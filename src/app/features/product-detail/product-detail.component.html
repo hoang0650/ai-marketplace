@@ -1,0 +1,651 @@
+@if (product(); as p) {
+  <section class="page route-enter playground-page">
+    <header class="hub-header">
+      <div class="hub-header__main">
+        <p class="hub-eyebrow">
+          <a [routerLink]="['/store', p.creatorSlug]" class="text-accent no-underline">{{ p.creatorName }}</a>
+          · {{ label(p.category) }}
+        </p>
+        <h1 class="hub-title">{{ p.name }}</h1>
+        <p class="hub-desc">{{ p.description }}</p>
+      </div>
+      <aside class="hub-buy panel">
+        <p class="hub-price">
+          @switch (p.pricing.model) {
+            @case ('free') { Free }
+            @case ('usage') { {{ p.pricing.usageRate | currency: p.pricing.currency }} / {{ p.pricing.usageUnit }} }
+            @case ('subscription') { {{ p.pricing.price | currency: p.pricing.currency }} / {{ p.pricing.interval }} }
+            @default { {{ p.pricing.price | currency: p.pricing.currency }} }
+          }
+        </p>
+        <p class="hub-meta">★ {{ p.rating | number: '1.1-1' }} ({{ p.reviewCount }}) · {{ p.installCount | number }} installs</p>
+        <label class="field-label">Pay with</label>
+        <select class="input input-sm" [(ngModel)]="provider">
+          <option value="stripe">Stripe</option>
+          <option value="paypal">PayPal</option>
+          <option value="paddle">Paddle</option>
+          <option value="payos">PayOS</option>
+        </select>
+        <div class="hub-actions">
+          <button type="button" class="btn btn-fill" (click)="primaryCta()">
+            @if (isHire(p.category)) {
+              Hire / Request
+            } @else if (isSkill(p.category)) {
+              Buy / Install
+            } @else {
+              Subscribe / Buy
+            }
+          </button>
+          <button type="button" class="btn btn-outline" (click)="toggleWishlist()">Wishlist</button>
+        </div>
+        @if (checkoutMsg()) {
+          <p class="checkout-msg">{{ checkoutMsg() }}</p>
+        }
+      </aside>
+    </header>
+
+    <nav class="ws-tabs" aria-label="Workspace">
+      @if (isHire(p.category)) {
+        <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'hire'" (click)="setWorkspace('hire')">
+          Hire
+        </button>
+      } @else if (isSkill(p.category)) {
+        <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'install'" (click)="setWorkspace('install')">
+          Install
+        </button>
+      } @else {
+        <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'playground'" (click)="setWorkspace('playground')">
+          Playground
+        </button>
+        <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'api'" (click)="setWorkspace('api')">
+          API
+        </button>
+      }
+      <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'overview'" (click)="setWorkspace('overview')">
+        Overview
+      </button>
+      <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'reviews'" (click)="setWorkspace('reviews')">
+        Reviews
+      </button>
+    </nav>
+
+    @if (workspaceTab() === 'install') {
+      <div class="hire-layout">
+        <section class="pg-pane">
+          <div class="pg-pane__head">
+            <h2>Buy & install skill</h2>
+          </div>
+          <p class="text-sm text-muted">
+            Skill packs ship as OpenClaw / agent folders (<code>SKILL.md</code>, prompts, tool playbooks). Purchase unlocks download + install instructions.
+          </p>
+          <div class="field">
+            <label class="field-label">Pay with</label>
+            <select class="input" [(ngModel)]="provider">
+              <option value="stripe">Stripe</option>
+              <option value="paypal">PayPal</option>
+              <option value="paddle">Paddle</option>
+              <option value="payos">PayOS</option>
+            </select>
+          </div>
+          <div class="pg-actions">
+            <button type="button" class="btn btn-outline" (click)="checkout()">Purchase</button>
+            <button type="button" class="btn btn-run" (click)="installSkill()">
+              {{ skillInstalled() ? 'Installed' : 'Mark installed' }}
+            </button>
+          </div>
+          @if (skillInstalled()) {
+            <p class="cost-hint">Marked installed for this demo session. Use the steps on the right in your OpenClaw workspace.</p>
+          }
+        </section>
+        <aside class="pg-pane">
+          <div class="pg-pane__head"><h2>Install guide</h2></div>
+          <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
+        </aside>
+      </div>
+    }
+
+    @if (workspaceTab() === 'hire') {
+      <div class="hire-layout">
+        <section class="pg-pane">
+          <div class="pg-pane__head">
+            <h2>Request to hire</h2>
+          </div>
+          <div class="field">
+            <label class="field-label" for="brief">Project brief</label>
+            <textarea id="brief" class="input textarea" rows="6" [(ngModel)]="hireBrief" placeholder="Goals, channels, deliverables…"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label" for="budget">Budget (optional)</label>
+            <input id="budget" class="input" [(ngModel)]="hireBudget" placeholder="e.g. $1,200 / month" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="timeline">Timeline</label>
+            <select id="timeline" class="input" [(ngModel)]="hireTimeline">
+              <option>ASAP</option>
+              <option>1 week</option>
+              <option>2 weeks</option>
+              <option>1 month</option>
+              <option>Ongoing retainer</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="contact">Contact email / Zalo</label>
+            <input id="contact" class="input" [(ngModel)]="hireContact" placeholder="you@company.com" />
+          </div>
+          <div class="pg-actions">
+            <button type="button" class="btn btn-outline" (click)="checkout()">Subscribe now</button>
+            <button type="button" class="btn btn-run" (click)="submitHireRequest()">Send request</button>
+          </div>
+          @if (hireSent()) {
+            <p class="cost-hint">Request queued. Seller can accept from their dashboard (mock).</p>
+          }
+        </section>
+        <aside class="pg-pane">
+          <div class="pg-pane__head"><h2>What you get</h2></div>
+          <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
+          <p class="result-caption mt-4">Category: {{ label(p.category) }} · by {{ p.creatorName }}</p>
+        </aside>
+      </div>
+    }
+
+    @if (workspaceTab() === 'playground') {
+      <div class="playground">
+        <section class="pg-pane" aria-labelledby="input-heading">
+          <div class="pg-pane__head">
+            <h2 id="input-heading">Input</h2>
+            <button type="button" class="ghost-chip ghost-chip--active" (click)="openLogs('session')">
+              Request logs
+            </button>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="model">Model</label>
+            <select id="model" class="input" [(ngModel)]="modelVariant">
+              <option [ngValue]="p.slug">{{ p.slug }}</option>
+              <option [ngValue]="p.slug + '-fast'">{{ p.slug }}-fast</option>
+            </select>
+          </div>
+
+          @if (p.category === 'text-to-text' || p.category === 'inference') {
+            <div class="field">
+              <span class="field-label">Input type</span>
+              <div class="segmented" role="group" aria-label="Input type">
+                <button type="button" [class.active]="inputMode === 'messages'" (click)="inputMode = 'messages'">Messages</button>
+                <button type="button" [class.active]="inputMode === 'prompt'" (click)="inputMode = 'prompt'">Prompt</button>
+              </div>
+            </div>
+          }
+
+          <div class="field">
+            <div class="field-label-row">
+              <label class="field-label" for="prompt">Prompt</label>
+              <span class="req">Required</span>
+            </div>
+            <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" placeholder="Enter a prompt"></textarea>
+          </div>
+
+          @if (p.category === 'text-to-text' || p.category === 'inference') {
+            <div class="field">
+              <label class="field-label" for="system">System prompt</label>
+              <textarea id="system" class="input textarea" rows="3" [(ngModel)]="systemPrompt"></textarea>
+            </div>
+          }
+
+          @if (p.category === 'text-to-video' || p.category === 'image-to-video') {
+            <div class="field">
+              <span class="field-label">Duration</span>
+              <div class="segmented" role="group" aria-label="Duration">
+                <button type="button" [class.active]="duration === 6" (click)="duration = 6">6s</button>
+                <button type="button" [class.active]="duration === 10" (click)="duration = 10">10s</button>
+              </div>
+            </div>
+          }
+
+          @if (p.category === 'image-to-video' || p.category === 'image-to-image') {
+            <div class="field">
+              <label class="field-label">Image</label>
+              <div class="image-drop">
+                @if (imageUrl) {
+                  <img [src]="imageUrl" alt="Reference" />
+                  <button type="button" class="btn btn-outline btn-sm" (click)="clearImage()">Remove</button>
+                } @else {
+                  <p class="text-sm text-muted">Upload or paste an image URL</p>
+                }
+                <input class="input input-sm" type="url" [(ngModel)]="imageUrl" placeholder="https://… or upload below" />
+                <input type="file" accept="image/*" (change)="onImageFile($event)" />
+              </div>
+            </div>
+          }
+
+          @if (p.category === 'text-to-image') {
+            <div class="field">
+              <label class="field-label" for="neg">Negative prompt</label>
+              <textarea id="neg" class="input textarea" rows="2" [(ngModel)]="negativePrompt" placeholder="Optional"></textarea>
+            </div>
+          }
+
+          <details class="settings" open>
+            <summary>Additional settings</summary>
+            <div class="settings-body">
+              @if (p.category === 'text-to-text' || p.category === 'inference') {
+                <div class="setting-block">
+                  <label class="field-label" for="maxTok">Max tokens</label>
+                  <p class="setting-help">Maximum number of tokens to generate.</p>
+                  <div class="stepper">
+                    <button type="button" class="stepper-btn" (click)="bumpMaxTokens(-64)" aria-label="Decrease max tokens">−</button>
+                    <input id="maxTok" class="stepper-input" type="number" min="16" max="8192" [(ngModel)]="maxTokens" />
+                    <button type="button" class="stepper-btn" (click)="bumpMaxTokens(64)" aria-label="Increase max tokens">+</button>
+                  </div>
+                </div>
+                <div class="setting-block">
+                  <label class="field-label" for="temp">Temperature</label>
+                  <p class="setting-help">Controls randomness. Lower values are more deterministic.</p>
+                  <div class="stepper">
+                    <button type="button" class="stepper-btn" (click)="bumpTemperature(-0.1)" aria-label="Decrease temperature">−</button>
+                    <input id="temp" class="stepper-input" type="number" min="0" max="2" step="0.1" [(ngModel)]="temperature" />
+                    <button type="button" class="stepper-btn" (click)="bumpTemperature(0.1)" aria-label="Increase temperature">+</button>
+                  </div>
+                </div>
+              }
+
+              @if (p.category === 'fine-tune') {
+                <div class="setting-block">
+                  <label class="field-label" for="seedFt">Seed</label>
+                  <input id="seedFt" class="input input-sm" type="text" [(ngModel)]="seed" />
+                </div>
+                <label class="check-row">
+                  <input type="checkbox" [(ngModel)]="enableSyncMode" name="ftSync" />
+                  <span>
+                    <strong>Wait for job completion</strong>
+                    <small>Block until training finishes (sandbox).</small>
+                  </span>
+                </label>
+              }
+
+              @if (p.category === 'dataset') {
+                <div class="setting-block">
+                  <label class="field-label" for="previewRows">Preview rows</label>
+                  <input id="previewRows" class="input input-sm" type="number" min="1" max="100" [(ngModel)]="maxTokens" />
+                </div>
+              }
+
+              @if (p.category === 'text-to-video') {
+                <div class="setting-block">
+                  <label class="field-label" for="seedVid">Seed</label>
+                  <p class="setting-help">Random seed for reproducible results. Use undefined for random seed.</p>
+                  <input id="seedVid" class="input input-sm" type="text" [(ngModel)]="seed" />
+                </div>
+                <div class="setting-block">
+                  <span class="field-label">Size</span>
+                  <div class="chip-row" role="group" aria-label="Video size">
+                    <button type="button" class="chip" [class.active]="videoSize === '720p'" (click)="videoSize = '720p'">720p</button>
+                    <button type="button" class="chip" [class.active]="videoSize === '1080p'" (click)="videoSize = '1080p'">1080p</button>
+                  </div>
+                </div>
+                <div class="setting-block">
+                  <span class="field-label">Aspect ratio</span>
+                  <div class="chip-row wrap" role="group" aria-label="Aspect ratio">
+                    @for (ar of videoAspectOptions; track ar) {
+                      <button type="button" class="chip" [class.active]="aspectRatio === ar" (click)="aspectRatio = ar">{{ ar }}</button>
+                    }
+                  </div>
+                </div>
+                <label class="check-row">
+                  <input type="checkbox" [(ngModel)]="enableSafetyChecker" name="safety" />
+                  <span>
+                    <strong>Enable safety checker</strong>
+                    <small>Whether to enable the safety checker.</small>
+                  </span>
+                </label>
+                <div class="setting-block">
+                  <label class="field-label" for="fps">Fps</label>
+                  <p class="setting-help">Frames per second</p>
+                  <select id="fps" class="input input-sm" [(ngModel)]="fps">
+                    @for (f of fpsOptions; track f) {
+                      <option [ngValue]="f">{{ f }}</option>
+                    }
+                  </select>
+                </div>
+                <label class="check-row">
+                  <input type="checkbox" [(ngModel)]="draftMode" name="draft" />
+                  <span>
+                    <strong>Draft</strong>
+                    <small>Draft mode for a lower-quality preview.</small>
+                  </span>
+                </label>
+                <label class="check-row">
+                  <input type="checkbox" [(ngModel)]="saveAudio" name="audio" />
+                  <span>
+                    <strong>Save Audio</strong>
+                    <small>Save the video with audio.</small>
+                  </span>
+                </label>
+                <label class="check-row">
+                  <input type="checkbox" [(ngModel)]="promptUpsampling" name="upsample" />
+                  <span>
+                    <strong>Prompt Upsampling</strong>
+                    <small>Automatically enhance the prompt for better results.</small>
+                  </span>
+                </label>
+              }
+
+              @if (p.category === 'image-to-image') {
+                <div class="setting-block">
+                  <label class="field-label" for="seedImg">Seed</label>
+                  <p class="setting-help">Random seed for reproducible results. Use -1 for random seed.</p>
+                  <input id="seedImg" class="input input-sm" type="text" [(ngModel)]="seed" />
+                </div>
+                <div class="setting-block">
+                  <span class="field-label">Size</span>
+                  <div class="chip-row wrap" role="group" aria-label="Image size">
+                    @for (sz of imageSizeOptions; track sz) {
+                      <button type="button" class="chip" [class.active]="imageSize === sz" (click)="imageSize = sz">{{ sz }}</button>
+                    }
+                  </div>
+                </div>
+                <div class="setting-block">
+                  <span class="field-label">Output format</span>
+                  <div class="chip-row" role="group" aria-label="Output format">
+                    <button type="button" class="chip" [class.active]="outputFormat === 'png'" (click)="outputFormat = 'png'">png</button>
+                    <button type="button" class="chip" [class.active]="outputFormat === 'jpeg'" (click)="outputFormat = 'jpeg'">jpeg</button>
+                  </div>
+                </div>
+                <div class="setting-block">
+                  <span class="field-label">LoRAs</span>
+                  <div class="lora-row">
+                    <input class="input input-sm" [(ngModel)]="loraDraft" name="lora" placeholder="Add LoRA id" (keydown.enter)="$event.preventDefault(); addLora()" />
+                    <button type="button" class="btn btn-outline btn-sm" (click)="addLora()">Add LoRA</button>
+                  </div>
+                  @if (loraIds.length) {
+                    <div class="chip-row wrap">
+                      @for (id of loraIds; track id) {
+                        <button type="button" class="chip active" (click)="removeLora(id)" [attr.aria-label]="'Remove ' + id">{{ id }} ×</button>
+                      }
+                    </div>
+                  }
+                </div>
+                <label class="check-row">
+                  <input type="checkbox" [(ngModel)]="enableBase64Output" name="b64" />
+                  <span><strong>Enable Base64 Output</strong></span>
+                </label>
+                <label class="check-row">
+                  <input type="checkbox" [(ngModel)]="enableSyncMode" name="sync" />
+                  <span><strong>Enable Sync Mode</strong></span>
+                </label>
+              }
+
+              @if (p.category === 'text-to-image' || p.category === 'image-to-video') {
+                <div class="setting-block">
+                  <label class="field-label" for="seedOther">Seed</label>
+                  <input id="seedOther" class="input input-sm" type="text" [(ngModel)]="seed" />
+                </div>
+              }
+            </div>
+          </details>
+
+          <p class="cost-hint">{{ priceHint() }}</p>
+
+          <div class="pg-actions">
+            <button type="button" class="btn btn-outline" (click)="resetPlayground()">Reset</button>
+            <button
+              type="button"
+              class="btn btn-run"
+              [disabled]="runStatus() === 'running' || !prompt.trim()"
+              (click)="run()"
+            >
+              {{ runStatus() === 'running' ? 'Running…' : 'Run' }}
+            </button>
+          </div>
+        </section>
+
+        <section class="pg-pane pg-pane--result" aria-labelledby="result-heading">
+          <div class="pg-pane__head">
+            <h2 id="result-heading">Result</h2>
+            <span class="status-pill" [attr.data-status]="runStatus()">
+              @switch (runStatus()) {
+                @case ('idle') { Idle }
+                @case ('running') { Running }
+                @case ('done') { Done · {{ lastLatencyMs }}ms }
+                @case ('error') { Error }
+              }
+            </span>
+          </div>
+
+          <div class="segmented result-tabs" role="tablist">
+            <button type="button" role="tab" [class.active]="resultView() === 'preview'" (click)="setResultView('preview')">Preview</button>
+            <button type="button" role="tab" [class.active]="resultView() === 'json'" (click)="setResultView('json')">JSON</button>
+          </div>
+
+          <div class="result-body">
+            @if (runStatus() === 'idle') {
+              <p class="result-empty">Generate to see results here</p>
+            } @else if (runStatus() === 'running') {
+              <p class="result-empty pulse">Generating…</p>
+            } @else if (resultView() === 'json') {
+              <pre class="result-json">{{ resultJson }}</pre>
+            } @else if (p.category === 'text-to-text' || p.category === 'inference' || p.category === 'fine-tune' || p.category === 'dataset') {
+              <div class="result-text">{{ previewText }}</div>
+            } @else if (resultMediaUrl) {
+              <div class="result-media">
+                <img [src]="resultMediaUrl" [alt]="p.name + ' output'" />
+                <p class="result-caption">{{ previewText }}</p>
+              </div>
+            } @else {
+              <div class="result-text">{{ previewText }}</div>
+            }
+          </div>
+        </section>
+      </div>
+    }
+
+    @if (workspaceTab() === 'api') {
+      <div class="panel api-hub">
+        <div class="api-hub__bar">
+          <button type="button" class="btn btn-outline btn-sm" (click)="createApiKey()">+ Create an API key</button>
+          <button type="button" class="api-link" (click)="showApiKeys.set(!showApiKeys())">
+            {{ showApiKeys() ? 'Hide keys' : 'All API keys' }} →
+          </button>
+        </div>
+
+        @if (showApiKeys()) {
+          <div class="api-keys">
+            @if (!apiKeys().length) {
+              <p class="text-sm text-muted">No keys yet — create one to call this model.</p>
+            } @else {
+              <ul class="api-keys__list">
+                @for (k of apiKeys(); track k.id) {
+                  <li>
+                    <span class="font-mono text-sm">{{ k.prefix }}</span>
+                    <span class="text-muted text-xs">{{ k.name }} · {{ k.createdAt | date: 'short' }}</span>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+
+        <div class="api-req-bar">
+          <select class="api-select" [(ngModel)]="apiClient" name="apiClient" aria-label="Client">
+            <option value="curl">cURL</option>
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+          </select>
+          <select class="api-select" [(ngModel)]="apiMethod" name="apiMethod" aria-label="Method">
+            <option value="POST">POST</option>
+            <option value="GET">GET</option>
+          </select>
+          <select class="api-select api-select--path" [(ngModel)]="apiAction" name="apiAction" aria-label="Path">
+            <option value="run">/run</option>
+            <option value="runsync">/runsync</option>
+            <option value="status">/status</option>
+          </select>
+          <button type="button" class="api-copy" (click)="copyApiSnippet(p)">
+            {{ apiCopied() ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
+
+        <pre class="api-curl"><code>{{ apiSnippet(p) }}</code></pre>
+
+        <div class="api-docs">
+          <h3 class="font-display text-lg">Docs</h3>
+          <pre class="api-docs__md">{{ p.apiDocsMarkdown }}</pre>
+        </div>
+      </div>
+    }
+
+    @if (workspaceTab() === 'overview') {
+      <div class="panel">
+        <p class="leading-relaxed text-muted">{{ p.description }}</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          @for (tag of p.tags; track tag) {
+            <span class="tag-chip">{{ tag }}</span>
+          }
+        </div>
+        <h3 class="mt-8 font-display text-2xl">Changelog</h3>
+        <ul class="mt-4 space-y-4">
+          @for (c of p.changelog; track c.version) {
+            <li>
+              <p class="font-display text-lg">{{ c.version }} <span class="text-sm text-muted">{{ c.date | date }}</span></p>
+              <p class="text-muted">{{ c.notes }}</p>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (workspaceTab() === 'reviews') {
+      <div class="panel space-y-4">
+        @for (r of reviews(); track r.id) {
+          <article class="border-b border-line pb-4">
+            <p class="font-semibold">{{ r.title }} · ★ {{ r.rating }}</p>
+            <p class="text-sm text-muted">{{ r.userName }} · {{ r.createdAt | date }}</p>
+            <p class="mt-2">{{ r.body }}</p>
+          </article>
+        }
+        @if (auth.isAuthenticated()) {
+          <form class="mt-6 grid gap-3" (ngSubmit)="submitReview()">
+            <input class="input" [(ngModel)]="reviewTitle" name="title" placeholder="Review title" required />
+            <textarea class="input min-h-24" [(ngModel)]="reviewBody" name="body" placeholder="Your experience" required></textarea>
+            <input class="input" type="number" min="1" max="5" [(ngModel)]="reviewRating" name="rating" />
+            <button class="btn btn-fill w-fit" type="submit">Post review</button>
+          </form>
+        }
+      </div>
+    }
+  </section>
+
+  @if (logsOpen()) {
+    <div class="logs-backdrop" (click)="closeLogs()" aria-hidden="true"></div>
+    <div class="logs-modal" role="dialog" aria-modal="true" aria-labelledby="logs-title" (click)="$event.stopPropagation()">
+      <div class="logs-modal__head">
+        <h2 id="logs-title">Request logs</h2>
+        <button type="button" class="logs-close" (click)="closeLogs()" aria-label="Close">×</button>
+      </div>
+
+      <div class="logs-tabs">
+        <button type="button" class="logs-tab" [class.active]="logsTab() === 'session'" (click)="setLogsTab('session')">
+          Session Logs
+        </button>
+        <button type="button" class="logs-tab" [class.active]="logsTab() === 'history'" (click)="setLogsTab('history')">
+          History
+        </button>
+      </div>
+
+      @if (logsTab() === 'history') {
+        <div class="logs-toolbar">
+          <select
+            class="api-select"
+            [ngModel]="historyRange()"
+            (ngModelChange)="setHistoryRange($event)"
+            name="historyRange"
+            aria-label="Time range"
+          >
+            <option value="24h">Last 24 hours</option>
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="all">All time</option>
+          </select>
+          <p class="logs-hint">There may be a short delay before new requests appear in the history.</p>
+        </div>
+      } @else {
+        <div class="logs-toolbar">
+          <button type="button" class="btn btn-outline btn-sm" (click)="clearSessionLogs()" [disabled]="!sessionLogs().length">
+            Clear session
+          </button>
+        </div>
+      }
+
+      <div class="logs-table-wrap">
+        <table class="logs-table">
+          <thead>
+            <tr>
+              <th>Request ID</th>
+              <th>Status</th>
+              <th>Delay time</th>
+              <th>Execution time</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of pagedLogs(); track row.id) {
+              <tr [class.selected]="selectedLog()?.id === row.id" (click)="selectLog(row)">
+                <td class="font-mono">{{ row.id }}</td>
+                <td><span class="log-status" [attr.data-status]="row.status">{{ row.status }}</span></td>
+                <td>{{ formatMs(row.delayMs) }}</td>
+                <td>{{ formatMs(row.executionMs) }}</td>
+                <td>{{ row.createdAt | date: 'short' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="logs-empty">
+                  @if (logsTab() === 'session') {
+                    No requests in this session yet. Run the playground to see logs here.
+                  } @else {
+                    No request history<br />
+                    <span class="text-muted">No historical request data found for the selected time range.</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="logs-footer">
+        <select
+          class="api-select"
+          [ngModel]="logsPageSize()"
+          (ngModelChange)="logsPageSize.set(+$event); logsPage.set(1)"
+          name="pageSize"
+          aria-label="Rows per page"
+        >
+          <option [ngValue]="10">10 per page</option>
+          <option [ngValue]="25">25 per page</option>
+          <option [ngValue]="50">50 per page</option>
+        </select>
+        <div class="logs-pager">
+          <button type="button" class="api-copy" (click)="prevLogsPage()" [disabled]="logsPage() <= 1">‹</button>
+          <span>Page {{ logsPage() }} of {{ logsTotalPages() }}</span>
+          <button type="button" class="api-copy" (click)="nextLogsPage()" [disabled]="logsPage() >= logsTotalPages()">›</button>
+        </div>
+      </div>
+
+      @if (selectedLog(); as log) {
+        <div class="logs-detail">
+          <p class="logs-detail__title">{{ log.id }} · {{ log.model }}</p>
+          <p class="text-sm text-muted">{{ log.promptPreview }}</p>
+          <div class="logs-detail__grid">
+            <div>
+              <p class="field-label">Request</p>
+              <pre class="api-curl logs-pre">{{ log.requestJson }}</pre>
+            </div>
+            <div>
+              <p class="field-label">Response</p>
+              <pre class="api-curl logs-pre">{{ log.responseJson }}</pre>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+}

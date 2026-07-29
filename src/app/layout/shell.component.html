@@ -1,0 +1,139 @@
+<a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-accent focus:px-3 focus:py-2 focus:text-paper" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
+    <a routerLink="/" class="brand group flex items-baseline gap-2 no-underline">
+      <span class="font-display text-2xl font-semibold tracking-tight text-ink transition group-hover:text-accent">{{ brand }}</span>
+    </a>
+
+    <nav class="flex items-center gap-2 sm:gap-3" aria-label="Primary">
+      <a routerLink="/marketplace" routerLinkActive="active" class="nav-link">Marketplace</a>
+
+      <div class="nav-dd" [class.open]="categoryOpen()">
+        <button
+          type="button"
+          class="nav-dd__btn"
+          [attr.aria-expanded]="categoryOpen()"
+          aria-haspopup="menu"
+          (click)="toggleCategories()"
+        >
+          Categories
+          <span class="nav-dd__chev" aria-hidden="true">▾</span>
+        </button>
+        @if (categoryOpen()) {
+          <div class="nav-dd__panel" role="menu" aria-label="Categories">
+            <div class="nav-dd__cols nav-dd__cols--3">
+              <div>
+                <p class="nav-dd__group">{{ groupTitle('models') }}</p>
+                <ul>
+                  @for (c of modelCategories; track c.id) {
+                    <li>
+                      <a
+                        [routerLink]="c.hubPath"
+                        role="menuitem"
+                        class="nav-dd__item"
+                        (click)="closeCategories()"
+                      >
+                        <span class="nav-dd__item-title">{{ c.label }}</span>
+                        <span class="nav-dd__item-desc">{{ c.description }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </div>
+              <div>
+                <p class="nav-dd__group">{{ groupTitle('hire') }}</p>
+                <ul>
+                  @for (c of hireCategories; track c.id) {
+                    <li>
+                      <a
+                        [routerLink]="c.hubPath"
+                        role="menuitem"
+                        class="nav-dd__item"
+                        (click)="closeCategories()"
+                      >
+                        <span class="nav-dd__item-title">{{ c.label }}</span>
+                        <span class="nav-dd__item-desc">{{ c.description }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </div>
+              <div>
+                <p class="nav-dd__group">{{ groupTitle('skills') }}</p>
+                <ul>
+                  @for (c of skillCategories; track c.id) {
+                    <li>
+                      <a
+                        [routerLink]="c.hubPath"
+                        role="menuitem"
+                        class="nav-dd__item"
+                        (click)="closeCategories()"
+                      >
+                        <span class="nav-dd__item-title">{{ c.label }}</span>
+                        <span class="nav-dd__item-desc">{{ c.description }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+            <a routerLink="/marketplace" class="nav-dd__all" (click)="closeCategories()">Browse all marketplace →</a>
+          </div>
+        }
+      </div>
+
+      <a routerLink="/search" routerLinkActive="active" class="nav-link hidden sm:inline">Search</a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <button type="button" class="icon-btn" (click)="toggleTheme()" [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
+        {{ theme.isDark() ? 'Light' : 'Dark' }}
+      </button>
+      <a routerLink="/wishlist" class="icon-btn hidden sm:inline-flex">Wishlist</a>
+      <a routerLink="/notifications" class="icon-btn hidden sm:inline-flex">Alerts</a>
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/dashboard" class="btn-ghost hidden md:inline-flex">Dashboard</a>
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin" class="btn-ghost hidden md:inline-flex">Admin</a>
+        }
+        <a routerLink="/profile" class="btn-primary">{{ auth.user()?.name }}</a>
+      } @else {
+        <a routerLink="/auth/login" class="btn-ghost">Log in</a>
+        <a routerLink="/auth/register" class="btn-primary hidden sm:inline-flex">Start selling</a>
+      }
+    </div>
+  </div>
+</header>
+
+<main id="main" class="min-h-[70vh]">
+  <router-outlet />
+</main>
+
+<footer class="site-footer mt-20 border-t border-line">
+  <div class="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-4 md:px-6">
+    <div class="md:col-span-2">
+      <p class="font-display text-3xl text-ink">{{ brand }}</p>
+      <p class="mt-3 max-w-md text-sm text-muted">AI models, skill packs, and hire talent — marketing, SEO, creators, agents, automation, build app/web.</p>
+    </div>
+    <div>
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-muted">Explore</p>
+      <ul class="space-y-2 text-sm">
+        @for (c of navCategories; track c.id) {
+          <li><a [routerLink]="c.hubPath" class="footer-link">{{ c.label }}</a></li>
+        }
+      </ul>
+    </div>
+    <div>
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-muted">Account</p>
+      <ul class="space-y-2 text-sm">
+        <li><a routerLink="/billing" class="footer-link">Billing</a></li>
+        <li><a routerLink="/wallet" class="footer-link">Wallet</a></li>
+        <li><a routerLink="/affiliate" class="footer-link">Affiliate</a></li>
+        @if (auth.isAuthenticated()) {
+          <li><button type="button" class="footer-link" (click)="logout()">Log out</button></li>
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

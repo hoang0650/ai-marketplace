@@ -1,0 +1,34 @@
+<section class="hero route-enter">
+  <div class="hero-inner mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-end px-4 pb-16 pt-24 md:px-6 md:pb-24">
+    <p class="font-display text-5xl leading-[0.95] tracking-tight text-ink md:text-7xl lg:text-8xl">{{ brand }}</p>
+    <p class="mt-6 max-w-xl text-lg text-muted md:text-xl">{{ tagline }}</p>
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a routerLink="/marketplace" class="btn btn-fill">Browse marketplace</a>
+      <a routerLink="/auth/register" class="btn btn-outline">Become a creator</a>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="mb-8 flex items-end justify-between gap-4">
+    <h2 class="section-title">Featured this week</h2>
+    <a routerLink="/marketplace" class="text-sm text-accent">View all</a>
+  </div>
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    @for (p of featured(); track p.id) {
+      <app-product-card [product]="p" />
+    }
+  </div>
+</section>
+
+<section class="page pt-4">
+  <h2 class="section-title mb-6">Categories</h2>
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    @for (c of categories; track c.id) {
+      <a [routerLink]="c.hubPath" class="panel block no-underline transition hover:border-accent">
+        <p class="font-display text-xl">{{ c.label }}</p>
+        <p class="mt-2 text-sm text-muted">{{ c.description }}</p>
+      </a>
+    }
+  </div>
+</section>

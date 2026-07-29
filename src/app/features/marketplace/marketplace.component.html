@@ -1,0 +1,32 @@
+<section class="page route-enter">
+  <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="section-title">Marketplace</h1>
+      <p class="mt-2 text-muted">Filter by category or search across the catalog.</p>
+    </div>
+    <div class="flex w-full max-w-xl flex-col gap-2 sm:flex-row">
+      <input class="input" type="search" [(ngModel)]="query" (ngModelChange)="onFilter()" placeholder="Search products..." aria-label="Search products" />
+      <select class="input sm:max-w-[12rem]" [(ngModel)]="selectedCategory" (ngModelChange)="onFilter()" aria-label="Category">
+        <option value="">All categories</option>
+        @for (c of categories(); track c.id) {
+          <option [value]="c.id">{{ c.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="mb-6 flex flex-wrap gap-2">
+    <a routerLink="/marketplace" class="btn btn-outline text-xs">All</a>
+    @for (c of categories(); track c.id) {
+      <a [routerLink]="['/marketplace', c.id]" class="btn btn-outline text-xs">{{ c.label }}</a>
+    }
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    @for (p of products(); track p.id) {
+      <app-product-card [product]="p" />
+    } @empty {
+      <p class="text-muted">No products match your filters.</p>
+    }
+  </div>
+</section>
