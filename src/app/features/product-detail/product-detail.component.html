@@ -29,7 +29,7 @@
         <div class="hub-actions">
           <button type="button" class="btn btn-fill" (click)="primaryCta()">
             @if (isHire(p.category)) {
-              Hire / Request
+              {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
             } @else if (isSkill(p.category)) {
               Buy / Install
             } @else {
@@ -106,45 +106,84 @@
 
     @if (workspaceTab() === 'hire') {
       <div class="hire-layout">
-        <section class="pg-pane">
-          <div class="pg-pane__head">
-            <h2>Request to hire</h2>
-          </div>
-          <div class="field">
-            <label class="field-label" for="brief">Project brief</label>
-            <textarea id="brief" class="input textarea" rows="6" [(ngModel)]="hireBrief" placeholder="Goals, channels, deliverables…"></textarea>
-          </div>
-          <div class="field">
-            <label class="field-label" for="budget">Budget (optional)</label>
-            <input id="budget" class="input" [(ngModel)]="hireBudget" placeholder="e.g. $1,200 / month" />
-          </div>
-          <div class="field">
-            <label class="field-label" for="timeline">Timeline</label>
-            <select id="timeline" class="input" [(ngModel)]="hireTimeline">
-              <option>ASAP</option>
-              <option>1 week</option>
-              <option>2 weeks</option>
-              <option>1 month</option>
-              <option>Ongoing retainer</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label" for="contact">Contact email / Zalo</label>
-            <input id="contact" class="input" [(ngModel)]="hireContact" placeholder="you@company.com" />
-          </div>
-          <div class="pg-actions">
-            <button type="button" class="btn btn-outline" (click)="checkout()">Subscribe now</button>
-            <button type="button" class="btn btn-run" (click)="submitHireRequest()">Send request</button>
-          </div>
-          @if (hireSent()) {
-            <p class="cost-hint">Request queued. Seller can accept from their dashboard (mock).</p>
-          }
-        </section>
-        <aside class="pg-pane">
-          <div class="pg-pane__head"><h2>What you get</h2></div>
-          <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
-          <p class="result-caption mt-4">Category: {{ label(p.category) }} · by {{ p.creatorName }}</p>
-        </aside>
+        @if (isOpenClawHire()) {
+          <section class="pg-pane">
+            <div class="pg-pane__head">
+              <h2>OpenClaw agent</h2>
+            </div>
+            <p class="text-muted">
+              Featherless-style managed agent. Launch opens the OpenClaw Control UI with gateway
+              token + auto device pairing — same flow as PHHotel AI chatbox.
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                class="btn btn-run"
+                (click)="launchOpenClaw()"
+                [disabled]="openclawBusy()"
+              >
+                {{ openclawBusy() ? 'Opening…' : '🚀 Launch OpenClaw' }}
+              </button>
+              <a class="btn btn-outline" routerLink="/hire-agent/marketplace">Browse Agents</a>
+              <a class="btn btn-outline" routerLink="/hire-agent/openclaw">Manage</a>
+            </div>
+            @if (openclawStatus()) {
+              <p class="cost-hint mt-3 font-mono text-xs">{{ openclawStatus() }}</p>
+            }
+              <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                <a class="btn btn-outline" routerLink="/hire-agent/openclaw/setup">Setup Wizard</a>
+                <button type="button" class="btn btn-outline" (click)="launchOpenClaw()">OpenClaw UI</button>
+              </div>
+            <div class="pg-actions mt-6">
+              <button type="button" class="btn btn-outline" (click)="checkout()">Subscribe seat</button>
+            </div>
+          </section>
+          <aside class="pg-pane">
+            <div class="pg-pane__head"><h2>What you get</h2></div>
+            <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
+            <p class="result-caption mt-4">Category: {{ label(p.category) }} · by {{ p.creatorName }}</p>
+          </aside>
+        } @else {
+          <section class="pg-pane">
+            <div class="pg-pane__head">
+              <h2>Request to hire</h2>
+            </div>
+            <div class="field">
+              <label class="field-label" for="brief">Project brief</label>
+              <textarea id="brief" class="input textarea" rows="6" [(ngModel)]="hireBrief" placeholder="Goals, channels, deliverables…"></textarea>
+            </div>
+            <div class="field">
+              <label class="field-label" for="budget">Budget (optional)</label>
+              <input id="budget" class="input" [(ngModel)]="hireBudget" placeholder="e.g. $1,200 / month" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="timeline">Timeline</label>
+              <select id="timeline" class="input" [(ngModel)]="hireTimeline">
+                <option>ASAP</option>
+                <option>1 week</option>
+                <option>2 weeks</option>
+                <option>1 month</option>
+                <option>Ongoing retainer</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label" for="contact">Contact email / Zalo</label>
+              <input id="contact" class="input" [(ngModel)]="hireContact" placeholder="you@company.com" />
+            </div>
+            <div class="pg-actions">
+              <button type="button" class="btn btn-outline" (click)="checkout()">Subscribe now</button>
+              <button type="button" class="btn btn-run" (click)="submitHireRequest()">Send request</button>
+            </div>
+            @if (hireSent()) {
+              <p class="cost-hint">Request queued. Seller can accept from their dashboard (mock).</p>
+            }
+          </section>
+          <aside class="pg-pane">
+            <div class="pg-pane__head"><h2>What you get</h2></div>
+            <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
+            <p class="result-caption mt-4">Category: {{ label(p.category) }} · by {{ p.creatorName }}</p>
+          </aside>
+        }
       </div>
     }
 

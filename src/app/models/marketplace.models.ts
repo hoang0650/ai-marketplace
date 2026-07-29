@@ -120,7 +120,7 @@ export interface Order {
 
 export interface WalletTx {
   id: string;
-  type: 'credit' | 'debit' | 'withdraw';
+  type: 'credit' | 'debit' | 'withdraw' | 'deposit';
   amount: number;
   currency: string;
   note: string;
@@ -159,4 +159,49 @@ export interface DashboardSummary {
   gpuHours: number;
   activeProducts: number;
   currency: string;
+}
+
+export interface AdminShopRevenue {
+  sellerId: string;
+  shopName: string;
+  creatorSlug: string;
+  avatarUrl: string;
+  orders: number;
+  grossRevenue: number;
+  platformFee: number;
+  sellerNet: number;
+}
+
+export interface AdminOverview {
+  users: number;
+  products: number;
+  creators: number;
+  orders: number;
+  reviews: number;
+  paidOrders: number;
+  currency: string;
+  platformFeeRate: number;
+  totalGrossRevenue: number;
+  gmv: number;
+  platformFee: number;
+  sellerNet: number;
+  buyerDeposits: number;
+  buyerDepositCount: number;
+  shops: AdminShopRevenue[];
+  usersList: Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+    creatorSlug?: string;
+    avatarUrl?: string;
+  }>;
+  productsList: Array<{
+    id: string;
+    name: string;
+    category: string;
+    creatorSlug?: string;
+    creatorName?: string;
+    featured?: boolean;
+  }>;
 }

@@ -9,7 +9,7 @@ function jsonOk<T>(body: T, status = 200) {
 }
 
 export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith(environment.apiUrl)) {
+  if (!environment.useMockApi || !req.url.startsWith(environment.apiUrl)) {
     return next(req);
   }
 
@@ -59,6 +59,9 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       if (req.method === 'POST' && path === '/wallet/withdraw') {
         return jsonOk(store.withdraw((req.body as { amount: number }).amount));
       }
+      if (req.method === 'POST' && path === '/wallet/deposit') {
+        return jsonOk(store.deposit((req.body as { amount: number }).amount));
+      }
       if (req.method === 'GET' && path === '/usage') {
         return jsonOk(store.usage());
       }
@@ -97,6 +100,12 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
         const id = auth.replace('Bearer mock.', '');
         const user = store.getUser(id);
         return user ? jsonOk(user) : jsonOk({ message: 'Unauthorized' }, 401);
+      }
+      if (req.method === 'POST' && path === '/openclaw/launch') {
+        return jsonOk({
+          success: false,
+          message: 'Configure OpenClaw env (AI_URL / OPENCLAW_GATEWAY_*) to launch gateway.',
+        });
       }
       if (req.method === 'GET' && path === '/admin/overview') {
         return jsonOk(store.adminOverview());

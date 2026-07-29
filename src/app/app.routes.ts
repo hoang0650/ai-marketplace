@@ -79,8 +79,22 @@ export const routes: Routes = [
       {
         path: 'hire-agent',
         loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'hire-agent', title: 'Hiring Agent' },
+          import('./features/agents/agents.components').then((m) => m.MyAgentsComponent),
+      },
+      {
+        path: 'hire-agent/marketplace',
+        loadComponent: () =>
+          import('./features/agents/agents.components').then((m) => m.AgentMarketplaceComponent),
+      },
+      {
+        path: 'hire-agent/:agentId/setup',
+        loadComponent: () =>
+          import('./features/agents/setup-wizard.component').then((m) => m.OpenClawSetupWizardComponent),
+      },
+      {
+        path: 'hire-agent/:agentId',
+        loadComponent: () =>
+          import('./features/agents/agents.components').then((m) => m.AgentDetailComponent),
       },
       {
         path: 'hire-marketing',

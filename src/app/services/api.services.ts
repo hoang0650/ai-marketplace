@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   AffiliateStats,
+  AdminOverview,
   Creator,
   DashboardSummary,
   NotificationItem,
@@ -127,6 +128,10 @@ export class DashboardService {
     return this.http.post<WalletTx>(`${this.base}/wallet/withdraw`, { amount });
   }
 
+  deposit(amount: number): Observable<WalletTx> {
+    return this.http.post<WalletTx>(`${this.base}/wallet/deposit`, { amount });
+  }
+
   affiliate(): Observable<AffiliateStats> {
     return this.http.get<AffiliateStats>(`${this.base}/affiliate`);
   }
@@ -139,8 +144,8 @@ export class DashboardService {
     return this.http.post<NotificationItem[]>(`${this.base}/notifications/read-all`, {});
   }
 
-  adminOverview(): Observable<Record<string, unknown>> {
-    return this.http.get<Record<string, unknown>>(`${this.base}/admin/overview`);
+  adminOverview(): Observable<AdminOverview> {
+    return this.http.get<AdminOverview>(`${this.base}/admin/overview`);
   }
 }
 

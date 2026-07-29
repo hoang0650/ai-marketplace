@@ -7,6 +7,7 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { PaymentProvider, Product, ProductCategory, Review } from '../../models/marketplace.models';
 import { categoryLabel, isHireCategory, isSkillCategory } from '../../models/categories';
+import { OpenClawGatewayService } from '../agents/openclaw-gateway.service';
 
 type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews';
 type ResultView = 'preview' | 'json';
@@ -45,6 +46,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly wishlistApi = inject(WishlistService);
   private readonly billing = inject(BillingService);
   private readonly seo = inject(SeoService);
+  private readonly openclaw = inject(OpenClawGatewayService);
   readonly auth = inject(AuthService);
 
   readonly product = signal<Product | null>(null);
@@ -90,6 +92,13 @@ export class ProductDetailComponent implements OnInit {
   hireContact = '';
   hireSent = signal(false);
   readonly skillInstalled = signal(false);
+  readonly openclawBusy = signal(false);
+  readonly openclawStatus = signal('');
+
+  readonly isOpenClawHire = computed(() => {
+    const p = this.product();
+    return !!p && (p.category === 'hire-agent' || p.slug === 'openclaw-ops-agent');
+  });
 
   apiClient: ApiClient = 'curl';
   apiMethod: 'POST' | 'GET' = 'POST';
@@ -190,9 +199,31 @@ export class ProductDetailComponent implements OnInit {
     this.checkoutMsg.set('Hire request sent — seller will reply in-app (mock).');
   }
 
+  launchOpenClaw(): void {
+    if (this.openclawBusy()) return;
+    this.openclawBusy.set(true);
+    this.openclawStatus.set('Opening OpenClaw gateway…');
+    const agent = this.openclaw.getAgent('openclaw');
+    this.openclaw.launchGateway({ agent: agent || undefined }).subscribe((res) => {
+      this.openclawBusy.set(false);
+      this.openclawStatus.set(
+        res.success
+          ? 'Gateway opened — auto-approving device pairing…'
+          : res.message || 'Launch failed',
+      );
+      if (res.success) {
+        this.checkoutMsg.set('OpenClaw Control UI launched.');
+      }
+    });
+  }
+
   primaryCta(): void {
     const p = this.product();
     if (!p) return;
+    if (p.category === 'hire-agent' || p.slug === 'openclaw-ops-agent') {
+      this.launchOpenClaw();
+      return;
+    }
     if (isHireCategory(p.category)) {
       this.setWorkspace('hire');
       return;

@@ -121,6 +121,19 @@ export class MockDataStore {
     return tx;
   }
 
+  deposit(amount: number): WalletTx {
+    const tx: WalletTx = {
+      id: `w-${Date.now()}`,
+      type: 'deposit',
+      amount,
+      currency: 'USD',
+      note: 'Buyer wallet deposit',
+      createdAt: new Date().toISOString(),
+    };
+    this.ensure().wallet.unshift(tx);
+    return tx;
+  }
+
   usage(): UsageStat[] {
     return this.ensure().usage;
   }
@@ -196,12 +209,60 @@ export class MockDataStore {
 
   adminOverview() {
     const db = this.ensure();
+    const paid = db.orders.filter((o) => o.status === 'paid');
+    const totalGrossRevenue = paid.reduce((s, o) => s + o.amount, 0);
+    const platformFeeRate = 0.2;
+    const platformFee = Math.round(totalGrossRevenue * platformFeeRate * 100) / 100;
+    const sellerNet = Math.round((totalGrossRevenue - platformFee) * 100) / 100;
+
+    const bySeller = new Map<string, { shopName: string; creatorSlug: string; avatarUrl: string; orders: number; gross: number }>();
+    for (const o of paid) {
+      const product = db.products.find((p) => p.id === o.productId);
+      const creator = db.creators.find((c) => c.id === product?.creatorId || c.slug === product?.creatorSlug);
+      const key = creator?.id || product?.creatorId || 'unknown';
+      const cur = bySeller.get(key) || {
+        shopName: creator?.name || product?.creatorName || 'Unknown shop',
+        creatorSlug: creator?.slug || product?.creatorSlug || '',
+        avatarUrl: creator?.avatarUrl || '',
+        orders: 0,
+        gross: 0,
+      };
+      cur.orders += 1;
+      cur.gross += o.amount;
+      bySeller.set(key, cur);
+    }
+
+    const deposits = db.wallet.filter((t) => t.type === 'deposit');
+    const buyerDeposits = deposits.reduce((s, t) => s + t.amount, 0);
+
     return {
       users: db.users.length,
       products: db.products.length,
       creators: db.creators.length,
       orders: db.orders.length,
-      gmv: db.orders.reduce((s, o) => s + o.amount, 0),
+      reviews: db.reviews?.length || 0,
+      paidOrders: paid.length,
+      currency: 'USD',
+      platformFeeRate,
+      totalGrossRevenue,
+      gmv: totalGrossRevenue,
+      platformFee,
+      sellerNet,
+      buyerDeposits,
+      buyerDepositCount: deposits.length,
+      shops: [...bySeller.entries()].map(([sellerId, row]) => {
+        const fee = Math.round(row.gross * platformFeeRate * 100) / 100;
+        return {
+          sellerId,
+          shopName: row.shopName,
+          creatorSlug: row.creatorSlug,
+          avatarUrl: row.avatarUrl,
+          orders: row.orders,
+          grossRevenue: row.gross,
+          platformFee: fee,
+          sellerNet: Math.round((row.gross - fee) * 100) / 100,
+        };
+      }),
       usersList: db.users,
       productsList: db.products,
       ordersList: db.orders,

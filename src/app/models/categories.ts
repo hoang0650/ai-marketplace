@@ -73,8 +73,8 @@ export const CATEGORY_META: CategoryMeta[] = [
   },
   {
     id: 'hire-agent',
-    label: 'Hiring Agent',
-    description: 'Hire AI agents / automation specialists for ops.',
+    label: 'Agents',
+    description: 'Hire & launch OpenClaw agents (Featherless-style marketplace).',
     hubPath: '/hire-agent',
     group: 'hire',
   },
