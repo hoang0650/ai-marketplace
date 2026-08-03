@@ -7,7 +7,8 @@ Production-oriented Angular 20 frontend for an AI marketplace: RunPod-style moda
 - Angular 20 (standalone, signals, SSR)
 - Tailwind CSS + SCSS design tokens
 - Angular Material / CDK (virtual scroll ready)
-- Mock API via HTTP interceptor (`/api/*`) backed by `src/assets/mock/marketplace.json`
+- Real backend by default: [`ai-marketplace-api`](../ai-marketplace-api) (`environment.useMockApi: false`)
+- Optional mock API via HTTP interceptor (`/api/*`) backed by `src/assets/mock/marketplace.json` — set `useMockApi: true` for offline demo
 
 ## Quick start
 
