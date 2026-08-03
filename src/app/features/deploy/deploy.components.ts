@@ -7,7 +7,6 @@ import { SeoService } from '../../services/seo.service';
 import { Product } from '../../models/marketplace.models';
 import { Deployment, InvokeResult } from '../../models/deployment.models';
 
-/** Model modalities shown in the Featherless-style catalog. */
 const MODEL_CATEGORIES = [
   'text-to-text',
   'text-to-video',
@@ -18,8 +17,52 @@ const MODEL_CATEGORIES = [
   'fine-tune',
 ];
 
+function emptyRuntimeForm() {
+  return {
+    serverlessEndpoint: '',
+    tokenizeEndpoint: '',
+    gatewayUrl: '',
+    publicEndpoint: '',
+    envText: '',
+    skillsText: '',
+    baseModel: '',
+    systemPrompt: '',
+    temperature: 0.7,
+    maxTokens: 1024,
+  };
+}
+
+function runtimePayload(form: ReturnType<typeof emptyRuntimeForm>) {
+  return {
+    serverlessEndpoint: form.serverlessEndpoint.trim(),
+    tokenizeEndpoint: form.tokenizeEndpoint.trim(),
+    gatewayUrl: form.gatewayUrl.trim(),
+    publicEndpoint: form.publicEndpoint.trim(),
+    env: form.envText,
+    skills: form.skillsText,
+    baseModel: form.baseModel.trim(),
+    systemPrompt: form.systemPrompt,
+    temperature: Number(form.temperature),
+    maxTokens: Number(form.maxTokens),
+  };
+}
+
+function fillRuntimeFromProduct(form: ReturnType<typeof emptyRuntimeForm>, p: Product) {
+  const r = p.runtime;
+  form.baseModel = r?.baseModel || p.name;
+  form.systemPrompt = r?.systemPrompt || '';
+  form.temperature = r?.temperature ?? 0.7;
+  form.maxTokens = r?.maxTokens ?? 1024;
+  form.serverlessEndpoint = r?.serverlessEndpoint || '';
+  form.tokenizeEndpoint = r?.tokenizeEndpoint || '';
+  form.gatewayUrl = r?.gatewayUrl || '';
+  form.publicEndpoint = r?.publicEndpoint || '';
+  form.skillsText = (r?.skills || []).join(', ');
+  form.envText = (r?.env || []).map((e) => `${e.key}=${e.value}`).join('\n');
+}
+
 /* ------------------------------------------------------------------ */
-/*  AI MODELS HUB — Featherless-style serverless model catalog         */
+/*  AI MODELS HUB                                                       */
 /* ------------------------------------------------------------------ */
 @Component({
   selector: 'app-models-hub',
@@ -32,11 +75,11 @@ const MODEL_CATEGORIES = [
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Serverless inference</p>
           <h1 class="section-title mt-1">AI Models</h1>
           <p class="mt-2 max-w-2xl text-muted">
-            Deploy any model with one click — pay per token, no idle cost. Configure, get an endpoint
-            + API key, and meter every request.
+            Sellers attach RunPod serverless, tokenize meters, and gateways. Deploy your product, then
+            publish it to the Agent Browser.
           </p>
         </div>
-        <a routerLink="/deployments" class="btn-ghost">My deployments →</a>
+        <a routerLink="/deployments" class="btn-ghost">Seller deployments →</a>
       </div>
 
       <div class="mt-6 flex flex-wrap gap-2">
@@ -75,6 +118,11 @@ const MODEL_CATEGORIES = [
             <div class="col-span-4">
               <a [routerLink]="['/product', p.slug]" class="font-medium text-ink hover:text-accent">{{ p.name }}</a>
               <p class="mt-0.5 line-clamp-1 text-xs text-muted">{{ p.tagline }}</p>
+              @if (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint) {
+                <p class="mt-1 truncate font-mono text-[11px] text-muted">
+                  {{ p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint }}
+                </p>
+              }
             </div>
             <div class="col-span-2">
               <span class="rounded bg-line/40 px-2 py-0.5 text-xs text-muted">{{ p.category }}</span>
@@ -87,11 +135,10 @@ const MODEL_CATEGORIES = [
                 <strong class="text-accent">Free</strong>
               } @else {
                 <strong>\${{ p.pricing.price | number: '1.0-2' }}</strong>
-                <span class="text-xs text-muted"> {{ p.pricing.model }}</span>
               }
             </div>
             <div class="col-span-2 md:text-right">
-              <a [routerLink]="['/deploy', p.slug]" class="btn-primary inline-flex text-sm">Deploy</a>
+              <a [routerLink]="['/deploy', p.slug]" class="btn-primary inline-flex text-sm">Configure deploy</a>
             </div>
           </div>
         } @empty {
@@ -122,8 +169,8 @@ export class ModelsHubComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.set({
-      title: 'AI Models — serverless deploy',
-      description: 'Deploy AI models serverless, pay per token.',
+      title: 'AI Models — RunPod serverless',
+      description: 'Deploy AI models with RunPod serverless, tokenize meters and gateways.',
     });
     this.productsApi.list().subscribe((items) => {
       this.products.set(items.filter((p) => MODEL_CATEGORIES.includes(p.category)));
@@ -136,7 +183,7 @@ export class ModelsHubComponent implements OnInit {
 }
 
 /* ------------------------------------------------------------------ */
-/*  DEPLOY WIZARD — configure & launch a model/agent deployment        */
+/*  DEPLOY WIZARD — seller configures RunPod runtime                   */
 /* ------------------------------------------------------------------ */
 @Component({
   selector: 'app-deploy-wizard',
@@ -145,27 +192,39 @@ export class ModelsHubComponent implements OnInit {
   template: `
     <section class="page route-enter mx-auto max-w-3xl">
       <p class="text-xs text-muted">
-        <a routerLink="/models" class="hover:text-accent">AI Models</a> / Deploy
+        <a routerLink="/models" class="hover:text-accent">AI Models</a> / Seller deploy
       </p>
 
       @if (created(); as dep) {
         <div class="mt-6 rounded-xl border border-accent/40 bg-accent/5 p-6">
-          <h1 class="text-xl font-semibold text-ink">🚀 {{ dep.name }} is live</h1>
+          <h1 class="text-xl font-semibold text-ink">{{ dep.name }} is live</h1>
           <p class="mt-1 text-sm text-muted">Status: {{ dep.status }} · Visibility: {{ dep.visibility }}</p>
           <dl class="mt-4 space-y-3 text-sm">
             <div>
-              <dt class="text-xs uppercase tracking-wider text-muted">Endpoint</dt>
+              <dt class="text-xs uppercase tracking-wider text-muted">Public / serverless endpoint</dt>
               <dd class="mt-1 select-all rounded bg-line/30 px-3 py-2 font-mono text-xs text-ink">{{ dep.endpoint }}</dd>
             </div>
+            @if (dep.runtime?.tokenizeEndpoint) {
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-muted">Tokenize meter</dt>
+                <dd class="mt-1 select-all rounded bg-line/30 px-3 py-2 font-mono text-xs text-ink">{{ dep.runtime.tokenizeEndpoint }}</dd>
+              </div>
+            }
+            @if (dep.runtime?.gatewayUrl) {
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-muted">Gateway</dt>
+                <dd class="mt-1 select-all rounded bg-line/30 px-3 py-2 font-mono text-xs text-ink">{{ dep.runtime.gatewayUrl }}</dd>
+              </div>
+            }
             <div>
-              <dt class="text-xs uppercase tracking-wider text-muted">API key (store it now — shown once)</dt>
+              <dt class="text-xs uppercase tracking-wider text-muted">Platform API key</dt>
               <dd class="mt-1 select-all rounded bg-line/30 px-3 py-2 font-mono text-xs text-ink">{{ dep.apiKey }}</dd>
             </div>
           </dl>
           <div class="mt-5 flex gap-3">
             <a routerLink="/deployments" class="btn-primary">Manage deployments</a>
             @if (dep.visibility === 'public') {
-              <a routerLink="/agent-browser" class="btn-ghost">View in Agent Browser</a>
+              <a routerLink="/agent-browser" class="btn-ghost">Agent Browser</a>
             }
           </div>
         </div>
@@ -173,25 +232,54 @@ export class ModelsHubComponent implements OnInit {
         <h1 class="section-title mt-2">Deploy {{ product()?.name || '…' }}</h1>
         @if (product(); as p) {
           <p class="mt-2 text-sm text-muted">
-            {{ p.tagline }}
+            Attach your RunPod serverless, tokenize endpoint, gateway, public URL, .env and skills.
+            Only the product seller can deploy.
             @if (p.pricing.model === 'usage') {
-              — <strong class="text-ink">\${{ p.pricing.usageRate | number: '1.2-4' }} / 1K tokens</strong>
-              (billed from your wallet per request)
+              — billed at <strong class="text-ink">\${{ p.pricing.usageRate | number: '1.2-4' }} / 1K tokens</strong>
             }
           </p>
 
-          <form class="mt-8 space-y-6" (ngSubmit)="submit()">
+          <form class="mt-8 space-y-5" (ngSubmit)="submit()">
             <div>
               <label class="mb-1 block text-sm font-medium text-ink" for="dep-name">Deployment name</label>
               <input id="dep-name" name="name" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" [(ngModel)]="form.name" required maxlength="120" />
             </div>
+
+            <fieldset class="space-y-3 rounded-xl border border-line p-4">
+              <legend class="px-1 text-sm font-semibold text-ink">RunPod &amp; networking</legend>
+              <div>
+                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-serverless">Serverless endpoint (RunPod)</label>
+                <input id="dep-serverless" name="serverlessEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.serverlessEndpoint" placeholder="https://api.runpod.ai/v2/…/runsync" />
+              </div>
+              <div>
+                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-public">Public endpoint (RunPod)</label>
+                <input id="dep-public" name="publicEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.publicEndpoint" placeholder="https://….proxy.runpod.net/v1" />
+              </div>
+              <div>
+                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-tokenize">Tokenize endpoint (meter)</label>
+                <input id="dep-tokenize" name="tokenizeEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.tokenizeEndpoint" placeholder="https://…/tokenize" />
+              </div>
+              <div>
+                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-gateway">Gateway</label>
+                <input id="dep-gateway" name="gatewayUrl" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.gatewayUrl" placeholder="wss://… or https://gateway…" />
+              </div>
+            </fieldset>
+
             <div>
-              <label class="mb-1 block text-sm font-medium text-ink" for="dep-model">Base model</label>
-              <input id="dep-model" name="baseModel" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" [(ngModel)]="form.baseModel" maxlength="200" />
+              <label class="mb-1 block text-sm font-medium text-ink" for="dep-env">.env (KEY=VALUE per line)</label>
+              <textarea id="dep-env" name="envText" rows="4" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.envText" placeholder="RUNPOD_API_KEY=&#10;HF_TOKEN="></textarea>
             </div>
             <div>
-              <label class="mb-1 block text-sm font-medium text-ink" for="dep-prompt">System prompt (agent behaviour)</label>
-              <textarea id="dep-prompt" name="systemPrompt" rows="4" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" [(ngModel)]="form.systemPrompt" maxlength="4000" placeholder="You are a helpful agent that…"></textarea>
+              <label class="mb-1 block text-sm font-medium text-ink" for="dep-skills">Skills (comma-separated)</label>
+              <input id="dep-skills" name="skillsText" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" [(ngModel)]="form.skillsText" placeholder="web-search, code-exec, memory" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-ink" for="dep-model">Base model</label>
+              <input id="dep-model" name="baseModel" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" [(ngModel)]="form.baseModel" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-ink" for="dep-prompt">System prompt</label>
+              <textarea id="dep-prompt" name="systemPrompt" rows="3" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" [(ngModel)]="form.systemPrompt"></textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -203,26 +291,32 @@ export class ModelsHubComponent implements OnInit {
                 <input id="dep-max" name="maxTokens" type="number" min="1" max="32768" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" [(ngModel)]="form.maxTokens" />
               </div>
             </div>
+
             <fieldset>
               <legend class="mb-2 text-sm font-medium text-ink">Visibility</legend>
               <div class="flex gap-3">
                 <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-line px-4 py-3 text-sm" [class.border-accent]="form.visibility === 'private'">
                   <input type="radio" name="visibility" value="private" [(ngModel)]="form.visibility" />
-                  <span><strong class="text-ink">Private</strong><br /><span class="text-xs text-muted">Only you can invoke</span></span>
+                  <span><strong class="text-ink">Private</strong><br /><span class="text-xs text-muted">Seller only</span></span>
                 </label>
                 <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-line px-4 py-3 text-sm" [class.border-accent]="form.visibility === 'public'">
                   <input type="radio" name="visibility" value="public" [(ngModel)]="form.visibility" />
-                  <span><strong class="text-ink">Publish to Agent Browser</strong><br /><span class="text-xs text-muted">Anyone can discover &amp; use it</span></span>
+                  <span><strong class="text-ink">Publish to Agent Browser</strong><br /><span class="text-xs text-muted">Buyers can discover &amp; invoke</span></span>
                 </label>
               </div>
             </fieldset>
+
+            <label class="flex items-center gap-2 text-sm text-muted">
+              <input type="checkbox" name="syncProduct" [(ngModel)]="form.syncProduct" />
+              Sync runtime back to Product catalog
+            </label>
 
             @if (error()) {
               <p class="rounded-lg border border-red-400/40 bg-red-400/10 px-3 py-2 text-sm text-red-400">{{ error() }}</p>
             }
 
             <button type="submit" class="btn-primary w-full py-3" [disabled]="busy()">
-              {{ busy() ? 'Deploying…' : 'Deploy now' }}
+              {{ busy() ? 'Deploying…' : 'Deploy as seller' }}
             </button>
           </form>
         }
@@ -243,20 +337,18 @@ export class DeployWizardComponent implements OnInit {
 
   form = {
     name: '',
-    baseModel: '',
-    systemPrompt: '',
-    temperature: 0.7,
-    maxTokens: 1024,
     visibility: 'private' as 'private' | 'public',
+    syncProduct: true,
+    ...emptyRuntimeForm(),
   };
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Deploy' });
+    this.seo.set({ title: 'Seller deploy' });
     const slug = this.route.snapshot.paramMap.get('slug') || '';
     this.productsApi.bySlug(slug).subscribe((p) => {
       this.product.set(p);
-      this.form.name = `${p.name} — my deployment`;
-      this.form.baseModel = p.name;
+      this.form.name = `${p.name} — production`;
+      fillRuntimeFromProduct(this.form, p);
       this.seo.set({ title: `Deploy ${p.name}` });
     });
   }
@@ -264,6 +356,10 @@ export class DeployWizardComponent implements OnInit {
   submit(): void {
     const p = this.product();
     if (!p || this.busy()) return;
+    if (!this.form.serverlessEndpoint.trim() && !this.form.publicEndpoint.trim()) {
+      this.error.set('Cần ít nhất Serverless endpoint hoặc Public endpoint (RunPod).');
+      return;
+    }
     this.busy.set(true);
     this.error.set('');
     this.deployments
@@ -271,12 +367,8 @@ export class DeployWizardComponent implements OnInit {
         productId: p.id,
         name: this.form.name,
         visibility: this.form.visibility,
-        config: {
-          baseModel: this.form.baseModel,
-          systemPrompt: this.form.systemPrompt,
-          temperature: Number(this.form.temperature),
-          maxTokens: Number(this.form.maxTokens),
-        },
+        syncProduct: this.form.syncProduct,
+        runtime: runtimePayload(this.form),
       })
       .subscribe({
         next: (dep) => {
@@ -285,14 +377,14 @@ export class DeployWizardComponent implements OnInit {
         },
         error: (err) => {
           this.busy.set(false);
-          this.error.set(err?.error?.message || 'Deploy failed. Please try again.');
+          this.error.set(err?.error?.message || 'Deploy failed. Chỉ seller của product mới được deploy.');
         },
       });
   }
 }
 
 /* ------------------------------------------------------------------ */
-/*  AGENT BROWSER — public catalog of user-deployed agents             */
+/*  AGENT BROWSER                                                       */
 /* ------------------------------------------------------------------ */
 @Component({
   selector: 'app-agent-browser',
@@ -302,15 +394,13 @@ export class DeployWizardComponent implements OnInit {
     <section class="page route-enter">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Community deployments</p>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Seller deployments</p>
           <h1 class="section-title mt-1">Agent Browser</h1>
           <p class="mt-2 max-w-2xl text-muted">
-            Agents and models configured &amp; published by the community. Deploy your own from
-            <a routerLink="/models" class="text-accent hover:underline">AI Models</a> or
-            <a routerLink="/hire-agent/marketplace" class="text-accent hover:underline">Hire Agent</a>.
+            Public RunPod endpoints &amp; agents published by sellers. Skills and gateways shown when configured.
           </p>
         </div>
-        <a routerLink="/models" class="btn-primary">+ Deploy your own</a>
+        <a routerLink="/models" class="btn-primary">+ Deploy your product</a>
       </div>
 
       <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -323,26 +413,40 @@ export class DeployWizardComponent implements OnInit {
               </span>
             </div>
             <p class="mt-1 text-xs text-muted">
-              by {{ d.ownerName || 'Community' }} · base:
+              by {{ d.ownerName || 'Seller' }} ·
               <a [routerLink]="['/product', d.productSlug]" class="text-accent hover:underline">{{ d.productName }}</a>
             </p>
-            @if (d.config.systemPrompt) {
-              <p class="mt-3 line-clamp-3 text-sm text-muted">“{{ d.config.systemPrompt }}”</p>
+            @if (d.runtime?.systemPrompt) {
+              <p class="mt-3 line-clamp-2 text-sm text-muted">“{{ d.runtime.systemPrompt }}”</p>
             }
+            @if (d.runtime?.skills?.length) {
+              <div class="mt-3 flex flex-wrap gap-1">
+                @for (s of d.runtime.skills; track s) {
+                  <span class="rounded bg-line/40 px-2 py-0.5 text-[11px] text-muted">{{ s }}</span>
+                }
+              </div>
+            }
+            <div class="mt-4 space-y-1 text-[11px] text-muted">
+              @if (d.endpoint) {
+                <p class="truncate font-mono" title="{{ d.endpoint }}">↗ {{ d.endpoint }}</p>
+              }
+              @if (d.runtime?.gatewayUrl) {
+                <p class="truncate font-mono">gateway {{ d.runtime.gatewayUrl }}</p>
+              }
+              @if (d.runtime?.tokenizeEndpoint) {
+                <p class="truncate font-mono">tokenize {{ d.runtime.tokenizeEndpoint }}</p>
+              }
+            </div>
             <div class="mt-4 flex flex-wrap gap-3 text-xs text-muted">
-              <span>⚡ {{ d.totals.requests | number }} runs</span>
-              <span>🔤 {{ d.totals.inputTokens + d.totals.outputTokens | number }} tokens</span>
-              <span>🌡 {{ d.config.temperature }}</span>
+              <span>{{ d.totals.requests | number }} runs</span>
+              <span>{{ d.totals.inputTokens + d.totals.outputTokens | number }} tokens</span>
             </div>
-            <div class="mt-auto pt-5">
-              <p class="select-all truncate rounded bg-line/30 px-2 py-1.5 font-mono text-[11px] text-muted" title="{{ d.endpoint }}">{{ d.endpoint }}</p>
-              <a [routerLink]="['/product', d.productSlug]" class="btn-ghost mt-3 w-full justify-center text-sm">View base product</a>
-            </div>
+            <a [routerLink]="['/product', d.productSlug]" class="btn-ghost mt-auto pt-5 w-full justify-center text-sm">View product</a>
           </article>
         } @empty {
           <div class="panel col-span-full rounded-xl border border-line p-10 text-center text-muted">
-            <p>No public agents yet — be the first to publish one.</p>
-            <a routerLink="/models" class="btn-primary mt-4 inline-flex">Deploy a model</a>
+            <p>No public seller deployments yet.</p>
+            <a routerLink="/models" class="btn-primary mt-4 inline-flex">Configure a deploy</a>
           </div>
         }
       </div>
@@ -352,20 +456,16 @@ export class DeployWizardComponent implements OnInit {
 export class AgentBrowserComponent implements OnInit {
   private readonly deployments = inject(DeploymentService);
   private readonly seo = inject(SeoService);
-
   readonly items = signal<Deployment[]>([]);
 
   ngOnInit(): void {
-    this.seo.set({
-      title: 'Agent Browser',
-      description: 'Browse community-deployed AI agents and models.',
-    });
+    this.seo.set({ title: 'Agent Browser', description: 'Browse seller-published RunPod agents.' });
     this.deployments.browser().subscribe((rows) => this.items.set(rows));
   }
 }
 
 /* ------------------------------------------------------------------ */
-/*  MY DEPLOYMENTS — manage, publish, and metered test playground      */
+/*  MY DEPLOYMENTS — seller edit runtime                               */
 /* ------------------------------------------------------------------ */
 @Component({
   selector: 'app-my-deployments',
@@ -375,8 +475,8 @@ export class AgentBrowserComponent implements OnInit {
     <section class="page route-enter">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 class="section-title">My Deployments</h1>
-          <p class="mt-2 text-muted">Endpoints, API keys, usage &amp; billing for everything you deployed.</p>
+          <h1 class="section-title">Seller Deployments</h1>
+          <p class="mt-2 text-muted">Update RunPod serverless, tokenize, gateway, public endpoint, .env &amp; skills.</p>
         </div>
         <a routerLink="/models" class="btn-primary">+ New deployment</a>
       </div>
@@ -390,57 +490,72 @@ export class AgentBrowserComponent implements OnInit {
           <article class="panel rounded-xl border border-line p-5">
             <div class="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 class="flex items-center gap-2 font-medium text-ink">
+                <h2 class="flex flex-wrap items-center gap-2 font-medium text-ink">
                   {{ d.name }}
-                  <span class="rounded-full px-2 py-0.5 text-[11px]" [class]="d.status === 'running' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-line/40 text-muted'">
-                    {{ d.status }}
-                  </span>
+                  <span class="rounded-full px-2 py-0.5 text-[11px]" [class]="d.status === 'running' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-line/40 text-muted'">{{ d.status }}</span>
                   <span class="rounded-full bg-line/40 px-2 py-0.5 text-[11px] text-muted">{{ d.visibility }}</span>
                 </h2>
                 <p class="mt-1 text-xs text-muted">
-                  {{ d.kind }} · base <a [routerLink]="['/product', d.productSlug]" class="text-accent hover:underline">{{ d.productName }}</a>
-                  · created {{ d.createdAt | date: 'MMM d, y' }}
+                  {{ d.kind }} · <a [routerLink]="['/product', d.productSlug]" class="text-accent hover:underline">{{ d.productName }}</a>
+                  · {{ d.createdAt | date: 'MMM d, y' }}
                 </p>
               </div>
               <div class="flex flex-wrap gap-2">
-                <button type="button" class="btn-ghost text-sm" (click)="toggleStatus(d)">
-                  {{ d.status === 'running' ? 'Stop' : 'Start' }}
+                <button type="button" class="btn-ghost text-sm" (click)="toggleEdit(d)">
+                  {{ editing() === d.id ? 'Close edit' : 'Edit runtime' }}
                 </button>
-                <button type="button" class="btn-ghost text-sm" (click)="toggleVisibility(d)">
-                  {{ d.visibility === 'public' ? 'Unpublish' : 'Publish to Browser' }}
-                </button>
+                <button type="button" class="btn-ghost text-sm" (click)="toggleStatus(d)">{{ d.status === 'running' ? 'Stop' : 'Start' }}</button>
+                <button type="button" class="btn-ghost text-sm" (click)="toggleVisibility(d)">{{ d.visibility === 'public' ? 'Unpublish' : 'Publish' }}</button>
                 <button type="button" class="btn-ghost text-sm text-red-400" (click)="remove(d)">Delete</button>
               </div>
             </div>
 
-            <div class="mt-4 grid gap-3 md:grid-cols-2">
-              <div>
-                <p class="text-[11px] uppercase tracking-wider text-muted">Endpoint</p>
-                <p class="mt-1 select-all truncate rounded bg-line/30 px-2 py-1.5 font-mono text-xs text-ink">{{ d.endpoint }}</p>
-              </div>
-              <div>
-                <p class="text-[11px] uppercase tracking-wider text-muted">API key</p>
-                <p class="mt-1 select-all truncate rounded bg-line/30 px-2 py-1.5 font-mono text-xs text-ink">
-                  {{ revealed() === d.id ? d.apiKey : '••••••••••••••••••••' }}
-                  <button type="button" class="ml-2 text-accent" (click)="reveal(d)">{{ revealed() === d.id ? 'hide' : 'show' }}</button>
-                </p>
-              </div>
+            <div class="mt-4 grid gap-2 text-[11px] text-muted md:grid-cols-2">
+              <p class="truncate font-mono" title="{{ d.runtime?.serverlessEndpoint }}">serverless {{ d.runtime?.serverlessEndpoint || '—' }}</p>
+              <p class="truncate font-mono" title="{{ d.runtime?.publicEndpoint }}">public {{ d.runtime?.publicEndpoint || '—' }}</p>
+              <p class="truncate font-mono" title="{{ d.runtime?.tokenizeEndpoint }}">tokenize {{ d.runtime?.tokenizeEndpoint || '—' }}</p>
+              <p class="truncate font-mono" title="{{ d.runtime?.gatewayUrl }}">gateway {{ d.runtime?.gatewayUrl || '—' }}</p>
             </div>
+
+            @if (editing() === d.id) {
+              <form class="mt-4 space-y-3 rounded-lg border border-line bg-line/10 p-4" (ngSubmit)="saveRuntime(d)">
+                <div class="grid gap-3 md:grid-cols-2">
+                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="serverless" [(ngModel)]="editForm.serverlessEndpoint" placeholder="Serverless RunPod" />
+                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="public" [(ngModel)]="editForm.publicEndpoint" placeholder="Public RunPod" />
+                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="tokenize" [(ngModel)]="editForm.tokenizeEndpoint" placeholder="Tokenize endpoint" />
+                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="gateway" [(ngModel)]="editForm.gatewayUrl" placeholder="Gateway" />
+                </div>
+                <textarea class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" rows="3" name="env" [(ngModel)]="editForm.envText" placeholder=".env KEY=VALUE"></textarea>
+                <input class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" name="skills" [(ngModel)]="editForm.skillsText" placeholder="Skills comma-separated" />
+                <div class="grid gap-3 md:grid-cols-2">
+                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" name="baseModel" [(ngModel)]="editForm.baseModel" placeholder="Base model" />
+                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" type="number" name="maxTokens" [(ngModel)]="editForm.maxTokens" placeholder="Max tokens" />
+                </div>
+                <textarea class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink" rows="2" name="prompt" [(ngModel)]="editForm.systemPrompt" placeholder="System prompt"></textarea>
+                <label class="flex items-center gap-2 text-sm text-muted">
+                  <input type="checkbox" name="sync" [(ngModel)]="editForm.syncProduct" />
+                  Sync to Product catalog
+                </label>
+                <button type="submit" class="btn-primary text-sm" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Save runtime' }}</button>
+              </form>
+            }
 
             <div class="mt-4 flex flex-wrap gap-5 border-t border-line pt-4 text-sm">
               <span class="text-muted">Requests <strong class="text-ink">{{ d.totals.requests | number }}</strong></span>
-              <span class="text-muted">Tokens in <strong class="text-ink">{{ d.totals.inputTokens | number }}</strong></span>
-              <span class="text-muted">Tokens out <strong class="text-ink">{{ d.totals.outputTokens | number }}</strong></span>
+              <span class="text-muted">Tokens <strong class="text-ink">{{ d.totals.inputTokens + d.totals.outputTokens | number }}</strong></span>
               <span class="text-muted">Spend <strong class="text-ink">{{ d.totals.cost | currency: 'USD' }}</strong></span>
+              @if (d.runtime?.skills?.length) {
+                <span class="text-muted">Skills <strong class="text-ink">{{ d.runtime.skills.join(', ') }}</strong></span>
+              }
             </div>
 
             @if (d.status === 'running') {
               <div class="mt-4 rounded-lg border border-line bg-line/10 p-4">
-                <p class="text-xs font-semibold uppercase tracking-wider text-muted">Test playground (metered)</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-muted">Self-test (metered, no self-charge)</p>
                 <div class="mt-2 flex gap-2">
                   <input
                     class="input flex-1 rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink"
-                    placeholder="Send a prompt — tokens & cost are metered for real"
+                    placeholder="Prompt to exercise tokenize + billing path"
                     [(ngModel)]="prompts[d.id]"
                     name="prompt-{{ d.id }}"
                     (keyup.enter)="invoke(d)"
@@ -453,10 +568,8 @@ export class AgentBrowserComponent implements OnInit {
                   <div class="mt-3 rounded bg-line/30 p-3 text-sm">
                     <p class="text-ink">{{ r.output }}</p>
                     <p class="mt-2 text-xs text-muted">
-                      {{ r.inputTokens | number }} in + {{ r.outputTokens | number }} out =
-                      <strong class="text-ink">{{ r.totalTokens | number }} tokens</strong>
-                      · charged <strong class="text-ink">{{ r.cost | currency: 'USD' : 'symbol' : '1.2-4' }}</strong>
-                      (seller nets {{ r.sellerNet | currency: 'USD' : 'symbol' : '1.2-4' }}, platform {{ r.platformFee | currency: 'USD' : 'symbol' : '1.2-4' }})
+                      {{ r.totalTokens | number }} tokens · cost {{ r.cost | currency: 'USD' : 'symbol' : '1.2-4' }}
+                      @if (r.endpoint) { · via {{ r.endpoint }} }
                     </p>
                   </div>
                 }
@@ -465,8 +578,8 @@ export class AgentBrowserComponent implements OnInit {
           </article>
         } @empty {
           <div class="panel rounded-xl border border-line p-10 text-center text-muted">
-            <p>Nothing deployed yet.</p>
-            <a routerLink="/models" class="btn-primary mt-4 inline-flex">Browse AI Models</a>
+            <p>No seller deployments yet. Publish a product, then configure RunPod runtime.</p>
+            <a routerLink="/dashboard/products" class="btn-primary mt-4 inline-flex">Go to Products</a>
           </div>
         }
       </div>
@@ -479,22 +592,71 @@ export class MyDeploymentsComponent implements OnInit {
 
   readonly items = signal<Deployment[]>([]);
   readonly status = signal('');
-  readonly revealed = signal<string | null>(null);
+  readonly editing = signal<string | null>(null);
+  readonly saving = signal(false);
   readonly invoking = signal<string | null>(null);
   prompts: Record<string, string> = {};
   results: Record<string, InvokeResult> = {};
+  editForm = { ...emptyRuntimeForm(), syncProduct: true };
 
   ngOnInit(): void {
-    this.seo.set({ title: 'My Deployments' });
+    this.seo.set({ title: 'Seller Deployments' });
     this.reload();
   }
 
   reload(): void {
-    this.deployments.mine().subscribe((rows) => this.items.set(rows));
+    this.deployments.mine().subscribe({
+      next: (rows) => this.items.set(rows),
+      error: (err) => this.status.set(err?.error?.message || 'Failed to load deployments (seller only).'),
+    });
   }
 
-  reveal(d: Deployment): void {
-    this.revealed.set(this.revealed() === d.id ? null : d.id);
+  toggleEdit(d: Deployment): void {
+    if (this.editing() === d.id) {
+      this.editing.set(null);
+      return;
+    }
+    const r = d.runtime;
+    this.editForm = {
+      ...emptyRuntimeForm(),
+      syncProduct: true,
+      serverlessEndpoint: r?.serverlessEndpoint || '',
+      tokenizeEndpoint: r?.tokenizeEndpoint || '',
+      gatewayUrl: r?.gatewayUrl || '',
+      publicEndpoint: r?.publicEndpoint || '',
+      baseModel: r?.baseModel || '',
+      systemPrompt: r?.systemPrompt || '',
+      temperature: r?.temperature ?? 0.7,
+      maxTokens: r?.maxTokens ?? 1024,
+      skillsText: (r?.skills || []).join(', '),
+      envText: (r?.env || []).map((e) => `${e.key}=${e.value}`).join('\n'),
+    };
+    this.editing.set(d.id);
+  }
+
+  saveRuntime(d: Deployment): void {
+    if (!this.editForm.serverlessEndpoint.trim() && !this.editForm.publicEndpoint.trim()) {
+      this.status.set('Cần serverless hoặc public RunPod endpoint.');
+      return;
+    }
+    this.saving.set(true);
+    this.deployments
+      .update(d.id, {
+        syncProduct: this.editForm.syncProduct,
+        runtime: runtimePayload(this.editForm),
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.editing.set(null);
+          this.status.set(`Updated runtime for ${d.name}.`);
+          this.reload();
+        },
+        error: (err) => {
+          this.saving.set(false);
+          this.status.set(err?.error?.message || 'Update failed.');
+        },
+      });
   }
 
   toggleStatus(d: Deployment): void {
@@ -508,7 +670,7 @@ export class MyDeploymentsComponent implements OnInit {
   }
 
   remove(d: Deployment): void {
-    if (!confirm(`Delete deployment "${d.name}"? This cannot be undone.`)) return;
+    if (!confirm(`Delete deployment "${d.name}"?`)) return;
     this.deployments.remove(d.id).subscribe(() => {
       this.status.set(`Deleted ${d.name}.`);
       this.reload();

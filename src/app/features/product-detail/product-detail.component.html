@@ -540,6 +540,46 @@
             <span class="tag-chip">{{ tag }}</span>
           }
         </div>
+        @if (p.runtime && (p.runtime.publicEndpoint || p.runtime.serverlessEndpoint || p.runtime.skills?.length)) {
+          <h3 class="mt-8 font-display text-2xl">Runtime</h3>
+          <dl class="mt-3 space-y-2 text-sm">
+            @if (p.runtime.publicEndpoint) {
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-muted">Public RunPod</dt>
+                <dd class="mt-0.5 truncate font-mono text-xs text-ink">{{ p.runtime.publicEndpoint }}</dd>
+              </div>
+            }
+            @if (p.runtime.serverlessEndpoint) {
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-muted">Serverless</dt>
+                <dd class="mt-0.5 truncate font-mono text-xs text-ink">{{ p.runtime.serverlessEndpoint }}</dd>
+              </div>
+            }
+            @if (p.runtime.tokenizeEndpoint) {
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-muted">Tokenize</dt>
+                <dd class="mt-0.5 truncate font-mono text-xs text-ink">{{ p.runtime.tokenizeEndpoint }}</dd>
+              </div>
+            }
+            @if (p.runtime.gatewayUrl) {
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-muted">Gateway</dt>
+                <dd class="mt-0.5 truncate font-mono text-xs text-ink">{{ p.runtime.gatewayUrl }}</dd>
+              </div>
+            }
+            @if (p.runtime.skills?.length) {
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-muted">Skills</dt>
+                <dd class="mt-1 flex flex-wrap gap-1">
+                  @for (s of p.runtime.skills; track s) {
+                    <span class="tag-chip">{{ s }}</span>
+                  }
+                </dd>
+              </div>
+            }
+          </dl>
+          <a [routerLink]="['/deploy', p.slug]" class="btn btn-outline mt-4 inline-flex text-sm">Seller: configure deploy</a>
+        }
         <h3 class="mt-8 font-display text-2xl">Changelog</h3>
         <ul class="mt-4 space-y-4">
           @for (c of p.changelog; track c.version) {

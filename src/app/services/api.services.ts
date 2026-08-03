@@ -18,7 +18,7 @@ import {
 import { CategoryMeta } from '../models/marketplace.models';
 import {
   Deployment,
-  DeploymentConfig,
+  DeploymentRuntime,
   DeploymentUsage,
   InvokeResult,
 } from '../models/deployment.models';
@@ -164,7 +164,12 @@ export class DeploymentService {
     productId: string;
     name?: string;
     visibility?: 'private' | 'public';
-    config?: Partial<DeploymentConfig>;
+    syncProduct?: boolean;
+    /** env/skills accept .env string or CSV — API normalizes. */
+    runtime?: Partial<Omit<DeploymentRuntime, 'env' | 'skills'>> & {
+      env?: DeploymentRuntime['env'] | string;
+      skills?: DeploymentRuntime['skills'] | string;
+    };
   }): Observable<Deployment> {
     return this.http.post<Deployment>(`${this.base}/deployments`, input);
   }
@@ -183,7 +188,11 @@ export class DeploymentService {
       name: string;
       status: 'running' | 'stopped';
       visibility: 'private' | 'public';
-      config: Partial<DeploymentConfig>;
+      syncProduct: boolean;
+      runtime: Partial<Omit<DeploymentRuntime, 'env' | 'skills'>> & {
+        env?: DeploymentRuntime['env'] | string;
+        skills?: DeploymentRuntime['skills'] | string;
+      };
     }>,
   ): Observable<Deployment> {
     return this.http.patch<Deployment>(`${this.base}/deployments/${id}`, patch);

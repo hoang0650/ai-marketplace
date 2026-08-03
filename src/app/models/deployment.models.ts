@@ -2,6 +2,22 @@ export type DeploymentKind = 'model' | 'agent';
 export type DeploymentStatus = 'provisioning' | 'running' | 'stopped';
 export type DeploymentVisibility = 'private' | 'public';
 
+/** Live seller runtime — mirrors Product.runtime. */
+export interface DeploymentRuntime {
+  serverlessEndpoint: string;
+  tokenizeEndpoint: string;
+  gatewayUrl: string;
+  publicEndpoint: string;
+  env?: Array<{ key: string; value: string }>;
+  envKeys?: string[];
+  skills: string[];
+  baseModel: string;
+  systemPrompt: string;
+  temperature: number;
+  maxTokens: number;
+}
+
+/** @deprecated use DeploymentRuntime — kept for older template bindings */
 export interface DeploymentConfig {
   baseModel: string;
   systemPrompt: string;
@@ -24,14 +40,19 @@ export interface Deployment {
   kind: DeploymentKind;
   status: DeploymentStatus;
   visibility: DeploymentVisibility;
+  productId?: string;
   productSlug: string;
   productName: string;
   ownerName?: string;
-  config: DeploymentConfig;
+  /** Public/serverless URL exposed to buyers. */
   endpoint: string;
+  runtime: DeploymentRuntime;
+  /** Legacy alias — same inference fields as runtime.skills → tools. */
+  config?: DeploymentConfig;
   apiKey?: string;
   totals: DeploymentTotals;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface InvokeResult {
@@ -45,6 +66,9 @@ export interface InvokeResult {
   platformFee: number;
   currency: string;
   output: string;
+  endpoint?: string;
+  tokenizeEndpoint?: string;
+  gatewayUrl?: string;
 }
 
 export interface DeploymentUsage {

@@ -306,6 +306,33 @@ export class DashboardAnalyticsComponent implements OnInit {
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Tags (comma-separated)</label>
           <input class="input" [(ngModel)]="draft.tags" name="tags" placeholder="llm, vietnamese, text-to-text" />
         </div>
+        <div class="md:col-span-2 border-t border-line pt-3">
+          <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">RunPod runtime (optional — editable later in Deployments)</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Serverless endpoint</label>
+          <input class="input font-mono text-xs" [(ngModel)]="draft.serverlessEndpoint" name="serverlessEndpoint" placeholder="https://api.runpod.ai/v2/…/runsync" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Public endpoint</label>
+          <input class="input font-mono text-xs" [(ngModel)]="draft.publicEndpoint" name="publicEndpoint" placeholder="https://….proxy.runpod.net/v1" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Tokenize endpoint</label>
+          <input class="input font-mono text-xs" [(ngModel)]="draft.tokenizeEndpoint" name="tokenizeEndpoint" placeholder="https://…/tokenize" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Gateway</label>
+          <input class="input font-mono text-xs" [(ngModel)]="draft.gatewayUrl" name="gatewayUrl" placeholder="wss://… or https://gateway…" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">.env (KEY=VALUE per line)</label>
+          <textarea class="input min-h-20 font-mono text-xs" [(ngModel)]="draft.envText" name="envText" placeholder="RUNPOD_API_KEY=&#10;HF_TOKEN="></textarea>
+        </div>
+        <div class="md:col-span-2">
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Skills (comma-separated)</label>
+          <input class="input" [(ngModel)]="draft.skillsText" name="skillsText" placeholder="web-search, code-exec, memory" />
+        </div>
         <div class="md:col-span-2">
           <button class="btn btn-fill" type="submit">Publish</button>
         </div>
@@ -318,8 +345,16 @@ export class DashboardAnalyticsComponent implements OnInit {
             <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ categoryLabel(p.category) }}</p>
             <a [routerLink]="['/product', p.slug]" class="font-display text-xl no-underline">{{ p.name }}</a>
             <p class="text-sm text-muted">{{ p.installCount | number }} installs · ★ {{ p.rating | number:'1.1-1' }}</p>
+            @if (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint) {
+              <p class="mt-1 max-w-xl truncate font-mono text-[11px] text-muted">
+                {{ p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint }}
+              </p>
+            }
           </div>
-          <button type="button" class="btn btn-outline" (click)="remove(p.id)">Delete</button>
+          <div class="flex gap-2">
+            <a class="btn btn-outline" [routerLink]="['/deploy', p.slug]">Deploy</a>
+            <button type="button" class="btn btn-outline" (click)="remove(p.id)">Delete</button>
+          </div>
         </div>
       }
       @if (!products().length) {
@@ -350,10 +385,16 @@ export class DashboardProductsComponent implements OnInit {
       pricingModel: 'usage' as PricingModel,
       price: 29,
       usageRate: 0.05,
-      usageUnit: '1M tokens',
+      usageUnit: '1K tokens',
       interval: 'month' as 'month' | 'year',
       coverUrl: '',
       tags: '',
+      serverlessEndpoint: '',
+      publicEndpoint: '',
+      tokenizeEndpoint: '',
+      gatewayUrl: '',
+      envText: '',
+      skillsText: '',
     };
   }
 
@@ -404,6 +445,28 @@ export class DashboardProductsComponent implements OnInit {
         creatorName: user?.name || 'Creator',
         category: this.draft.category,
         pricing,
+        runtime: {
+          serverlessEndpoint: this.draft.serverlessEndpoint.trim(),
+          publicEndpoint: this.draft.publicEndpoint.trim(),
+          tokenizeEndpoint: this.draft.tokenizeEndpoint.trim(),
+          gatewayUrl: this.draft.gatewayUrl.trim(),
+          env: this.draft.envText
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter((line) => line && !line.startsWith('#') && line.includes('='))
+            .map((line) => {
+              const i = line.indexOf('=');
+              return { key: line.slice(0, i).trim(), value: line.slice(i + 1).trim() };
+            }),
+          skills: this.draft.skillsText
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
+          baseModel: this.draft.name,
+          systemPrompt: '',
+          temperature: 0.7,
+          maxTokens: 1024,
+        },
         coverUrl: this.draft.coverUrl || undefined,
         gallery: this.draft.coverUrl ? [this.draft.coverUrl] : undefined,
         tags,

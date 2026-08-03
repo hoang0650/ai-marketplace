@@ -66,6 +66,22 @@ export interface ProductPricing {
   usageRate?: number;
 }
 
+/** Seller RunPod / gateway runtime attached to a catalog product. */
+export interface ProductRuntime {
+  serverlessEndpoint: string;
+  tokenizeEndpoint: string;
+  gatewayUrl: string;
+  publicEndpoint: string;
+  /** Present when caller owns the product; otherwise only envKeys. */
+  env?: Array<{ key: string; value: string }>;
+  envKeys?: string[];
+  skills: string[];
+  baseModel: string;
+  systemPrompt: string;
+  temperature: number;
+  maxTokens: number;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -79,6 +95,7 @@ export interface Product {
   coverUrl: string;
   gallery: string[];
   pricing: ProductPricing;
+  runtime?: ProductRuntime;
   rating: number;
   reviewCount: number;
   installCount: number;
