@@ -17,6 +17,28 @@ export const routes: Routes = [
           import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
       },
       {
+        path: 'models',
+        loadComponent: () =>
+          import('./features/deploy/deploy.components').then((m) => m.ModelsHubComponent),
+      },
+      {
+        path: 'agent-browser',
+        loadComponent: () =>
+          import('./features/deploy/deploy.components').then((m) => m.AgentBrowserComponent),
+      },
+      {
+        path: 'deploy/:slug',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/deploy/deploy.components').then((m) => m.DeployWizardComponent),
+      },
+      {
+        path: 'deployments',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/deploy/deploy.components').then((m) => m.MyDeploymentsComponent),
+      },
+      {
         path: 'marketplace/:category',
         loadComponent: () =>
           import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),

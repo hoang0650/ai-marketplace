@@ -16,6 +16,12 @@ import {
   WalletTx,
 } from '../models/marketplace.models';
 import { CategoryMeta } from '../models/marketplace.models';
+import {
+  Deployment,
+  DeploymentConfig,
+  DeploymentUsage,
+  InvokeResult,
+} from '../models/deployment.models';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -146,6 +152,56 @@ export class DashboardService {
 
   adminOverview(): Observable<AdminOverview> {
     return this.http.get<AdminOverview>(`${this.base}/admin/overview`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class DeploymentService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  deploy(input: {
+    productId: string;
+    name?: string;
+    visibility?: 'private' | 'public';
+    config?: Partial<DeploymentConfig>;
+  }): Observable<Deployment> {
+    return this.http.post<Deployment>(`${this.base}/deployments`, input);
+  }
+
+  mine(): Observable<Deployment[]> {
+    return this.http.get<Deployment[]>(`${this.base}/deployments/mine`);
+  }
+
+  browser(): Observable<Deployment[]> {
+    return this.http.get<Deployment[]>(`${this.base}/deployments/browser`);
+  }
+
+  update(
+    id: string,
+    patch: Partial<{
+      name: string;
+      status: 'running' | 'stopped';
+      visibility: 'private' | 'public';
+      config: Partial<DeploymentConfig>;
+    }>,
+  ): Observable<Deployment> {
+    return this.http.patch<Deployment>(`${this.base}/deployments/${id}`, patch);
+  }
+
+  remove(id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/deployments/${id}`);
+  }
+
+  invoke(
+    id: string,
+    input: { input?: string; inputTokens?: number; outputTokens?: number },
+  ): Observable<InvokeResult> {
+    return this.http.post<InvokeResult>(`${this.base}/deployments/${id}/invoke`, input);
+  }
+
+  usage(id: string): Observable<DeploymentUsage> {
+    return this.http.get<DeploymentUsage>(`${this.base}/deployments/${id}/usage`);
   }
 }
 

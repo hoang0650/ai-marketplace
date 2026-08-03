@@ -8,6 +8,8 @@
 
     <nav class="flex items-center gap-2 sm:gap-3" aria-label="Primary">
       <a routerLink="/marketplace" routerLinkActive="active" class="nav-link">Marketplace</a>
+      <a routerLink="/models" routerLinkActive="active" class="nav-link">AI Models</a>
+      <a routerLink="/agent-browser" routerLinkActive="active" class="nav-link hidden md:inline">Agent Browser</a>
 
       <div class="nav-dd" [class.open]="categoryOpen()">
         <button
@@ -93,6 +95,7 @@
       <a routerLink="/wishlist" class="icon-btn hidden sm:inline-flex">Wishlist</a>
       <a routerLink="/notifications" class="icon-btn hidden sm:inline-flex">Alerts</a>
       @if (auth.isAuthenticated()) {
+        <a routerLink="/deployments" class="btn-ghost hidden md:inline-flex">Deployments</a>
         <a routerLink="/dashboard" class="btn-ghost hidden md:inline-flex">Dashboard</a>
         @if (auth.isAdmin()) {
           <a routerLink="/admin" class="btn-ghost hidden md:inline-flex">Admin</a>
