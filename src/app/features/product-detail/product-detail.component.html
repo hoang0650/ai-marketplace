@@ -1,48 +1,234 @@
 @if (product(); as p) {
-  <section class="page route-enter playground-page">
-    <header class="hub-header">
-      <div class="hub-header__main">
-        <p class="hub-eyebrow">
-          <a [routerLink]="['/store', p.creatorSlug]" class="text-accent no-underline">{{ p.creatorName }}</a>
-          · {{ label(p.category) }}
-        </p>
-        <h1 class="hub-title">{{ p.name }}</h1>
-        <p class="hub-desc">{{ p.description }}</p>
+  <section class="pd route-enter playground-page">
+    <div class="pd__crumb-row">
+      <nav class="pd__crumb" aria-label="Breadcrumb">
+        <a routerLink="/">Home</a>
+        <span>/</span>
+        <a routerLink="/marketplace">Marketplace</a>
+        <span>/</span>
+        <a [routerLink]="['/marketplace', p.category]">{{ label(p.category) }}</a>
+        <span>/</span>
+        <span class="pd__crumb-current">{{ p.name }}</span>
+      </nav>
+      <p class="pd__stock">In stock · metered · protected</p>
+    </div>
+
+    <div class="pd__top">
+      <div class="pd__main">
+        <div class="pd-gallery">
+          <div class="pd-gallery__stage">
+            <button type="button" class="pd-gallery__nav pd-gallery__nav--prev" (click)="prevMedia()" aria-label="Previous">‹</button>
+            <img [src]="activeMedia()" [alt]="p.name" class="pd-gallery__img" />
+            <button type="button" class="pd-gallery__nav pd-gallery__nav--next" (click)="nextMedia()" aria-label="Next">›</button>
+            <div class="pd-gallery__tools">
+              <button type="button" class="pd-gallery__tool" (click)="toggleWishlist()" aria-label="Wishlist">♡</button>
+            </div>
+            <div class="pd-gallery__badges">
+              <span>🛡 Protected checkout</span>
+              <span>⚡ Fast deploy</span>
+              <span>⚙ Seller runtime</span>
+            </div>
+          </div>
+          <div class="pd-gallery__thumbs">
+            @for (src of mediaList(); track src; let i = $index) {
+              <button
+                type="button"
+                class="pd-gallery__thumb"
+                [class.active]="mediaIndex() === i"
+                (click)="mediaIndex.set(i)"
+              >
+                <img [src]="src" [alt]="p.name + ' ' + (i + 1)" />
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="pd-meta">
+          <div class="pd-meta__tags">
+            <span class="pd-tag pd-tag--cat">{{ label(p.category) }}</span>
+            @for (tag of p.tags.slice(0, 4); track tag) {
+              <span class="pd-tag">{{ tag }}</span>
+            }
+          </div>
+          <h1 class="pd-meta__title">{{ p.name }}</h1>
+          <p class="pd-meta__stats">
+            <span class="pd-meta__stars">★ {{ p.rating | number: '1.1-1' }}</span>
+            <span>{{ p.reviewCount }} reviews</span>
+            <span>Sold {{ p.installCount | number }}</span>
+          </p>
+          <p class="pd-meta__desc">{{ p.description }}</p>
+          <ul class="pd-meta__features">
+            <li>Manual / API delivery via seller runtime</li>
+            <li>Token metering &amp; wallet settlement</li>
+            <li>20% platform fee on usage revenue</li>
+          </ul>
+        </div>
       </div>
-      <aside class="hub-buy panel">
-        <p class="hub-price">
-          @switch (p.pricing.model) {
-            @case ('free') { Free }
-            @case ('usage') { {{ p.pricing.usageRate | currency: p.pricing.currency }} / {{ p.pricing.usageUnit }} }
-            @case ('subscription') { {{ p.pricing.price | currency: p.pricing.currency }} / {{ p.pricing.interval }} }
-            @default { {{ p.pricing.price | currency: p.pricing.currency }} }
+
+      <aside class="pd-buy">
+        <div class="pd-buy__head">
+          <p class="pd-buy__label">Selected package</p>
+          <p class="pd-buy__price">{{ displayPrice(p) }}</p>
+          <p class="pd-buy__ok">In stock</p>
+        </div>
+
+        <p class="pd-buy__section">Choose package</p>
+        <div class="pd-packages">
+          @for (pkg of packages(); track pkg.id) {
+            <button
+              type="button"
+              class="pd-package"
+              [class.active]="selectedPackage() === pkg.id"
+              (click)="selectedPackage.set(pkg.id)"
+            >
+              <span class="pd-package__icon" aria-hidden="true">◆</span>
+              <span class="pd-package__text">
+                <strong>{{ pkg.title }}</strong>
+                <small>{{ pkg.subtitle }}</small>
+              </span>
+              <span class="pd-package__price">{{ pkg.priceLabel }}</span>
+            </button>
           }
-        </p>
-        <p class="hub-meta">★ {{ p.rating | number: '1.1-1' }} ({{ p.reviewCount }}) · {{ p.installCount | number }} installs</p>
-        <label class="field-label">Pay with</label>
-        <select class="input input-sm" [(ngModel)]="provider">
+        </div>
+
+        <label class="pd-buy__section" for="pd-qty">Quantity</label>
+        <div class="pd-qty">
+          <button type="button" (click)="bumpQty(-1)" aria-label="Decrease">−</button>
+          <input id="pd-qty" type="number" min="1" max="99" [(ngModel)]="qty" name="qty" />
+          <button type="button" (click)="bumpQty(1)" aria-label="Increase">+</button>
+        </div>
+
+        <label class="field-label mt-3">Pay with</label>
+        <select class="input input-sm" [(ngModel)]="provider" name="provider">
           <option value="stripe">Stripe</option>
           <option value="paypal">PayPal</option>
           <option value="paddle">Paddle</option>
           <option value="payos">PayOS</option>
         </select>
-        <div class="hub-actions">
-          <button type="button" class="btn btn-fill" (click)="primaryCta()">
-            @if (isHire(p.category)) {
-              {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
-            } @else if (isSkill(p.category)) {
-              Buy / Install
-            } @else {
-              Subscribe / Buy
-            }
-          </button>
-          <button type="button" class="btn btn-outline" (click)="toggleWishlist()">Wishlist</button>
+
+        <button type="button" class="pd-buy__cta" (click)="primaryCta()">
+          @if (isHire(p.category)) {
+            {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
+          } @else if (isSkill(p.category)) {
+            Buy / Install
+          } @else {
+            Buy now
+          }
+        </button>
+        <button type="button" class="pd-buy__cart" (click)="toggleWishlist()">
+          🛒 Thêm vào giỏ
+        </button>
+
+        <div class="pd-coupon">
+          <label class="pd-coupon__check">
+            <input type="checkbox" [(ngModel)]="useCoupon" name="useCoupon" />
+            Have a discount code?
+          </label>
+          @if (useCoupon) {
+            <div class="pd-coupon__row">
+              <input class="input" [(ngModel)]="couponCode" name="coupon" placeholder="Enter code" />
+              <button type="button" class="pd-coupon__apply" (click)="applyCoupon()">Apply</button>
+            </div>
+          }
         </div>
+
+        <div class="pd-total">
+          <div class="pd-total__row">
+            <span>Subtotal</span>
+            <strong>{{ displayPrice(p) }}</strong>
+          </div>
+          <div class="pd-total__row">
+            <span>Fee</span>
+            <span>Free</span>
+          </div>
+          <div class="pd-total__row pd-total__row--sum">
+            <span>Total</span>
+            <strong>{{ displayPrice(p) }}</strong>
+          </div>
+          <div class="pd-wallet">
+            <span>Wallet</span>
+            <select [(ngModel)]="displayCurrency" name="currency">
+              <option value="USD">USD</option>
+              <option value="VND">VND</option>
+            </select>
+          </div>
+        </div>
+
         @if (checkoutMsg()) {
           <p class="checkout-msg">{{ checkoutMsg() }}</p>
         }
+        @if (isHire(p.category) === false && isSkill(p.category) === false) {
+          <a [routerLink]="['/deploy', p.slug]" class="pd-buy__deploy">Seller: configure deploy →</a>
+        }
       </aside>
-    </header>
+    </div>
+
+    <div class="pd__lower">
+      <section class="pd-seller panel">
+        <div class="pd-seller__head">
+          <div class="pd-seller__avatar">{{ p.creatorName.charAt(0) }}</div>
+          <div>
+            <p class="pd-seller__name">
+              {{ p.creatorName }}
+              <span class="pd-seller__verified" aria-label="Verified">✓</span>
+            </p>
+            <p class="pd-seller__online">● Online</p>
+          </div>
+        </div>
+        <div class="pd-seller__stats">
+          <span>★ {{ p.rating | number: '1.1-1' }}</span>
+          <span>{{ p.reviewCount }} reviews</span>
+          <span>Sold {{ p.installCount | number }}</span>
+        </div>
+        <dl class="pd-seller__dl">
+          <div><dt>Orders</dt><dd>Sold {{ p.installCount | number }}</dd></div>
+          <div><dt>Response</dt><dd>≈ 4h</dd></div>
+        </dl>
+        <a [routerLink]="['/store', p.creatorSlug]" class="pd-seller__shop">View shop</a>
+      </section>
+
+      <section class="pd-comments panel">
+        <div class="pd-comments__head">
+          <h2>Comments</h2>
+          <div class="pd-comments__tabs">
+            <button type="button" class="active">Top</button>
+            <button type="button" (click)="setWorkspace('reviews')">Newest</button>
+          </div>
+        </div>
+        @if (reviews().length) {
+          @for (r of reviews().slice(0, 3); track r.id) {
+            <article class="pd-comment">
+              <p class="pd-comment__title">{{ r.title }} · ★ {{ r.rating }}</p>
+              <p class="pd-comment__meta">{{ r.userName }}</p>
+              <p>{{ r.body }}</p>
+            </article>
+          }
+        } @else {
+          <p class="pd-comments__empty">No comments yet. Start the conversation.</p>
+        }
+      </section>
+    </div>
+
+    @if (related().length) {
+      <section class="pd-related">
+        <div class="pd-related__head">
+          <h2>Related products</h2>
+          <a routerLink="/marketplace">Swipe to see →</a>
+        </div>
+        <div class="pd-related__track">
+          @for (r of related(); track r.id) {
+            <a [routerLink]="['/product', r.slug]" class="pd-related__card">
+              <img [src]="r.coverUrl" [alt]="r.name" />
+              <div>
+                <p class="pd-related__name">{{ r.name }}</p>
+                <p class="pd-related__cat">{{ label(r.category) }}</p>
+                <p class="pd-related__price">{{ displayPrice(r) }}</p>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+    }
 
     <nav class="ws-tabs" aria-label="Workspace">
       @if (isHire(p.category)) {

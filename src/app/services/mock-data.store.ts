@@ -207,6 +207,19 @@ export class MockDataStore {
     return this.ensure().users.find((u) => u.id === id);
   }
 
+  updateUser(
+    id: string,
+    patch: { name?: string; bio?: string; avatarUrl?: string; coverUrl?: string },
+  ): User | undefined {
+    const user = this.getUser(id);
+    if (!user) return undefined;
+    if (patch.name !== undefined) user.name = patch.name;
+    if (patch.bio !== undefined) user.bio = patch.bio;
+    if (patch.avatarUrl !== undefined) user.avatarUrl = patch.avatarUrl;
+    if (patch.coverUrl !== undefined) user.coverUrl = patch.coverUrl;
+    return user;
+  }
+
   adminOverview() {
     const db = this.ensure();
     const paid = db.orders.filter((o) => o.status === 'paid');

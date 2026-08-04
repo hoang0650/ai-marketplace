@@ -1,0 +1,115 @@
+<header class="sp-head">
+  <div>
+    <h1>Thông tin hồ sơ</h1>
+    <p>Cập nhật ảnh, tên hiển thị và thông tin công khai của bạn.</p>
+  </div>
+</header>
+
+<form class="sp-form" (ngSubmit)="save()">
+  <div class="media">
+    <div class="media__avatar">
+      <div class="preview avatar-prev" [style.backgroundImage]="avatarUrl ? 'url(' + avatarUrl + ')' : null">
+        @if (!avatarUrl) {
+          {{ initials() }}
+        }
+        <label class="change">
+          Thay đổi
+          <input type="file" accept="image/*" hidden (change)="onAvatarFile($event)" />
+        </label>
+      </div>
+      <div>
+        <strong>Ảnh đại diện</strong>
+        <p>JPG, PNG, tối đa 2MB. Kích thước đề xuất 512×512px.</p>
+      </div>
+    </div>
+    <div class="media__cover">
+      <div class="preview cover-prev" [style.backgroundImage]="coverUrl ? 'url(' + coverUrl + ')' : null">
+        @if (!coverUrl) {
+          <span>Ảnh bìa</span>
+        }
+        <label class="change">
+          Thay đổi
+          <input type="file" accept="image/*" hidden (change)="onCoverFile($event)" />
+        </label>
+      </div>
+      <div>
+        <strong>Ảnh bìa (tùy chọn)</strong>
+        <p>JPG, PNG, tối đa 5MB. Kích thước đề xuất 1200×400px.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <label>
+      <span>Email</span>
+      <div class="input-wrap">
+        <input [value]="auth.user()?.email || ''" readonly />
+        <em class="verified">Đã xác minh</em>
+      </div>
+    </label>
+
+    <label>
+      <span>Tên hiển thị</span>
+      <input [(ngModel)]="name" name="name" required />
+      <small>Tên này hiển thị trên hồ sơ và bình luận.</small>
+    </label>
+
+    <label>
+      <span>Dòng giới thiệu</span>
+      <select [(ngModel)]="introLine" name="introLine">
+        <option value="">Chọn dòng giới thiệu</option>
+        <option value="buyer">Người mua trên marketplace</option>
+        <option value="seller">Người bán / creator</option>
+        <option value="builder">Xây dựng agent & workflow</option>
+        <option value="learner">Đang học AI</option>
+      </select>
+    </label>
+
+    <label>
+      <span>Khu vực</span>
+      <input [(ngModel)]="region" name="region" placeholder="VD: Hồ Chí Minh City" />
+    </label>
+
+    <label>
+      <span>Ngôn ngữ thông báo</span>
+      <select [(ngModel)]="notifyLang" name="notifyLang">
+        <option value="vi">Tiếng Việt</option>
+        <option value="en">English</option>
+      </select>
+    </label>
+
+    <label class="full">
+      <span>Giới thiệu</span>
+      <textarea [(ngModel)]="bio" name="bio" rows="4" maxlength="200" placeholder="Viết ngắn gọn về bạn."></textarea>
+      <small class="counter">{{ bio.length }} / 200</small>
+    </label>
+
+    <label class="full">
+      <span>Website (tùy chọn)</span>
+      <input [(ngModel)]="website" name="website" placeholder="https://" />
+    </label>
+  </div>
+
+  <div class="social">
+    <h2>Liên kết mạng xã hội</h2>
+    <p>Thêm liên kết công khai để cộng đồng dễ tìm thấy bạn.</p>
+    @for (s of socials; track s.id) {
+      <div class="social__row">
+        <input [(ngModel)]="s.label" [name]="'sl' + s.id" placeholder="Nhãn" />
+        <input [(ngModel)]="s.url" [name]="'su' + s.id" placeholder="https://" />
+        <button type="button" (click)="removeSocial(s.id)">Xóa</button>
+      </div>
+    }
+    <button type="button" class="add-link" (click)="addSocial()">+ Thêm liên kết khác</button>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn-ghost" (click)="reset()">Đặt lại</button>
+    <button type="submit" class="btn-primary" [disabled]="saving()">
+      {{ saving() ? 'Đang lưu…' : 'Lưu hồ sơ' }}
+    </button>
+  </div>
+  @if (msg()) {
+    <p class="msg">{{ msg() }}</p>
+  }
+</form>

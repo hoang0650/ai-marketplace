@@ -1,34 +1,55 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DecimalPipe } from '@angular/common';
 import { Product } from '../../models/marketplace.models';
 import { categoryLabel } from '../../models/categories';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DecimalPipe],
   template: `
-    <a [routerLink]="['/product', product.slug]" class="ct-card group">
-      <div class="ct-card__media">
-        <img [src]="product.coverUrl || placeholder" [alt]="product.name" loading="lazy" width="480" height="480" />
-        <button type="button" class="ct-card__heart" aria-label="Save" (click)="onHeart($event)">♡</button>
-        <span class="ct-card__ago">{{ ago }}</span>
-        @if (product.gallery.length) {
-          <span class="ct-card__shots" aria-hidden="true">📷 {{ product.gallery.length }}</span>
-        }
-      </div>
-      <div class="ct-card__body">
-        <h3 class="ct-card__title">{{ product.name }}</h3>
-        <p class="ct-card__price">{{ priceLabel }}</p>
-        <p class="ct-card__meta">
-          <span aria-hidden="true">◎</span>
-          {{ label }} · {{ product.creatorName }}
-        </p>
-      </div>
-    </a>
+    @if (variant === 'shop') {
+      <a [routerLink]="['/product', product.slug]" class="shop-card">
+        <div class="shop-card__media">
+          <img [src]="product.coverUrl || placeholder" [alt]="product.name" loading="lazy" width="400" height="400" />
+        </div>
+        <div class="shop-card__body">
+          <h3 class="shop-card__title">{{ product.name }}</h3>
+          <p class="shop-card__cat">{{ label }}</p>
+          <p class="shop-card__price">{{ shopPrice }}</p>
+          <div class="shop-card__stats">
+            <span class="shop-card__stars">★ {{ product.rating | number: '1.1-1' }}</span>
+            <span>Stock {{ stockLabel }}</span>
+            <span>Sold {{ product.installCount | number }}</span>
+            <button type="button" class="shop-card__cart" aria-label="Add" (click)="onHeart($event)">🛒</button>
+          </div>
+        </div>
+      </a>
+    } @else {
+      <a [routerLink]="['/product', product.slug]" class="ct-card group">
+        <div class="ct-card__media">
+          <img [src]="product.coverUrl || placeholder" [alt]="product.name" loading="lazy" width="480" height="480" />
+          <button type="button" class="ct-card__heart" aria-label="Save" (click)="onHeart($event)">♡</button>
+          <span class="ct-card__ago">{{ ago }}</span>
+          @if (product.gallery.length) {
+            <span class="ct-card__shots" aria-hidden="true">📷 {{ product.gallery.length }}</span>
+          }
+        </div>
+        <div class="ct-card__body">
+          <h3 class="ct-card__title">{{ product.name }}</h3>
+          <p class="ct-card__price">{{ priceLabel }}</p>
+          <p class="ct-card__meta">
+            <span aria-hidden="true">◎</span>
+            {{ label }} · {{ product.creatorName }}
+          </p>
+        </div>
+      </a>
+    }
   `,
   styles: [
     `
+      /* —— Chợ Tốt style (landing) —— */
       .ct-card {
         display: block;
         text-decoration: none;
@@ -54,10 +75,6 @@ import { categoryLabel } from '../../models/categories';
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.35s ease;
-      }
-      .ct-card:hover .ct-card__media img {
-        transform: scale(1.03);
       }
       .ct-card__heart {
         position: absolute;
@@ -68,10 +85,7 @@ import { categoryLabel } from '../../models/categories';
         border: 0;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.92);
-        color: #444;
         cursor: pointer;
-        font-size: 0.95rem;
-        line-height: 1;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
       }
       .ct-card__ago {
@@ -119,18 +133,104 @@ import { categoryLabel } from '../../models/categories';
         margin: 0.35rem 0 0;
         color: var(--color-muted);
         font-size: 0.72rem;
+      }
+
+      /* —— GC MMO / shop marketplace style —— */
+      .shop-card {
         display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        white-space: nowrap;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        background: var(--color-surface);
+        border: 1px solid var(--color-line);
+        border-radius: 12px;
         overflow: hidden;
-        text-overflow: ellipsis;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        height: 100%;
+      }
+      .shop-card:hover {
+        border-color: #ffc9c4;
+        box-shadow: 0 6px 18px rgba(229, 57, 53, 0.1);
+      }
+      .shop-card__media {
+        aspect-ratio: 1 / 1;
+        background: #f7f7f7;
+        overflow: hidden;
+      }
+      .shop-card__media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .shop-card__body {
+        padding: 0.75rem 0.8rem 0.85rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .shop-card__title {
+        margin: 0;
+        font-size: 0.92rem;
+        font-weight: 700;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.5em;
+      }
+      .shop-card__cat {
+        margin: 0.3rem 0 0;
+        font-size: 0.75rem;
+        color: var(--color-muted);
+      }
+      .shop-card__price {
+        margin: 0.45rem 0 0;
+        color: #e53935;
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+      .shop-card__stats {
+        margin-top: auto;
+        padding-top: 0.55rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.45rem 0.65rem;
+        font-size: 0.7rem;
+        color: var(--color-muted);
+        position: relative;
+        padding-right: 2.4rem;
+      }
+      .shop-card__stars {
+        color: #f5a623;
+        font-weight: 600;
+      }
+      .shop-card__cart {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        border: 1.5px solid #e53935;
+        background: #fff;
+        cursor: pointer;
+        font-size: 0.85rem;
+        display: grid;
+        place-items: center;
+        padding: 0;
+      }
+      .shop-card__cart:hover {
+        background: #ffe8e6;
       }
     `,
   ],
 })
 export class ProductCardComponent {
   @Input({ required: true }) product!: Product;
+  @Input() variant: 'default' | 'shop' = 'default';
+  @Input() currency: 'USD' | 'VND' = 'USD';
 
   readonly placeholder =
     'data:image/svg+xml,' +
@@ -148,6 +248,24 @@ export class ProductCardComponent {
     if (p.model === 'usage') return `$${p.usageRate}/${p.usageUnit || '1K tokens'}`;
     if (p.model === 'subscription') return `$${p.price}/${p.interval}`;
     return `$${p.price}`;
+  }
+
+  get shopPrice(): string {
+    const p = this.product.pricing;
+    if (p.model === 'free') return this.currency === 'VND' ? '0 đ' : 'Free';
+    let usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
+    if (this.currency === 'VND') {
+      const vnd = Math.round(usd * 25_000);
+      return `${vnd.toLocaleString('vi-VN')} đ`;
+    }
+    if (p.model === 'usage') return `$${usd}/${p.usageUnit || '1K tokens'}`;
+    if (p.model === 'subscription') return `$${usd}/${p.interval}`;
+    return `$${usd}`;
+  }
+
+  get stockLabel(): string {
+    // Digital catalog — treat installs as demand signal; stock is always available.
+    return '∞';
   }
 
   get ago(): string {

@@ -3,6 +3,146 @@ import { authGuard, creatorGuard, adminGuard } from './guards/auth.guards';
 
 export const routes: Routes = [
   {
+    path: 'work',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/work/work-shell.component').then((m) => m.WorkShellComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/work/work-dashboard.component').then((m) => m.WorkDashboardComponent),
+      },
+      {
+        path: 'profile',
+        data: { page: 'profile' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'saved',
+        data: { page: 'saved' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'job-profile',
+        data: { page: 'job-profile' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'post',
+        data: { page: 'post' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'org',
+        data: { page: 'org' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'services',
+        data: { page: 'services' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'contests',
+        data: { page: 'contests' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'contracts',
+        data: { page: 'contracts' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'disputes',
+        data: { page: 'disputes' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+      {
+        path: 'withdraw',
+        data: { page: 'withdraw' },
+        loadComponent: () =>
+          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+      },
+    ],
+  },
+  {
+    path: 'sell',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/sell/sell-shell.component').then((m) => m.SellShellComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/sell/sell-overview.component').then((m) => m.SellOverviewComponent),
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/sell/sell-profile.component').then((m) => m.SellProfileComponent),
+      },
+      {
+        path: 'images',
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellImagesComponent),
+      },
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellProductsComponent),
+      },
+      {
+        path: 'orders',
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellOrdersComponent),
+      },
+      {
+        path: 'complaints',
+        data: { page: 'complaints' },
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+      },
+      {
+        path: 'coupons',
+        data: { page: 'coupons' },
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+      },
+      {
+        path: 'payment',
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellPaymentComponent),
+      },
+      {
+        path: 'withdraw',
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellWithdrawComponent),
+      },
+      {
+        path: 'ledger',
+        data: { page: 'ledger' },
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+      },
+      {
+        path: 'integrate',
+        data: { page: 'integrate' },
+        loadComponent: () =>
+          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+      },
+    ],
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/shell.component').then((m) => m.ShellComponent),
     children: [
@@ -180,10 +320,14 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/auth.components').then((m) => m.RegisterComponent),
       },
       {
-        path: 'wishlist',
+        path: 'cart',
         canActivate: [authGuard],
-        loadComponent: () =>
-          import('./features/wishlist/wishlist.component').then((m) => m.WishlistComponent),
+        loadComponent: () => import('./features/cart/cart.component').then((m) => m.CartComponent),
+      },
+      {
+        path: 'wishlist',
+        redirectTo: 'cart',
+        pathMatch: 'full',
       },
       {
         path: 'notifications',
@@ -196,7 +340,59 @@ export const routes: Routes = [
       {
         path: 'profile',
         canActivate: [authGuard],
-        loadComponent: () => import('./features/commerce/commerce.components').then((m) => m.ProfileComponent),
+        loadComponent: () =>
+          import('./features/profile/profile.component').then((m) => m.ProfileComponent),
+      },
+      {
+        path: 'settings',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/settings/settings-shell.component').then((m) => m.SettingsShellComponent),
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'profile' },
+          {
+            path: 'profile',
+            loadComponent: () =>
+              import('./features/settings/settings-profile.component').then(
+                (m) => m.SettingsProfileComponent,
+              ),
+          },
+          {
+            path: 'activity',
+            loadComponent: () =>
+              import('./features/settings/settings-pages.components').then(
+                (m) => m.SettingsActivityComponent,
+              ),
+          },
+          {
+            path: 'security',
+            loadComponent: () =>
+              import('./features/settings/settings-pages.components').then(
+                (m) => m.SettingsSecurityComponent,
+              ),
+          },
+          {
+            path: 'notifications',
+            loadComponent: () =>
+              import('./features/settings/settings-pages.components').then(
+                (m) => m.SettingsNotificationsComponent,
+              ),
+          },
+          {
+            path: 'connections',
+            loadComponent: () =>
+              import('./features/settings/settings-pages.components').then(
+                (m) => m.SettingsConnectionsComponent,
+              ),
+          },
+          {
+            path: 'feed',
+            loadComponent: () =>
+              import('./features/settings/settings-pages.components').then(
+                (m) => m.SettingsFeedComponent,
+              ),
+          },
+        ],
       },
       {
         path: 'billing',
@@ -206,7 +402,8 @@ export const routes: Routes = [
       {
         path: 'wallet',
         canActivate: [authGuard],
-        loadComponent: () => import('./features/commerce/commerce.components').then((m) => m.WalletComponent),
+        loadComponent: () =>
+          import('./features/wallet/wallet.component').then((m) => m.WalletComponent),
       },
       {
         path: 'affiliate',

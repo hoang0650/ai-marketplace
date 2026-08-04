@@ -38,6 +38,7 @@ export interface User {
   email: string;
   name: string;
   avatarUrl?: string;
+  coverUrl?: string;
   role: UserRole;
   creatorSlug?: string;
   bio?: string;

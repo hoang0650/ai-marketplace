@@ -1,0 +1,111 @@
+<div class="sell" [class.sell--collapsed]="collapsed()">
+  <aside class="sell-side" aria-label="Kênh bán hàng">
+    <div class="sell-side__brand">
+      <span class="sell-side__mark" aria-hidden="true">🏪</span>
+      @if (!collapsed()) {
+        <div>
+          <p class="sell-side__title">Kênh bán hàng</p>
+          <p class="sell-side__sub">Không gian bán hàng</p>
+        </div>
+      }
+    </div>
+
+    <nav class="sell-side__nav">
+      @for (g of groups; track g.key) {
+        <div class="sell-nav-group">
+          @if (!collapsed()) {
+            @if (g.collapsible) {
+              <button type="button" class="sell-nav-group__title" (click)="toggleGroup(g.key)">
+                <span>{{ g.title }}</span>
+                <span aria-hidden="true">{{ isOpen(g.key) ? '▾' : '▸' }}</span>
+              </button>
+            } @else {
+              <p class="sell-nav-group__title sell-nav-group__title--static">{{ g.title }}</p>
+            }
+          }
+          @if (!g.collapsible || isOpen(g.key) || collapsed()) {
+            <ul>
+              @for (item of g.items; track item.label) {
+                <li>
+                  <a
+                    [routerLink]="item.path"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: !!item.exact }"
+                    [title]="item.label"
+                  >
+                    @if (!collapsed()) {
+                      <span>{{ item.label }}</span>
+                      @if (item.badge && !shop.started()) {
+                        <i class="dot" aria-hidden="true"></i>
+                      }
+                    } @else {
+                      <span>{{ item.label.charAt(0) }}</span>
+                    }
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </nav>
+
+    <div class="sell-side__foot">
+      @if (!collapsed()) {
+        <a
+          class="sell-side__shop"
+          [routerLink]="auth.user()?.creatorSlug ? ['/store', auth.user()?.creatorSlug] : '/sell/profile'"
+        >
+          Xem shop của bạn ›
+        </a>
+        <p class="sell-side__meta">Trạng thái gian hàng: {{ shop.statusLabel() }}</p>
+        <p class="sell-side__meta">Sản phẩm: {{ productCount() }}</p>
+      }
+      <div class="sell-side__tools">
+        <a routerLink="/" title="Về trang chủ">⌂</a>
+        <button type="button" (click)="toggleCollapse()" [title]="collapsed() ? 'Mở rộng' : 'Thu gọn'">
+          {{ collapsed() ? '»' : '«' }}
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sell-main">
+    <header class="sell-top">
+      <a routerLink="/" class="sell-top__logo">
+        <span class="sell-top__mark">PH</span>
+        <span>{{ brand }}</span>
+      </a>
+      <button type="button" class="sell-top__theme" (click)="toggleTheme()" aria-label="Đổi giao diện">
+        {{ theme.isDark() ? '☀' : '☾' }}
+      </button>
+      <label class="sell-top__search">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" placeholder="Tìm kiếm" />
+      </label>
+      <div class="sell-top__actions">
+        <a routerLink="/wallet" class="icon" title="Ví">💳</a>
+        <a routerLink="/cart" class="icon" title="Giỏ hàng">🛒</a>
+        <a routerLink="/notifications" class="icon" title="Thông báo">
+          🔔<span class="badge">1</span>
+        </a>
+        <div class="user-menu" [class.open]="userMenuOpen()">
+          <button type="button" class="avatar" (click)="toggleUserMenu($event)">{{ initials() }}</button>
+          @if (userMenuOpen()) {
+            <div class="user-menu__panel" (click)="$event.stopPropagation()">
+              <p class="user-menu__name">{{ auth.user()?.name }}</p>
+              <p class="user-menu__email">{{ auth.user()?.email }}</p>
+              <a routerLink="/profile" (click)="closeUserMenu()">Hồ sơ</a>
+              <a routerLink="/sell" (click)="closeUserMenu()">Kênh bán hàng</a>
+              <button type="button" class="logout" (click)="logout()">Đăng xuất</button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <div class="sell-content">
+      <router-outlet />
+    </div>
+  </div>
+</div>

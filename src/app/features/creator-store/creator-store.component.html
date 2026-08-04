@@ -1,0 +1,248 @@
+@if (creator(); as c) {
+  <section class="store route-enter">
+    <!-- Banner -->
+    <div class="store-banner">
+      <div class="store-banner__bg">
+        <img [src]="c.coverUrl || placeholderCover" [alt]="c.name + ' cover'" />
+      </div>
+      <div class="store-banner__inner">
+        <div class="store-banner__profile">
+          <img class="store-banner__avatar" [src]="c.avatarUrl || placeholderAvatar" [alt]="c.name" />
+          <div class="store-banner__info">
+            <h1 class="store-banner__name">
+              {{ c.name }}
+              @if (c.verified) {
+                <span class="store-banner__check" aria-label="Verified">✓</span>
+              }
+            </h1>
+            <p class="store-banner__slug">
+              /{{ c.slug }}
+              <span class="store-banner__online">● Online</span>
+            </p>
+            <div class="store-banner__badges">
+              @if (c.totalSales >= 1 || c.verified) {
+                <span class="store-badge store-badge--gold">★ Top Seller</span>
+              }
+              <span class="store-badge store-badge--green">🛡 Protected up to 9,999h</span>
+            </div>
+          </div>
+        </div>
+        <div class="store-banner__actions">
+          <button type="button" class="store-btn store-btn--follow" (click)="toggleFollow()">
+            {{ followed() ? 'Following' : '+ Follow' }}
+          </button>
+          <button type="button" class="store-btn store-btn--icon" (click)="share()" aria-label="Share" title="Share">↗</button>
+          <a class="store-btn store-btn--icon" routerLink="/marketplace" aria-label="Browse" title="Browse">💬</a>
+        </div>
+      </div>
+      <div class="store-banner__seal" aria-hidden="true">🏆</div>
+    </div>
+
+    <div class="store-stats">
+      <div class="store-stat"><span>★</span> {{ c.rating | number: '1.1-1' }} ({{ reviewCount() }} reviews)</div>
+      <div class="store-stat"><span>👥</span> {{ followers() }} followers</div>
+      <div class="store-stat"><span>📦</span> {{ c.productCount }} products</div>
+      <div class="store-stat"><span>⏱</span> ~4.4h avg delivery</div>
+      <div class="store-stat"><span>✓</span> {{ c.totalSales | number }} completed</div>
+    </div>
+
+    <!-- Intro + seller info -->
+    <div class="store-mid">
+      <div class="store-mid__left">
+        <article class="store-card">
+          <h2 class="store-card__title">About</h2>
+          <p class="store-card__body">{{ c.bio || 'This seller has not added a shop introduction yet.' }}</p>
+        </article>
+        <article class="store-card">
+          <h2 class="store-card__title">Shop policy</h2>
+          <div class="store-policy">
+            <div class="store-policy__icon">🛡</div>
+            <div>
+              <p class="store-policy__label">Warranty</p>
+              <p class="store-policy__text">
+                {{ products().length || 0 }} listings with runtime / usage warranty via marketplace escrow.
+              </p>
+            </div>
+          </div>
+          <button type="button" class="store-link" (click)="showPolicy = !showPolicy">
+            {{ showPolicy ? 'Hide policy' : 'View full policy' }}
+          </button>
+          @if (showPolicy) {
+            <ul class="store-policy__list">
+              <li>Token usage billed from buyer wallet; seller receives net after 20% platform fee.</li>
+              <li>Disputes handled through PH AI Market support within 72h.</li>
+              <li>Refunds apply to unused prepaid credits only.</li>
+            </ul>
+          }
+        </article>
+      </div>
+
+      <aside class="store-mid__right">
+        <article class="store-card">
+          <h2 class="store-card__title">Seller information</h2>
+          <dl class="store-info">
+            <div><dt>Sold</dt><dd>{{ c.totalSales | number }}</dd></div>
+            <div><dt>Rating</dt><dd>{{ c.rating > 0 ? (c.rating | number: '1.1-1') : 'None yet' }}</dd></div>
+            <div><dt>Avg. delivery</dt><dd>4.4h</dd></div>
+            <div><dt>Joined</dt><dd>{{ joinedLabel }}</dd></div>
+            <div><dt>Completion rate</dt><dd>{{ completionRate() }}%</dd></div>
+            <div><dt>Active products</dt><dd>{{ c.productCount }}</dd></div>
+            <div><dt>Complaint rate</dt><dd>0%</dd></div>
+            <div><dt>Orders (30d)</dt><dd>{{ orders30d() }}</dd></div>
+            <div>
+              <dt>Seller level</dt>
+              <dd class="store-info__gold">{{ c.verified || c.totalSales > 0 ? 'Top Seller' : 'Rising' }}</dd>
+            </div>
+          </dl>
+        </article>
+        <article class="store-card">
+          <h2 class="store-card__title">Trust center</h2>
+          <ul class="store-trust">
+            <li><span class="ok">✓</span> Public seller profile</li>
+            <li><span class="ok">✓</span> {{ c.totalSales | number }} completed order(s)</li>
+            <li><span class="ok">✓</span> No public complaints</li>
+            <li><span class="muted">○</span> Support hours not announced</li>
+          </ul>
+        </article>
+      </aside>
+    </div>
+
+    <!-- Shop products -->
+    <section class="store-products">
+      <div class="store-products__head">
+        <h2 class="store-products__title">Shop products</h2>
+        <div class="store-products__tools">
+          <select class="store-select" [(ngModel)]="sort" (ngModelChange)="applyLocal()" aria-label="Sort">
+            <option value="newest">Newest</option>
+            <option value="bestsellers">Best sellers</option>
+            <option value="price-asc">Low price</option>
+            <option value="price-desc">High price</option>
+            <option value="rating">High rating</option>
+          </select>
+          <label class="store-search">
+            <span aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              [(ngModel)]="query"
+              (ngModelChange)="applyLocal()"
+              placeholder="Search in this shop…"
+            />
+          </label>
+          <div class="store-view">
+            <button type="button" class="store-view__btn" [class.active]="view() === 'grid'" (click)="view.set('grid')">▦</button>
+            <button type="button" class="store-view__btn" [class.active]="view() === 'list'" (click)="view.set('list')">☰</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="store-cats">
+        <button type="button" class="store-cat" [class.active]="!category" (click)="setCategory('')">All</button>
+        @for (cat of shopCategories(); track cat) {
+          <button type="button" class="store-cat" [class.active]="category === cat" (click)="setCategory(cat)">
+            {{ categoryLabel(cat) }}
+          </button>
+        }
+      </div>
+
+      <div class="store-filters">
+        <label>
+          Price from
+          <input type="number" min="0" [(ngModel)]="priceMin" (ngModelChange)="applyLocal()" />
+        </label>
+        <label>
+          Price to
+          <input type="number" min="0" [(ngModel)]="priceMax" (ngModelChange)="applyLocal()" />
+        </label>
+        <button type="button" class="store-chip" [class.on]="filterAuto" (click)="filterAuto = !filterAuto; applyLocal()">Auto-delivery</button>
+        <button type="button" class="store-chip" [class.on]="filterStock" (click)="filterStock = !filterStock; applyLocal()">In stock</button>
+        <button type="button" class="store-chip" [class.on]="filterWarranty" (click)="filterWarranty = !filterWarranty; applyLocal()">Warranty</button>
+        <button type="button" class="store-chip" [class.on]="filterBest" (click)="filterBest = !filterBest; applyLocal()">Best seller</button>
+        <button type="button" class="store-chip" [class.on]="filterHighRating" (click)="filterHighRating = !filterHighRating; applyLocal()">High rating</button>
+      </div>
+
+      <div class="store-grid" [class.store-grid--list]="view() === 'list'">
+        @for (p of filtered(); track p.id) {
+          <article class="store-pcard">
+            <a [routerLink]="['/product', p.slug]" class="store-pcard__media">
+              @if (p.featured || p.installCount > 50) {
+                <span class="store-pcard__ribbon">BEST SELLER</span>
+              }
+              <img [src]="p.coverUrl" [alt]="p.name" loading="lazy" />
+            </a>
+            <div class="store-pcard__body">
+              <a [routerLink]="['/product', p.slug]" class="store-pcard__title">{{ p.name }}</a>
+              <p class="store-pcard__cat">{{ categoryLabel(p.category) }}</p>
+              <p class="store-pcard__price">{{ priceOf(p) }}</p>
+              <p class="store-pcard__meta">
+                <span class="stars">★ {{ p.rating | number: '1.1-1' }}</span>
+                <span>Sold {{ p.installCount | number }}</span>
+              </p>
+              <div class="store-pcard__footer">
+                <span class="pill pill--green">Warranty 9,999h</span>
+                <span class="pill pill--cyan">In stock</span>
+                <div class="store-pcard__acts">
+                  <a [routerLink]="['/product', p.slug]" class="icon-sq" title="Open">↗</a>
+                  <a [routerLink]="['/product', p.slug]" class="icon-sq" title="Buy">🛒</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        } @empty {
+          <p class="store-empty">No products match your filters.</p>
+        }
+      </div>
+      <p class="store-shown">Showing {{ filtered().length }} products</p>
+    </section>
+
+    <!-- Community -->
+    <section class="store-card store-community">
+      <div class="store-community__head">
+        <h2 class="store-card__title">Community activity</h2>
+        <button type="button" class="store-btn store-btn--dark" (click)="statusMsg.set('Discussion board coming soon.')">
+          Open discussion
+        </button>
+      </div>
+      <div class="store-community__stats">
+        <div><strong>0</strong><span>Answers</span></div>
+        <div><strong>0</strong><span>Accepted</span></div>
+        <div><strong>0</strong><span>Guides</span></div>
+        <div><strong>0</strong><span>Helpful</span></div>
+        <div><strong>—</strong><span>Latest activity</span></div>
+      </div>
+      <p class="store-empty-inline">No discussions yet for this shop.</p>
+    </section>
+
+    <div class="store-bottom">
+      <article class="store-card">
+        <h2 class="store-card__title">Shop ratings</h2>
+        <div class="store-ratings">
+          <div class="store-ratings__score">
+            <p class="store-ratings__num">{{ c.rating | number: '1.1-1' }}</p>
+            <p class="store-ratings__stars">★★★★★</p>
+            <p class="store-ratings__count">({{ reviewCount() }} reviews)</p>
+            <button type="button" class="store-btn store-btn--outline" (click)="statusMsg.set('Write a review from a product page.')">
+              Write a review
+            </button>
+          </div>
+          <div class="store-ratings__empty">
+            @if (reviewCount() === 0) {
+              Shop has no public reviews yet.
+            } @else {
+              Reviews appear on individual product pages.
+            }
+          </div>
+        </div>
+      </article>
+      <article class="store-card">
+        <h2 class="store-card__title">FAQ</h2>
+        <div class="store-ratings__empty">
+          This shop has not published FAQs yet.
+        </div>
+      </article>
+    </div>
+
+    @if (statusMsg()) {
+      <p class="store-toast">{{ statusMsg() }}</p>
+    }
+  </section>
+}

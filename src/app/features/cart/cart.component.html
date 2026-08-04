@@ -1,0 +1,150 @@
+<section class="cart page route-enter">
+  <ol class="steps" aria-label="Tiến trình thanh toán">
+    <li class="active"><span>1</span> Giỏ hàng</li>
+    <li><span>2</span> Thanh toán</li>
+    <li><span>3</span> Hoàn tất</li>
+  </ol>
+
+  <div class="cart-layout">
+    <div class="cart-main">
+      <header class="cart-head">
+        <h1>Giỏ hàng</h1>
+        <p>Xem lại sản phẩm trong giỏ và thanh toán nhanh bằng ví {{ brand }}.</p>
+      </header>
+
+      <div class="toolbar">
+        <label class="check">
+          <input type="checkbox" [checked]="allSelected()" (change)="toggleAll()" />
+          Chọn tất cả ({{ cart.lines().length }})
+        </label>
+        <button type="button" class="link-btn" (click)="cart.removeSelected()" [disabled]="!cart.selectedLines().length">
+          🗑 Xóa đã chọn
+        </button>
+        <a routerLink="/marketplace" class="continue">← Tiếp tục mua sắm</a>
+      </div>
+
+      <div class="lines">
+        @for (line of cart.lines(); track line.product.id) {
+          <article class="line">
+            <label class="check">
+              <input
+                type="checkbox"
+                [checked]="line.selected"
+                (change)="cart.toggleSelected(line.product.id)"
+              />
+            </label>
+            <a [routerLink]="['/product', line.product.slug]" class="line__thumb">
+              <img [src]="line.product.coverUrl" [alt]="line.product.name" />
+            </a>
+            <div class="line__meta">
+              <a [routerLink]="['/product', line.product.slug]" class="line__title">{{ line.product.name }}</a>
+              <p class="line__tags">
+                <span>{{ categoryLabel(line.product.category) }}</span>
+                <span>Người bán: {{ line.product.creatorName }}</span>
+              </p>
+              <p class="stock"><i></i> Còn hàng</p>
+            </div>
+            <div class="line__side">
+              <p class="price">{{ cart.unitPrice(line.product) | currency: line.product.pricing.currency: 'symbol-narrow': '1.0-2' }}</p>
+              <div class="qty">
+                <button type="button" (click)="cart.setQty(line.product.id, line.qty - 1)" aria-label="Giảm">−</button>
+                <span>{{ line.qty }}</span>
+                <button type="button" (click)="cart.setQty(line.product.id, line.qty + 1)" aria-label="Tăng">+</button>
+              </div>
+              <button type="button" class="trash" (click)="cart.remove(line.product.id)" aria-label="Xóa">🗑</button>
+            </div>
+          </article>
+        } @empty {
+          <div class="empty">
+            <p>Giỏ hàng trống.</p>
+            <a routerLink="/marketplace" class="btn-primary">Khám phá sản phẩm</a>
+          </div>
+        }
+      </div>
+
+      @if (suggested().length) {
+        <section class="suggest">
+          <h2>Có thể bạn cũng thích</h2>
+          <div class="suggest__grid">
+            @for (p of suggested(); track p.id) {
+              <article class="suggest__card">
+                <a [routerLink]="['/product', p.slug]" class="suggest__thumb">
+                  <img [src]="p.coverUrl" [alt]="p.name" />
+                </a>
+                <div>
+                  <a [routerLink]="['/product', p.slug]" class="suggest__title">{{ p.name }}</a>
+                  <p class="suggest__price">
+                    {{ cart.unitPrice(p) | currency: p.pricing.currency: 'symbol-narrow': '1.0-2' }}
+                  </p>
+                  <a [routerLink]="['/product', p.slug]" class="suggest__link">Xem chi tiết</a>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    </div>
+
+    <aside class="cart-aside">
+      <div class="wallet-card">
+        <div>
+          <p class="wallet-card__label">{{ brand }} · {{ walletCurrency() }}</p>
+          <p class="wallet-card__bal">{{ balance() | currency: walletCurrency(): 'symbol-narrow': '1.0-0' }}</p>
+        </div>
+        <a routerLink="/wallet" class="btn-outline">Nạp tiền</a>
+      </div>
+
+      <div class="pay-card">
+        <h2>Thanh toán</h2>
+        <dl>
+          <div>
+            <dt>Tạm tính</dt>
+            <dd>{{ cart.subtotal() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
+          </div>
+          <div>
+            <dt>Giảm giá người bán</dt>
+            <dd>{{ discountSeller() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
+          </div>
+          <div>
+            <dt>Giảm giá nền tảng</dt>
+            <dd>{{ discountPlatform() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
+          </div>
+        </dl>
+
+        <div class="coupon">
+          <input
+            type="text"
+            [ngModel]="coupon()"
+            (ngModelChange)="coupon.set($event)"
+            placeholder="Nhập mã giảm giá"
+          />
+          <button type="button" (click)="applyCoupon()">Áp dụng</button>
+        </div>
+
+        <label class="wallet-switch">
+          <span>Dùng số dư ví ({{ balance() | currency: walletCurrency(): 'symbol-narrow': '1.0-0' }})</span>
+          <input type="checkbox" [checked]="useWallet()" (change)="useWallet.set(!useWallet())" />
+        </label>
+
+        <div class="total">
+          <span>Tổng thanh toán</span>
+          <strong>{{ total() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</strong>
+        </div>
+
+        <button type="button" class="btn-pay" [disabled]="paying() || !cart.selectedLines().length" (click)="pay()">
+          {{ paying() ? 'Đang xử lý…' : 'Thanh toán ngay' }}
+        </button>
+
+        @if (msg()) {
+          <p class="msg">{{ msg() }}</p>
+        }
+      </div>
+
+      <div class="trust">
+        <div><span>🛡</span><p>Thanh toán an toàn</p></div>
+        <div><span>☎</span><p>Hỗ trợ 24/7</p></div>
+        <div><span>⚡</span><p>Giao hàng tức thì</p></div>
+      </div>
+    </aside>
+  </div>
+</section>

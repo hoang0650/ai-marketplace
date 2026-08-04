@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService, ReviewService, WishlistService, BillingService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
@@ -35,7 +35,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, FormsModule],
+  imports: [RouterLink, DatePipe, DecimalPipe, FormsModule],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -51,11 +51,51 @@ export class ProductDetailComponent implements OnInit {
 
   readonly product = signal<Product | null>(null);
   readonly reviews = signal<Review[]>([]);
+  readonly related = signal<Product[]>([]);
+  readonly mediaIndex = signal(0);
+  readonly selectedPackage = signal('std');
   readonly workspaceTab = signal<WorkspaceTab>('playground');
   readonly resultView = signal<ResultView>('preview');
   readonly runStatus = signal<RunStatus>('idle');
   readonly checkoutMsg = signal('');
   provider: PaymentProvider = 'stripe';
+  qty = 1;
+  useCoupon = false;
+  couponCode = '';
+  displayCurrency: 'USD' | 'VND' = 'USD';
+
+  readonly mediaList = computed(() => {
+    const p = this.product();
+    if (!p) return [] as string[];
+    const list = [p.coverUrl, ...(p.gallery || [])].filter(Boolean);
+    return list.length ? list : [p.coverUrl].filter(Boolean);
+  });
+
+  readonly activeMedia = computed(() => {
+    const list = this.mediaList();
+    if (!list.length) return '';
+    return list[Math.min(this.mediaIndex(), list.length - 1)];
+  });
+
+  readonly packages = computed(() => {
+    const p = this.product();
+    if (!p) return [] as Array<{ id: string; title: string; subtitle: string; priceLabel: string }>;
+    const price = this.displayPrice(p);
+    return [
+      {
+        id: 'std',
+        title: p.name,
+        subtitle: 'Standard processing',
+        priceLabel: price,
+      },
+      {
+        id: 'pro',
+        title: `${p.name} · Pro`,
+        subtitle: 'Priority queue + higher limits',
+        priceLabel: price,
+      },
+    ];
+  });
   inputMode: InputMode = 'messages';
   modelVariant = '';
   prompt = '';
@@ -160,8 +200,13 @@ export class ProductDetailComponent implements OnInit {
       const slug = params.get('slug') || '';
       this.productsApi.bySlug(slug).subscribe((p) => {
         this.product.set(p);
+        this.mediaIndex.set(0);
+        this.selectedPackage.set('std');
         this.seo.set({ title: p.name, description: p.tagline, image: p.coverUrl });
         this.reviewsApi.list(p.id).subscribe((r) => this.reviews.set(r));
+        this.productsApi.list({ category: p.category }).subscribe((items) => {
+          this.related.set(items.filter((x) => x.id !== p.id).slice(0, 6));
+        });
         this.resetPlayground(p);
         this.workspaceTab.set(
           isHireCategory(p.category) ? 'hire' : isSkillCategory(p.category) ? 'install' : 'playground',
@@ -174,6 +219,42 @@ export class ProductDetailComponent implements OnInit {
         this.loadHistory(p.id);
       });
     });
+  }
+
+  displayPrice(p: Product): string {
+    const pr = p.pricing;
+    if (pr.model === 'free') return this.displayCurrency === 'VND' ? '0 đ' : 'Free';
+    const usd = pr.model === 'usage' ? Number(pr.usageRate) || 0 : Number(pr.price) || 0;
+    if (this.displayCurrency === 'VND') {
+      return `${Math.round(usd * 25_000).toLocaleString('vi-VN')} đ`;
+    }
+    if (pr.model === 'usage') return `$${usd} / ${pr.usageUnit || 'unit'}`;
+    if (pr.model === 'subscription') return `$${usd} / ${pr.interval}`;
+    return `$${usd}`;
+  }
+
+  bumpQty(delta: number): void {
+    this.qty = Math.min(99, Math.max(1, this.qty + delta));
+  }
+
+  prevMedia(): void {
+    const n = this.mediaList().length;
+    if (!n) return;
+    this.mediaIndex.update((i) => (i - 1 + n) % n);
+  }
+
+  nextMedia(): void {
+    const n = this.mediaList().length;
+    if (!n) return;
+    this.mediaIndex.update((i) => (i + 1) % n);
+  }
+
+  applyCoupon(): void {
+    if (!this.couponCode.trim()) {
+      this.checkoutMsg.set('Enter a discount code first.');
+      return;
+    }
+    this.checkoutMsg.set(`Coupon "${this.couponCode.trim()}" noted (demo — not applied).`);
   }
 
   label(cat: ProductCategory): string {

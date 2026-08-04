@@ -79,19 +79,136 @@
         <button type="button" class="icon-btn" (click)="toggleTheme()" [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
           {{ theme.isDark() ? '☀' : '☾' }}
         </button>
-        <a routerLink="/wishlist" class="icon-btn" title="Wishlist" aria-label="Wishlist">♡</a>
-        <a routerLink="/notifications" class="icon-btn hidden sm:inline-flex" title="Alerts" aria-label="Alerts">🔔</a>
         @if (auth.isAuthenticated()) {
-          <a routerLink="/deployments" class="nav-link hidden md:inline">Deployments</a>
-          <a routerLink="/dashboard" class="nav-link hidden md:inline">Dashboard</a>
-          @if (auth.isAdmin()) {
-            <a routerLink="/admin" class="nav-link hidden lg:inline">Admin</a>
-          }
-          <a routerLink="/dashboard/products" class="btn-post">+ Publish</a>
-          <a routerLink="/profile" class="avatar-btn" [attr.title]="auth.user()?.name">
-            <span class="avatar-btn__letter">{{ auth.user()?.name?.charAt(0) || 'U' }}</span>
-          </a>
+          <a routerLink="/wallet" class="icon-btn hidden sm:inline-flex" title="Ví" aria-label="Ví">💳</a>
+          <a routerLink="/cart" class="icon-btn" title="Giỏ hàng" aria-label="Giỏ hàng">🛒</a>
+          <div class="noti-menu" [class.open]="notiOpen()">
+            <button
+              type="button"
+              class="icon-btn"
+              title="Thông báo"
+              aria-label="Thông báo"
+              [attr.aria-expanded]="notiOpen()"
+              (click)="toggleNoti($event)"
+            >
+              🔔
+              @if (unreadCount()) {
+                <span class="icon-btn__badge">{{ unreadCount() > 9 ? '9+' : unreadCount() }}</span>
+              }
+            </button>
+            @if (notiOpen()) {
+              <div class="noti-menu__panel" role="dialog" aria-label="Thông báo" (click)="$event.stopPropagation()">
+                <div class="noti-menu__head">
+                  <div>
+                    <strong>Thông báo</strong>
+                    @if (unreadCount()) {
+                      <span class="noti-menu__unread">{{ unreadCount() }} chưa đọc</span>
+                    }
+                  </div>
+                  <button type="button" class="noti-menu__mark" (click)="readAllNotifs()" [disabled]="!unreadCount()">
+                    Đánh dấu tất cả đã đọc
+                  </button>
+                </div>
+                <div class="noti-menu__tabs">
+                  <button type="button" [class.active]="notiTab() === 'all'" (click)="setNotiTab('all')">
+                    Tất cả ({{ notifications().length }})
+                  </button>
+                  <button type="button" [class.active]="notiTab() === 'tx'" (click)="setNotiTab('tx')">Giao dịch</button>
+                  <button type="button" [class.active]="notiTab() === 'system'" (click)="setNotiTab('system')">Hệ thống</button>
+                  <button type="button" [class.active]="notiTab() === 'promo'" (click)="setNotiTab('promo')">Khuyến mãi</button>
+                </div>
+                <ul class="noti-menu__list">
+                  @for (n of visibleNotifs(); track n.id) {
+                    <li [class.unread]="!n.read">
+                      <a [routerLink]="n.href || '/notifications'" (click)="closeNoti()">
+                        <span class="noti-menu__icon" aria-hidden="true">✓</span>
+                        <div>
+                          <p class="noti-menu__title">{{ n.title }}</p>
+                          <p class="noti-menu__body">{{ n.body }}</p>
+                          <time>{{ n.createdAt | date: 'h:mm a, d MMM y' }}</time>
+                        </div>
+                      </a>
+                    </li>
+                  } @empty {
+                    <li class="noti-menu__empty">Không có thông báo.</li>
+                  }
+                </ul>
+                <div class="noti-menu__foot">
+                  <a routerLink="/settings/notifications" (click)="closeNoti()">Cài đặt thông báo</a>
+                  <a routerLink="/notifications" class="all" (click)="closeNoti()">Xem tất cả thông báo ›</a>
+                </div>
+              </div>
+            }
+          </div>
+          <a routerLink="/sell" class="btn-post hidden md:inline-flex">+ Publish</a>
+
+          <div class="user-menu" [class.open]="userMenuOpen()">
+            <button
+              type="button"
+              class="avatar-btn"
+              [attr.aria-expanded]="userMenuOpen()"
+              aria-haspopup="menu"
+              (click)="toggleUserMenu($event)"
+            >
+              <span class="avatar-btn__letter">{{ initials() }}</span>
+              <span class="avatar-btn__dot" aria-hidden="true"></span>
+            </button>
+            @if (userMenuOpen()) {
+              <div class="user-menu__panel" role="menu" aria-label="Account menu">
+                <div class="user-menu__head">
+                  <p class="user-menu__name">{{ auth.user()?.name }}</p>
+                  <p class="user-menu__email">{{ auth.user()?.email }}</p>
+                </div>
+                <ul class="user-menu__list">
+                  <li>
+                    <a routerLink="/profile" role="menuitem" (click)="closeUserMenu()">
+                      <span aria-hidden="true">👤</span> Hồ sơ
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/sell" role="menuitem" (click)="closeUserMenu()">
+                      <span aria-hidden="true">🏪</span>
+                      {{ auth.isCreator() ? 'Gian hàng của bạn' : 'Mở gian hàng' }}
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/work" role="menuitem" (click)="closeUserMenu()">
+                      <span aria-hidden="true">💼</span> Work của bạn
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/settings" role="menuitem" (click)="closeUserMenu()">
+                      <span aria-hidden="true">⚙</span> Cài đặt
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/sell/orders" role="menuitem" (click)="closeUserMenu()">
+                      <span aria-hidden="true">🛍</span> Đơn hàng
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/wallet" role="menuitem" (click)="closeUserMenu()">
+                      <span aria-hidden="true">💳</span> Ví
+                    </a>
+                  </li>
+                  @if (auth.isAdmin()) {
+                    <li>
+                      <a routerLink="/admin" role="menuitem" (click)="closeUserMenu()">
+                        <span aria-hidden="true">🛡</span> Admin
+                      </a>
+                    </li>
+                  }
+                </ul>
+                <div class="user-menu__foot">
+                  <button type="button" class="user-menu__logout" role="menuitem" (click)="logout()">
+                    <span aria-hidden="true">↩</span> Đăng xuất
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
         } @else {
+          <a routerLink="/cart" class="icon-btn" title="Giỏ hàng" aria-label="Giỏ hàng">🛒</a>
           <a routerLink="/auth/login" class="nav-link">Log in</a>
           <a routerLink="/auth/register" class="btn-post">+ Publish</a>
         }

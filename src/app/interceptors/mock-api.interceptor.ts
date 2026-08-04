@@ -101,6 +101,17 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
         const user = store.getUser(id);
         return user ? jsonOk(user) : jsonOk({ message: 'Unauthorized' }, 401);
       }
+      if (req.method === 'PATCH' && path === '/auth/me') {
+        const auth = req.headers.get('Authorization') || '';
+        const id = auth.replace('Bearer mock.', '');
+        const user = store.updateUser(id, req.body as {
+          name?: string;
+          bio?: string;
+          avatarUrl?: string;
+          coverUrl?: string;
+        });
+        return user ? jsonOk(user) : jsonOk({ message: 'Unauthorized' }, 401);
+      }
       if (req.method === 'POST' && path === '/openclaw/launch') {
         return jsonOk({
           success: false,

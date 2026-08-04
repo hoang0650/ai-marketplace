@@ -1,0 +1,170 @@
+<section class="sp">
+  <div class="sp-main">
+    <p class="crumb">Hồ sơ gian hàng / Quản lý</p>
+    <h1>Hồ sơ gian hàng</h1>
+    <p class="lede">Thiết lập thông tin, hình ảnh và chính sách để khách tin tưởng hơn.</p>
+
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" [class.active]="tab() === 'basic'" (click)="setTab('basic')">
+        Thông tin cơ bản
+      </button>
+      <button type="button" role="tab" [class.active]="tab() === 'images'" (click)="setTab('images')">
+        Hình ảnh & Banner
+      </button>
+      <button type="button" role="tab" [class.active]="tab() === 'payment'" (click)="setTab('payment')">
+        Thanh toán
+      </button>
+    </div>
+
+    @if (tab() === 'basic') {
+      <form class="card" (ngSubmit)="saveDraft()">
+        <h2>Thông tin cơ bản</h2>
+        <label>
+          <span>Tên gian hàng <i>*</i></span>
+          <input [(ngModel)]="draft.shopName" name="shopName" required />
+        </label>
+        <label>
+          <span>Đường dẫn gian hàng <i>*</i></span>
+          <input [(ngModel)]="draft.slug" name="slug" required />
+          <small>
+            Địa chỉ gian hàng:
+            @if (draft.slug) {
+              /store/{{ draft.slug }}
+            } @else {
+              Chưa tạo
+            }
+          </small>
+        </label>
+        <div class="status-row">
+          <span>Trạng thái gian hàng</span>
+          <em>{{ shop.statusLabel() }}</em>
+        </div>
+
+        <h2 class="mt">Giới thiệu gian hàng</h2>
+        <label>
+          <span>Mô tả gian hàng <i>*</i></span>
+          <textarea [(ngModel)]="draft.description" name="description" rows="5" maxlength="1000"></textarea>
+          <small>{{ draft.description.length }}/1000</small>
+        </label>
+        <label>
+          <span>Thông báo từ shop</span>
+          <textarea [(ngModel)]="draft.announcement" name="announcement" rows="3"></textarea>
+        </label>
+
+        <label>
+          <span>Giờ hỗ trợ</span>
+          <input [(ngModel)]="draft.supportHours" name="supportHours" />
+        </label>
+
+        <div class="block">
+          <div class="block__head">
+            <h2>Chính sách của shop</h2>
+            <button type="button" class="link" (click)="addPolicy()">+ Thêm chính sách</button>
+          </div>
+          @if (!draft.policies.length) {
+            <p class="empty">Bạn chưa thêm chính sách nào</p>
+          } @else {
+            @for (p of draft.policies; track p.id) {
+              <div class="mini">
+                <input [(ngModel)]="p.title" [name]="'pt' + p.id" />
+                <textarea [(ngModel)]="p.body" [name]="'pb' + p.id" rows="2"></textarea>
+                <button type="button" class="link danger" (click)="removePolicy(p.id)">Xóa</button>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="block">
+          <div class="block__head">
+            <h2>Câu hỏi thường gặp</h2>
+            <button type="button" class="link" (click)="addFaq()">+ Thêm câu hỏi</button>
+          </div>
+          @if (!draft.faqs.length) {
+            <p class="empty">Chưa có câu hỏi nào</p>
+          } @else {
+            @for (f of draft.faqs; track f.id) {
+              <div class="mini">
+                <input [(ngModel)]="f.question" [name]="'fq' + f.id" />
+                <textarea [(ngModel)]="f.answer" [name]="'fa' + f.id" rows="2"></textarea>
+                <button type="button" class="link danger" (click)="removeFaq(f.id)">Xóa</button>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="stats">
+          <h2>Thống kê hiệu suất</h2>
+          <div class="stats__grid">
+            <div><strong>0%</strong><span>Đánh giá tích cực</span></div>
+            <div><strong>{{ draft.supportHours || '—' }}</strong><span>Giờ hỗ trợ</span></div>
+            <div><strong>0</strong><span>Đơn hoàn thành</span></div>
+            <div>
+              <strong>{{ auth.user()?.createdAt | date: 'dd/MM/yyyy' }}</strong>
+              <span>Tham gia từ</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn-muted" (click)="cancel()">Hủy bỏ</button>
+          <button type="button" class="btn-outline" (click)="saveDraft()">Lưu nháp</button>
+          <button type="button" class="btn-primary" (click)="saveChanges()">Lưu thay đổi</button>
+        </div>
+      </form>
+    }
+
+    @if (tab() === 'images') {
+      <div class="card">
+        <p>Quản lý logo và ảnh bìa tại trang Hình ảnh.</p>
+        <a routerLink="/sell/images" class="btn-primary inline">Mở trang Hình ảnh</a>
+      </div>
+    }
+
+    @if (tab() === 'payment') {
+      <div class="card">
+        <p>Thiết lập nhận thanh toán sau khi hồ sơ được duyệt.</p>
+        <a routerLink="/sell/payment" class="btn-primary inline">Đi tới Thanh toán</a>
+      </div>
+    }
+  </div>
+
+  <aside class="sp-aside">
+    <div class="preview">
+      <div class="preview__head">
+        <h3>Xem trước gian hàng</h3>
+        <a [routerLink]="draft.slug ? ['/store', draft.slug] : '/sell/profile'">Xem trang ›</a>
+      </div>
+      <div class="preview__card">
+        <div class="preview__banner">GIAN HÀNG CỦA BẠN</div>
+        <div class="preview__body">
+          <div class="preview__avatar">{{ previewInitials() }}</div>
+          <strong>{{ draft.shopName || 'Tên gian hàng' }}</strong>
+          <p>{{ draft.description || 'Mô tả gian hàng sẽ hiện ở đây.' }}</p>
+          <div class="preview__stats">
+            <span>0 đánh giá</span>
+            <span>0 đã bán</span>
+            <span>{{ draft.supportHours || 'Hỗ trợ' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick">
+      <h3>Liên kết nhanh</h3>
+      <a [routerLink]="draft.slug ? ['/store', draft.slug] : '/sell/profile'">Xem trang gian hàng ›</a>
+      <a routerLink="/sell/products">Quản lý sản phẩm ›</a>
+      <a routerLink="/sell/orders">Quản lý đơn hàng ›</a>
+      <a routerLink="/sell/coupons">Quản lý mã giảm giá ›</a>
+      <a routerLink="/sell">Xem tổng quan ›</a>
+    </div>
+
+    <div class="help">
+      <h3>Hỗ trợ cần thiết?</h3>
+      <a routerLink="/marketplace" class="btn-primary">Liên hệ hỗ trợ</a>
+    </div>
+  </aside>
+
+  @if (toast()) {
+    <div class="toast" role="status">{{ toast() }} <button type="button" (click)="toast.set('')">×</button></div>
+  }
+</section>

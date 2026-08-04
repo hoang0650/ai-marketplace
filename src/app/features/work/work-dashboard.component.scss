@@ -1,0 +1,167 @@
+.wd-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.1rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #e53935;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.lede {
+  margin: 0.4rem 0 0;
+  color: #777;
+  max-width: 36rem;
+}
+
+.wd-head__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-ghost,
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.88rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-ghost {
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  color: #333;
+}
+
+.btn-primary {
+  border: 0;
+  background: #e53935;
+  color: #fff;
+}
+
+.wd-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.stat__icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: #ffe8e8;
+  color: #e53935;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.stat strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.stat span {
+  display: block;
+  font-size: 0.75rem;
+  color: #777;
+  margin-top: 0.1rem;
+}
+
+.wd-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 14px;
+  padding: 1rem;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.card header a,
+.link {
+  color: #e53935;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.empty {
+  flex: 1;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 0.45rem;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+  .wd-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wd-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .wd-stats,
+  .wd-grid {
+    grid-template-columns: 1fr;
+  }
+}

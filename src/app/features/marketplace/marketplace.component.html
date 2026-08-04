@@ -1,44 +1,163 @@
-<section class="page route-enter">
-  <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-    <div>
-      <h1 class="section-title">Marketplace</h1>
-      <p class="mt-1 text-sm text-muted">Browse AI models, agents, and skill packs</p>
-    </div>
-    <div class="flex w-full max-w-xl flex-col gap-2 sm:flex-row">
-      <input
-        class="input"
-        type="search"
-        [(ngModel)]="query"
-        (ngModelChange)="onFilter()"
-        placeholder="Search products…"
-        aria-label="Search products"
-      />
-      <select
-        class="input sm:max-w-[12rem]"
-        [(ngModel)]="selectedCategory"
-        (ngModelChange)="onFilter()"
-        aria-label="Category"
-      >
-        <option value="">All categories</option>
-        @for (c of categories(); track c.id) {
-          <option [value]="c.id">{{ c.label }}</option>
+<section class="mkt route-enter">
+  <nav class="mkt__crumb" aria-label="Breadcrumb">
+    <a routerLink="/">Home</a>
+    <span aria-hidden="true">/</span>
+    <a routerLink="/marketplace">Products</a>
+    @if (selectedCategory()) {
+      <span aria-hidden="true">/</span>
+      <span>{{ categoryTitle() }}</span>
+    } @else {
+      <span aria-hidden="true">/</span>
+      <span>All products</span>
+    }
+  </nav>
+
+  <div class="mkt__layout">
+    <!-- Sidebar filters -->
+    <aside class="mkt-filter">
+      <h2 class="mkt-filter__title">
+        <span aria-hidden="true">⚙</span> Filters
+      </h2>
+
+      <label class="mkt-filter__search">
+        <span aria-hidden="true">⌕</span>
+        <input
+          type="search"
+          [(ngModel)]="filterQuery"
+          placeholder="Search models, agents…"
+          aria-label="Filter search"
+        />
+      </label>
+
+      <div class="mkt-filter__block">
+        <p class="mkt-filter__label">Categories</p>
+        <ul class="mkt-filter__cats">
+          <li>
+            <button
+              type="button"
+              class="mkt-filter__cat"
+              [class.active]="!draftCategory"
+              (click)="draftCategory = ''"
+            >
+              <span>All categories</span>
+              <span class="mkt-filter__count">{{ totalCount() }}</span>
+            </button>
+          </li>
+          @for (c of categories(); track c.id) {
+            <li>
+              <button
+                type="button"
+                class="mkt-filter__cat"
+                [class.active]="draftCategory === c.id"
+                (click)="draftCategory = c.id"
+              >
+                <span>{{ c.label }}</span>
+                <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="mkt-filter__block">
+        <p class="mkt-filter__label">Price range (USD)</p>
+        <div class="mkt-filter__range">
+          <input type="range" min="0" [max]="priceCeiling" step="1" [(ngModel)]="priceMin" />
+          <input type="range" min="0" [max]="priceCeiling" step="1" [(ngModel)]="priceMax" />
+        </div>
+        <div class="mkt-filter__price-inputs">
+          <label>
+            From
+            <input type="number" min="0" [(ngModel)]="priceMin" />
+          </label>
+          <label>
+            To
+            <input type="number" min="0" [(ngModel)]="priceMax" />
+          </label>
+        </div>
+      </div>
+
+      <div class="mkt-filter__block">
+        <p class="mkt-filter__label">Currency</p>
+        <select class="mkt-filter__select" [(ngModel)]="currency">
+          <option value="USD">USD ($)</option>
+          <option value="VND">VND (đ)</option>
+        </select>
+      </div>
+
+      <label class="mkt-filter__check">
+        <input type="checkbox" [(ngModel)]="inStockOnly" />
+        Available only
+      </label>
+
+      <button type="button" class="mkt-filter__apply" (click)="applyFilters()">Apply filters</button>
+      <button type="button" class="mkt-filter__reset" (click)="resetFilters()">Reset filters</button>
+    </aside>
+
+    <!-- Main catalog -->
+    <div class="mkt-main">
+      <header class="mkt-main__head">
+        <h1 class="mkt-main__title">
+          {{ selectedCategory() ? categoryTitle() : 'All products' }}
+          <span class="mkt-main__badge">{{ displayed().length }} results</span>
+        </h1>
+      </header>
+
+      <div class="mkt-toolbar">
+        <div class="mkt-toolbar__sort">
+          <span class="mkt-toolbar__label">Sort</span>
+          @for (s of sorts; track s.id) {
+            <button
+              type="button"
+              class="mkt-sort"
+              [class.active]="sort() === s.id"
+              (click)="setSort(s.id)"
+            >
+              {{ s.label }}
+            </button>
+          }
+        </div>
+        <div class="mkt-toolbar__view">
+          <button
+            type="button"
+            class="mkt-view"
+            [class.active]="view() === 'grid'"
+            (click)="view.set('grid')"
+            aria-label="Grid view"
+          >
+            ▦ Grid
+          </button>
+          <button
+            type="button"
+            class="mkt-view"
+            [class.active]="view() === 'list'"
+            (click)="view.set('list')"
+            aria-label="List view"
+          >
+            ☰ List
+          </button>
+        </div>
+      </div>
+
+      <aside class="mkt-banner">
+        <div class="mkt-banner__copy">
+          <p class="mkt-banner__eyebrow">This week</p>
+          <h2 class="mkt-banner__title">Featured AI deals</h2>
+          <p class="mkt-banner__desc">Deploy models &amp; agents — meter tokens, pay creators fairly.</p>
+          <a routerLink="/models" class="mkt-banner__cta">View deals now →</a>
+        </div>
+        <div class="mkt-banner__art" aria-hidden="true">
+          <span>🧠</span><span>🤖</span><span>⚡</span><span>🎬</span>
+        </div>
+      </aside>
+
+      <div class="mkt-grid" [class.mkt-grid--list]="view() === 'list'">
+        @for (p of displayed(); track p.id) {
+          <app-product-card [product]="p" variant="shop" [currency]="currency" />
+        } @empty {
+          <p class="mkt-empty">No products match your filters.</p>
         }
-      </select>
+      </div>
     </div>
-  </div>
-
-  <div class="mb-5 flex flex-wrap gap-2">
-    <a routerLink="/marketplace" class="chip" [class.chip--on]="!selectedCategory">All</a>
-    @for (c of categories(); track c.id) {
-      <a [routerLink]="['/marketplace', c.id]" class="chip" [class.chip--on]="selectedCategory === c.id">{{ c.label }}</a>
-    }
-  </div>
-
-  <div class="ct-mkt-grid">
-    @for (p of products(); track p.id) {
-      <app-product-card [product]="p" />
-    } @empty {
-      <p class="col-span-full py-10 text-center text-muted">No products match your filters.</p>
-    }
   </div>
 </section>

@@ -1,0 +1,50 @@
+<section class="noti page route-enter">
+  <header class="noti-head">
+    <div>
+      @if (unreadCount()) {
+        <p class="eyebrow">{{ unreadCount() }} chưa đọc</p>
+      }
+      <h1>Thông báo</h1>
+      <p class="lede">Theo dõi cập nhật tài khoản, đơn hàng, ví, gian hàng và cộng đồng tại một nơi.</p>
+    </div>
+    <div class="noti-head__actions">
+      <button type="button" class="btn-ghost" (click)="reload()" [disabled]="loading()">Tải lại</button>
+      <button type="button" class="btn-dark" (click)="readAll()" [disabled]="!unreadCount()">
+        Đánh dấu tất cả đã đọc
+      </button>
+      <a routerLink="/settings/notifications" class="btn-outline">Cài đặt thông báo</a>
+    </div>
+  </header>
+
+  <div class="filters">
+    <button type="button" [class.active]="filter() === 'all'" (click)="setFilter('all')">Tất cả</button>
+    <button type="button" [class.active]="filter() === 'unread'" (click)="setFilter('unread')">
+      Chưa đọc ({{ unreadCount() }})
+    </button>
+  </div>
+
+  <ul class="noti-list">
+    @for (n of visible(); track n.id) {
+      <li [class.unread]="!n.read">
+        <a [routerLink]="n.href || '/'" class="noti-card">
+          @if (!n.read) {
+            <i class="dot" aria-hidden="true"></i>
+          }
+          <div class="noti-card__body">
+            <div class="noti-card__title-row">
+              <strong>{{ n.title }}</strong>
+              @if (!n.read) {
+                <span class="badge">Chưa đọc</span>
+              }
+            </div>
+            <p>{{ n.body }}</p>
+            <time>{{ n.createdAt | date: 'HH:mm d MMM, y' }}</time>
+          </div>
+          <span class="chev" aria-hidden="true">›</span>
+        </a>
+      </li>
+    } @empty {
+      <li class="empty">Không có thông báo nào.</li>
+    }
+  </ul>
+</section>

@@ -1,0 +1,117 @@
+<section class="wd">
+  <div class="wd-head">
+    <div>
+      <p class="eyebrow">Không gian làm việc</p>
+      <h1>Chào mừng trở lại{{ auth.user()?.name ? ', ' + auth.user()?.name : '' }}!</h1>
+      <p class="lede">Theo dõi toàn bộ hành trình từ hồ sơ đến hợp đồng trong một nơi.</p>
+    </div>
+    <div class="wd-head__actions">
+      <button type="button" class="btn-ghost" (click)="refresh()" [disabled]="loading()">Làm mới</button>
+      <a routerLink="/hire-agent" class="btn-primary">Tìm việc</a>
+    </div>
+  </div>
+
+  <div class="wd-stats">
+    <div class="stat">
+      <span class="stat__icon" aria-hidden="true">👤</span>
+      <div>
+        <strong>Chưa tạo</strong>
+        <span>Hồ sơ năng lực</span>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat__icon" aria-hidden="true">📋</span>
+      <div>
+        <strong>{{ jobsCount() }}</strong>
+        <span>Việc đang quản lý</span>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat__icon" aria-hidden="true">📨</span>
+      <div>
+        <strong>0</strong>
+        <span>Đơn ứng tuyển</span>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat__icon" aria-hidden="true">🤝</span>
+      <div>
+        <strong>{{ servicesCount() }}</strong>
+        <span>Dịch vụ / đề nghị</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wd-grid">
+    <article class="card">
+      <header>
+        <h2>Lời mời ứng tuyển</h2>
+      </header>
+      <div class="empty">
+        <p>Chưa có lời mời nào.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <header>
+        <h2>Gợi ý phù hợp với bạn</h2>
+        <a routerLink="/work/profile">Cập nhật hồ sơ →</a>
+      </header>
+      <div class="empty">
+        <p>Cập nhật hồ sơ năng lực để nhận gợi ý việc phù hợp.</p>
+      </div>
+    </article>
+
+    <article class="card card--tall">
+      <header>
+        <h2>Hồ sơ năng lực</h2>
+        <a routerLink="/work/profile">Chỉnh sửa →</a>
+      </header>
+      <div class="empty">
+        <p>Tạo hồ sơ để nhà tuyển dụng tìm thấy bạn nhanh hơn.</p>
+        <a routerLink="/work/profile" class="link">Tạo hồ sơ →</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <header>
+        <h2>Đơn ứng tuyển gần đây</h2>
+        <a routerLink="/hire-agent">Xem việc làm →</a>
+      </header>
+      <div class="empty">
+        <p>Chưa có đơn ứng tuyển.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <header>
+        <h2>Việc bạn đang quản lý</h2>
+        <a routerLink="/work/post">Đăng việc →</a>
+      </header>
+      <div class="empty">
+        @if (jobsCount()) {
+          <p>Bạn đang quản lý {{ jobsCount() }} mục liên quan sản phẩm/dịch vụ.</p>
+          <a routerLink="/sell/products" class="link">Xem sản phẩm →</a>
+        } @else {
+          <p>Chưa có việc nào. Đăng việc để bắt đầu tuyển dụng.</p>
+          <a routerLink="/work/post" class="link">Đăng việc →</a>
+        }
+      </div>
+    </article>
+
+    <article class="card">
+      <header>
+        <h2>Đề nghị hợp tác</h2>
+        <a routerLink="/work/services">Dịch vụ của tôi →</a>
+      </header>
+      <div class="empty">
+        @if (servicesCount()) {
+          <p>{{ servicesCount() }} deployment / dịch vụ đang có.</p>
+          <a routerLink="/deployments" class="link">Quản lý deployments →</a>
+        } @else {
+          <p>Chưa có đề nghị gửi hoặc nhận.</p>
+        }
+      </div>
+    </article>
+  </div>
+</section>

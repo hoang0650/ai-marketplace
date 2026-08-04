@@ -1,0 +1,31 @@
+<section class="settings page route-enter">
+  <aside class="settings-side">
+    <div class="settings-side__user">
+      <div class="avatar" aria-hidden="true">{{ initials() }}</div>
+      <div>
+        <p class="name">
+          {{ auth.user()?.name }}
+          <span class="badge">{{ roleLabel() }}</span>
+        </p>
+        <p class="bio">Quản lý thông tin tài khoản và hồ sơ để kết nối với cộng đồng {{ brand }}.</p>
+      </div>
+    </div>
+
+    <p class="settings-side__label">Cài đặt tài khoản</p>
+    <nav class="settings-nav" aria-label="Cài đặt tài khoản">
+      @for (l of links; track l.path) {
+        <a [routerLink]="l.path" routerLinkActive="active">
+          <span class="icon" aria-hidden="true">{{ l.icon }}</span>
+          <span>
+            <strong>{{ l.title }}</strong>
+            <small>{{ l.desc }}</small>
+          </span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="settings-main">
+    <router-outlet />
+  </div>
+</section>

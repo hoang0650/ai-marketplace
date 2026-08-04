@@ -73,6 +73,17 @@ export class AuthService {
     );
   }
 
+  updateProfile(patch: {
+    name?: string;
+    bio?: string;
+    avatarUrl?: string;
+    coverUrl?: string;
+  }): Observable<User> {
+    return this.http
+      .patch<User>(`${environment.apiUrl}/auth/me`, patch)
+      .pipe(tap((user) => this.userSignal.set(user)));
+  }
+
   private persist(res: AuthResponse): void {
     this.userSignal.set(res.user);
     this.tokenSignal.set(res.token);

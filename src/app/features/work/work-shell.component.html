@@ -1,0 +1,79 @@
+<div class="work" [class.work--collapsed]="collapsed()">
+  <aside class="work-side" aria-label="GC Work">
+    <div class="work-side__brand">
+      <span class="work-side__mark" aria-hidden="true">💼</span>
+      @if (!collapsed()) {
+        <div>
+          <p class="work-side__title">{{ brand }} Work</p>
+          <p class="work-side__sub">BETA</p>
+        </div>
+      }
+    </div>
+
+    <nav class="work-side__nav">
+      @for (g of groups; track g.title) {
+        <div class="nav-group">
+          @if (!collapsed()) {
+            <p class="nav-group__title">{{ g.title }}</p>
+          }
+          <ul>
+            @for (item of g.items; track item.path) {
+              <li>
+                <a
+                  [routerLink]="item.path"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: !!item.exact }"
+                  [title]="item.label"
+                >
+                  {{ collapsed() ? item.label.charAt(0) : item.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </nav>
+
+    <div class="work-side__foot">
+      <a routerLink="/" title="Về trang chủ">⌂ {{ collapsed() ? '' : 'Về trang chủ' }}</a>
+      <button type="button" (click)="toggleCollapse()" [title]="collapsed() ? 'Mở rộng' : 'Thu gọn'">
+        {{ collapsed() ? '»' : '« Thu gọn' }}
+      </button>
+    </div>
+  </aside>
+
+  <div class="work-main">
+    <header class="work-top">
+      <a routerLink="/" class="work-top__logo">
+        <span class="work-top__mark">PH</span>
+      </a>
+      <button type="button" class="work-top__theme" (click)="toggleTheme()">
+        {{ theme.isDark() ? '☀' : '☾' }}
+      </button>
+      <label class="work-top__search">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" placeholder="Tìm kiếm" />
+      </label>
+      <div class="work-top__actions">
+        <a routerLink="/wallet" class="icon" title="Ví">💳</a>
+        <a routerLink="/cart" class="icon" title="Giỏ hàng">🛒</a>
+        <a routerLink="/notifications" class="icon" title="Thông báo">🔔<span class="badge">1</span></a>
+        <div class="user-menu" [class.open]="userMenuOpen()">
+          <button type="button" class="avatar" (click)="toggleUserMenu($event)">{{ initials() }}</button>
+          @if (userMenuOpen()) {
+            <div class="user-menu__panel" (click)="$event.stopPropagation()">
+              <p class="name">{{ auth.user()?.name }}</p>
+              <a routerLink="/profile" (click)="closeUserMenu()">Hồ sơ</a>
+              <a routerLink="/work" (click)="closeUserMenu()">Work</a>
+              <a routerLink="/sell" (click)="closeUserMenu()">Kênh bán hàng</a>
+              <button type="button" class="logout" (click)="logout()">Đăng xuất</button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+    <div class="work-content">
+      <router-outlet />
+    </div>
+  </div>
+</div>

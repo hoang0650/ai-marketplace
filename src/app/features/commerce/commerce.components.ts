@@ -3,14 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { BillingService, DashboardService, ReviewService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
-import { AuthService } from '../../services/auth.service';
 import {
   AffiliateStats,
   AdminOverview,
   PaymentProvider,
   Review,
-  User,
-  WalletTx,
 } from '../../models/marketplace.models';
 
 @Component({
@@ -49,106 +46,6 @@ export class BillingComponent {
     this.billing.checkout({ productId: 'p-concierge', provider: this.provider }).subscribe((r) => {
       this.msg.set(`${r.provider} checkout ${r.checkoutId}`);
     });
-  }
-}
-
-@Component({
-  selector: 'app-wallet',
-  standalone: true,
-  imports: [CurrencyPipe, FormsModule],
-  template: `
-    <section class="page route-enter">
-      <h1 class="section-title">Wallet</h1>
-      <div class="mt-8 grid gap-6 lg:grid-cols-2">
-        <div class="panel">
-          <p class="text-xs uppercase text-muted">Available</p>
-          <p class="mt-2 font-display text-4xl">{{ balance() | currency: 'USD' }}</p>
-          <form class="mt-6 flex gap-2" (ngSubmit)="deposit()">
-            <input class="input" type="number" [(ngModel)]="depositAmount" name="depositAmount" min="1" />
-            <button class="btn btn-fill" type="submit">Deposit</button>
-          </form>
-          <form class="mt-3 flex gap-2" (ngSubmit)="withdraw()">
-            <input class="input" type="number" [(ngModel)]="amount" name="amount" min="1" />
-            <button class="btn" type="submit">Withdraw</button>
-          </form>
-        </div>
-        <div class="panel">
-          <h2 class="font-display text-2xl">Transactions</h2>
-          <ul class="mt-4 space-y-3 text-sm">
-            @for (t of txs(); track t.id) {
-              <li class="flex justify-between border-b border-line pb-2">
-                <span>{{ t.type }} · {{ t.note }}</span>
-                <span>{{ t.amount | currency: t.currency }}</span>
-              </li>
-            }
-          </ul>
-        </div>
-      </div>
-    </section>
-  `,
-})
-export class WalletComponent implements OnInit {
-  private readonly api = inject(DashboardService);
-  private readonly seo = inject(SeoService);
-  readonly txs = signal<WalletTx[]>([]);
-  readonly balance = signal(0);
-  amount = 50;
-  depositAmount = 100;
-
-  ngOnInit(): void {
-    this.seo.set({ title: 'Wallet' });
-    this.reload();
-  }
-
-  reload(): void {
-    this.api.wallet().subscribe((list) => {
-      this.txs.set(list);
-      const bal = list.reduce(
-        (s, t) => s + (t.type === 'debit' || t.type === 'withdraw' ? -t.amount : t.amount),
-        0,
-      );
-      this.balance.set(bal);
-    });
-  }
-
-  deposit(): void {
-    this.api.deposit(this.depositAmount).subscribe(() => this.reload());
-  }
-
-  withdraw(): void {
-    this.api.withdraw(this.amount).subscribe(() => this.reload());
-  }
-}
-
-@Component({
-  selector: 'app-profile',
-  standalone: true,
-  template: `
-    <section class="page route-enter max-w-xl">
-      <h1 class="section-title">Profile</h1>
-      @if (user(); as u) {
-        <div class="panel mt-8 flex gap-4">
-          <img [src]="u.avatarUrl" [alt]="u.name" class="h-20 w-20 rounded-2xl bg-mist" />
-          <div>
-            <p class="font-display text-3xl">{{ u.name }}</p>
-            <p class="text-muted">{{ u.email }}</p>
-            <p class="mt-2 text-sm uppercase tracking-wider text-muted">{{ u.role }}</p>
-            @if (u.bio) {
-              <p class="mt-3 text-muted">{{ u.bio }}</p>
-            }
-          </div>
-        </div>
-      }
-    </section>
-  `,
-})
-export class ProfileComponent implements OnInit {
-  private readonly auth = inject(AuthService);
-  private readonly seo = inject(SeoService);
-  readonly user = signal<User | null>(null);
-  ngOnInit(): void {
-    this.seo.set({ title: 'Profile' });
-    this.user.set(this.auth.user());
   }
 }
 

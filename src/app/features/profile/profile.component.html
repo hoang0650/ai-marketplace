@@ -1,0 +1,252 @@
+<section class="profile page route-enter">
+  @if (user(); as u) {
+    <div class="profile-hero">
+      <div class="profile-hero__banner" [attr.data-brand]="brand">
+        <span class="profile-hero__watermark">{{ brand }}</span>
+      </div>
+      <div class="profile-hero__body">
+        <div class="profile-hero__identity">
+          <div class="profile-hero__avatar" aria-hidden="true">{{ initials() }}</div>
+          <div>
+            <div class="profile-hero__name-row">
+              <h1 class="profile-hero__name">{{ u.name }}</h1>
+              <span class="tag tag--role">{{ roleLabel() }}</span>
+              <span class="tag tag--online">Đang hoạt động</span>
+            </div>
+            <p class="profile-hero__sub">Quản lý tài khoản và hoạt động mua bán của bạn.</p>
+          </div>
+        </div>
+        <div class="profile-hero__actions">
+          <button type="button" class="btn-soft" (click)="shareProfile()">Chia sẻ</button>
+          <a routerLink="/settings/profile" class="btn-dark">Chỉnh sửa hồ sơ</a>
+        </div>
+      </div>
+      @if (shareMsg()) {
+        <p class="profile-hero__toast">{{ shareMsg() }}</p>
+      }
+    </div>
+
+    <div class="profile-stats">
+      <div class="stat">
+        <span class="stat__icon" aria-hidden="true">📦</span>
+        <div>
+          <strong>{{ orderCount() }}</strong>
+          <span>Đơn hàng</span>
+        </div>
+      </div>
+      <div class="stat">
+        <span class="stat__icon" aria-hidden="true">✓</span>
+        <div>
+          <strong>{{ paidCount() }}</strong>
+          <span>Giao dịch thành công</span>
+        </div>
+      </div>
+      <div class="stat">
+        <span class="stat__icon" aria-hidden="true">⚠</span>
+        <div>
+          <strong>{{ refundedCount() }}</strong>
+          <span>Tranh chấp</span>
+        </div>
+      </div>
+      <div class="stat">
+        <span class="stat__icon" aria-hidden="true">💳</span>
+        <div>
+          <strong>{{ balance() | currency: walletCurrency(): 'symbol-narrow': '1.0-0' }}</strong>
+          <span>Số dư ví</span>
+        </div>
+      </div>
+      <div class="stat">
+        <span class="stat__icon" aria-hidden="true">📅</span>
+        <div>
+          <strong>{{ u.createdAt | date: 'dd/MM/yyyy' }}</strong>
+          <span>Ngày tham gia</span>
+        </div>
+      </div>
+      <div class="stat">
+        <span class="stat__icon" aria-hidden="true">⏳</span>
+        <div>
+          <strong>{{ pendingCount() }}</strong>
+          <span>Đang xử lý</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <article class="card">
+        <header class="card__head">
+          <h2><span aria-hidden="true">👤</span> Thông tin cá nhân</h2>
+        </header>
+        <dl class="kv">
+          <div>
+            <dt>Email</dt>
+            <dd>
+              {{ u.email }}
+              <span class="ok">✓</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Số điện thoại</dt>
+            <dd class="muted">Chưa cung cấp</dd>
+          </div>
+          <div>
+            <dt>Tên hiển thị</dt>
+            <dd>{{ u.name }}</dd>
+          </div>
+          <div>
+            <dt>ID người dùng</dt>
+            <dd class="mono">{{ u.id }}</dd>
+          </div>
+          <div>
+            <dt>Khu vực</dt>
+            <dd>
+              <span class="muted">Chưa cập nhật</span>
+              <a routerLink="/settings/profile" class="link-accent">Cập nhật</a>
+            </dd>
+          </div>
+          <div>
+            <dt>Ngày tham gia</dt>
+            <dd>{{ u.createdAt | date: 'dd/MM/yyyy' }}</dd>
+          </div>
+          <div>
+            <dt>Vai trò</dt>
+            <dd><span class="tag tag--role">{{ roleLabel() }}</span></dd>
+          </div>
+        </dl>
+        <a routerLink="/settings/profile" class="card__cta">Xem và chỉnh sửa thông tin</a>
+      </article>
+
+      <article class="card">
+        <header class="card__head">
+          <h2><span aria-hidden="true">🛍</span> Tổng quan mua hàng</h2>
+          <span class="chip">Toàn thời gian</span>
+        </header>
+        <div class="overview">
+          <div>
+            <p class="overview__label">Tổng chi tiêu</p>
+            <p class="overview__value">{{ totalSpent() | currency: spendCurrency(): 'symbol-narrow': '1.0-0' }}</p>
+          </div>
+          <div>
+            <p class="overview__label">Đã mua</p>
+            <p class="overview__value">{{ orderCount() }}</p>
+          </div>
+          <div>
+            <p class="overview__label">Tỷ lệ hoàn thành</p>
+            <p class="overview__value">{{ completionRate() }}%</p>
+          </div>
+          <div>
+            <p class="overview__label">Đơn thất bại</p>
+            <p class="overview__value">{{ refundedCount() }}</p>
+          </div>
+        </div>
+        <a routerLink="/dashboard/orders" class="card__cta">Xem chi tiết thống kê</a>
+      </article>
+
+      <article class="card">
+        <header class="card__head">
+          <h2><span aria-hidden="true">🛡</span> Bảo mật tài khoản</h2>
+        </header>
+        <ul class="secure-list">
+          <li>
+            <span>Xác thực 2 bước</span>
+            <strong class="muted">Tắt</strong>
+          </li>
+          <li>
+            <span>Mật khẩu</span>
+            <strong>Có thể thay đổi</strong>
+          </li>
+          <li>
+            <span>Email</span>
+            <strong class="ok-text">Đã thêm</strong>
+          </li>
+          <li>
+            <span>Số điện thoại</span>
+            <strong class="muted">Chưa thêm</strong>
+          </li>
+        </ul>
+        <a routerLink="/settings/security" class="card__cta">Quản lý bảo mật</a>
+      </article>
+
+      <article class="card">
+        <header class="card__head">
+          <h2><span aria-hidden="true">🔗</span> Liên kết mạng xã hội</h2>
+        </header>
+        <ul class="social-list">
+          <li>
+            <span>Facebook</span>
+            <button type="button" class="link-accent" disabled>Kết nối</button>
+          </li>
+          <li>
+            <span>Discord</span>
+            <button type="button" class="link-accent" disabled>Kết nối</button>
+          </li>
+          <li>
+            <span>YouTube</span>
+            <button type="button" class="link-accent" disabled>Kết nối</button>
+          </li>
+          <li>
+            <span>Telegram</span>
+            <button type="button" class="link-accent" disabled>Kết nối</button>
+          </li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <header class="card__head">
+          <h2><span aria-hidden="true">📦</span> Đơn hàng gần đây</h2>
+          <a routerLink="/dashboard/orders" class="link-more">Xem tất cả ›</a>
+        </header>
+        @if (recentOrders().length) {
+          <ul class="order-list">
+            @for (o of recentOrders(); track o.id) {
+              <li>
+                <div class="order-list__thumb" aria-hidden="true">{{ o.productName.charAt(0) }}</div>
+                <div class="order-list__meta">
+                  <p class="order-list__title">{{ o.productName }}</p>
+                  <p [class.ok-text]="o.status === 'paid'" [class.warn-text]="o.status === 'pending'">
+                    {{ statusLabel(o.status) }}
+                  </p>
+                  <p class="order-list__id">{{ o.id }} · {{ o.createdAt | date: 'dd/MM/yyyy' }}</p>
+                </div>
+                <strong>{{ o.amount | currency: o.currency: 'symbol-narrow': '1.0-0' }}</strong>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty">Chưa có đơn hàng nào.</p>
+        }
+        <a routerLink="/dashboard/orders" class="card__cta">Xem tất cả đơn hàng</a>
+      </article>
+
+      <article class="card">
+        <header class="card__head">
+          <h2><span aria-hidden="true">🕒</span> Hoạt động gần đây</h2>
+        </header>
+        <p class="empty">Chưa có hoạt động gần đây.</p>
+        <a routerLink="/notifications" class="card__cta">Xem tất cả hoạt động</a>
+      </article>
+    </div>
+
+    <nav class="profile-shortcuts" aria-label="Lối tắt tài khoản">
+      <a routerLink="/dashboard/orders">
+        <strong>Đơn hàng</strong>
+        <span>Theo dõi mua bán</span>
+      </a>
+      <a routerLink="/wallet">
+        <strong>Ví {{ brand }}</strong>
+        <span>Số dư & giao dịch</span>
+      </a>
+      <a routerLink="/settings/security">
+        <strong>Bảo mật</strong>
+        <span>Mật khẩu & xác thực</span>
+      </a>
+      <a routerLink="/marketplace">
+        <strong>Hỗ trợ tận tâm</strong>
+        <span>Trợ giúp mua bán</span>
+      </a>
+    </nav>
+  } @else {
+    <div class="card empty-card">
+      <p>Đang tải hồ sơ…</p>
+    </div>
+  }
+</section>
