@@ -12,11 +12,13 @@ module.exports = {
         'accent-2': 'var(--color-accent-2)',
         line: 'var(--color-line)',
         muted: 'var(--color-muted)',
+        price: 'var(--color-price)',
+        surface: 'var(--color-surface)',
       },
       fontFamily: {
-        display: ['"Syne"', 'sans-serif'],
-        body: ['"Manrope"', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'monospace'],
+        display: ['"Sora"', 'sans-serif'],
+        body: ['"Be Vietnam Pro"', 'sans-serif'],
+        mono: ['ui-monospace', 'monospace'],
       },
       boxShadow: {
         soft: '0 20px 60px -30px rgba(8, 18, 32, 0.45)',

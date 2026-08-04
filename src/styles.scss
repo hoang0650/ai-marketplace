@@ -1,34 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Chợ Tốt–inspired marketplace tokens, adapted for PH AI Market */
 :root,
 [data-theme='light'] {
-  --color-ink: #0b1220;
-  --color-paper: #f4f7fb;
-  --color-mist: #e4ebf5;
-  --color-accent: #0f8f7b;
-  --color-accent-2: #c9f56a;
-  --color-line: #c9d4e4;
-  --color-muted: #5b6b82;
-  --hero-glow: radial-gradient(1200px 600px at 80% -10%, rgba(15, 143, 123, 0.28), transparent 55%),
-    radial-gradient(900px 500px at 10% 20%, rgba(201, 245, 106, 0.18), transparent 50%),
-    linear-gradient(160deg, #eef3f9 0%, #dfe9f4 45%, #f7fafc 100%);
+  --color-ink: #222222;
+  --color-paper: #f4f4f4;
+  --color-surface: #ffffff;
+  --color-mist: #f0f0f0;
+  --color-accent: #ffba00;
+  --color-accent-hover: #f5a623;
+  --color-accent-2: #ffe08a;
+  --color-price: #d0021b;
+  --color-line: #e8e8e8;
+  --color-muted: #777777;
+  --color-cta: #222222;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-search: 0 8px 28px rgba(0, 0, 0, 0.12);
+  --hero-glow: none;
+  --radius-card: 12px;
+  --radius-pill: 999px;
 }
 
 [data-theme='dark'] {
-  --color-ink: #eef3fb;
-  --color-paper: #070b12;
-  --color-mist: #121a27;
-  --color-accent: #3ddeb8;
-  --color-accent-2: #d6ff7a;
-  --color-line: #243247;
-  --color-muted: #93a4bd;
-  --hero-glow: radial-gradient(1000px 520px at 85% -5%, rgba(61, 222, 184, 0.2), transparent 55%),
-    radial-gradient(800px 480px at 5% 10%, rgba(214, 255, 122, 0.08), transparent 45%),
-    linear-gradient(165deg, #070b12 0%, #0d1522 50%, #0a101a 100%);
+  --color-ink: #f2f2f2;
+  --color-paper: #121212;
+  --color-surface: #1c1c1c;
+  --color-mist: #2a2a2a;
+  --color-accent: #ffba00;
+  --color-accent-hover: #ffc933;
+  --color-accent-2: #5a4300;
+  --color-price: #ff5a6a;
+  --color-line: #333333;
+  --color-muted: #a0a0a0;
+  --color-cta: #ffba00;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-search: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --hero-glow: none;
 }
 
 html,
@@ -38,11 +49,9 @@ body {
 
 body {
   margin: 0;
-  font-family: Manrope, sans-serif;
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
   color: var(--color-ink);
   background: var(--color-paper);
-  background-image: var(--hero-glow);
-  background-attachment: fixed;
 }
 
 a {
@@ -50,33 +59,34 @@ a {
 }
 
 .font-display {
-  font-family: Syne, sans-serif;
+  font-family: Sora, 'Be Vietnam Pro', sans-serif;
 }
 
 .font-mono {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .page {
-  @apply mx-auto max-w-7xl px-4 py-10 md:px-6;
+  @apply mx-auto max-w-7xl px-3 py-6 md:px-4 md:py-8;
 }
 
 .section-title {
-  @apply font-display text-3xl md:text-4xl;
+  @apply font-display text-xl font-bold tracking-tight md:text-2xl;
 }
 
 .panel {
   border: 1px solid var(--color-line);
-  border-radius: 1.25rem;
-  background: color-mix(in srgb, var(--color-paper) 80%, transparent);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
   padding: 1.25rem;
+  box-shadow: var(--shadow-card);
 }
 
 .input {
   width: 100%;
   border: 1px solid var(--color-line);
-  border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--color-paper) 70%, var(--color-mist));
+  border-radius: 10px;
+  background: var(--color-surface);
   color: var(--color-ink);
   padding: 0.75rem 1rem;
   outline: none;
@@ -91,36 +101,55 @@ a {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 999px;
-  padding: 0.7rem 1.2rem;
+  border-radius: var(--radius-pill);
+  padding: 0.65rem 1.15rem;
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
   font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .btn-fill {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--color-cta);
+  color: #fff;
+}
+
+[data-theme='dark'] .btn-fill {
+  color: #111;
 }
 
 .btn-outline {
-  background: transparent;
+  background: var(--color-surface);
   color: var(--color-ink);
   border-color: var(--color-line);
 }
 
+.btn-accent {
+  background: var(--color-accent);
+  color: #222;
+}
+
+.btn-accent:hover {
+  background: var(--color-accent-hover);
+}
+
 .route-enter {
-  animation: fade-up 0.55s ease both;
+  animation: fade-up 0.45s ease both;
 }
 
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.text-price {
+  color: var(--color-price);
+  font-weight: 700;
 }

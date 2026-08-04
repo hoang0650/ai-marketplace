@@ -6,7 +6,7 @@ export type ThemeMode = 'light' | 'dark';
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly mode = signal<ThemeMode>('dark');
+  private readonly mode = signal<ThemeMode>('light');
 
   readonly theme = this.mode.asReadonly();
   readonly isDark = computed(() => this.mode() === 'dark');
@@ -14,8 +14,8 @@ export class ThemeService {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       const saved = localStorage.getItem('phai.theme') as ThemeMode | null;
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.mode.set(saved || (prefersDark ? 'dark' : 'light'));
+      // Marketplace UI defaults to light (Chợ Tốt–style); honor explicit user choice.
+      this.mode.set(saved || 'light');
       effect(() => {
         const value = this.mode();
         document.documentElement.setAttribute('data-theme', value);

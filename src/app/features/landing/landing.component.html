@@ -1,34 +1,96 @@
-<section class="hero route-enter">
-  <div class="hero-inner mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-end px-4 pb-16 pt-24 md:px-6 md:pb-24">
-    <p class="font-display text-5xl leading-[0.95] tracking-tight text-ink md:text-7xl lg:text-8xl">{{ brand }}</p>
-    <p class="mt-6 max-w-xl text-lg text-muted md:text-xl">{{ tagline }}</p>
-    <div class="mt-10 flex flex-wrap gap-3">
-      <a routerLink="/marketplace" class="btn btn-fill">Browse marketplace</a>
-      <a routerLink="/auth/register" class="btn btn-outline">Become a creator</a>
-    </div>
+<section class="ct-hero route-enter">
+  <div class="ct-hero__decor" aria-hidden="true">
+    <span class="float f1">🧠</span>
+    <span class="float f2">🎬</span>
+    <span class="float f3">🖼️</span>
+    <span class="float f4">🤖</span>
+    <span class="float f5">⚡</span>
+    <span class="float f6">📦</span>
   </div>
-</section>
 
-<section class="page">
-  <div class="mb-8 flex items-end justify-between gap-4">
-    <h2 class="section-title">Featured this week</h2>
-    <a routerLink="/marketplace" class="text-sm text-accent">View all</a>
-  </div>
-  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-    @for (p of featured(); track p.id) {
-      <app-product-card [product]="p" />
+  <div class="ct-hero__inner">
+    <p class="ct-hero__brand font-display">{{ brand }}</p>
+    <h1 class="ct-hero__slogan font-display">{{ slogan }}</h1>
+
+    <form class="ct-search" (ngSubmit)="search()">
+      <label class="ct-search__field">
+        <span class="ct-search__icon" aria-hidden="true">⌕</span>
+        <input
+          type="search"
+          name="q"
+          [(ngModel)]="query"
+          placeholder="Search AI models, agents, skills…"
+          aria-label="Search marketplace"
+        />
+      </label>
+      <div class="ct-search__divider" aria-hidden="true"></div>
+      <label class="ct-search__region">
+        <span class="ct-search__pin" aria-hidden="true">◎</span>
+        <select name="category" [(ngModel)]="selectedCategory" aria-label="Category">
+          <option value="">All categories</option>
+          @for (c of categories; track c.id) {
+            <option [value]="c.id">{{ c.label }}</option>
+          }
+        </select>
+      </label>
+      <button type="submit" class="ct-search__btn">Search</button>
+    </form>
+
+    @if (recentTags.length) {
+      <div class="ct-recent">
+        @for (tag of recentTags; track tag) {
+          <button type="button" class="ct-chip" (click)="searchTag(tag)">
+            {{ tag }}
+            <span aria-hidden="true">×</span>
+          </button>
+        }
+      </div>
     }
   </div>
 </section>
 
-<section class="page pt-4">
-  <h2 class="section-title mb-6">Categories</h2>
-  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    @for (c of categories; track c.id) {
-      <a [routerLink]="c.hubPath" class="panel block no-underline transition hover:border-accent">
-        <p class="font-display text-xl">{{ c.label }}</p>
-        <p class="mt-2 text-sm text-muted">{{ c.description }}</p>
+<section class="ct-cats">
+  <div class="ct-cats__track" #catsTrack>
+    @for (c of categoryIcons; track c.id) {
+      <a [routerLink]="c.hubPath" class="ct-cat">
+        <span class="ct-cat__icon" [style.background]="c.bg">{{ c.emoji }}</span>
+        <span class="ct-cat__label">{{ c.label }}</span>
       </a>
     }
   </div>
+  <button type="button" class="ct-cats__next" aria-label="Scroll categories" (click)="scrollCats(catsTrack)">›</button>
 </section>
+
+<section class="page ct-section">
+  <div class="ct-section__head">
+    <div>
+      <h2 class="section-title">Featured AI products</h2>
+      <p class="ct-section__sub">Models &amp; agents trending this week</p>
+    </div>
+    <a routerLink="/marketplace" class="ct-more">See more</a>
+  </div>
+  <div class="ct-grid">
+    @for (p of featured(); track p.id) {
+      <app-product-card [product]="p" />
+    } @empty {
+      <p class="text-muted col-span-full py-8 text-center">Loading catalog…</p>
+    }
+  </div>
+</section>
+
+@if (latest().length) {
+  <section class="page ct-section pt-2">
+    <div class="ct-section__head">
+      <div>
+        <h2 class="section-title">Hire agents &amp; talent</h2>
+        <p class="ct-section__sub">Launch OpenClaw agents and specialist talent</p>
+      </div>
+      <a routerLink="/hire-agent/marketplace" class="ct-more">See more</a>
+    </div>
+    <div class="ct-grid">
+      @for (p of hireProducts(); track p.id) {
+        <app-product-card [product]="p" />
+      }
+    </div>
+  </section>
+}
