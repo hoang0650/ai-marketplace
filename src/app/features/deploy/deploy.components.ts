@@ -204,13 +204,13 @@ export class ModelsHubComponent implements OnInit {
               <dt class="text-xs uppercase tracking-wider text-muted">Public / serverless endpoint</dt>
               <dd class="mt-1 select-all rounded bg-line/30 px-3 py-2 font-mono text-xs text-ink">{{ dep.endpoint }}</dd>
             </div>
-            @if (dep.runtime?.tokenizeEndpoint) {
+            @if (dep.runtime.tokenizeEndpoint) {
               <div>
                 <dt class="text-xs uppercase tracking-wider text-muted">Tokenize meter</dt>
                 <dd class="mt-1 select-all rounded bg-line/30 px-3 py-2 font-mono text-xs text-ink">{{ dep.runtime.tokenizeEndpoint }}</dd>
               </div>
             }
-            @if (dep.runtime?.gatewayUrl) {
+            @if (dep.runtime.gatewayUrl) {
               <div>
                 <dt class="text-xs uppercase tracking-wider text-muted">Gateway</dt>
                 <dd class="mt-1 select-all rounded bg-line/30 px-3 py-2 font-mono text-xs text-ink">{{ dep.runtime.gatewayUrl }}</dd>
@@ -416,10 +416,10 @@ export class DeployWizardComponent implements OnInit {
               by {{ d.ownerName || 'Seller' }} ·
               <a [routerLink]="['/product', d.productSlug]" class="text-accent hover:underline">{{ d.productName }}</a>
             </p>
-            @if (d.runtime?.systemPrompt) {
+            @if (d.runtime.systemPrompt) {
               <p class="mt-3 line-clamp-2 text-sm text-muted">“{{ d.runtime.systemPrompt }}”</p>
             }
-            @if (d.runtime?.skills?.length) {
+            @if (d.runtime.skills.length) {
               <div class="mt-3 flex flex-wrap gap-1">
                 @for (s of d.runtime.skills; track s) {
                   <span class="rounded bg-line/40 px-2 py-0.5 text-[11px] text-muted">{{ s }}</span>
@@ -430,10 +430,10 @@ export class DeployWizardComponent implements OnInit {
               @if (d.endpoint) {
                 <p class="truncate font-mono" title="{{ d.endpoint }}">↗ {{ d.endpoint }}</p>
               }
-              @if (d.runtime?.gatewayUrl) {
+              @if (d.runtime.gatewayUrl) {
                 <p class="truncate font-mono">gateway {{ d.runtime.gatewayUrl }}</p>
               }
-              @if (d.runtime?.tokenizeEndpoint) {
+              @if (d.runtime.tokenizeEndpoint) {
                 <p class="truncate font-mono">tokenize {{ d.runtime.tokenizeEndpoint }}</p>
               }
             </div>
@@ -511,10 +511,10 @@ export class AgentBrowserComponent implements OnInit {
             </div>
 
             <div class="mt-4 grid gap-2 text-[11px] text-muted md:grid-cols-2">
-              <p class="truncate font-mono" title="{{ d.runtime?.serverlessEndpoint }}">serverless {{ d.runtime?.serverlessEndpoint || '—' }}</p>
-              <p class="truncate font-mono" title="{{ d.runtime?.publicEndpoint }}">public {{ d.runtime?.publicEndpoint || '—' }}</p>
-              <p class="truncate font-mono" title="{{ d.runtime?.tokenizeEndpoint }}">tokenize {{ d.runtime?.tokenizeEndpoint || '—' }}</p>
-              <p class="truncate font-mono" title="{{ d.runtime?.gatewayUrl }}">gateway {{ d.runtime?.gatewayUrl || '—' }}</p>
+              <p class="truncate font-mono" title="{{ d.runtime.serverlessEndpoint }}">serverless {{ d.runtime.serverlessEndpoint || '—' }}</p>
+              <p class="truncate font-mono" title="{{ d.runtime.publicEndpoint }}">public {{ d.runtime.publicEndpoint || '—' }}</p>
+              <p class="truncate font-mono" title="{{ d.runtime.tokenizeEndpoint }}">tokenize {{ d.runtime.tokenizeEndpoint || '—' }}</p>
+              <p class="truncate font-mono" title="{{ d.runtime.gatewayUrl }}">gateway {{ d.runtime.gatewayUrl || '—' }}</p>
             </div>
 
             @if (editing() === d.id) {
@@ -544,7 +544,7 @@ export class AgentBrowserComponent implements OnInit {
               <span class="text-muted">Requests <strong class="text-ink">{{ d.totals.requests | number }}</strong></span>
               <span class="text-muted">Tokens <strong class="text-ink">{{ d.totals.inputTokens + d.totals.outputTokens | number }}</strong></span>
               <span class="text-muted">Spend <strong class="text-ink">{{ d.totals.cost | currency: 'USD' }}</strong></span>
-              @if (d.runtime?.skills?.length) {
+              @if (d.runtime.skills.length) {
                 <span class="text-muted">Skills <strong class="text-ink">{{ d.runtime.skills.join(', ') }}</strong></span>
               }
             </div>
