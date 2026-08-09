@@ -12,7 +12,14 @@ import { categoryLabel } from '../../models/categories';
     @if (variant === 'shop') {
       <a [routerLink]="['/product', product.slug]" class="shop-card">
         <div class="shop-card__media">
-          <img [src]="product.coverUrl || placeholder" [alt]="product.name" loading="lazy" width="400" height="400" />
+          <img
+            [src]="product.coverUrl || placeholder"
+            [alt]="product.name"
+            [attr.loading]="priority ? 'eager' : 'lazy'"
+            [attr.fetchpriority]="priority ? 'high' : null"
+            width="400"
+            height="400"
+          />
           @if (isRunpod) {
             <span class="shop-card__badge">RunPod</span>
           }
@@ -32,7 +39,14 @@ import { categoryLabel } from '../../models/categories';
     } @else {
       <a [routerLink]="['/product', product.slug]" class="ct-card group">
         <div class="ct-card__media">
-          <img [src]="product.coverUrl || placeholder" [alt]="product.name" loading="lazy" width="480" height="480" />
+          <img
+            [src]="product.coverUrl || placeholder"
+            [alt]="product.name"
+            [attr.loading]="priority ? 'eager' : 'lazy'"
+            [attr.fetchpriority]="priority ? 'high' : null"
+            width="480"
+            height="480"
+          />
           <button type="button" class="ct-card__heart" aria-label="Save" (click)="onHeart($event)">♡</button>
           @if (isRunpod) {
             <span class="ct-card__badge">RunPod</span>
@@ -252,6 +266,8 @@ export class ProductCardComponent {
   @Input({ required: true }) product!: Product;
   @Input() variant: 'default' | 'shop' = 'default';
   @Input() currency: 'USD' | 'VND' = 'USD';
+  /** Eager-load cover for above-the-fold cards on home. */
+  @Input() priority = false;
 
   readonly placeholder =
     'data:image/svg+xml,' +

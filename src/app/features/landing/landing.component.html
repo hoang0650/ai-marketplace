@@ -1,12 +1,5 @@
 <section class="ct-hero route-enter">
-  <div class="ct-hero__decor" aria-hidden="true">
-    <span class="float f1">🧠</span>
-    <span class="float f2">🎬</span>
-    <span class="float f3">🖼️</span>
-    <span class="float f4">🤖</span>
-    <span class="float f5">⚡</span>
-    <span class="float f6">📦</span>
-  </div>
+  <div class="ct-hero__glow" aria-hidden="true"></div>
 
   <div class="ct-hero__inner">
     <p class="ct-hero__brand font-display">{{ brand }}</p>
@@ -21,6 +14,7 @@
           [(ngModel)]="query"
           placeholder="Search AI models, agents, skills…"
           aria-label="Search marketplace"
+          autocomplete="off"
         />
       </label>
       <div class="ct-search__divider" aria-hidden="true"></div>
@@ -43,12 +37,12 @@
       <button type="submit" class="ct-search__btn">Search</button>
     </form>
 
-    @if (recentTags.length) {
-      <div class="ct-recent">
-        @for (tag of recentTags; track tag) {
+    @if (recentTags().length) {
+      <div class="ct-recent" aria-label="Quick searches">
+        @for (tag of recentTags(); track tag) {
           <button type="button" class="ct-chip" (click)="searchTag(tag)">
             {{ tag }}
-            <span aria-hidden="true">×</span>
+            <span class="ct-chip__x" aria-label="Remove" (click)="dismissTag(tag, $event)">×</span>
           </button>
         }
       </div>
@@ -56,7 +50,8 @@
   </div>
 </section>
 
-<section class="ct-cats">
+<section class="ct-cats" aria-label="Browse categories">
+  <button type="button" class="ct-cats__prev" aria-label="Scroll categories left" (click)="scrollCats(catsTrack, -1)">‹</button>
   <div class="ct-cats__track" #catsTrack>
     @for (c of categoryIcons; track c.id) {
       <a [routerLink]="c.hubPath" class="ct-cat">
@@ -65,7 +60,7 @@
       </a>
     }
   </div>
-  <button type="button" class="ct-cats__next" aria-label="Scroll categories" (click)="scrollCats(catsTrack)">›</button>
+  <button type="button" class="ct-cats__next" aria-label="Scroll categories right" (click)="scrollCats(catsTrack, 1)">›</button>
 </section>
 
 <section class="page ct-section">
@@ -76,21 +71,50 @@
     </div>
     <a routerLink="/marketplace" class="ct-more">See more</a>
   </div>
-  <div class="ct-grid">
-    @for (p of featured(); track p.id) {
-      <app-product-card [product]="p" />
-    } @empty {
-      <p class="text-muted col-span-full py-8 text-center">Loading catalog…</p>
-    }
-  </div>
+
+  @if (loadState() === 'loading') {
+    <div class="ct-grid" aria-busy="true" aria-label="Loading catalog">
+      @for (slot of skeletonSlots; track slot) {
+        <div class="ct-skel">
+          <div class="ct-skel__media"></div>
+          <div class="ct-skel__line"></div>
+          <div class="ct-skel__line ct-skel__line--short"></div>
+        </div>
+      }
+    </div>
+  } @else if (loadState() === 'error') {
+    <div class="ct-empty">
+      <p class="ct-empty__title">Không tải được catalog</p>
+      <p class="ct-empty__sub">Kiểm tra kết nối hoặc thử lại. Bạn vẫn có thể duyệt marketplace.</p>
+      <div class="ct-empty__actions">
+        <button type="button" class="btn btn-fill" (click)="loadCatalog()">Thử lại</button>
+        <a routerLink="/marketplace" class="btn btn-outline">Browse marketplace</a>
+      </div>
+    </div>
+  } @else if (!featured().length) {
+    <div class="ct-empty">
+      <p class="ct-empty__title">Chưa có sản phẩm nổi bật</p>
+      <p class="ct-empty__sub">Hãy là người đầu tiên đăng model hoặc agent lên {{ brand }}.</p>
+      <div class="ct-empty__actions">
+        <a routerLink="/auth/register" class="btn btn-fill">Start selling</a>
+        <a routerLink="/marketplace" class="btn btn-outline">Browse marketplace</a>
+      </div>
+    </div>
+  } @else {
+    <div class="ct-grid">
+      @for (p of featured(); track p.id; let i = $index) {
+        <app-product-card [product]="p" [priority]="i < 4" />
+      }
+    </div>
+  }
 </section>
 
-@if (latest().length) {
-  <section class="page ct-section pt-2">
+@if (loadState() === 'ready' && hireProducts().length) {
+  <section class="page ct-section ct-section--hire">
     <div class="ct-section__head">
       <div>
         <h2 class="section-title">Hire agents &amp; talent</h2>
-        <p class="ct-section__sub">Launch OpenClaw agents and specialist talent</p>
+        <p class="ct-section__sub">OpenClaw agents and specialist packs ready to launch</p>
       </div>
       <a routerLink="/hire-agent/marketplace" class="ct-more">See more</a>
     </div>
