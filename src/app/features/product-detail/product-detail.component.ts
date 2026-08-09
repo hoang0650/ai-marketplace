@@ -2,12 +2,28 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ProductService, ReviewService, WishlistService, BillingService } from '../../services/api.services';
+import {
+  ProductService,
+  ReviewService,
+  WishlistService,
+  BillingService,
+  PlaygroundService,
+  AgentChatService,
+} from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 import { PaymentProvider, Product, ProductCategory, Review } from '../../models/marketplace.models';
 import { categoryLabel, isHireCategory, isSkillCategory } from '../../models/categories';
 import { OpenClawGatewayService } from '../agents/openclaw-gateway.service';
+import {
+  RUNPOD_VIDEO_ASPECT,
+  RUNPOD_VIDEO_DURATIONS,
+  estimateSeedanceCost,
+  isRunpodProduct,
+  resolveRunpodEndpoint,
+  runpodVideoPriceHint,
+} from '../../models/runpod-playground';
 
 type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews';
 type ResultView = 'preview' | 'json';
@@ -45,6 +61,8 @@ export class ProductDetailComponent implements OnInit {
   private readonly reviewsApi = inject(ReviewService);
   private readonly wishlistApi = inject(WishlistService);
   private readonly billing = inject(BillingService);
+  private readonly playgroundApi = inject(PlaygroundService);
+  private readonly agentChatApi = inject(AgentChatService);
   private readonly seo = inject(SeoService);
   private readonly openclaw = inject(OpenClawGatewayService);
   readonly auth = inject(AuthService);
@@ -101,20 +119,29 @@ export class ProductDetailComponent implements OnInit {
   prompt = '';
   systemPrompt = 'You are a helpful assistant.';
   negativePrompt = '';
-  duration: 6 | 10 = 6;
+  /** RunPod video duration (seconds), e.g. Seedance 4–12. */
+  duration = 5;
   imageUrl = '';
+  endImageUrl = '';
   temperature = 1;
   maxTokens = 2048;
   seed = '-1';
 
-  /** text-to-video advanced */
-  videoSize: '720p' | '1080p' = '720p';
-  aspectRatio: '16:9' | '9:16' | '4:3' | '3:4' | '3:2' | '2:3' | '1:1' = '16:9';
+  /** fine-tune structured fields (not JSON-in-prompt) */
+  ftBaseModel = '';
+  ftMethod: 'qlora' | 'lora' | 'full' = 'qlora';
+  ftEpochs = 3;
+
+  /** text/image-to-video advanced (RunPod field names) */
+  videoResolution: '480p' | '720p' | '1080p' = '720p';
+  aspectRatio: (typeof RUNPOD_VIDEO_ASPECT)[number] | '3:2' | '2:3' = '16:9';
   fps = 24;
   enableSafetyChecker = false;
   draftMode = false;
   saveAudio = true;
   promptUpsampling = true;
+  cameraFixed = false;
+  generateAudio = false;
 
   /** image-to-image advanced */
   imageSize: '1024×1024' | '1024×1280' | '1280×1024' | '1280×1280' | '1280×1536' | '1536×1080' =
@@ -131,6 +158,21 @@ export class ProductDetailComponent implements OnInit {
   hireTimeline = '2 weeks';
   hireContact = '';
   hireSent = signal(false);
+
+  /** Persistent-memory agent chat (hire-agent) */
+  agentDraft = '';
+  agentSessionId = '';
+  readonly agentBusy = signal(false);
+  readonly agentError = signal('');
+  readonly agentMessages = signal<
+    Array<{
+      role: 'user' | 'assistant';
+      content: string;
+      memoryRecalled?: number;
+      memoryWritten?: number;
+      cost?: number;
+    }>
+  >([]);
   readonly skillInstalled = signal(false);
   readonly openclawBusy = signal(false);
   readonly openclawStatus = signal('');
@@ -142,7 +184,7 @@ export class ProductDetailComponent implements OnInit {
 
   apiClient: ApiClient = 'curl';
   apiMethod: 'POST' | 'GET' = 'POST';
-  apiAction: ApiAction = 'run';
+  apiAction: ApiAction = 'runsync';
   readonly apiCopied = signal(false);
   readonly apiKeys = signal<{ id: string; name: string; prefix: string; createdAt: string }[]>([]);
   readonly showApiKeys = signal(false);
@@ -156,7 +198,8 @@ export class ProductDetailComponent implements OnInit {
   readonly logsPageSize = signal(10);
   readonly logsPage = signal(1);
 
-  readonly videoAspectOptions = ['16:9', '9:16', '4:3', '3:4', '3:2', '2:3', '1:1'] as const;
+  readonly videoAspectOptions = RUNPOD_VIDEO_ASPECT;
+  readonly videoDurationOptions = RUNPOD_VIDEO_DURATIONS;
   readonly imageSizeOptions = [
     '1024×1024',
     '1024×1280',
@@ -170,19 +213,35 @@ export class ProductDetailComponent implements OnInit {
   previewText = '';
   resultJson = '';
   resultMediaUrl = '';
+  resultMediaKind: 'image' | 'video' | 'audio' | 'text' | '' = '';
   lastLatencyMs = 0;
+  lastCost = 0;
 
   reviewTitle = '';
   reviewBody = '';
   reviewRating = 5;
 
-  readonly priceHint = computed(() => {
+  readonly isRunpod = computed(() => isRunpodProduct(this.product()));
+  readonly runpodEndpoint = computed(() => {
+    const p = this.product();
+    return p ? resolveRunpodEndpoint(p) ?? null : null;
+  });
+
+  priceHint(): string {
     const p = this.product();
     if (!p) return '';
-    if (p.category === 'text-to-video') {
-      return this.videoSize === '1080p'
-        ? '720p · $0.02/sec · 1080p · $0.04/sec (sandbox estimate).'
-        : '720p · $0.02/sec · 1080p · $0.04/sec (sandbox estimate).';
+    const ep = this.runpodEndpoint();
+    if (isRunpodProduct(p) && (p.category === 'image-to-video' || p.category === 'text-to-video')) {
+      const hint = runpodVideoPriceHint(ep ?? undefined, this.videoResolution);
+      if (ep?.slug === 'seedance-1-5-pro' || hint.includes('0.024')) {
+        const res = this.videoResolution === '480p' ? '480p' : '720p';
+        const est = estimateSeedanceCost(this.duration, res);
+        return `${hint} · Est. $${est.toFixed(3)} for ${this.duration}s ${res}`;
+      }
+      return hint || ep?.pricing || p.tagline;
+    }
+    if (isRunpodProduct(p) && ep?.pricing) {
+      return `RunPod Public Endpoint · ${ep.pricing}`;
     }
     const pr = p.pricing;
     if (pr.model === 'usage') {
@@ -193,7 +252,7 @@ export class ProductDetailComponent implements OnInit {
     }
     if (pr.model === 'free') return 'Free sandbox — no charge for demo runs.';
     return `One-time purchase ${pr.price} ${pr.currency}.`;
-  });
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -280,6 +339,58 @@ export class ProductDetailComponent implements OnInit {
     this.checkoutMsg.set('Hire request sent — seller will reply in-app (mock).');
   }
 
+  sendAgentMessage(): void {
+    const p = this.product();
+    const text = this.agentDraft.trim();
+    if (!p || !text || this.agentBusy()) return;
+    if (!this.auth.user()) {
+      this.agentError.set('Log in to chat with this agent (memory + wallet billing).');
+      return;
+    }
+    this.agentError.set('');
+    this.agentBusy.set(true);
+    this.agentMessages.update((list) => [...list, { role: 'user', content: text }]);
+    this.agentDraft = '';
+    this.agentChatApi
+      .chat({
+        productSlug: p.slug,
+        productId: p.id,
+        message: text,
+        sessionId: this.agentSessionId || undefined,
+      })
+      .subscribe({
+        next: (res) => {
+          this.agentBusy.set(false);
+          if (res.sessionId) this.agentSessionId = res.sessionId;
+          this.agentMessages.update((list) => [
+            ...list,
+            {
+              role: 'assistant',
+              content: res.reply || '',
+              memoryRecalled: res.memoryRecalled,
+              memoryWritten: res.memoryWritten,
+              cost: res.cost,
+            },
+          ]);
+        },
+        error: (err) => {
+          this.agentBusy.set(false);
+          const msg = err?.error?.message || err?.message || 'Agent chat failed';
+          this.agentError.set(msg);
+          this.agentMessages.update((list) => [
+            ...list,
+            { role: 'assistant', content: `Error: ${msg}` },
+          ]);
+        },
+      });
+  }
+
+  clearAgentChat(): void {
+    this.agentMessages.set([]);
+    this.agentSessionId = '';
+    this.agentError.set('');
+  }
+
   launchOpenClaw(): void {
     if (this.openclawBusy()) return;
     this.openclawBusy.set(true);
@@ -330,61 +441,77 @@ export class ProductDetailComponent implements OnInit {
     this.previewText = '';
     this.resultJson = '';
     this.resultMediaUrl = '';
+    this.resultMediaKind = '';
     this.lastLatencyMs = 0;
+    this.lastCost = 0;
     this.resultView.set('preview');
     this.inputMode = 'messages';
     this.temperature = 1;
     this.maxTokens = 2048;
-    this.seed = product?.category === 'text-to-video' ? '0' : '-1';
-    this.duration = 6;
+    this.seed = '-1';
+    this.duration = 5;
     this.negativePrompt = '';
     this.imageUrl = '';
-    this.videoSize = '720p';
+    this.endImageUrl = '';
+    this.videoResolution = '720p';
     this.aspectRatio = '16:9';
     this.fps = 24;
     this.enableSafetyChecker = false;
     this.draftMode = false;
     this.saveAudio = true;
     this.promptUpsampling = true;
+    this.cameraFixed = false;
+    this.generateAudio = false;
     this.imageSize = '1024×1024';
     this.outputFormat = 'jpeg';
     this.enableBase64Output = false;
-    this.enableSyncMode = false;
+    this.enableSyncMode = true;
     this.loraIds = [];
     this.loraDraft = '';
     this.textImageSize = '1024×1024';
+    this.ftMethod = 'qlora';
+    this.ftEpochs = 3;
+    this.apiAction = 'runsync';
 
     if (!product) return;
-    this.modelVariant = product.slug;
+    const ep = resolveRunpodEndpoint(product);
+    this.modelVariant = ep?.endpointId || product.runtime?.baseModel || product.slug;
+    this.ftBaseModel = product.runtime?.baseModel || product.name;
     this.systemPrompt = `You are ${product.name}.`;
 
     switch (product.category) {
       case 'text-to-text':
-        this.prompt = 'What is PH AI Market?';
+        this.prompt = 'What is Runpod?';
         break;
       case 'text-to-video':
         this.prompt =
           'A kitten chases a bouncing rubber ball across a polished wooden floor, sliding slightly and bumping into a potted plant.';
         break;
       case 'image-to-video':
-        this.prompt = 'Subtle camera push-in, soft natural motion, cinematic lighting.';
-        this.imageUrl = product.coverUrl;
+        this.prompt = 'The character slowly turns and smiles at the camera';
+        this.imageUrl =
+          ep?.slug === 'seedance-1-5-pro'
+            ? 'https://image.runpod.ai/asset/bytedance/seedance-v1-5-pro-i2.png'
+            : product.coverUrl;
+        this.duration = 5;
+        this.videoResolution = '720p';
         break;
       case 'text-to-image':
-        this.prompt = 'Minimal product photo of a ceramic mug on linen, soft daylight, 85mm.';
+        this.prompt = 'A beautiful sunset over mountains';
         break;
       case 'image-to-image':
         this.prompt = 'Keep composition, restyle as watercolor with warm pastel palette.';
         this.imageUrl = product.coverUrl;
         break;
       case 'fine-tune':
-        this.prompt = '{\n  "base_model": "sea-flash",\n  "method": "qlora",\n  "epochs": 3\n}';
+        this.prompt = 'Train on customer-support dialogues (Vietnamese + English).';
+        this.ftBaseModel = product.runtime?.baseModel || 'sea-flash';
         break;
       case 'dataset':
         this.prompt = 'Request sample rows / schema preview.';
         break;
       case 'inference':
-        this.prompt = 'What is PH AI Market?';
+        this.prompt = 'What is Runpod?';
         this.systemPrompt = `You are ${product.name}.`;
         break;
     }
@@ -428,50 +555,105 @@ export class ProductDetailComponent implements OnInit {
   run(): void {
     const p = this.product();
     if (!p) return;
-    if (!this.prompt.trim()) return;
+    if (p.category !== 'fine-tune' && !this.prompt.trim()) return;
     if ((p.category === 'image-to-video' || p.category === 'image-to-image') && !this.imageUrl.trim()) {
       this.runStatus.set('error');
       this.previewText = 'Image is required for this modality.';
       this.resultJson = JSON.stringify({ error: 'image_required' }, null, 2);
       return;
     }
+    if (!this.auth.user()) {
+      this.runStatus.set('error');
+      this.previewText = 'Log in to run playground (billed via marketplace wallet).';
+      this.resultJson = JSON.stringify({ error: 'auth_required' }, null, 2);
+      return;
+    }
 
     const requestId = `req_${Math.random().toString(36).slice(2, 10)}`;
-    const delayMs = Math.round(40 + Math.random() * 120);
     this.runStatus.set('running');
     this.previewText = '';
     this.resultJson = '';
     this.resultMediaUrl = '';
+    this.resultMediaKind = '';
+    this.lastCost = 0;
 
     const started = typeof performance !== 'undefined' ? performance.now() : Date.now();
     const payload = this.buildRequestPayload(p);
+    const input = (payload['input'] as Record<string, unknown>) || payload;
+    const ep = resolveRunpodEndpoint(p);
 
-    setTimeout(() => {
-      const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
-      this.lastLatencyMs = Math.round(now - started);
-      const response = this.buildMockResponse(p, payload);
-      response['id'] = requestId;
-      this.resultJson = JSON.stringify(response, null, 2);
-      this.applyPreview(p, response);
-      this.runStatus.set('done');
-
-      const entry: RequestLogEntry = {
-        id: requestId,
-        productId: p.id,
+    this.playgroundApi
+      .run({
         productSlug: p.slug,
-        status: 'COMPLETED',
-        delayMs,
-        executionMs: this.lastLatencyMs,
-        createdAt: new Date().toISOString(),
-        model: this.modelVariant || p.slug,
-        promptPreview: this.prompt.trim().slice(0, 120),
-        requestJson: JSON.stringify(payload, null, 2),
-        responseJson: this.resultJson,
-      };
-      this.sessionLogs.update((list) => [entry, ...list]);
-      this.persistHistory(entry);
-      this.historyLogs.update((list) => [entry, ...list.filter((x) => x.id !== entry.id)]);
-    }, 700 + Math.random() * 500);
+        productId: p.id,
+        input,
+        model: this.modelVariant || ep?.openaiModel || undefined,
+        endpointId: ep?.endpointId,
+        action: this.apiAction === 'run' ? 'run' : 'runsync',
+      })
+      .subscribe({
+        next: (res) => {
+          const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+          this.lastLatencyMs = res.executionTime || Math.round(now - started);
+          this.lastCost = Number(res.cost || 0);
+          const response: Record<string, unknown> = {
+            id: res.id || requestId,
+            status: res.status || 'COMPLETED',
+            delayTime: res.delayTime ?? 0,
+            executionTime: this.lastLatencyMs,
+            provider: res.provider,
+            model: res.model,
+            endpointId: res.endpointId,
+            output: res.output,
+            usage: res.usage,
+            cost: res.cost,
+            sandbox: res.sandbox,
+          };
+          this.resultJson = JSON.stringify(response, null, 2);
+          this.applyPreview(p, response);
+          this.runStatus.set('done');
+          this.pushLog(p, requestId, payload, 'COMPLETED', 0);
+        },
+        error: (err) => {
+          const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+          this.lastLatencyMs = Math.round(now - started);
+          const message =
+            err?.error?.message || err?.message || 'Playground run failed via marketplace API';
+          this.previewText = message;
+          this.resultJson = JSON.stringify(
+            { error: message, status: err?.status, detail: err?.error },
+            null,
+            2,
+          );
+          this.runStatus.set('error');
+          this.pushLog(p, requestId, payload, 'FAILED', 0);
+        },
+      });
+  }
+
+  private pushLog(
+    p: Product,
+    requestId: string,
+    payload: Record<string, unknown>,
+    status: 'COMPLETED' | 'FAILED',
+    delayMs: number,
+  ): void {
+    const entry: RequestLogEntry = {
+      id: requestId,
+      productId: p.id,
+      productSlug: p.slug,
+      status,
+      delayMs,
+      executionMs: this.lastLatencyMs,
+      createdAt: new Date().toISOString(),
+      model: this.modelVariant || p.slug,
+      promptPreview: this.prompt.trim().slice(0, 120),
+      requestJson: JSON.stringify(payload, null, 2),
+      responseJson: this.resultJson,
+    };
+    this.sessionLogs.update((list) => [entry, ...list]);
+    this.persistHistory(entry);
+    this.historyLogs.update((list) => [entry, ...list.filter((x) => x.id !== entry.id)]);
   }
 
   openLogs(tab: LogsTab = 'session'): void {
@@ -579,23 +761,32 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private buildRequestPayload(p: Product): Record<string, unknown> {
-    const model = this.modelVariant || p.slug;
+    const ep = resolveRunpodEndpoint(p);
+    const model = this.modelVariant || ep?.openaiModel || ep?.endpointId || p.slug;
+    const seedNum = this.seed === '' || this.seed === undefined ? -1 : Number(this.seed);
+    const imageRef = this.imageUrl.startsWith('data:') ? this.imageUrl : this.imageUrl;
 
     if (p.category === 'text-to-text' || p.category === 'inference') {
-      const useMessages = this.inputMode === 'messages' || p.category === 'inference';
+      const useMessages = this.inputMode === 'messages';
       const input: Record<string, unknown> = useMessages
         ? {
             messages: [
               { role: 'system', content: this.systemPrompt },
               { role: 'user', content: this.prompt },
             ],
+            sampling_params: {
+              max_tokens: this.maxTokens,
+              temperature: this.temperature,
+              seed: seedNum,
+            },
           }
-        : { prompt: this.prompt, system_prompt: this.systemPrompt };
-      input['sampling_params'] = {
-        max_tokens: this.maxTokens,
-        temperature: this.temperature,
-      };
-      return { input, model };
+        : {
+            prompt: this.prompt,
+            max_tokens: this.maxTokens,
+            temperature: this.temperature,
+          };
+      if (ep?.openaiModel || model) input['model'] = model;
+      return { input };
     }
 
     if (p.category === 'text-to-video') {
@@ -603,16 +794,12 @@ export class ProductDetailComponent implements OnInit {
         input: {
           prompt: this.prompt,
           duration: this.duration,
-          seed: this.seed === '' ? undefined : Number(this.seed),
-          size: this.videoSize,
+          seed: seedNum,
+          resolution: this.videoResolution,
           aspect_ratio: this.aspectRatio,
-          fps: this.fps,
           enable_safety_checker: this.enableSafetyChecker,
-          draft: this.draftMode,
-          save_audio: this.saveAudio,
-          prompt_upsampling: this.promptUpsampling,
+          prompt_expansion: this.promptUpsampling,
         },
-        model,
       };
     }
 
@@ -620,149 +807,113 @@ export class ProductDetailComponent implements OnInit {
       return {
         input: {
           prompt: this.prompt,
+          image: imageRef,
+          last_image: this.endImageUrl || undefined,
           duration: this.duration,
-          image: this.imageUrl.startsWith('data:') ? 'data:image/...;base64,…' : this.imageUrl,
-          seed: this.seed === '' ? undefined : Number(this.seed),
-          size: this.videoSize,
+          resolution: this.videoResolution === '1080p' ? '720p' : this.videoResolution,
           aspect_ratio: this.aspectRatio,
-          fps: this.fps,
+          camera_fixed: this.cameraFixed,
+          generate_audio: this.generateAudio,
+          seed: seedNum,
         },
-        model,
       };
     }
 
     if (p.category === 'text-to-image') {
+      const [w, h] = this.textImageSize.split('×').map(Number);
       return {
         input: {
           prompt: this.prompt,
           negative_prompt: this.negativePrompt || undefined,
-          seed: this.seed === '' ? undefined : Number(this.seed),
-          size: this.textImageSize,
+          width: w || 1024,
+          height: h || 1024,
+          seed: seedNum,
           output_format: this.outputFormat,
         },
-        model,
       };
     }
 
     if (p.category === 'fine-tune') {
       return {
         input: {
-          config: this.prompt,
-          seed: this.seed === '' ? undefined : Number(this.seed),
+          base_model: this.ftBaseModel,
+          method: this.ftMethod,
+          epochs: this.ftEpochs,
+          notes: this.prompt || undefined,
+          seed: seedNum,
           wait_for_completion: this.enableSyncMode,
         },
-        model,
       };
     }
 
     if (p.category === 'dataset') {
       return {
         input: { query: this.prompt, preview_rows: Math.min(100, Math.max(1, this.maxTokens)) },
-        model,
       };
     }
 
+    // image-to-image
     return {
       input: {
         prompt: this.prompt,
-        image: this.imageUrl.startsWith('data:') ? 'data:image/...;base64,…' : this.imageUrl,
-        seed: this.seed === '' ? undefined : Number(this.seed),
+        image: imageRef,
+        seed: seedNum,
         size: this.imageSize,
         output_format: this.outputFormat,
-        loras: this.loraIds,
+        loras: this.loraIds.length ? this.loraIds : undefined,
         enable_base64_output: this.enableBase64Output,
-        enable_sync_mode: this.enableSyncMode,
       },
-      model,
-    };
-  }
-
-  private buildMockResponse(p: Product, request: Record<string, unknown>): Record<string, unknown> {
-    const id = `run_${Math.random().toString(36).slice(2, 10)}`;
-    if (p.category === 'text-to-text' || p.category === 'inference') {
-      return {
-        id,
-        status: 'completed',
-        latencyMs: this.lastLatencyMs,
-        output: {
-          text: `${p.name} reply:\n\n${this.prompt.trim()}\n\n—\nThis is a sandbox completion. Wire your RunPod / Nest endpoint to replace the mock.`,
-        },
-        usage: { input_tokens: 42, output_tokens: 96 },
-        request,
-      };
-    }
-    if (p.category === 'fine-tune') {
-      return {
-        id,
-        status: 'completed',
-        latencyMs: this.lastLatencyMs,
-        output: {
-          text: `Fine-tune job queued.\nAdapter: adapter_${id}.safetensors\nEval loss: 0.42 (mock)`,
-        },
-        request,
-      };
-    }
-    if (p.category === 'dataset') {
-      return {
-        id,
-        status: 'completed',
-        latencyMs: this.lastLatencyMs,
-        output: {
-          text: `Schema preview (mock)\n- turn_id: string\n- channel: zalo|fanpage|web\n- intent: book|faq|escalate\n- text: string\n\nShowing 5 / 40000 rows.`,
-        },
-        request,
-      };
-    }
-    if (p.category === 'text-to-video' || p.category === 'image-to-video') {
-      return {
-        id,
-        status: 'completed',
-        latencyMs: this.lastLatencyMs,
-        output: {
-          type: 'video',
-          duration: this.duration,
-          url: p.coverUrl,
-          note: 'Mock preview uses cover art — replace with job.poll video URL.',
-        },
-        request,
-      };
-    }
-    return {
-      id,
-      status: 'completed',
-      latencyMs: this.lastLatencyMs,
-      output: {
-        type: 'image',
-        url: this.imageUrl || p.coverUrl,
-        note: 'Mock image output — replace with generation URL.',
-      },
-      request,
     };
   }
 
   private applyPreview(p: Product, response: Record<string, unknown>): void {
     const output = response['output'] as Record<string, unknown> | undefined;
-    if (
-      p.category === 'text-to-text' ||
-      p.category === 'inference' ||
-      p.category === 'fine-tune' ||
-      p.category === 'dataset'
-    ) {
-      this.previewText = String(output?.['text'] || '');
+    this.lastCost = Number(output?.['cost'] ?? this.lastCost) || 0;
+
+    if (p.category === 'text-to-text' || p.category === 'inference' || p.category === 'fine-tune' || p.category === 'dataset') {
+      const choices = output?.['choices'] as Array<{ tokens?: string[]; message?: { content?: string } }> | undefined;
+      const tokenText = choices?.[0]?.tokens?.join('') || choices?.[0]?.message?.content || '';
+      this.previewText =
+        tokenText ||
+        String(output?.['text'] || output?.['ai_response_text'] || '');
       this.resultMediaUrl = '';
+      this.resultMediaKind = 'text';
       return;
     }
-    this.previewText = String(output?.['note'] || 'Generation complete.');
-    this.resultMediaUrl = String(output?.['url'] || p.coverUrl);
+    if (p.category === 'text-to-video' || p.category === 'image-to-video') {
+      this.resultMediaUrl = String(output?.['video_url'] || p.coverUrl);
+      this.resultMediaKind = 'video';
+      this.previewText = this.lastCost ? `Cost $${this.lastCost}` : 'Generation complete.';
+      return;
+    }
+    this.resultMediaUrl = String(output?.['image_url'] || output?.['url'] || this.imageUrl || p.coverUrl);
+    this.resultMediaKind = 'image';
+    this.previewText = this.lastCost ? `Cost $${this.lastCost}` : 'Generation complete.';
   }
 
-  apiEndpoint(p: Product): string {
-    return `https://api.phaimarket.com/v2/${p.slug}/${this.apiAction}`;
+  apiEndpoint(_p: Product): string {
+    // Customer-facing calls go through marketplace (which routes via denglish-api).
+    return `${environment.apiUrl}/playground/run`;
+  }
+
+  downloadResult(): void {
+    if (!this.resultMediaUrl || typeof window === 'undefined') return;
+    const a = document.createElement('a');
+    a.href = this.resultMediaUrl;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.download = this.resultMediaKind === 'video' ? 'output.mp4' : 'output.png';
+    a.click();
   }
 
   apiSnippet(p: Product): string {
     const url = this.apiEndpoint(p);
-    const body = JSON.stringify(this.buildRequestPayload(p));
+    const wrapped = {
+      productSlug: p.slug,
+      input: (this.buildRequestPayload(p)['input'] as Record<string, unknown>) || {},
+      action: this.apiAction === 'run' ? 'run' : 'runsync',
+    };
+    const auth = 'Authorization: Bearer $MARKETPLACE_JWT';
     if (this.apiClient === 'python') {
       return [
         'import requests',
@@ -770,9 +921,9 @@ export class ProductDetailComponent implements OnInit {
         `url = "${url}"`,
         'headers = {',
         '  "Content-Type": "application/json",',
-        '  "Authorization": "Bearer YOUR_API_KEY",',
+        '  "Authorization": f"Bearer {MARKETPLACE_JWT}",',
         '}',
-        `payload = ${JSON.stringify(this.buildRequestPayload(p), null, 2)}`,
+        `payload = ${JSON.stringify(wrapped, null, 2)}`,
         '',
         'response = requests.post(url, headers=headers, json=payload)',
         'print(response.json())',
@@ -784,18 +935,19 @@ export class ProductDetailComponent implements OnInit {
         '  method: "POST",',
         '  headers: {',
         '    "Content-Type": "application/json",',
-        '    "Authorization": "Bearer YOUR_API_KEY",',
+        '    Authorization: `Bearer ${MARKETPLACE_JWT}`,',
         '  },',
-        `  body: JSON.stringify(${JSON.stringify(this.buildRequestPayload(p), null, 2)}),`,
+        `  body: JSON.stringify(${JSON.stringify(wrapped, null, 2)}),`,
         '});',
         'const data = await res.json();',
         'console.log(data);',
       ].join('\n');
     }
+    const body = JSON.stringify(wrapped);
     return [
-      `curl -X ${this.apiMethod} ${url} \\`,
+      `curl -X POST "${url}" \\`,
       `  -H 'Content-Type: application/json' \\`,
-      `  -H 'Authorization: Bearer YOUR_API_KEY' \\`,
+      `  -H '${auth}' \\`,
       `  -d '${body.replace(/'/g, "'\\''")}'`,
     ].join('\n');
   }

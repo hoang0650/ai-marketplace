@@ -300,6 +300,79 @@ export const routes: Routes = [
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'skill-pack', title: 'Skill packs' },
       },
+      // Digital / sản phẩm số (gcmmo-style)
+      {
+        path: 'ai-account',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'ai-account', title: 'Tài khoản AI' },
+      },
+      {
+        path: 'social-account',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'social-account', title: 'Mạng xã hội' },
+      },
+      {
+        path: 'software',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'software', title: 'Phần mềm' },
+      },
+      {
+        path: 'vpn-proxy',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'vpn-proxy', title: 'VPN & Proxy' },
+      },
+      {
+        path: 'license-key',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'license-key', title: 'Key / License' },
+      },
+      {
+        path: 'course',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'course', title: 'Khóa học' },
+      },
+      {
+        path: 'template',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'template', title: 'Template / Source' },
+      },
+      {
+        path: 'email-domain',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'email-domain', title: 'Email & Domain' },
+      },
+      {
+        path: 'boost-service',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'boost-service', title: 'Tăng tương tác' },
+      },
+      {
+        path: 'mmo-tool',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'mmo-tool', title: 'Tool MMO' },
+      },
+      {
+        path: 'design-asset',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'design-asset', title: 'Thiết kế' },
+      },
+      {
+        path: 'cloud-hosting',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'cloud-hosting', title: 'Cloud / Hosting' },
+      },
       {
         path: 'store/:creatorSlug',
         loadComponent: () =>
@@ -415,6 +488,20 @@ export const routes: Routes = [
         path: 'reviews',
         loadComponent: () =>
           import('./features/commerce/commerce.components').then((m) => m.ReviewsPageComponent),
+      },
+      {
+        path: 'privacy-policy',
+        loadComponent: () =>
+          import('./features/legal/privacy-policy/privacy-policy.component').then(
+            (m) => m.PrivacyPolicyComponent,
+          ),
+      },
+      {
+        path: 'terms-of-service',
+        loadComponent: () =>
+          import('./features/legal/terms-of-service/terms-of-service.component').then(
+            (m) => m.TermsOfServiceComponent,
+          ),
       },
       {
         path: 'admin',

@@ -97,14 +97,33 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "1M tokens", "usageRate": 0.95 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "1M tokens",
+        "usageRate": 0.95
+      },
       "rating": 4.8,
       "reviewCount": 156,
       "installCount": 4200,
-      "tags": ["llm", "chat", "reasoning", "text-to-text"],
+      "tags": [
+        "llm",
+        "chat",
+        "reasoning",
+        "text-to-text"
+      ],
       "apiDocsMarkdown": "POST `/v1/chat/completions` with OpenAI-compatible messages.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-20", "notes": "K3 reasoning traces." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-20",
+          "notes": "K3 reasoning traces."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-01T00:00:00.000Z"
     },
@@ -119,14 +138,32 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "1M tokens", "usageRate": 0.4 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "1M tokens",
+        "usageRate": 0.4
+      },
       "rating": 4.8,
       "reviewCount": 210,
       "installCount": 5400,
-      "tags": ["llm", "vietnamese", "text-to-text"],
+      "tags": [
+        "llm",
+        "vietnamese",
+        "text-to-text"
+      ],
       "apiDocsMarkdown": "OpenAI-compatible `/chat/completions`.",
-      "changelog": [{ "version": "0.9.2", "date": "2026-07-20", "notes": "Better tool calling." }],
+      "changelog": [
+        {
+          "version": "0.9.2",
+          "date": "2026-07-20",
+          "notes": "Better tool calling."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-01-20T00:00:00.000Z"
     },
@@ -141,14 +178,31 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "1M tokens", "usageRate": 0.05 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "1M tokens",
+        "usageRate": 0.05
+      },
       "rating": 4.7,
       "reviewCount": 88,
       "installCount": 1900,
-      "tags": ["embedding", "text-to-text"],
+      "tags": [
+        "embedding",
+        "text-to-text"
+      ],
       "apiDocsMarkdown": "POST `/v1/embeddings`.",
-      "changelog": [{ "version": "1.5.0", "date": "2026-07-15", "notes": "Batch up to 2k inputs." }],
+      "changelog": [
+        {
+          "version": "1.5.0",
+          "date": "2026-07-15",
+          "notes": "Batch up to 2k inputs."
+        }
+      ],
       "publishedAt": "2026-02-02T00:00:00.000Z"
     },
     {
@@ -166,15 +220,32 @@
         "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&q=80",
         "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80"
       ],
-      "pricing": { "model": "subscription", "price": 49, "currency": "USD", "interval": "month" },
+      "pricing": {
+        "model": "subscription",
+        "price": 49,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.9,
       "reviewCount": 128,
       "installCount": 2140,
-      "tags": ["hospitality", "agent", "text-to-text"],
+      "tags": [
+        "hospitality",
+        "agent",
+        "text-to-text"
+      ],
       "apiDocsMarkdown": "## Install\n\n```bash\nnpx phai install hotel-concierge-agent\n```\n\n## Auth\n\nSend `Authorization: Bearer <key>`.",
       "changelog": [
-        { "version": "1.4.0", "date": "2026-07-10", "notes": "SePay deposit verification + Vietnamese prompts." },
-        { "version": "1.3.0", "date": "2026-06-02", "notes": "Telegram channel adapter." }
+        {
+          "version": "1.4.0",
+          "date": "2026-07-10",
+          "notes": "SePay deposit verification + Vietnamese prompts."
+        },
+        {
+          "version": "1.3.0",
+          "date": "2026-06-02",
+          "notes": "Telegram channel adapter."
+        }
       ],
       "featured": true,
       "publishedAt": "2026-04-01T00:00:00.000Z"
@@ -190,14 +261,32 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "second", "usageRate": 0.0383 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "second",
+        "usageRate": 0.0383
+      },
       "rating": 4.5,
       "reviewCount": 62,
       "installCount": 980,
-      "tags": ["video", "minimax", "text-to-video"],
+      "tags": [
+        "video",
+        "minimax",
+        "text-to-video"
+      ],
       "apiDocsMarkdown": "POST `/v1/video/text-to-video` with `prompt` and `duration` (6|10).",
-      "changelog": [{ "version": "2.0.0", "date": "2026-07-18", "notes": "10s clips + prompt enhance." }],
+      "changelog": [
+        {
+          "version": "2.0.0",
+          "date": "2026-07-18",
+          "notes": "10s clips + prompt enhance."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-06-01T00:00:00.000Z"
     },
@@ -212,14 +301,31 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=80"],
-      "pricing": { "model": "subscription", "price": 39, "currency": "USD", "interval": "month" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "subscription",
+        "price": 39,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.3,
       "reviewCount": 28,
       "installCount": 410,
-      "tags": ["video", "marketing", "text-to-video"],
+      "tags": [
+        "video",
+        "marketing",
+        "text-to-video"
+      ],
       "apiDocsMarkdown": "POST `/v1/reels` with script JSON.",
-      "changelog": [{ "version": "0.6.0", "date": "2026-07-05", "notes": "Vertical 9:16 export." }],
+      "changelog": [
+        {
+          "version": "0.6.0",
+          "date": "2026-07-05",
+          "notes": "Vertical 9:16 export."
+        }
+      ],
       "publishedAt": "2026-05-12T00:00:00.000Z"
     },
     {
@@ -233,14 +339,32 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1536240478700-b869070f9279?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "second", "usageRate": 0.019 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "second",
+        "usageRate": 0.019
+      },
       "rating": 4.6,
       "reviewCount": 74,
       "installCount": 1320,
-      "tags": ["video", "minimax", "image-to-video"],
+      "tags": [
+        "video",
+        "minimax",
+        "image-to-video"
+      ],
       "apiDocsMarkdown": "POST `/v1/video/image-to-video` with `image` (URL or base64) + `prompt`.",
-      "changelog": [{ "version": "2.3.0", "date": "2026-07-22", "notes": "Faster I2V path." }],
+      "changelog": [
+        {
+          "version": "2.3.0",
+          "date": "2026-07-22",
+          "notes": "Faster I2V path."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-06-18T00:00:00.000Z"
     },
@@ -255,14 +379,31 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80"],
-      "pricing": { "model": "subscription", "price": 29, "currency": "USD", "interval": "month" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "subscription",
+        "price": 29,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.3,
       "reviewCount": 22,
       "installCount": 310,
-      "tags": ["video", "ecommerce", "image-to-video"],
+      "tags": [
+        "video",
+        "ecommerce",
+        "image-to-video"
+      ],
       "apiDocsMarkdown": "Upload still → poll job → download mp4.",
-      "changelog": [{ "version": "0.4.0", "date": "2026-06-18", "notes": "1080p export." }],
+      "changelog": [
+        {
+          "version": "0.4.0",
+          "date": "2026-06-18",
+          "notes": "1080p export."
+        }
+      ],
       "publishedAt": "2026-06-18T00:00:00.000Z"
     },
     {
@@ -276,14 +417,30 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80"],
-      "pricing": { "model": "one-time", "price": 79, "currency": "USD" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 79,
+        "currency": "USD"
+      },
       "rating": 4.5,
       "reviewCount": 41,
       "installCount": 620,
-      "tags": ["image", "ecommerce", "text-to-image"],
+      "tags": [
+        "image",
+        "ecommerce",
+        "text-to-image"
+      ],
       "apiDocsMarkdown": "POST `/v1/images/generations` with `prompt`.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-05-01", "notes": "Initial release." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-05-01",
+          "notes": "Initial release."
+        }
+      ],
       "publishedAt": "2026-05-01T00:00:00.000Z"
     },
     {
@@ -297,14 +454,32 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "image", "usageRate": 0.04 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "image",
+        "usageRate": 0.04
+      },
       "rating": 4.7,
       "reviewCount": 95,
       "installCount": 2100,
-      "tags": ["image", "ads", "text-to-image"],
+      "tags": [
+        "image",
+        "ads",
+        "text-to-image"
+      ],
       "apiDocsMarkdown": "POST `/v1/images/generations`.",
-      "changelog": [{ "version": "1.2.0", "date": "2026-07-12", "notes": "2K upscale option." }],
+      "changelog": [
+        {
+          "version": "1.2.0",
+          "date": "2026-07-12",
+          "notes": "2K upscale option."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-03-15T00:00:00.000Z"
     },
@@ -319,14 +494,32 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "image", "usageRate": 0.06 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "image",
+        "usageRate": 0.06
+      },
       "rating": 4.4,
       "reviewCount": 38,
       "installCount": 540,
-      "tags": ["image", "edit", "image-to-image"],
+      "tags": [
+        "image",
+        "edit",
+        "image-to-image"
+      ],
       "apiDocsMarkdown": "POST `/v1/images/edits` with source image + `prompt`.",
-      "changelog": [{ "version": "1.1.0", "date": "2026-07-08", "notes": "Mask support." }],
+      "changelog": [
+        {
+          "version": "1.1.0",
+          "date": "2026-07-08",
+          "notes": "Mask support."
+        }
+      ],
       "publishedAt": "2026-04-10T00:00:00.000Z"
     },
     {
@@ -340,14 +533,32 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "megapixel", "usageRate": 0.01 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "megapixel",
+        "usageRate": 0.01
+      },
       "rating": 4.6,
       "reviewCount": 51,
       "installCount": 870,
-      "tags": ["image", "upscale", "image-to-image"],
+      "tags": [
+        "image",
+        "upscale",
+        "image-to-image"
+      ],
       "apiDocsMarkdown": "POST `/v1/images/upscale`.",
-      "changelog": [{ "version": "2.0.0", "date": "2026-06-22", "notes": "Face-aware mode." }],
+      "changelog": [
+        {
+          "version": "2.0.0",
+          "date": "2026-06-22",
+          "notes": "Face-aware mode."
+        }
+      ],
       "publishedAt": "2026-02-28T00:00:00.000Z"
     },
     {
@@ -361,14 +572,31 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1556745757-8d76bdb6984b?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1556745757-8d76bdb6984b?w=1200&q=80"],
-      "pricing": { "model": "subscription", "price": 29, "currency": "USD", "interval": "month" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1556745757-8d76bdb6984b?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "subscription",
+        "price": 29,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.6,
       "reviewCount": 54,
       "installCount": 890,
-      "tags": ["hospitality", "cx", "text-to-text"],
+      "tags": [
+        "hospitality",
+        "cx",
+        "text-to-text"
+      ],
       "apiDocsMarkdown": "POST `/v1/chat/completions` with brand tone in system prompt.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-01", "notes": "Initial release." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-01",
+          "notes": "Initial release."
+        }
+      ],
       "publishedAt": "2026-07-01T00:00:00.000Z"
     },
     {
@@ -382,14 +610,31 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "second", "usageRate": 0.022 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "second",
+        "usageRate": 0.022
+      },
       "rating": 4.5,
       "reviewCount": 31,
       "installCount": 420,
-      "tags": ["hospitality", "image-to-video"],
+      "tags": [
+        "hospitality",
+        "image-to-video"
+      ],
       "apiDocsMarkdown": "POST `/v1/video/image-to-video` with room still + prompt.",
-      "changelog": [{ "version": "0.9.0", "date": "2026-07-14", "notes": "Vertical export." }],
+      "changelog": [
+        {
+          "version": "0.9.0",
+          "date": "2026-07-14",
+          "notes": "Vertical export."
+        }
+      ],
       "publishedAt": "2026-07-14T00:00:00.000Z"
     },
     {
@@ -403,14 +648,31 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "image", "usageRate": 0.05 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "image",
+        "usageRate": 0.05
+      },
       "rating": 4.4,
       "reviewCount": 19,
       "installCount": 260,
-      "tags": ["brand", "image-to-image"],
+      "tags": [
+        "brand",
+        "image-to-image"
+      ],
       "apiDocsMarkdown": "POST `/v1/images/edits` with source + brand hex list.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-19", "notes": "Hex palette input." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-19",
+          "notes": "Hex palette input."
+        }
+      ],
       "publishedAt": "2026-07-19T00:00:00.000Z"
     },
     {
@@ -424,14 +686,32 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "second", "usageRate": 0.035 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "second",
+        "usageRate": 0.035
+      },
       "rating": 4.4,
       "reviewCount": 27,
       "installCount": 380,
-      "tags": ["video", "vietnamese", "text-to-video"],
+      "tags": [
+        "video",
+        "vietnamese",
+        "text-to-video"
+      ],
       "apiDocsMarkdown": "POST `/v1/video/text-to-video`.",
-      "changelog": [{ "version": "0.5.0", "date": "2026-07-11", "notes": "VI prompt enhance." }],
+      "changelog": [
+        {
+          "version": "0.5.0",
+          "date": "2026-07-11",
+          "notes": "VI prompt enhance."
+        }
+      ],
       "publishedAt": "2026-07-11T00:00:00.000Z"
     },
     {
@@ -445,14 +725,31 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "image", "usageRate": 0.035 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "image",
+        "usageRate": 0.035
+      },
       "rating": 4.5,
       "reviewCount": 44,
       "installCount": 710,
-      "tags": ["poster", "text-to-image"],
+      "tags": [
+        "poster",
+        "text-to-image"
+      ],
       "apiDocsMarkdown": "POST `/v1/images/generations`.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-06-28", "notes": "A4 + story sizes." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-06-28",
+          "notes": "A4 + story sizes."
+        }
+      ],
       "publishedAt": "2026-06-28T00:00:00.000Z"
     },
     {
@@ -466,14 +763,31 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "second", "usageRate": 0.02 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "second",
+        "usageRate": 0.02
+      },
       "rating": 4.3,
       "reviewCount": 21,
       "installCount": 290,
-      "tags": ["ecommerce", "image-to-video"],
+      "tags": [
+        "ecommerce",
+        "image-to-video"
+      ],
       "apiDocsMarkdown": "POST `/v1/video/image-to-video`.",
-      "changelog": [{ "version": "0.3.0", "date": "2026-07-16", "notes": "Logo lock region." }],
+      "changelog": [
+        {
+          "version": "0.3.0",
+          "date": "2026-07-16",
+          "notes": "Logo lock region."
+        }
+      ],
       "publishedAt": "2026-07-16T00:00:00.000Z"
     },
     {
@@ -487,14 +801,31 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "1M tokens", "usageRate": 0.25 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "1M tokens",
+        "usageRate": 0.25
+      },
       "rating": 4.2,
       "reviewCount": 16,
       "installCount": 240,
-      "tags": ["script", "text-to-text"],
+      "tags": [
+        "script",
+        "text-to-text"
+      ],
       "apiDocsMarkdown": "POST `/v1/chat/completions`.",
-      "changelog": [{ "version": "0.2.0", "date": "2026-07-09", "notes": "Shot-list JSON mode." }],
+      "changelog": [
+        {
+          "version": "0.2.0",
+          "date": "2026-07-09",
+          "notes": "Shot-list JSON mode."
+        }
+      ],
       "publishedAt": "2026-07-09T00:00:00.000Z"
     },
     {
@@ -508,14 +839,31 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&q=80"],
-      "pricing": { "model": "subscription", "price": 199, "currency": "USD", "interval": "month" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "subscription",
+        "price": 199,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.9,
       "reviewCount": 36,
       "installCount": 180,
-      "tags": ["agent", "hospitality", "hire-agent"],
+      "tags": [
+        "agent",
+        "hospitality",
+        "hire-agent"
+      ],
       "apiDocsMarkdown": "## Scope\n\nManaged OpenClaw agent + Nest wiring. Book a kickoff call after checkout.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-20", "notes": "Hotel ops pack." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-20",
+          "notes": "Hotel ops pack."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-20T00:00:00.000Z"
     },
@@ -530,14 +878,31 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80"],
-      "pricing": { "model": "subscription", "price": 1200, "currency": "USD", "interval": "month" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "subscription",
+        "price": 1200,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.7,
       "reviewCount": 22,
       "installCount": 64,
-      "tags": ["marketing", "ads", "hire-marketing"],
+      "tags": [
+        "marketing",
+        "ads",
+        "hire-marketing"
+      ],
       "apiDocsMarkdown": "## Deliverables\n\nWeekly report, ad creatives brief, landing experiments.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-05", "notes": "Hospitality playbook." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-05",
+          "notes": "Hospitality playbook."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-05T00:00:00.000Z"
     },
@@ -552,14 +917,31 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=1200&q=80"],
-      "pricing": { "model": "subscription", "price": 890, "currency": "USD", "interval": "month" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "subscription",
+        "price": 890,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.6,
       "reviewCount": 18,
       "installCount": 51,
-      "tags": ["seo", "local", "hire-seo"],
+      "tags": [
+        "seo",
+        "local",
+        "hire-seo"
+      ],
       "apiDocsMarkdown": "## Deliverables\n\nTechnical audit, GBP optimization, 8 articles / month.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-06-18", "notes": "Local pack." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-06-18",
+          "notes": "Local pack."
+        }
+      ],
       "publishedAt": "2026-06-18T00:00:00.000Z"
     },
     {
@@ -573,14 +955,31 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=80"],
-      "pricing": { "model": "subscription", "price": 650, "currency": "USD", "interval": "month" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "subscription",
+        "price": 650,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.8,
       "reviewCount": 29,
       "installCount": 97,
-      "tags": ["ugc", "creator", "hire-creator"],
+      "tags": [
+        "ugc",
+        "creator",
+        "hire-creator"
+      ],
       "apiDocsMarkdown": "## Deliverables\n\nShot list, raw + edited reels, captions.",
-      "changelog": [{ "version": "1.1.0", "date": "2026-07-12", "notes": "TikTok + Reels pack." }],
+      "changelog": [
+        {
+          "version": "1.1.0",
+          "date": "2026-07-12",
+          "notes": "TikTok + Reels pack."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-12T00:00:00.000Z"
     },
@@ -595,14 +994,30 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=1200&q=80"],
-      "pricing": { "model": "one-time", "price": 2400, "currency": "USD" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 2400,
+        "currency": "USD"
+      },
       "rating": 4.8,
       "reviewCount": 14,
       "installCount": 42,
-      "tags": ["n8n", "automation", "hire-workflow"],
+      "tags": [
+        "n8n",
+        "automation",
+        "hire-workflow"
+      ],
       "apiDocsMarkdown": "## Deliverables\n\nMapped workflows, production deploy, runbook, 2 weeks support.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-18", "notes": "OpenClaw + Nest hooks." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-18",
+          "notes": "OpenClaw + Nest hooks."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-18T00:00:00.000Z"
     },
@@ -617,14 +1032,30 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&q=80"],
-      "pricing": { "model": "one-time", "price": 18000, "currency": "USD" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 18000,
+        "currency": "USD"
+      },
       "rating": 4.7,
       "reviewCount": 9,
       "installCount": 18,
-      "tags": ["mobile", "flutter", "hire-build-app"],
+      "tags": [
+        "mobile",
+        "flutter",
+        "hire-build-app"
+      ],
       "apiDocsMarkdown": "## Scope\n\nDiscovery, UI kit, MVP app, store submission support.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-08", "notes": "Hospitality MVP pack." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-08",
+          "notes": "Hospitality MVP pack."
+        }
+      ],
       "publishedAt": "2026-07-08T00:00:00.000Z"
     },
     {
@@ -638,14 +1069,30 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1467232004584-a241c7c9aa98?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1467232004584-a241c7c9aa98?w=1200&q=80"],
-      "pricing": { "model": "one-time", "price": 9500, "currency": "USD" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1467232004584-a241c7c9aa98?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 9500,
+        "currency": "USD"
+      },
       "rating": 4.6,
       "reviewCount": 17,
       "installCount": 33,
-      "tags": ["web", "angular", "hire-build-web"],
+      "tags": [
+        "web",
+        "angular",
+        "hire-build-web"
+      ],
       "apiDocsMarkdown": "## Deliverables\n\nDesign system, SSR site, CMS handoff, Lighthouse pass.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-15", "notes": "SSR + booking CTA pack." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-15",
+          "notes": "SSR + booking CTA pack."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-15T00:00:00.000Z"
     },
@@ -660,14 +1107,32 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "GPU hour", "usageRate": 1.8 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "GPU hour",
+        "usageRate": 1.8
+      },
       "rating": 4.7,
       "reviewCount": 24,
       "installCount": 310,
-      "tags": ["lora", "vietnamese", "fine-tune"],
+      "tags": [
+        "lora",
+        "vietnamese",
+        "fine-tune"
+      ],
       "apiDocsMarkdown": "POST `/v1/fine-tune/jobs` with dataset URI + base model.",
-      "changelog": [{ "version": "1.0.0", "date": "2026-07-21", "notes": "QLoRA 4-bit path." }],
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-21",
+          "notes": "QLoRA 4-bit path."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-21T00:00:00.000Z"
     },
@@ -682,14 +1147,29 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80"],
-      "pricing": { "model": "one-time", "price": 199, "currency": "USD" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 199,
+        "currency": "USD"
+      },
       "rating": 4.7,
       "reviewCount": 18,
       "installCount": 140,
-      "tags": ["dataset", "hospitality"],
+      "tags": [
+        "dataset",
+        "hospitality"
+      ],
       "apiDocsMarkdown": "Download parquet via signed URL after purchase.",
-      "changelog": [{ "version": "2026.06", "date": "2026-06-30", "notes": "Added Zalo threads." }],
+      "changelog": [
+        {
+          "version": "2026.06",
+          "date": "2026-06-30",
+          "notes": "Added Zalo threads."
+        }
+      ],
       "publishedAt": "2026-06-30T00:00:00.000Z"
     },
     {
@@ -703,14 +1183,32 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80"],
-      "pricing": { "model": "usage", "price": 0, "currency": "USD", "usageUnit": "1M tokens", "usageRate": 0.35 },
+      "gallery": [
+        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "usage",
+        "price": 0,
+        "currency": "USD",
+        "usageUnit": "1M tokens",
+        "usageRate": 0.35
+      },
       "rating": 4.5,
       "reviewCount": 41,
       "installCount": 680,
-      "tags": ["gpu", "endpoint", "inference"],
+      "tags": [
+        "gpu",
+        "endpoint",
+        "inference"
+      ],
       "apiDocsMarkdown": "POST `/v1/inference/chat/completions` with Bearer key.",
-      "changelog": [{ "version": "1.2.0", "date": "2026-07-19", "notes": "Cold start under 3s." }],
+      "changelog": [
+        {
+          "version": "1.2.0",
+          "date": "2026-07-19",
+          "notes": "Cold start under 3s."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-19T00:00:00.000Z"
     },
@@ -725,16 +1223,34 @@
       "creatorSlug": "nova-labs",
       "creatorName": "Nova Labs",
       "coverUrl": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"],
-      "pricing": { "model": "one-time", "price": 49, "currency": "USD" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 49,
+        "currency": "USD"
+      },
       "rating": 4.9,
       "reviewCount": 38,
       "installCount": 520,
-      "tags": ["openclaw", "phhotel", "skill-pack"],
+      "tags": [
+        "openclaw",
+        "phhotel",
+        "skill-pack"
+      ],
       "apiDocsMarkdown": "## Install\n\n```bash\n# Copy into OpenClaw skills/\ncp -r phhotel-sales-skill ~/.openclaw/skills/phhotel\n```\n\n## Env\n\n- `NEST_BACKEND_URL`\n- `NEST_SERVICE_AUTH_SECRET` + subject (or `NEST_API_TOKEN`)\n\n## Tools order\n\n1. GET `/rooms/available`\n2. POST `/sepay/create-payment-history`\n3. GET `/sepay/payment-status`\n4. POST `/rooms/booking`",
       "changelog": [
-        { "version": "1.4.0", "date": "2026-07-28", "notes": "Mint JWT via create-token; forbid Render env coaching." },
-        { "version": "1.3.0", "date": "2026-07-10", "notes": "SePay deposit + booking payloads aligned." }
+        {
+          "version": "1.4.0",
+          "date": "2026-07-28",
+          "notes": "Mint JWT via create-token; forbid Render env coaching."
+        },
+        {
+          "version": "1.3.0",
+          "date": "2026-07-10",
+          "notes": "SePay deposit + booking payloads aligned."
+        }
       ],
       "featured": true,
       "publishedAt": "2026-07-01T00:00:00.000Z"
@@ -750,14 +1266,31 @@
       "creatorSlug": "orbit-ai",
       "creatorName": "Orbit AI",
       "coverUrl": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80"],
-      "pricing": { "model": "subscription", "price": 19, "currency": "USD", "interval": "month" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "subscription",
+        "price": 19,
+        "currency": "USD",
+        "interval": "month"
+      },
       "rating": 4.6,
       "reviewCount": 27,
       "installCount": 340,
-      "tags": ["cskh", "zalo", "skill-pack"],
+      "tags": [
+        "cskh",
+        "zalo",
+        "skill-pack"
+      ],
       "apiDocsMarkdown": "## Install\n\nDrop into `skills/cskh/` and enable in OpenClaw / PHGroup-AI agent config.\n\n## Includes\n\n- SKILL.md\n- prompt packs (VI/EN)\n- escalation checklist",
-      "changelog": [{ "version": "1.1.0", "date": "2026-07-22", "notes": "VIP escalation templates." }],
+      "changelog": [
+        {
+          "version": "1.1.0",
+          "date": "2026-07-22",
+          "notes": "VIP escalation templates."
+        }
+      ],
       "publishedAt": "2026-06-20T00:00:00.000Z"
     },
     {
@@ -771,16 +1304,262 @@
       "creatorSlug": "pulse-studio",
       "creatorName": "Pulse Studio",
       "coverUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80",
-      "gallery": ["https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80"],
-      "pricing": { "model": "one-time", "price": 79, "currency": "USD" },
+      "gallery": [
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 79,
+        "currency": "USD"
+      },
       "rating": 4.5,
       "reviewCount": 15,
       "installCount": 190,
-      "tags": ["rag", "faq", "skill-pack"],
+      "tags": [
+        "rag",
+        "faq",
+        "skill-pack"
+      ],
       "apiDocsMarkdown": "## Install\n\n```bash\nnpx phai skill install rag-ops-skill\n```\n\nRequires embedding + inference endpoints from the marketplace.",
-      "changelog": [{ "version": "0.9.0", "date": "2026-07-16", "notes": "MCP retrieve node." }],
+      "changelog": [
+        {
+          "version": "0.9.0",
+          "date": "2026-07-16",
+          "notes": "MCP retrieve node."
+        }
+      ],
       "featured": true,
       "publishedAt": "2026-07-16T00:00:00.000Z"
+    },
+    {
+      "id": "p-chatgpt-plus",
+      "slug": "chatgpt-plus-1thang",
+      "name": "ChatGPT Plus 1 tháng",
+      "tagline": "Tài khoản ChatGPT Plus dùng riêng",
+      "description": "Tài khoản ChatGPT Plus full tính năng, bảo hành login. Giao ngay sau thanh toán.",
+      "category": "ai-account",
+      "creatorId": "c-pulse",
+      "creatorSlug": "pulse-studio",
+      "creatorName": "Pulse Studio",
+      "coverUrl": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 12,
+        "currency": "USD"
+      },
+      "rating": 4.7,
+      "reviewCount": 88,
+      "installCount": 640,
+      "tags": [
+        "digital",
+        "chatgpt",
+        "ai-account"
+      ],
+      "apiDocsMarkdown": "## ChatGPT Plus\\nNhận thông tin đăng nhập qua email sau khi thanh toán.",
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-01",
+          "notes": "Mở bán."
+        }
+      ],
+      "featured": true,
+      "publishedAt": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": "p-via-fb",
+      "slug": "via-facebook-co-mail",
+      "name": "VIA Facebook có mail",
+      "tagline": "VIA sống, có 2FA + mail",
+      "description": "VIA Facebook đã nuôi, kèm mail và 2FA. Phù hợp chạy ads/MMO.",
+      "category": "social-account",
+      "creatorId": "c-nova",
+      "creatorSlug": "nova-labs",
+      "creatorName": "Nova Labs",
+      "coverUrl": "https://images.unsplash.com/photo-1611162616305-c69b3fa7fdf2?w=1200&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1611162616305-c69b3fa7fdf2?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 3.5,
+        "currency": "USD"
+      },
+      "rating": 4.5,
+      "reviewCount": 210,
+      "installCount": 1820,
+      "tags": [
+        "digital",
+        "via",
+        "facebook",
+        "social-account"
+      ],
+      "apiDocsMarkdown": "## VIA Facebook\\nGiao tài khoản + hướng dẫn đổi mật khẩu.",
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-15",
+          "notes": "Stock mới."
+        }
+      ],
+      "featured": true,
+      "publishedAt": "2026-07-15T00:00:00.000Z"
+    },
+    {
+      "id": "p-nordvpn",
+      "slug": "nordvpn-1nam",
+      "name": "NordVPN Key 1 năm",
+      "tagline": "Key VPN premium 12 tháng",
+      "description": "Key NordVPN 1 năm, kích hoạt trên tài khoản của bạn.",
+      "category": "vpn-proxy",
+      "creatorId": "c-orbit",
+      "creatorSlug": "orbit-ai",
+      "creatorName": "Orbit AI",
+      "coverUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 28,
+        "currency": "USD"
+      },
+      "rating": 4.6,
+      "reviewCount": 54,
+      "installCount": 390,
+      "tags": [
+        "digital",
+        "vpn",
+        "nordvpn"
+      ],
+      "apiDocsMarkdown": "## NordVPN\\nGửi key + hướng dẫn redeem.",
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-05",
+          "notes": "Key official."
+        }
+      ],
+      "featured": false,
+      "publishedAt": "2026-08-05T00:00:00.000Z"
+    },
+    {
+      "id": "p-mmo-course",
+      "slug": "khoa-hoc-mmo-ai-2026",
+      "name": "Khóa học MMO + AI 2026",
+      "tagline": "Lộ trình kiếm tiền online với AI",
+      "description": "Khóa học video: content AI, tool automation, affiliate. Cập nhật 2026.",
+      "category": "course",
+      "creatorId": "c-nova",
+      "creatorSlug": "nova-labs",
+      "creatorName": "Nova Labs",
+      "coverUrl": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 49,
+        "currency": "USD"
+      },
+      "rating": 4.8,
+      "reviewCount": 120,
+      "installCount": 760,
+      "tags": [
+        "digital",
+        "course",
+        "mmo",
+        "ai"
+      ],
+      "apiDocsMarkdown": "## Khóa học\\nTruy cập Google Drive / Notion sau thanh toán.",
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-06-20",
+          "notes": "Ra mắt."
+        }
+      ],
+      "featured": true,
+      "publishedAt": "2026-06-20T00:00:00.000Z"
+    },
+    {
+      "id": "p-auto-tool",
+      "slug": "tool-auto-post-tiktok",
+      "name": "Tool Auto Post TikTok",
+      "tagline": "Lên lịch & đăng hàng loạt",
+      "description": "Tool Windows tự động đăng video TikTok theo lịch, hỗ trợ proxy.",
+      "category": "mmo-tool",
+      "creatorId": "c-pulse",
+      "creatorSlug": "pulse-studio",
+      "creatorName": "Pulse Studio",
+      "coverUrl": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 35,
+        "currency": "USD"
+      },
+      "rating": 4.4,
+      "reviewCount": 67,
+      "installCount": 410,
+      "tags": [
+        "digital",
+        "mmo-tool",
+        "tiktok"
+      ],
+      "apiDocsMarkdown": "## Tool Auto Post\\nNhận link download + license key.",
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-07-28",
+          "notes": "v1."
+        }
+      ],
+      "featured": false,
+      "publishedAt": "2026-07-28T00:00:00.000Z"
+    },
+    {
+      "id": "p-canva",
+      "slug": "canva-pro-1thang",
+      "name": "Canva Pro 1 tháng",
+      "tagline": "Tài khoản Canva Pro design",
+      "description": "Canva Pro 1 tháng, dùng cho thiết kế social & ads.",
+      "category": "design-asset",
+      "creatorId": "c-pulse",
+      "creatorSlug": "pulse-studio",
+      "creatorName": "Pulse Studio",
+      "coverUrl": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80"
+      ],
+      "pricing": {
+        "model": "one-time",
+        "price": 5,
+        "currency": "USD"
+      },
+      "rating": 4.5,
+      "reviewCount": 140,
+      "installCount": 990,
+      "tags": [
+        "digital",
+        "canva",
+        "design-asset"
+      ],
+      "apiDocsMarkdown": "## Canva Pro\\nGiao login.",
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-08-02",
+          "notes": "Stock."
+        }
+      ],
+      "featured": false,
+      "publishedAt": "2026-08-02T00:00:00.000Z"
     }
   ],
   "reviews": [
@@ -869,13 +1648,55 @@
     }
   ],
   "usage": [
-    { "date": "2026-07-22", "tokens": 1200000, "gpuHours": 4.2, "requests": 8200, "revenue": 180 },
-    { "date": "2026-07-23", "tokens": 980000, "gpuHours": 3.1, "requests": 6100, "revenue": 140 },
-    { "date": "2026-07-24", "tokens": 1500000, "gpuHours": 5.0, "requests": 9100, "revenue": 210 },
-    { "date": "2026-07-25", "tokens": 1320000, "gpuHours": 4.6, "requests": 8700, "revenue": 195 },
-    { "date": "2026-07-26", "tokens": 1100000, "gpuHours": 3.8, "requests": 7400, "revenue": 160 },
-    { "date": "2026-07-27", "tokens": 1600000, "gpuHours": 5.4, "requests": 10200, "revenue": 240 },
-    { "date": "2026-07-28", "tokens": 1450000, "gpuHours": 4.9, "requests": 9600, "revenue": 220 }
+    {
+      "date": "2026-07-22",
+      "tokens": 1200000,
+      "gpuHours": 4.2,
+      "requests": 8200,
+      "revenue": 180
+    },
+    {
+      "date": "2026-07-23",
+      "tokens": 980000,
+      "gpuHours": 3.1,
+      "requests": 6100,
+      "revenue": 140
+    },
+    {
+      "date": "2026-07-24",
+      "tokens": 1500000,
+      "gpuHours": 5,
+      "requests": 9100,
+      "revenue": 210
+    },
+    {
+      "date": "2026-07-25",
+      "tokens": 1320000,
+      "gpuHours": 4.6,
+      "requests": 8700,
+      "revenue": 195
+    },
+    {
+      "date": "2026-07-26",
+      "tokens": 1100000,
+      "gpuHours": 3.8,
+      "requests": 7400,
+      "revenue": 160
+    },
+    {
+      "date": "2026-07-27",
+      "tokens": 1600000,
+      "gpuHours": 5.4,
+      "requests": 10200,
+      "revenue": 240
+    },
+    {
+      "date": "2026-07-28",
+      "tokens": 1450000,
+      "gpuHours": 4.9,
+      "requests": 9600,
+      "revenue": 220
+    }
   ],
   "notifications": [
     {

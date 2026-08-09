@@ -28,9 +28,16 @@
         <span class="ct-search__pin" aria-hidden="true">◎</span>
         <select name="category" [(ngModel)]="selectedCategory" aria-label="Category">
           <option value="">All categories</option>
-          @for (c of categories; track c.id) {
-            <option [value]="c.id">{{ c.label }}</option>
-          }
+          <optgroup label="AI">
+            @for (c of aiCategories; track c.id) {
+              <option [value]="c.id">{{ c.label }}</option>
+            }
+          </optgroup>
+          <optgroup label="Sản phẩm số">
+            @for (c of digitalCategories; track c.id) {
+              <option [value]="c.id">{{ c.label }}</option>
+            }
+          </optgroup>
         </select>
       </label>
       <button type="submit" class="ct-search__btn">Search</button>

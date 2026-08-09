@@ -14,6 +14,7 @@ import {
 } from '../models/marketplace.models';
 import { CATEGORY_META } from '../models/categories';
 import seed from '../../assets/mock/marketplace.json';
+import { mergeRunpodIntoMarketplace } from '../models/runpod-marketplace-products';
 
 interface MockDb {
   users: User[];
@@ -28,9 +29,15 @@ interface MockDb {
   dashboard: DashboardSummary;
 }
 
+function initMockDb(): MockDb {
+  const db = structuredClone(seed as MockDb);
+  mergeRunpodIntoMarketplace(db);
+  return db;
+}
+
 @Injectable({ providedIn: 'root' })
 export class MockDataStore {
-  private db: MockDb = structuredClone(seed as MockDb);
+  private db: MockDb = initMockDb();
   private wishlistIds = signal<string[]>(this.readWishlist());
 
   ready(): Promise<void> {

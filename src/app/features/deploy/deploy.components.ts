@@ -2,10 +2,17 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DeploymentService, ProductService } from '../../services/api.services';
+import { DeploymentService, ProductService, RunpodService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { Product } from '../../models/marketplace.models';
 import { Deployment, InvokeResult } from '../../models/deployment.models';
+import {
+  RUNPOD_ENDPOINT_KIND_LABEL,
+  RUNPOD_PUBLIC_ENDPOINTS,
+  RunpodEndpointKind,
+  RunpodPublicEndpoint,
+  runtimeFromRunpodPublicEndpoint,
+} from '../../models/runpod-public-endpoints';
 
 const MODEL_CATEGORIES = [
   'text-to-text',
@@ -16,6 +23,8 @@ const MODEL_CATEGORIES = [
   'inference',
   'fine-tune',
 ];
+
+const RUNPOD_KINDS: RunpodEndpointKind[] = ['image', 'video', 'text', 'audio'];
 
 function emptyRuntimeForm() {
   return {
@@ -72,17 +81,44 @@ function fillRuntimeFromProduct(form: ReturnType<typeof emptyRuntimeForm>, p: Pr
     <section class="page route-enter">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Serverless inference</p>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">RunPod Public Endpoints</p>
           <h1 class="section-title mt-1">AI Models</h1>
           <p class="mt-2 max-w-2xl text-muted">
-            Sellers attach RunPod serverless, tokenize meters, and gateways. Deploy your product, then
-            publish it to the Agent Browser.
+            Official pre-deployed models from
+            <a class="text-accent underline" href="https://docs.runpod.io/public-endpoints/reference" target="_blank" rel="noopener">
+              RunPod Public Endpoints
+            </a>
+            — call with <code class="text-xs">Authorization: Bearer RUNPOD_API_KEY</code> via
+            <code class="text-xs">/runsync</code> or <code class="text-xs">/run</code>.
           </p>
         </div>
         <a routerLink="/deployments" class="btn-ghost">Seller deployments →</a>
       </div>
 
       <div class="mt-6 flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="rounded-full border px-3 py-1.5 text-xs transition"
+          [class.border-accent]="tab() === 'public'"
+          [class.text-accent]="tab() === 'public'"
+          [class.border-line]="tab() !== 'public'"
+          (click)="tab.set('public')"
+        >
+          Public Endpoints ({{ publicFiltered().length }})
+        </button>
+        <button
+          type="button"
+          class="rounded-full border px-3 py-1.5 text-xs transition"
+          [class.border-accent]="tab() === 'sellers'"
+          [class.text-accent]="tab() === 'sellers'"
+          [class.border-line]="tab() !== 'sellers'"
+          (click)="tab.set('sellers')"
+        >
+          Seller catalog ({{ sellerFiltered().length }})
+        </button>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2">
         <input
           type="search"
           class="input w-full max-w-sm rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink"
@@ -90,74 +126,142 @@ function fillRuntimeFromProduct(form: ReturnType<typeof emptyRuntimeForm>, p: Pr
           [ngModel]="q()"
           (ngModelChange)="q.set($event)"
         />
-        @for (c of categories; track c) {
-          <button
-            type="button"
-            class="rounded-full border px-3 py-1.5 text-xs transition"
-            [class.border-accent]="cat() === c"
-            [class.text-accent]="cat() === c"
-            [class.border-line]="cat() !== c"
-            [class.text-muted]="cat() !== c"
-            (click)="toggleCat(c)"
-          >
-            {{ c }}
-          </button>
+        @if (tab() === 'public') {
+          @for (k of kinds; track k) {
+            <button
+              type="button"
+              class="rounded-full border px-3 py-1.5 text-xs transition"
+              [class.border-accent]="kind() === k"
+              [class.text-accent]="kind() === k"
+              [class.border-line]="kind() !== k"
+              [class.text-muted]="kind() !== k"
+              (click)="toggleKind(k)"
+            >
+              {{ kindLabel[k] }}
+            </button>
+          }
+        } @else {
+          @for (c of categories; track c) {
+            <button
+              type="button"
+              class="rounded-full border px-3 py-1.5 text-xs transition"
+              [class.border-accent]="cat() === c"
+              [class.text-accent]="cat() === c"
+              [class.border-line]="cat() !== c"
+              [class.text-muted]="cat() !== c"
+              (click)="toggleCat(c)"
+            >
+              {{ c }}
+            </button>
+          }
         }
       </div>
 
-      <div class="mt-8 overflow-hidden rounded-xl border border-line">
-        <div class="hidden grid-cols-12 gap-3 border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted md:grid">
-          <span class="col-span-4">Model</span>
-          <span class="col-span-2">Modality</span>
-          <span class="col-span-2">Creator</span>
-          <span class="col-span-2 text-right">Price / 1K tokens</span>
-          <span class="col-span-2 text-right">Deploy</span>
-        </div>
-        @for (p of filtered(); track p.id) {
-          <div class="grid grid-cols-1 items-center gap-3 border-b border-line px-4 py-4 transition hover:bg-line/20 md:grid-cols-12">
-            <div class="col-span-4">
-              <a [routerLink]="['/product', p.slug]" class="font-medium text-ink hover:text-accent">{{ p.name }}</a>
-              <p class="mt-0.5 line-clamp-1 text-xs text-muted">{{ p.tagline }}</p>
-              @if (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint) {
-                <p class="mt-1 truncate font-mono text-[11px] text-muted">
-                  {{ p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint }}
-                </p>
-              }
-            </div>
-            <div class="col-span-2">
-              <span class="rounded bg-line/40 px-2 py-0.5 text-xs text-muted">{{ p.category }}</span>
-            </div>
-            <div class="col-span-2 text-sm text-muted">{{ p.creatorName }}</div>
-            <div class="col-span-2 text-left text-sm text-ink md:text-right">
-              @if (p.pricing.model === 'usage') {
-                <strong>\${{ p.pricing.usageRate | number: '1.2-4' }}</strong>
-              } @else if (p.pricing.model === 'free') {
-                <strong class="text-accent">Free</strong>
-              } @else {
-                <strong>\${{ p.pricing.price | number: '1.0-2' }}</strong>
-              }
-            </div>
-            <div class="col-span-2 md:text-right">
-              <a [routerLink]="['/deploy', p.slug]" class="btn-primary inline-flex text-sm">Configure deploy</a>
-            </div>
+      @if (tab() === 'public') {
+        <div class="mt-8 overflow-hidden rounded-xl border border-line">
+          <div class="hidden grid-cols-12 gap-3 border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted md:grid">
+            <span class="col-span-4">Model</span>
+            <span class="col-span-2">Kind</span>
+            <span class="col-span-3">Endpoint</span>
+            <span class="col-span-2 text-right">Pricing</span>
+            <span class="col-span-1 text-right">Docs</span>
           </div>
-        } @empty {
-          <p class="px-4 py-10 text-center text-muted">No models match your filters.</p>
-        }
-      </div>
+          @for (e of publicFiltered(); track e.slug) {
+            <div class="grid grid-cols-1 items-center gap-3 border-b border-line px-4 py-4 transition hover:bg-line/20 md:grid-cols-12">
+              <div class="col-span-4">
+                <p class="font-medium text-ink">{{ e.name }}</p>
+                <p class="mt-0.5 line-clamp-2 text-xs text-muted">{{ e.description }}</p>
+                <p class="mt-1 text-[11px] text-muted">modality · {{ e.modality }}</p>
+              </div>
+              <div class="col-span-2">
+                <span class="rounded bg-line/40 px-2 py-0.5 text-xs text-muted">{{ kindLabel[e.kind] }}</span>
+              </div>
+              <div class="col-span-3 min-w-0">
+                <p class="truncate font-mono text-[11px] text-muted" [title]="e.runsyncUrl">{{ e.runsyncUrl }}</p>
+                @if (e.openaiBaseUrl) {
+                  <p class="mt-0.5 truncate font-mono text-[11px] text-accent" [title]="e.openaiBaseUrl">OpenAI · {{ e.openaiBaseUrl }}</p>
+                }
+              </div>
+              <div class="col-span-2 text-left text-sm text-ink md:text-right">{{ e.pricing }}</div>
+              <div class="col-span-1 md:text-right">
+                <a class="text-sm text-accent hover:underline" [href]="e.docsUrl" target="_blank" rel="noopener">Docs</a>
+              </div>
+            </div>
+          } @empty {
+            <p class="px-4 py-10 text-center text-muted">No public endpoints match your filters.</p>
+          }
+        </div>
+      } @else {
+        <div class="mt-8 overflow-hidden rounded-xl border border-line">
+          <div class="hidden grid-cols-12 gap-3 border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted md:grid">
+            <span class="col-span-4">Model</span>
+            <span class="col-span-2">Modality</span>
+            <span class="col-span-2">Creator</span>
+            <span class="col-span-2 text-right">Price</span>
+            <span class="col-span-2 text-right">Deploy</span>
+          </div>
+          @for (p of sellerFiltered(); track p.id) {
+            <div class="grid grid-cols-1 items-center gap-3 border-b border-line px-4 py-4 transition hover:bg-line/20 md:grid-cols-12">
+              <div class="col-span-4">
+                <a [routerLink]="['/product', p.slug]" class="font-medium text-ink hover:text-accent">{{ p.name }}</a>
+                <p class="mt-0.5 line-clamp-1 text-xs text-muted">{{ p.tagline }}</p>
+                @if (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint) {
+                  <p class="mt-1 truncate font-mono text-[11px] text-muted">
+                    {{ p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint }}
+                  </p>
+                }
+              </div>
+              <div class="col-span-2">
+                <span class="rounded bg-line/40 px-2 py-0.5 text-xs text-muted">{{ p.category }}</span>
+              </div>
+              <div class="col-span-2 text-sm text-muted">{{ p.creatorName }}</div>
+              <div class="col-span-2 text-left text-sm text-ink md:text-right">
+                @if (p.pricing.model === 'usage') {
+                  <strong>\${{ p.pricing.usageRate | number: '1.2-4' }}</strong>
+                } @else if (p.pricing.model === 'free') {
+                  <strong class="text-accent">Free</strong>
+                } @else {
+                  <strong>\${{ p.pricing.price | number: '1.0-2' }}</strong>
+                }
+              </div>
+              <div class="col-span-2 md:text-right">
+                <a [routerLink]="['/deploy', p.slug]" class="btn-primary inline-flex text-sm">Configure deploy</a>
+              </div>
+            </div>
+          } @empty {
+            <p class="px-4 py-10 text-center text-muted">No seller models match your filters.</p>
+          }
+        </div>
+      }
     </section>
   `,
 })
 export class ModelsHubComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
+  private readonly runpodApi = inject(RunpodService);
   private readonly seo = inject(SeoService);
 
   readonly categories = MODEL_CATEGORIES;
+  readonly kinds = RUNPOD_KINDS;
+  readonly kindLabel = RUNPOD_ENDPOINT_KIND_LABEL;
   readonly products = signal<Product[]>([]);
+  readonly publicEndpoints = signal<RunpodPublicEndpoint[]>(RUNPOD_PUBLIC_ENDPOINTS);
   readonly q = signal('');
   readonly cat = signal<string | null>(null);
+  readonly kind = signal<RunpodEndpointKind | null>(null);
+  readonly tab = signal<'public' | 'sellers'>('public');
 
-  readonly filtered = computed(() => {
+  readonly publicFiltered = computed(() => {
+    const q = this.q().toLowerCase();
+    const kind = this.kind();
+    return this.publicEndpoints().filter(
+      (e) =>
+        (!kind || e.kind === kind) &&
+        (!q || `${e.name} ${e.slug} ${e.endpointId} ${e.description} ${e.modality}`.toLowerCase().includes(q)),
+    );
+  });
+
+  readonly sellerFiltered = computed(() => {
     const q = this.q().toLowerCase();
     const cat = this.cat();
     return this.products().filter(
@@ -169,8 +273,12 @@ export class ModelsHubComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.set({
-      title: 'AI Models — RunPod serverless',
-      description: 'Deploy AI models with RunPod serverless, tokenize meters and gateways.',
+      title: 'AI Models — RunPod Public Endpoints',
+      description: 'Browse official RunPod Public Endpoints and seller-deployed models.',
+    });
+    this.runpodApi.publicEndpoints().subscribe({
+      next: (items) => this.publicEndpoints.set(items),
+      error: () => this.publicEndpoints.set(RUNPOD_PUBLIC_ENDPOINTS),
     });
     this.productsApi.list().subscribe((items) => {
       this.products.set(items.filter((p) => MODEL_CATEGORIES.includes(p.category)));
@@ -179,6 +287,10 @@ export class ModelsHubComponent implements OnInit {
 
   toggleCat(c: string): void {
     this.cat.set(this.cat() === c ? null : c);
+  }
+
+  toggleKind(k: RunpodEndpointKind): void {
+    this.kind.set(this.kind() === k ? null : k);
   }
 }
 
@@ -232,7 +344,7 @@ export class ModelsHubComponent implements OnInit {
         <h1 class="section-title mt-2">Deploy {{ product()?.name || '…' }}</h1>
         @if (product(); as p) {
           <p class="mt-2 text-sm text-muted">
-            Attach your RunPod serverless, tokenize endpoint, gateway, public URL, .env and skills.
+            Attach AI Markets endpoints (api.aimarkets.vn / ai.aimarkets.vn), .env and skills.
             Only the product seller can deploy.
             @if (p.pricing.model === 'usage') {
               — billed at <strong class="text-ink">\${{ p.pricing.usageRate | number: '1.2-4' }} / 1K tokens</strong>
@@ -246,28 +358,47 @@ export class ModelsHubComponent implements OnInit {
             </div>
 
             <fieldset class="space-y-3 rounded-xl border border-line p-4">
-              <legend class="px-1 text-sm font-semibold text-ink">RunPod &amp; networking</legend>
+              <legend class="px-1 text-sm font-semibold text-ink">AI Markets networking</legend>
               <div>
-                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-serverless">Serverless endpoint (RunPod)</label>
-                <input id="dep-serverless" name="serverlessEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.serverlessEndpoint" placeholder="https://api.runpod.ai/v2/…/runsync" />
+                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-catalog">Pick hosted model</label>
+                <select
+                  id="dep-catalog"
+                  name="catalogSlug"
+                  class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 text-sm text-ink"
+                  [(ngModel)]="catalogSlug"
+                  (ngModelChange)="applyCatalog($event)"
+                >
+                  <option value="">— Custom / paste URLs —</option>
+                  @for (e of catalogOptions(); track e.slug) {
+                    <option [value]="e.slug">{{ e.name }} · {{ e.pricing }}</option>
+                  }
+                </select>
+                <p class="mt-1 text-[11px] text-muted">
+                  Fills public URLs on <code>api.aimarkets.vn</code> / <code>ai.aimarkets.vn</code>.
+                  Buyers never see upstream provider hosts. Auth: marketplace JWT.
+                </p>
               </div>
               <div>
-                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-public">Public endpoint (RunPod)</label>
-                <input id="dep-public" name="publicEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.publicEndpoint" placeholder="https://….proxy.runpod.net/v1" />
+                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-public">Public endpoint (/runsync)</label>
+                <input id="dep-public" name="publicEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.publicEndpoint" placeholder="https://api.aimarkets.vn/v1/models/…/runsync" />
+              </div>
+              <div>
+                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-serverless">Async endpoint (/run)</label>
+                <input id="dep-serverless" name="serverlessEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.serverlessEndpoint" placeholder="https://api.aimarkets.vn/v1/models/…/run" />
               </div>
               <div>
                 <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-tokenize">Tokenize endpoint (meter)</label>
-                <input id="dep-tokenize" name="tokenizeEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.tokenizeEndpoint" placeholder="https://…/tokenize" />
+                <input id="dep-tokenize" name="tokenizeEndpoint" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.tokenizeEndpoint" placeholder="https://api.aimarkets.vn/v1/models/…/tokenize" />
               </div>
               <div>
-                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-gateway">Gateway</label>
-                <input id="dep-gateway" name="gatewayUrl" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.gatewayUrl" placeholder="wss://… or https://gateway…" />
+                <label class="mb-1 block text-xs uppercase tracking-wider text-muted" for="dep-gateway">Gateway / OpenAI base</label>
+                <input id="dep-gateway" name="gatewayUrl" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.gatewayUrl" placeholder="https://ai.aimarkets.vn/v1" />
               </div>
             </fieldset>
 
             <div>
               <label class="mb-1 block text-sm font-medium text-ink" for="dep-env">.env (KEY=VALUE per line)</label>
-              <textarea id="dep-env" name="envText" rows="4" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.envText" placeholder="RUNPOD_API_KEY=&#10;HF_TOKEN="></textarea>
+              <textarea id="dep-env" name="envText" rows="4" class="input w-full rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" [(ngModel)]="form.envText" placeholder="MARKETPLACE_API_KEY=&#10;UPSTREAM_RUNSYNC="></textarea>
             </div>
             <div>
               <label class="mb-1 block text-sm font-medium text-ink" for="dep-skills">Skills (comma-separated)</label>
@@ -328,12 +459,23 @@ export class DeployWizardComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly productsApi = inject(ProductService);
   private readonly deployments = inject(DeploymentService);
+  private readonly runpodApi = inject(RunpodService);
   private readonly seo = inject(SeoService);
 
   readonly product = signal<Product | null>(null);
   readonly created = signal<Deployment | null>(null);
   readonly busy = signal(false);
   readonly error = signal('');
+  readonly catalog = signal<RunpodPublicEndpoint[]>(RUNPOD_PUBLIC_ENDPOINTS);
+  catalogSlug = '';
+
+  readonly catalogOptions = computed(() => {
+    const modality = this.product()?.category;
+    const all = this.catalog();
+    if (!modality) return all;
+    const matched = all.filter((e) => e.modality === modality);
+    return matched.length ? matched : all;
+  });
 
   form = {
     name: '',
@@ -344,20 +486,48 @@ export class DeployWizardComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.set({ title: 'Seller deploy' });
+    this.runpodApi.publicEndpoints().subscribe({
+      next: (items) => this.catalog.set(items),
+      error: () => this.catalog.set(RUNPOD_PUBLIC_ENDPOINTS),
+    });
     const slug = this.route.snapshot.paramMap.get('slug') || '';
     this.productsApi.bySlug(slug).subscribe((p) => {
       this.product.set(p);
       this.form.name = `${p.name} — production`;
       fillRuntimeFromProduct(this.form, p);
+      const hit = this.catalog().find((e) => e.runsyncUrl === this.form.publicEndpoint);
+      this.catalogSlug = hit?.slug || '';
       this.seo.set({ title: `Deploy ${p.name}` });
     });
+  }
+
+  applyCatalog(slug: string): void {
+    if (!slug) return;
+    const ep = this.catalog().find((e) => e.slug === slug);
+    if (!ep) return;
+    const mapped = runtimeFromRunpodPublicEndpoint(ep);
+    this.form.publicEndpoint = mapped.publicEndpoint;
+    this.form.serverlessEndpoint = mapped.serverlessEndpoint;
+    this.form.gatewayUrl = mapped.gatewayUrl;
+    this.form.tokenizeEndpoint = mapped.tokenizeEndpoint;
+    this.form.baseModel = mapped.baseModel;
+    const up = mapped._upstream;
+    const lines = [
+      'AI_PROVIDER=runpod_public',
+      `PROVIDER_ENDPOINT_ID=${up.endpointId}`,
+      `UPSTREAM_RUNSYNC=${up.runsync}`,
+      `UPSTREAM_RUN=${up.run}`,
+      up.gateway ? `UPSTREAM_GATEWAY=${up.gateway}` : '',
+      'MARKETPLACE_API_KEY=',
+    ].filter(Boolean);
+    this.form.envText = lines.join('\n');
   }
 
   submit(): void {
     const p = this.product();
     if (!p || this.busy()) return;
     if (!this.form.serverlessEndpoint.trim() && !this.form.publicEndpoint.trim()) {
-      this.error.set('Cần ít nhất Serverless endpoint hoặc Public endpoint (RunPod).');
+      this.error.set('Cần ít nhất serverless hoặc public endpoint (api.aimarkets.vn).');
       return;
     }
     this.busy.set(true);
@@ -520,8 +690,8 @@ export class AgentBrowserComponent implements OnInit {
             @if (editing() === d.id) {
               <form class="mt-4 space-y-3 rounded-lg border border-line bg-line/10 p-4" (ngSubmit)="saveRuntime(d)">
                 <div class="grid gap-3 md:grid-cols-2">
-                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="serverless" [(ngModel)]="editForm.serverlessEndpoint" placeholder="Serverless RunPod" />
-                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="public" [(ngModel)]="editForm.publicEndpoint" placeholder="Public RunPod" />
+                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="public" [(ngModel)]="editForm.publicEndpoint" placeholder="https://api.aimarkets.vn/v1/models/…/runsync" />
+                  <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="serverless" [(ngModel)]="editForm.serverlessEndpoint" placeholder="https://api.aimarkets.vn/v1/models/…/run" />
                   <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="tokenize" [(ngModel)]="editForm.tokenizeEndpoint" placeholder="Tokenize endpoint" />
                   <input class="input rounded-lg border border-line bg-transparent px-3 py-2 font-mono text-xs text-ink" name="gateway" [(ngModel)]="editForm.gatewayUrl" placeholder="Gateway" />
                 </div>
@@ -636,7 +806,7 @@ export class MyDeploymentsComponent implements OnInit {
 
   saveRuntime(d: Deployment): void {
     if (!this.editForm.serverlessEndpoint.trim() && !this.editForm.publicEndpoint.trim()) {
-      this.status.set('Cần serverless hoặc public RunPod endpoint.');
+      this.status.set('Cần serverless hoặc public endpoint (api.aimarkets.vn).');
       return;
     }
     this.saving.set(true);

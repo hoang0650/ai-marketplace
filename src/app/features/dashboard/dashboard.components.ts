@@ -14,7 +14,12 @@ import {
   UsageStat,
   WalletTx,
 } from '../../models/marketplace.models';
-import { CATEGORY_META, categoryLabel } from '../../models/categories';
+import { AI_CATEGORIES, DIGITAL_CATEGORIES, CATEGORY_META, categoryLabel } from '../../models/categories';
+import {
+  RUNPOD_PUBLIC_ENDPOINTS,
+  RunpodPublicEndpoint,
+  runtimeFromRunpodPublicEndpoint,
+} from '../../models/runpod-public-endpoints';
 
 @Component({
   selector: 'app-dashboard-shell',
@@ -259,9 +264,16 @@ export class DashboardAnalyticsComponent implements OnInit {
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Modality (RunPod-style)</label>
           <select class="input" [(ngModel)]="draft.category" name="category" required>
-            @for (c of categories; track c.id) {
-              <option [ngValue]="c.id">{{ c.label }}</option>
-            }
+            <optgroup label="AI">
+              @for (c of aiCategories; track c.id) {
+                <option [ngValue]="c.id">{{ c.label }}</option>
+              }
+            </optgroup>
+            <optgroup label="Sản phẩm số">
+              @for (c of digitalCategories; track c.id) {
+                <option [ngValue]="c.id">{{ c.label }}</option>
+              }
+            </optgroup>
           </select>
         </div>
         <div>
@@ -307,27 +319,36 @@ export class DashboardAnalyticsComponent implements OnInit {
           <input class="input" [(ngModel)]="draft.tags" name="tags" placeholder="llm, vietnamese, text-to-text" />
         </div>
         <div class="md:col-span-2 border-t border-line pt-3">
-          <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">RunPod runtime (optional — editable later in Deployments)</p>
+          <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">AI Markets endpoints (optional — editable later in Deployments)</p>
+        </div>
+        <div class="md:col-span-2">
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Pick from hosted catalog</label>
+          <select class="input" name="runpodCatalog" [(ngModel)]="catalogSlug" (ngModelChange)="applyRunpodCatalog($event)">
+            <option value="">— Custom / paste URLs —</option>
+            @for (e of catalogForCategory(); track e.slug) {
+              <option [value]="e.slug">{{ e.name }} · {{ e.pricing }}</option>
+            }
+          </select>
         </div>
         <div>
-          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Serverless endpoint</label>
-          <input class="input font-mono text-xs" [(ngModel)]="draft.serverlessEndpoint" name="serverlessEndpoint" placeholder="https://api.runpod.ai/v2/…/runsync" />
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Public endpoint (/runsync)</label>
+          <input class="input font-mono text-xs" [(ngModel)]="draft.publicEndpoint" name="publicEndpoint" placeholder="https://api.aimarkets.vn/v1/models/…/runsync" />
         </div>
         <div>
-          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Public endpoint</label>
-          <input class="input font-mono text-xs" [(ngModel)]="draft.publicEndpoint" name="publicEndpoint" placeholder="https://….proxy.runpod.net/v1" />
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Async endpoint (/run)</label>
+          <input class="input font-mono text-xs" [(ngModel)]="draft.serverlessEndpoint" name="serverlessEndpoint" placeholder="https://api.aimarkets.vn/v1/models/…/run" />
         </div>
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Tokenize endpoint</label>
-          <input class="input font-mono text-xs" [(ngModel)]="draft.tokenizeEndpoint" name="tokenizeEndpoint" placeholder="https://…/tokenize" />
+          <input class="input font-mono text-xs" [(ngModel)]="draft.tokenizeEndpoint" name="tokenizeEndpoint" placeholder="https://api.aimarkets.vn/v1/models/…/tokenize" />
         </div>
         <div>
-          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Gateway</label>
-          <input class="input font-mono text-xs" [(ngModel)]="draft.gatewayUrl" name="gatewayUrl" placeholder="wss://… or https://gateway…" />
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Gateway / OpenAI base</label>
+          <input class="input font-mono text-xs" [(ngModel)]="draft.gatewayUrl" name="gatewayUrl" placeholder="https://ai.aimarkets.vn/v1" />
         </div>
         <div class="md:col-span-2">
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">.env (KEY=VALUE per line)</label>
-          <textarea class="input min-h-20 font-mono text-xs" [(ngModel)]="draft.envText" name="envText" placeholder="RUNPOD_API_KEY=&#10;HF_TOKEN="></textarea>
+          <textarea class="input min-h-20 font-mono text-xs" [(ngModel)]="draft.envText" name="envText" placeholder="MARKETPLACE_API_KEY=&#10;UPSTREAM_RUNSYNC="></textarea>
         </div>
         <div class="md:col-span-2">
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Skills (comma-separated)</label>
@@ -368,12 +389,47 @@ export class DashboardProductsComponent implements OnInit {
   private readonly auth = inject(AuthService);
   readonly products = signal<Product[]>([]);
   readonly categories = CATEGORY_META;
+  readonly aiCategories = AI_CATEGORIES;
+  readonly digitalCategories = DIGITAL_CATEGORIES;
   readonly categoryLabel = categoryLabel;
+  readonly runpodCatalog: RunpodPublicEndpoint[] = RUNPOD_PUBLIC_ENDPOINTS;
+  catalogSlug = '';
   showForm = false;
   draft = this.emptyDraft();
 
   ngOnInit(): void {
     this.reload();
+  }
+
+  catalogForCategory(): RunpodPublicEndpoint[] {
+    const modality = this.draft.category;
+    const matched = this.runpodCatalog.filter((e) => e.modality === modality);
+    return matched.length ? matched : this.runpodCatalog;
+  }
+
+  applyRunpodCatalog(slug: string): void {
+    if (!slug) return;
+    const ep = this.runpodCatalog.find((e) => e.slug === slug);
+    if (!ep) return;
+    const mapped = runtimeFromRunpodPublicEndpoint(ep);
+    this.draft.publicEndpoint = mapped.publicEndpoint;
+    this.draft.serverlessEndpoint = mapped.serverlessEndpoint;
+    this.draft.gatewayUrl = mapped.gatewayUrl;
+    this.draft.tokenizeEndpoint = mapped.tokenizeEndpoint;
+    const up = mapped._upstream;
+    this.draft.envText = [
+      'AI_PROVIDER=runpod_public',
+      `PROVIDER_ENDPOINT_ID=${up.endpointId}`,
+      `UPSTREAM_RUNSYNC=${up.runsync}`,
+      `UPSTREAM_RUN=${up.run}`,
+      up.gateway ? `UPSTREAM_GATEWAY=${up.gateway}` : '',
+      'MARKETPLACE_API_KEY=',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    if (!this.draft.name) this.draft.name = ep.name;
+    if (!this.draft.tagline) this.draft.tagline = ep.description;
+    this.draft.category = ep.modality;
   }
 
   emptyDraft() {
@@ -475,6 +531,7 @@ export class DashboardProductsComponent implements OnInit {
       })
       .subscribe(() => {
         this.draft = this.emptyDraft();
+        this.catalogSlug = '';
         this.showForm = false;
         this.reload();
       });

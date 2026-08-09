@@ -1,5 +1,10 @@
-/** RunPod-style I/O modalities + hire talent */
+/**
+ * Product categories — two catalog lanes (gcmmo-style):
+ * - AI: models, agents, skills, hire
+ * - Digital: tài khoản, phần mềm, key, khóa học, tool MMO…
+ */
 export type ProductCategory =
+  // AI
   | 'text-to-text'
   | 'text-to-video'
   | 'image-to-video'
@@ -15,9 +20,28 @@ export type ProductCategory =
   | 'hire-workflow'
   | 'hire-build-app'
   | 'hire-build-web'
-  | 'skill-pack';
+  | 'skill-pack'
+  // Digital (sản phẩm số)
+  | 'ai-account'
+  | 'social-account'
+  | 'software'
+  | 'vpn-proxy'
+  | 'license-key'
+  | 'course'
+  | 'template'
+  | 'email-domain'
+  | 'boost-service'
+  | 'mmo-tool'
+  | 'design-asset'
+  | 'cloud-hosting';
 
-export type CategoryGroup = 'models' | 'skills' | 'hire';
+export type CategoryGroup = 'models' | 'skills' | 'hire' | 'digital';
+
+/** Top-level marketplace lanes — AI vs Digital goods. */
+export type CatalogLane = 'ai' | 'digital';
+
+/** Header mega-menu sections within AI (digital uses lane only). */
+export type NavGroup = 'generate' | 'platform' | 'talent' | 'digital';
 
 export type PricingModel = 'free' | 'one-time' | 'subscription' | 'usage';
 
@@ -31,6 +55,8 @@ export interface CategoryMeta {
   description: string;
   hubPath: string;
   group: CategoryGroup;
+  navGroup: NavGroup;
+  lane: CatalogLane;
 }
 
 export interface User {

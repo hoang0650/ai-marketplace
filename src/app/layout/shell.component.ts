@@ -5,8 +5,13 @@ import { ThemeService } from '../services/theme.service';
 import { AuthService } from '../services/auth.service';
 import { DashboardService } from '../services/api.services';
 import { environment } from '../../environments/environment';
-import { CATEGORY_GROUP_LABEL, CATEGORY_META, categoriesByGroup } from '../models/categories';
-import { CategoryGroup, NotificationItem } from '../models/marketplace.models';
+import {
+  AI_CATEGORIES,
+  CATALOG_LANE_LABEL_VI,
+  DIGITAL_CATEGORIES,
+  NAV_PLATFORM_LINKS,
+} from '../models/categories';
+import { CatalogLane, NotificationItem } from '../models/marketplace.models';
 
 type NotiTab = 'all' | 'tx' | 'system' | 'promo';
 
@@ -23,11 +28,10 @@ export class ShellComponent implements OnInit {
   readonly theme = inject(ThemeService);
   readonly auth = inject(AuthService);
   readonly brand = environment.brandName;
-  readonly navCategories = CATEGORY_META;
-  readonly groupLabel = CATEGORY_GROUP_LABEL;
-  readonly modelCategories = categoriesByGroup('models');
-  readonly skillCategories = categoriesByGroup('skills');
-  readonly hireCategories = categoriesByGroup('hire');
+  readonly laneLabel = CATALOG_LANE_LABEL_VI;
+  readonly platformLinks = NAV_PLATFORM_LINKS;
+  readonly aiCategories = AI_CATEGORIES;
+  readonly digitalCategories = DIGITAL_CATEGORIES;
   readonly categoryOpen = signal(false);
   readonly userMenuOpen = signal(false);
   readonly notiOpen = signal(false);
@@ -157,7 +161,7 @@ export class ShellComponent implements OnInit {
     this.auth.logout();
   }
 
-  groupTitle(group: CategoryGroup): string {
-    return this.groupLabel[group];
+  laneTitle(lane: CatalogLane): string {
+    return this.laneLabel[lane];
   }
 }

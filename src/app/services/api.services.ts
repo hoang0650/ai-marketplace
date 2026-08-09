@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   AffiliateStats,
@@ -22,6 +22,50 @@ import {
   DeploymentUsage,
   InvokeResult,
 } from '../models/deployment.models';
+import {
+  RUNPOD_PUBLIC_ENDPOINTS,
+  RunpodEndpointKind,
+  RunpodPublicEndpoint,
+} from '../models/runpod-public-endpoints';
+
+@Injectable({ providedIn: 'root' })
+export class RunpodService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  /** Official RunPod Public Endpoints (docs catalog). Falls back to bundled JSON offline/mock. */
+  publicEndpoints(filter: {
+    kind?: RunpodEndpointKind | string;
+    modality?: string;
+    q?: string;
+  } = {}): Observable<RunpodPublicEndpoint[]> {
+    if (environment.useMockApi) {
+      let rows = RUNPOD_PUBLIC_ENDPOINTS;
+      if (filter.kind) rows = rows.filter((e) => e.kind === filter.kind);
+      if (filter.modality) rows = rows.filter((e) => e.modality === filter.modality);
+      if (filter.q) {
+        const q = filter.q.toLowerCase();
+        rows = rows.filter((e) =>
+          `${e.name} ${e.slug} ${e.endpointId} ${e.description}`.toLowerCase().includes(q),
+        );
+      }
+      return of(rows);
+    }
+    let params = new HttpParams();
+    if (filter.kind) params = params.set('kind', filter.kind);
+    if (filter.modality) params = params.set('modality', filter.modality);
+    if (filter.q) params = params.set('q', filter.q);
+    return this.http.get<RunpodPublicEndpoint[]>(`${this.base}/runpod/public-endpoints`, { params });
+  }
+
+  bySlug(slug: string): Observable<RunpodPublicEndpoint> {
+    if (environment.useMockApi) {
+      const hit = RUNPOD_PUBLIC_ENDPOINTS.find((e) => e.slug === slug);
+      return hit ? of(hit) : throwError(() => ({ status: 404 }));
+    }
+    return this.http.get<RunpodPublicEndpoint>(`${this.base}/runpod/public-endpoints/${slug}`);
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -227,5 +271,83 @@ export class BillingService {
       `${this.base}/billing/checkout`,
       input,
     );
+  }
+}
+
+export interface PlaygroundRunResult {
+  ok: boolean;
+  id: string;
+  status: string;
+  provider: string;
+  model?: string;
+  endpointId?: string;
+  delayTime?: number;
+  executionTime?: number;
+  output: Record<string, unknown>;
+  usage?: {
+    input_tokens?: number;
+    output_tokens?: number;
+    total_tokens?: number;
+    unit?: string;
+    quantity?: number;
+  };
+  cost?: number;
+  sandbox?: boolean;
+  message?: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class PlaygroundService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  /** Platform-mediated run → ai-marketplace-api → denglish-api → providers */
+  run(input: {
+    productSlug: string;
+    productId?: string;
+    input: Record<string, unknown>;
+    provider?: string;
+    model?: string;
+    endpointId?: string;
+    action?: string;
+  }): Observable<PlaygroundRunResult> {
+    return this.http.post<PlaygroundRunResult>(`${this.base}/playground/run`, input);
+  }
+}
+
+export interface AgentChatResult {
+  ok: boolean;
+  id?: string;
+  reply: string;
+  sessionId: string;
+  usage?: {
+    input_tokens?: number;
+    output_tokens?: number;
+    total_tokens?: number;
+    unit?: string;
+  };
+  cost?: number;
+  provider?: string;
+  latencyMs?: number;
+  memoryApplied?: boolean;
+  memoryRecalled?: number;
+  memoryWritten?: number;
+  sandbox?: boolean;
+  message?: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class AgentChatService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  /** Hire-agent chat with persistent memory (Postgres/Redis/Qdrant/Neo4j via denglish-api). */
+  chat(input: {
+    productSlug: string;
+    productId?: string;
+    message: string;
+    sessionId?: string;
+  }): Observable<AgentChatResult> {
+    return this.http.post<AgentChatResult>(`${this.base}/agents/chat`, input);
   }
 }

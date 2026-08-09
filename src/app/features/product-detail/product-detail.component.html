@@ -292,84 +292,90 @@
 
     @if (workspaceTab() === 'hire') {
       <div class="hire-layout">
-        @if (isOpenClawHire()) {
-          <section class="pg-pane">
-            <div class="pg-pane__head">
-              <h2>OpenClaw agent</h2>
-            </div>
-            <p class="text-muted">
-              Featherless-style managed agent. Launch opens the OpenClaw Control UI with gateway
-              token + auto device pairing — same flow as PHHotel AI chatbox.
-            </p>
+        <section class="pg-pane agent-chat-pane">
+          <div class="pg-pane__head">
+            <h2>Agent chat</h2>
+            <button type="button" class="ghost-chip" (click)="clearAgentChat()" [disabled]="!agentMessages().length">
+              Clear
+            </button>
+          </div>
+          <p class="setting-help">
+            Memory grows with use (Postgres · Redis · Qdrant · Neo4j). RunPod only does inference + extraction.
+          </p>
+          <div class="agent-chat-log" role="log" aria-live="polite">
+            @if (!agentMessages().length) {
+              <p class="result-empty">Say what you need — the agent will remember preferences and habits.</p>
+            }
+            @for (m of agentMessages(); track $index) {
+              <article class="agent-bubble" [class.agent-bubble--user]="m.role === 'user'" [class.agent-bubble--assistant]="m.role === 'assistant'">
+                <p>{{ m.content }}</p>
+                @if (m.role === 'assistant' && (m.memoryRecalled || m.memoryWritten)) {
+                  <span class="memory-chip">
+                    Memory used {{ m.memoryRecalled || 0 }} · wrote {{ m.memoryWritten || 0 }}
+                    @if (m.cost) { · ${{ m.cost }} }
+                  </span>
+                }
+              </article>
+            }
+            @if (agentBusy()) {
+              <p class="result-empty pulse">Thinking…</p>
+            }
+          </div>
+          @if (agentError()) {
+            <p class="cost-hint">{{ agentError() }}</p>
+          }
+          <div class="agent-chat-compose">
+            <textarea
+              class="input textarea"
+              rows="3"
+              [(ngModel)]="agentDraft"
+              name="agentDraft"
+              placeholder="Message the agent…"
+              (keydown.enter)="$event.preventDefault(); sendAgentMessage()"
+              [disabled]="agentBusy()"
+            ></textarea>
+            <button type="button" class="btn btn-run" (click)="sendAgentMessage()" [disabled]="agentBusy() || !agentDraft.trim()">
+              {{ agentBusy() ? 'Sending…' : 'Send' }}
+            </button>
+          </div>
+        </section>
+
+        <aside class="pg-pane">
+          @if (isOpenClawHire()) {
+            <div class="pg-pane__head"><h2>OpenClaw</h2></div>
+            <p class="text-muted">Optional Control UI launch (separate from memory chat).</p>
             <div class="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                class="btn btn-run"
-                (click)="launchOpenClaw()"
-                [disabled]="openclawBusy()"
-              >
-                {{ openclawBusy() ? 'Opening…' : '🚀 Launch OpenClaw' }}
+              <button type="button" class="btn btn-outline" (click)="launchOpenClaw()" [disabled]="openclawBusy()">
+                {{ openclawBusy() ? 'Opening…' : 'Launch OpenClaw' }}
               </button>
-              <a class="btn btn-outline" routerLink="/hire-agent/marketplace">Browse Agents</a>
-              <a class="btn btn-outline" routerLink="/hire-agent/openclaw">Manage</a>
+              <a class="btn btn-outline" routerLink="/hire-agent/openclaw/setup">Setup</a>
             </div>
             @if (openclawStatus()) {
               <p class="cost-hint mt-3 font-mono text-xs">{{ openclawStatus() }}</p>
             }
-              <div class="mt-6 grid gap-3 sm:grid-cols-2">
-                <a class="btn btn-outline" routerLink="/hire-agent/openclaw/setup">Setup Wizard</a>
-                <button type="button" class="btn btn-outline" (click)="launchOpenClaw()">OpenClaw UI</button>
-              </div>
-            <div class="pg-actions mt-6">
-              <button type="button" class="btn btn-outline" (click)="checkout()">Subscribe seat</button>
-            </div>
-          </section>
-          <aside class="pg-pane">
-            <div class="pg-pane__head"><h2>What you get</h2></div>
-            <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
-            <p class="result-caption mt-4">Category: {{ label(p.category) }} · by {{ p.creatorName }}</p>
-          </aside>
-        } @else {
-          <section class="pg-pane">
-            <div class="pg-pane__head">
-              <h2>Request to hire</h2>
-            </div>
+          } @else {
+            <div class="pg-pane__head"><h2>Request to hire</h2></div>
             <div class="field">
               <label class="field-label" for="brief">Project brief</label>
-              <textarea id="brief" class="input textarea" rows="6" [(ngModel)]="hireBrief" placeholder="Goals, channels, deliverables…"></textarea>
+              <textarea id="brief" class="input textarea" rows="4" [(ngModel)]="hireBrief" placeholder="Goals, channels…"></textarea>
             </div>
             <div class="field">
-              <label class="field-label" for="budget">Budget (optional)</label>
-              <input id="budget" class="input" [(ngModel)]="hireBudget" placeholder="e.g. $1,200 / month" />
-            </div>
-            <div class="field">
-              <label class="field-label" for="timeline">Timeline</label>
-              <select id="timeline" class="input" [(ngModel)]="hireTimeline">
-                <option>ASAP</option>
-                <option>1 week</option>
-                <option>2 weeks</option>
-                <option>1 month</option>
-                <option>Ongoing retainer</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label" for="contact">Contact email / Zalo</label>
+              <label class="field-label" for="contact">Contact</label>
               <input id="contact" class="input" [(ngModel)]="hireContact" placeholder="you@company.com" />
             </div>
             <div class="pg-actions">
-              <button type="button" class="btn btn-outline" (click)="checkout()">Subscribe now</button>
+              <button type="button" class="btn btn-outline" (click)="checkout()">Subscribe</button>
               <button type="button" class="btn btn-run" (click)="submitHireRequest()">Send request</button>
             </div>
             @if (hireSent()) {
-              <p class="cost-hint">Request queued. Seller can accept from their dashboard (mock).</p>
+              <p class="cost-hint">Request queued.</p>
             }
-          </section>
-          <aside class="pg-pane">
+          }
+          <div class="mt-6">
             <div class="pg-pane__head"><h2>What you get</h2></div>
             <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
-            <p class="result-caption mt-4">Category: {{ label(p.category) }} · by {{ p.creatorName }}</p>
-          </aside>
-        }
+          </div>
+        </aside>
       </div>
     }
 
@@ -386,8 +392,15 @@
           <div class="field">
             <label class="field-label" for="model">Model</label>
             <select id="model" class="input" [(ngModel)]="modelVariant">
-              <option [ngValue]="p.slug">{{ p.slug }}</option>
-              <option [ngValue]="p.slug + '-fast'">{{ p.slug }}-fast</option>
+              @if (runpodEndpoint(); as ep) {
+                <option [ngValue]="ep.endpointId">{{ ep.endpointId }}</option>
+                @if (ep.openaiModel) {
+                  <option [ngValue]="ep.openaiModel">{{ ep.openaiModel }}</option>
+                }
+              } @else {
+                <option [ngValue]="p.slug">{{ p.slug }}</option>
+                <option [ngValue]="p.runtime?.baseModel || (p.slug + '-base')">{{ p.runtime?.baseModel || p.slug + '-base' }}</option>
+              }
             </select>
           </div>
 
@@ -401,12 +414,33 @@
             </div>
           }
 
+          @if (p.category === 'fine-tune') {
+            <div class="field">
+              <label class="field-label" for="ftBase">Base model</label>
+              <input id="ftBase" class="input" [(ngModel)]="ftBaseModel" name="ftBase" />
+            </div>
+            <div class="field">
+              <span class="field-label">Method</span>
+              <div class="segmented" role="group" aria-label="Fine-tune method">
+                <button type="button" [class.active]="ftMethod === 'qlora'" (click)="ftMethod = 'qlora'">QLoRA</button>
+                <button type="button" [class.active]="ftMethod === 'lora'" (click)="ftMethod = 'lora'">LoRA</button>
+                <button type="button" [class.active]="ftMethod === 'full'" (click)="ftMethod = 'full'">Full</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="ftEpochs">Epochs</label>
+              <input id="ftEpochs" class="input" type="number" min="1" max="100" [(ngModel)]="ftEpochs" name="ftEpochs" />
+            </div>
+          }
+
           <div class="field">
             <div class="field-label-row">
-              <label class="field-label" for="prompt">Prompt</label>
-              <span class="req">Required</span>
+              <label class="field-label" for="prompt">{{ p.category === 'fine-tune' ? 'Notes' : 'Prompt' }}</label>
+              @if (p.category !== 'fine-tune') {
+                <span class="req">Required</span>
+              }
             </div>
-            <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" placeholder="Enter a prompt"></textarea>
+            <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" [placeholder]="p.category === 'fine-tune' ? 'Optional training notes' : 'Enter a prompt'"></textarea>
           </div>
 
           @if (p.category === 'text-to-text' || p.category === 'inference') {
@@ -419,9 +453,10 @@
           @if (p.category === 'text-to-video' || p.category === 'image-to-video') {
             <div class="field">
               <span class="field-label">Duration</span>
-              <div class="segmented" role="group" aria-label="Duration">
-                <button type="button" [class.active]="duration === 6" (click)="duration = 6">6s</button>
-                <button type="button" [class.active]="duration === 10" (click)="duration = 10">10s</button>
+              <div class="chip-row wrap" role="group" aria-label="Duration">
+                @for (d of videoDurationOptions; track d) {
+                  <button type="button" class="chip" [class.active]="duration === d" (click)="duration = d">{{ d }}s</button>
+                }
               </div>
             </div>
           }
@@ -430,14 +465,13 @@
             <div class="field">
               <label class="field-label">Image</label>
               <div class="image-drop">
+                <input class="input input-sm" type="url" [(ngModel)]="imageUrl" name="imageUrl" placeholder="Enter URL or base64 data" />
+                <p class="setting-help">Supports jpeg, jpg, png · up to 16MB</p>
                 @if (imageUrl) {
                   <img [src]="imageUrl" alt="Reference" />
                   <button type="button" class="btn btn-outline btn-sm" (click)="clearImage()">Remove</button>
-                } @else {
-                  <p class="text-sm text-muted">Upload or paste an image URL</p>
                 }
-                <input class="input input-sm" type="url" [(ngModel)]="imageUrl" placeholder="https://… or upload below" />
-                <input type="file" accept="image/*" (change)="onImageFile($event)" />
+                <input type="file" accept="image/jpeg,image/jpg,image/png" (change)="onImageFile($event)" />
               </div>
             </div>
           }
@@ -449,7 +483,7 @@
             </div>
           }
 
-          <details class="settings" open>
+          <details class="settings">
             <summary>Additional settings</summary>
             <div class="settings-body">
               @if (p.category === 'text-to-text' || p.category === 'inference') {
@@ -471,6 +505,10 @@
                     <button type="button" class="stepper-btn" (click)="bumpTemperature(0.1)" aria-label="Increase temperature">+</button>
                   </div>
                 </div>
+                <div class="setting-block">
+                  <label class="field-label" for="seedTxt">Seed</label>
+                  <input id="seedTxt" class="input input-sm" type="text" [(ngModel)]="seed" />
+                </div>
               }
 
               @if (p.category === 'fine-tune') {
@@ -482,7 +520,7 @@
                   <input type="checkbox" [(ngModel)]="enableSyncMode" name="ftSync" />
                   <span>
                     <strong>Wait for job completion</strong>
-                    <small>Block until training finishes (sandbox).</small>
+                    <small>Use /runsync style blocking (sandbox).</small>
                   </span>
                 </label>
               }
@@ -494,17 +532,20 @@
                 </div>
               }
 
-              @if (p.category === 'text-to-video') {
+              @if (p.category === 'text-to-video' || p.category === 'image-to-video') {
                 <div class="setting-block">
                   <label class="field-label" for="seedVid">Seed</label>
-                  <p class="setting-help">Random seed for reproducible results. Use undefined for random seed.</p>
+                  <p class="setting-help">Set to -1 for random.</p>
                   <input id="seedVid" class="input input-sm" type="text" [(ngModel)]="seed" />
                 </div>
                 <div class="setting-block">
-                  <span class="field-label">Size</span>
-                  <div class="chip-row" role="group" aria-label="Video size">
-                    <button type="button" class="chip" [class.active]="videoSize === '720p'" (click)="videoSize = '720p'">720p</button>
-                    <button type="button" class="chip" [class.active]="videoSize === '1080p'" (click)="videoSize = '1080p'">1080p</button>
+                  <span class="field-label">Resolution</span>
+                  <div class="chip-row" role="group" aria-label="Resolution">
+                    <button type="button" class="chip" [class.active]="videoResolution === '480p'" (click)="videoResolution = '480p'">480p</button>
+                    <button type="button" class="chip" [class.active]="videoResolution === '720p'" (click)="videoResolution = '720p'">720p</button>
+                    @if (p.category === 'text-to-video' && !isRunpod()) {
+                      <button type="button" class="chip" [class.active]="videoResolution === '1080p'" (click)="videoResolution = '1080p'">1080p</button>
+                    }
                   </div>
                 </div>
                 <div class="setting-block">
@@ -515,49 +556,42 @@
                     }
                   </div>
                 </div>
-                <label class="check-row">
-                  <input type="checkbox" [(ngModel)]="enableSafetyChecker" name="safety" />
-                  <span>
-                    <strong>Enable safety checker</strong>
-                    <small>Whether to enable the safety checker.</small>
-                  </span>
-                </label>
-                <div class="setting-block">
-                  <label class="field-label" for="fps">Fps</label>
-                  <p class="setting-help">Frames per second</p>
-                  <select id="fps" class="input input-sm" [(ngModel)]="fps">
-                    @for (f of fpsOptions; track f) {
-                      <option [ngValue]="f">{{ f }}</option>
-                    }
-                  </select>
-                </div>
-                <label class="check-row">
-                  <input type="checkbox" [(ngModel)]="draftMode" name="draft" />
-                  <span>
-                    <strong>Draft</strong>
-                    <small>Draft mode for a lower-quality preview.</small>
-                  </span>
-                </label>
-                <label class="check-row">
-                  <input type="checkbox" [(ngModel)]="saveAudio" name="audio" />
-                  <span>
-                    <strong>Save Audio</strong>
-                    <small>Save the video with audio.</small>
-                  </span>
-                </label>
-                <label class="check-row">
-                  <input type="checkbox" [(ngModel)]="promptUpsampling" name="upsample" />
-                  <span>
-                    <strong>Prompt Upsampling</strong>
-                    <small>Automatically enhance the prompt for better results.</small>
-                  </span>
-                </label>
+                @if (p.category === 'image-to-video') {
+                  <div class="setting-block">
+                    <label class="field-label" for="endImg">Last image (optional)</label>
+                    <input id="endImg" class="input input-sm" type="url" [(ngModel)]="endImageUrl" name="endImageUrl" placeholder="Ending frame URL" />
+                  </div>
+                  <label class="check-row">
+                    <input type="checkbox" [(ngModel)]="cameraFixed" name="camFixed" />
+                    <span>
+                      <strong>Camera fixed</strong>
+                      <small>Keep camera position fixed during video.</small>
+                    </span>
+                  </label>
+                  <label class="check-row">
+                    <input type="checkbox" [(ngModel)]="generateAudio" name="genAudio" />
+                    <span>
+                      <strong>Generate audio</strong>
+                      <small>Generate accompanying audio.</small>
+                    </span>
+                  </label>
+                }
+                @if (p.category === 'text-to-video') {
+                  <label class="check-row">
+                    <input type="checkbox" [(ngModel)]="enableSafetyChecker" name="safety" />
+                    <span><strong>Enable safety checker</strong></span>
+                  </label>
+                  <label class="check-row">
+                    <input type="checkbox" [(ngModel)]="promptUpsampling" name="upsample" />
+                    <span><strong>Prompt expansion</strong></span>
+                  </label>
+                }
               }
 
               @if (p.category === 'image-to-image') {
                 <div class="setting-block">
                   <label class="field-label" for="seedImg">Seed</label>
-                  <p class="setting-help">Random seed for reproducible results. Use -1 for random seed.</p>
+                  <p class="setting-help">Use -1 for random seed.</p>
                   <input id="seedImg" class="input input-sm" type="text" [(ngModel)]="seed" />
                 </div>
                 <div class="setting-block">
@@ -589,20 +623,27 @@
                     </div>
                   }
                 </div>
-                <label class="check-row">
-                  <input type="checkbox" [(ngModel)]="enableBase64Output" name="b64" />
-                  <span><strong>Enable Base64 Output</strong></span>
-                </label>
-                <label class="check-row">
-                  <input type="checkbox" [(ngModel)]="enableSyncMode" name="sync" />
-                  <span><strong>Enable Sync Mode</strong></span>
-                </label>
               }
 
-              @if (p.category === 'text-to-image' || p.category === 'image-to-video') {
+              @if (p.category === 'text-to-image') {
                 <div class="setting-block">
                   <label class="field-label" for="seedOther">Seed</label>
                   <input id="seedOther" class="input input-sm" type="text" [(ngModel)]="seed" />
+                </div>
+                <div class="setting-block">
+                  <span class="field-label">Size</span>
+                  <div class="chip-row wrap" role="group">
+                    <button type="button" class="chip" [class.active]="textImageSize === '1024×1024'" (click)="textImageSize = '1024×1024'">1024×1024</button>
+                    <button type="button" class="chip" [class.active]="textImageSize === '1024×1280'" (click)="textImageSize = '1024×1280'">1024×1280</button>
+                    <button type="button" class="chip" [class.active]="textImageSize === '1280×1024'" (click)="textImageSize = '1280×1024'">1280×1024</button>
+                  </div>
+                </div>
+                <div class="setting-block">
+                  <span class="field-label">Output format</span>
+                  <div class="chip-row">
+                    <button type="button" class="chip" [class.active]="outputFormat === 'png'" (click)="outputFormat = 'png'">png</button>
+                    <button type="button" class="chip" [class.active]="outputFormat === 'jpeg'" (click)="outputFormat = 'jpeg'">jpeg</button>
+                  </div>
                 </div>
               }
             </div>
@@ -615,7 +656,7 @@
             <button
               type="button"
               class="btn btn-run"
-              [disabled]="runStatus() === 'running' || !prompt.trim()"
+              [disabled]="runStatus() === 'running' || (p.category !== 'fine-tune' && !prompt.trim())"
               (click)="run()"
             >
               {{ runStatus() === 'running' ? 'Running…' : 'Run' }}
@@ -628,17 +669,24 @@
             <h2 id="result-heading">Result</h2>
             <span class="status-pill" [attr.data-status]="runStatus()">
               @switch (runStatus()) {
-                @case ('idle') { Idle }
-                @case ('running') { Running }
-                @case ('done') { Done · {{ lastLatencyMs }}ms }
-                @case ('error') { Error }
+                @case ('idle') { idle }
+                @case ('running') { running }
+                @case ('done') { COMPLETED }
+                @case ('error') { FAILED }
               }
             </span>
           </div>
 
-          <div class="segmented result-tabs" role="tablist">
-            <button type="button" role="tab" [class.active]="resultView() === 'preview'" (click)="setResultView('preview')">Preview</button>
-            <button type="button" role="tab" [class.active]="resultView() === 'json'" (click)="setResultView('json')">JSON</button>
+          <div class="result-toolbar">
+            <div class="segmented result-tabs" role="tablist">
+              <button type="button" role="tab" [class.active]="resultView() === 'preview'" (click)="setResultView('preview')">Preview</button>
+              <button type="button" role="tab" [class.active]="resultView() === 'json'" (click)="setResultView('json')">JSON</button>
+            </div>
+            @if (runStatus() === 'done' && resultMediaUrl && (resultMediaKind === 'video' || resultMediaKind === 'image')) {
+              <button type="button" class="btn btn-outline btn-sm" (click)="downloadResult()">
+                {{ resultMediaKind === 'video' ? 'Download video' : 'Download image' }}
+              </button>
+            }
           </div>
 
           <div class="result-body">
@@ -648,9 +696,12 @@
               <p class="result-empty pulse">Generating…</p>
             } @else if (resultView() === 'json') {
               <pre class="result-json">{{ resultJson }}</pre>
-            } @else if (p.category === 'text-to-text' || p.category === 'inference' || p.category === 'fine-tune' || p.category === 'dataset') {
-              <div class="result-text">{{ previewText }}</div>
-            } @else if (resultMediaUrl) {
+            } @else if (resultMediaKind === 'video' && resultMediaUrl) {
+              <div class="result-media">
+                <video [src]="resultMediaUrl" controls playsinline poster="{{ p.coverUrl }}"></video>
+                <p class="result-caption">{{ previewText }}</p>
+              </div>
+            } @else if (resultMediaKind === 'image' && resultMediaUrl) {
               <div class="result-media">
                 <img [src]="resultMediaUrl" [alt]="p.name + ' output'" />
                 <p class="result-caption">{{ previewText }}</p>
@@ -731,13 +782,13 @@
           <dl class="mt-3 space-y-2 text-sm">
             @if (p.runtime.publicEndpoint) {
               <div>
-                <dt class="text-xs uppercase tracking-wider text-muted">Public RunPod</dt>
+                <dt class="text-xs uppercase tracking-wider text-muted">Public Endpoint (/runsync)</dt>
                 <dd class="mt-0.5 truncate font-mono text-xs text-ink">{{ p.runtime.publicEndpoint }}</dd>
               </div>
             }
             @if (p.runtime.serverlessEndpoint) {
               <div>
-                <dt class="text-xs uppercase tracking-wider text-muted">Serverless</dt>
+                <dt class="text-xs uppercase tracking-wider text-muted">Async (/run)</dt>
                 <dd class="mt-0.5 truncate font-mono text-xs text-ink">{{ p.runtime.serverlessEndpoint }}</dd>
               </div>
             }
@@ -749,7 +800,7 @@
             }
             @if (p.runtime.gatewayUrl) {
               <div>
-                <dt class="text-xs uppercase tracking-wider text-muted">Gateway</dt>
+                <dt class="text-xs uppercase tracking-wider text-muted">Gateway / OpenAI base</dt>
                 <dd class="mt-0.5 truncate font-mono text-xs text-ink">{{ p.runtime.gatewayUrl }}</dd>
               </div>
             }

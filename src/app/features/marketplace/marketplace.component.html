@@ -43,7 +43,28 @@
               <span class="mkt-filter__count">{{ totalCount() }}</span>
             </button>
           </li>
-          @for (c of categories(); track c.id) {
+        </ul>
+
+        <p class="mkt-filter__lane">AI</p>
+        <ul class="mkt-filter__cats">
+          @for (c of aiCategories(); track c.id) {
+            <li>
+              <button
+                type="button"
+                class="mkt-filter__cat"
+                [class.active]="draftCategory === c.id"
+                (click)="draftCategory = c.id"
+              >
+                <span>{{ c.label }}</span>
+                <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+
+        <p class="mkt-filter__lane">Sản phẩm số</p>
+        <ul class="mkt-filter__cats">
+          @for (c of digitalCategories(); track c.id) {
             <li>
               <button
                 type="button"

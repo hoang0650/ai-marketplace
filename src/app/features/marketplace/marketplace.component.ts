@@ -38,6 +38,9 @@ export class MarketplaceComponent implements OnInit {
   readonly priceMinSig = signal(0);
   readonly priceMaxSig = signal(500);
 
+  readonly aiCategories = computed(() => this.categories().filter((c) => c.lane === 'ai'));
+  readonly digitalCategories = computed(() => this.categories().filter((c) => c.lane === 'digital'));
+
   readonly sorts: Array<{ id: SortId; label: string }> = [
     { id: 'featured', label: 'Featured' },
     { id: 'bestsellers', label: 'Best sellers' },

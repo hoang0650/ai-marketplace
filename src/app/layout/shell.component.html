@@ -11,9 +11,6 @@
       <nav class="site-header__nav" aria-label="Primary">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">Home</a>
         <a routerLink="/marketplace" routerLinkActive="active" class="nav-link">Marketplace</a>
-        <a routerLink="/models" routerLinkActive="active" class="nav-link">AI Models</a>
-        <a routerLink="/agent-browser" routerLinkActive="active" class="nav-link hidden lg:inline">Agent Browser</a>
-        <a routerLink="/hire-agent" routerLinkActive="active" class="nav-link hidden md:inline">Agents</a>
 
         <div class="nav-dd" [class.open]="categoryOpen()">
           <button
@@ -28,11 +25,19 @@
           </button>
           @if (categoryOpen()) {
             <div class="nav-dd__panel" role="menu" aria-label="Categories">
-              <div class="nav-dd__cols nav-dd__cols--3">
+              <div class="nav-dd__cols nav-dd__cols--2">
                 <div>
-                  <p class="nav-dd__group">{{ groupTitle('models') }}</p>
+                  <p class="nav-dd__group">{{ laneTitle('ai') }}</p>
                   <ul>
-                    @for (c of modelCategories; track c.id) {
+                    @for (link of platformLinks; track link.path) {
+                      <li>
+                        <a [routerLink]="link.path" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
+                          <span class="nav-dd__item-title">{{ link.label }}</span>
+                          <span class="nav-dd__item-desc">{{ link.description }}</span>
+                        </a>
+                      </li>
+                    }
+                    @for (c of aiCategories; track c.id) {
                       <li>
                         <a [routerLink]="c.hubPath" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
                           <span class="nav-dd__item-title">{{ c.label }}</span>
@@ -43,22 +48,9 @@
                   </ul>
                 </div>
                 <div>
-                  <p class="nav-dd__group">{{ groupTitle('hire') }}</p>
+                  <p class="nav-dd__group">{{ laneTitle('digital') }}</p>
                   <ul>
-                    @for (c of hireCategories; track c.id) {
-                      <li>
-                        <a [routerLink]="c.hubPath" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
-                          <span class="nav-dd__item-title">{{ c.label }}</span>
-                          <span class="nav-dd__item-desc">{{ c.description }}</span>
-                        </a>
-                      </li>
-                    }
-                  </ul>
-                </div>
-                <div>
-                  <p class="nav-dd__group">{{ groupTitle('skills') }}</p>
-                  <ul>
-                    @for (c of skillCategories; track c.id) {
+                    @for (c of digitalCategories; track c.id) {
                       <li>
                         <a [routerLink]="c.hubPath" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
                           <span class="nav-dd__item-title">{{ c.label }}</span>
@@ -168,17 +160,7 @@
                   <li>
                     <a routerLink="/sell" role="menuitem" (click)="closeUserMenu()">
                       <span aria-hidden="true">🏪</span>
-                      {{ auth.isCreator() ? 'Gian hàng của bạn' : 'Mở gian hàng' }}
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/work" role="menuitem" (click)="closeUserMenu()">
-                      <span aria-hidden="true">💼</span> Work của bạn
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/settings" role="menuitem" (click)="closeUserMenu()">
-                      <span aria-hidden="true">⚙</span> Cài đặt
+                      {{ auth.isCreator() ? 'Gian hàng' : 'Mở gian hàng' }}
                     </a>
                   </li>
                   <li>
@@ -187,8 +169,13 @@
                     </a>
                   </li>
                   <li>
-                    <a routerLink="/wallet" role="menuitem" (click)="closeUserMenu()">
-                      <span aria-hidden="true">💳</span> Ví
+                    <a routerLink="/work" role="menuitem" (click)="closeUserMenu()">
+                      <span aria-hidden="true">💼</span> Work
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/settings" role="menuitem" (click)="closeUserMenu()">
+                      <span aria-hidden="true">⚙</span> Cài đặt
                     </a>
                   </li>
                   @if (auth.isAdmin()) {
@@ -238,9 +225,21 @@
   </div>
   <div class="site-footer__links mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 md:px-4">
     <div>
-      <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">Explore</p>
+      <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">{{ laneTitle('ai') }}</p>
       <ul class="space-y-2 text-sm">
-        @for (c of navCategories.slice(0, 8); track c.id) {
+        <li><a routerLink="/marketplace" class="footer-link">Marketplace</a></li>
+        @for (link of platformLinks; track link.path) {
+          <li><a [routerLink]="link.path" class="footer-link">{{ link.label }}</a></li>
+        }
+        @for (c of aiCategories.slice(0, 8); track c.id) {
+          <li><a [routerLink]="c.hubPath" class="footer-link">{{ c.label }}</a></li>
+        }
+      </ul>
+    </div>
+    <div>
+      <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">{{ laneTitle('digital') }}</p>
+      <ul class="space-y-2 text-sm">
+        @for (c of digitalCategories; track c.id) {
           <li><a [routerLink]="c.hubPath" class="footer-link">{{ c.label }}</a></li>
         }
       </ul>
@@ -248,20 +247,17 @@
     <div>
       <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">Account</p>
       <ul class="space-y-2 text-sm">
-        <li><a routerLink="/billing" class="footer-link">Billing</a></li>
         <li><a routerLink="/wallet" class="footer-link">Wallet</a></li>
-        <li><a routerLink="/affiliate" class="footer-link">Affiliate</a></li>
+        <li><a routerLink="/billing" class="footer-link">Billing</a></li>
+        <li><a routerLink="/sell" class="footer-link">Sell</a></li>
         @if (auth.isAuthenticated()) {
           <li><button type="button" class="footer-link" (click)="logout()">Log out</button></li>
         }
       </ul>
-    </div>
-    <div>
-      <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">Seller</p>
+      <p class="mb-3 mt-8 text-xs font-bold uppercase tracking-[0.16em] text-muted">Legal</p>
       <ul class="space-y-2 text-sm">
-        <li><a routerLink="/models" class="footer-link">AI Models</a></li>
-        <li><a routerLink="/deployments" class="footer-link">Deployments</a></li>
-        <li><a routerLink="/agent-browser" class="footer-link">Agent Browser</a></li>
+        <li><a routerLink="/privacy-policy" class="footer-link">Chính sách bảo mật</a></li>
+        <li><a routerLink="/terms-of-service" class="footer-link">Thỏa thuận sử dụng</a></li>
       </ul>
     </div>
   </div>

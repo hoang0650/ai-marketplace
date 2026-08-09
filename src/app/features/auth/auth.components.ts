@@ -59,6 +59,12 @@ export class LoginComponent {
           <input type="checkbox" [(ngModel)]="asCreator" name="asCreator" />
           I want to sell on PH AI Market
         </label>
+        <p class="text-xs text-muted">
+          By creating an account you agree to our
+          <a routerLink="/terms-of-service" class="text-accent">Terms</a>
+          and
+          <a routerLink="/privacy-policy" class="text-accent">Privacy Policy</a>.
+        </p>
         <button class="btn btn-fill" type="submit">Create account</button>
       </form>
       <p class="mt-4 text-sm text-muted">Have an account? <a routerLink="/auth/login" class="text-accent">Log in</a></p>

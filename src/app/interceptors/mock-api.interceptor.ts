@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { of, delay, switchMap, from } from 'rxjs';
 import { MockDataStore } from '../services/mock-data.store';
 import { environment } from '../../environments/environment';
+import { RUNPOD_PUBLIC_ENDPOINTS } from '../models/runpod-public-endpoints';
 
 function jsonOk<T>(body: T, status = 200) {
   return of(new HttpResponse({ status, body })).pipe(delay(120));
@@ -34,6 +35,25 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       }
       if (req.method === 'GET' && path === '/categories') {
         return jsonOk(store.categories());
+      }
+      if (req.method === 'GET' && path === '/runpod/public-endpoints') {
+        let rows = RUNPOD_PUBLIC_ENDPOINTS;
+        const kind = params.get('kind');
+        const modality = params.get('modality');
+        const q = (params.get('q') || '').toLowerCase();
+        if (kind) rows = rows.filter((e) => e.kind === kind);
+        if (modality) rows = rows.filter((e) => e.modality === modality);
+        if (q) {
+          rows = rows.filter((e) =>
+            `${e.name} ${e.slug} ${e.endpointId} ${e.description}`.toLowerCase().includes(q),
+          );
+        }
+        return jsonOk(rows);
+      }
+      if (req.method === 'GET' && path.startsWith('/runpod/public-endpoints/')) {
+        const slug = path.split('/')[3];
+        const hit = RUNPOD_PUBLIC_ENDPOINTS.find((e) => e.slug === slug);
+        return hit ? jsonOk(hit) : jsonOk({ message: 'Not found' }, 404);
       }
       if (req.method === 'GET' && path === '/creators') {
         return jsonOk(store.creators());
@@ -126,6 +146,77 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
           checkoutId: `chk_${Date.now()}`,
           provider: (req.body as { provider: string }).provider,
           status: 'created',
+        });
+      }
+      if (req.method === 'POST' && path === '/agents/chat') {
+        const body = req.body as { message?: string; sessionId?: string };
+        const msg = String(body.message || '');
+        return jsonOk({
+          ok: true,
+          id: `evt_agent_${Date.now()}`,
+          reply: `[mock agent+memory] ${msg.slice(0, 240)}`,
+          sessionId: body.sessionId || `sess_mock_${Date.now()}`,
+          usage: { input_tokens: 12, output_tokens: 28, total_tokens: 40, unit: 'tokens' },
+          cost: 0,
+          memoryApplied: true,
+          memoryRecalled: 2,
+          memoryWritten: 1,
+          sandbox: true,
+        });
+      }
+      if (req.method === 'POST' && path === '/playground/run') {
+        const body = req.body as {
+          productSlug?: string;
+          input?: Record<string, unknown>;
+        };
+        const input = body.input || {};
+        const duration = Number(input['duration'] || 0);
+        const prompt = String(input['prompt'] || input['text'] || '');
+        if (duration > 0) {
+          return jsonOk({
+            ok: true,
+            id: `evt_mock_${Date.now()}`,
+            status: 'COMPLETED',
+            provider: 'runpod_public',
+            executionTime: 120,
+            output: {
+              video_url: 'https://image.runpod.ai/asset/bytedance/seedance-v1-5-pro-i2.png',
+              cost: 0.052 * duration,
+              usage: { unit: 'seconds', quantity: duration },
+            },
+            usage: {
+              input_tokens: 0,
+              output_tokens: 0,
+              total_tokens: 0,
+              unit: 'seconds',
+              quantity: duration,
+            },
+            cost: 0.052 * duration,
+            sandbox: true,
+          });
+        }
+        const text = `[mock playground] ${prompt.slice(0, 200)}`;
+        return jsonOk({
+          ok: true,
+          id: `evt_mock_${Date.now()}`,
+          status: 'COMPLETED',
+          provider: 'runpod_serverless',
+          executionTime: 80,
+          output: {
+            text,
+            choices: [{ tokens: [text] }],
+            cost: 0,
+            usage: { input: 10, output: 20 },
+          },
+          usage: {
+            input_tokens: 10,
+            output_tokens: 20,
+            total_tokens: 30,
+            unit: 'tokens',
+            quantity: 30,
+          },
+          cost: 0,
+          sandbox: true,
         });
       }
       if (req.method === 'POST' && path === '/products') {

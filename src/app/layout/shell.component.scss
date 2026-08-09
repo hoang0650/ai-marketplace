@@ -103,8 +103,8 @@
   top: calc(100% + 0.7rem);
   left: 0;
   z-index: 50;
-  width: min(96vw, 880px);
-  max-height: min(80vh, 560px);
+  width: min(96vw, 720px);
+  max-height: min(80vh, 640px);
   overflow: auto;
   border: 1px solid var(--color-line);
   border-radius: 12px;
@@ -137,6 +137,10 @@
 }
 
 @media (min-width: 900px) {
+  .nav-dd__cols--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .nav-dd__cols--3 {
     grid-template-columns: 1.15fr 1.1fr 0.85fr;
   }

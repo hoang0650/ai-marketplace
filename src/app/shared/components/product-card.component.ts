@@ -13,6 +13,9 @@ import { categoryLabel } from '../../models/categories';
       <a [routerLink]="['/product', product.slug]" class="shop-card">
         <div class="shop-card__media">
           <img [src]="product.coverUrl || placeholder" [alt]="product.name" loading="lazy" width="400" height="400" />
+          @if (isRunpod) {
+            <span class="shop-card__badge">RunPod</span>
+          }
         </div>
         <div class="shop-card__body">
           <h3 class="shop-card__title">{{ product.name }}</h3>
@@ -31,6 +34,9 @@ import { categoryLabel } from '../../models/categories';
         <div class="ct-card__media">
           <img [src]="product.coverUrl || placeholder" [alt]="product.name" loading="lazy" width="480" height="480" />
           <button type="button" class="ct-card__heart" aria-label="Save" (click)="onHeart($event)">♡</button>
+          @if (isRunpod) {
+            <span class="ct-card__badge">RunPod</span>
+          }
           <span class="ct-card__ago">{{ ago }}</span>
           @if (product.gallery.length) {
             <span class="ct-card__shots" aria-hidden="true">📷 {{ product.gallery.length }}</span>
@@ -87,6 +93,20 @@ import { categoryLabel } from '../../models/categories';
         background: rgba(255, 255, 255, 0.92);
         cursor: pointer;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+      }
+      .ct-card__badge,
+      .shop-card__badge {
+        position: absolute;
+        top: 0.45rem;
+        left: 0.45rem;
+        padding: 0.18rem 0.45rem;
+        border-radius: 999px;
+        background: #b8860b;
+        color: #1a1a1a;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        z-index: 1;
       }
       .ct-card__ago {
         position: absolute;
@@ -153,6 +173,7 @@ import { categoryLabel } from '../../models/categories';
         box-shadow: 0 6px 18px rgba(229, 57, 53, 0.1);
       }
       .shop-card__media {
+        position: relative;
         aspect-ratio: 1 / 1;
         background: #f7f7f7;
         overflow: hidden;
@@ -240,6 +261,16 @@ export class ProductCardComponent {
 
   get label(): string {
     return categoryLabel(this.product.category);
+  }
+
+  get isRunpod(): boolean {
+    return (
+      this.product.creatorSlug === 'runpod' ||
+      this.product.creatorSlug === 'aimarkets' ||
+      this.product.tags?.includes('public-endpoint') ||
+      this.product.tags?.includes('aimarkets') ||
+      this.product.slug?.startsWith('runpod-')
+    );
   }
 
   get priceLabel(): string {
