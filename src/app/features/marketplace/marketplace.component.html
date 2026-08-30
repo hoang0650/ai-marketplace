@@ -190,8 +190,15 @@
       <div class="mkt-grid" [class.mkt-grid--list]="view() === 'list'">
         @for (p of displayed(); track p.id) {
           <app-product-card [product]="p" variant="luxury" [currency]="currency" />
-        } @empty {
-          <p class="mkt-empty">{{ 'mkt.empty' | t }}</p>
+        }         @empty {
+          @if (loadError()) {
+            <p class="mkt-empty mkt-empty--error">
+              Không tải được sản phẩm từ API. Kiểm tra CORS (<code>www.aimarkets.vn</code>) trên Dokploy
+              hoặc thử tải lại trang.
+            </p>
+          } @else {
+            <p class="mkt-empty">{{ 'mkt.empty' | t }}</p>
+          }
         }
       </div>
     </div>

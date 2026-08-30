@@ -1,6 +1,8 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { catchError, of } from 'rxjs';
 import { ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { Product, CategoryMeta } from '../../models/marketplace.models';
@@ -30,9 +32,11 @@ export class MarketplaceComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly categories = signal<CategoryMeta[]>([]);
   readonly catalog = signal<Product[]>([]);
+  readonly loadError = signal(false);
   readonly sort = signal<SortId>('featured');
   readonly view = signal<'grid' | 'list'>('grid');
   readonly selectedCategory = signal('');
@@ -115,8 +119,22 @@ export class MarketplaceComponent implements OnInit {
       title: this.i18n.t('nav.marketplace'),
       description: this.i18n.t('home.featuredSub'),
     });
-    this.productsApi.categories().subscribe((c) => this.categories.set(c));
-    this.productsApi.list().subscribe((items) => this.catalog.set(items));
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.productsApi
+      .categories()
+      .pipe(catchError(() => of([] as CategoryMeta[])))
+      .subscribe((c) => this.categories.set(c));
+
+    this.productsApi
+      .list()
+      .pipe(
+        catchError(() => {
+          this.loadError.set(true);
+          return of([] as Product[]);
+        }),
+      )
+      .subscribe((items) => this.catalog.set(items));
 
     this.route.paramMap.subscribe((params) => {
       const cat = params.get('category') || '';
