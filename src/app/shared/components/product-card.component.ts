@@ -10,7 +10,49 @@ import { TPipe } from '../../i18n/t.pipe';
   standalone: true,
   imports: [RouterLink, DecimalPipe, TPipe],
   template: `
-    @if (variant === 'luxury') {
+    @if (variant === 'luxury' && layout === 'list') {
+      <a [routerLink]="['/product', product.slug]" class="lux-list">
+        <div class="lux-list__thumb">
+          <img
+            [src]="product.coverUrl || placeholder"
+            [alt]="product.name"
+            loading="lazy"
+            width="112"
+            height="112"
+          />
+          @if (onSale) {
+            <span class="lux-list__sale">Sale</span>
+          }
+        </div>
+        <div class="lux-list__main">
+          <div class="lux-list__tags">
+            <span class="lux-list__cat">{{ label }}</span>
+            @if (product.featured) {
+              <span class="lux-list__feat">{{ 'card.featured' | t }}</span>
+            }
+          </div>
+          <h3 class="lux-list__title">{{ product.name }}</h3>
+          @if (product.tagline) {
+            <p class="lux-list__tagline">{{ product.tagline }}</p>
+          }
+          <div class="lux-list__meta">
+            <span class="lux-list__creator">{{ product.creatorName }}</span>
+            <span class="lux-list__rating">★ {{ product.rating | number: '1.1-1' }}</span>
+            <span>{{ 'card.sold' | t: { n: (product.salesCount || 0) } }}</span>
+            <span class="lux-list__ago">{{ ago }}</span>
+          </div>
+        </div>
+        <div class="lux-list__side">
+          <p class="lux-list__price">
+            @if (onSale) {
+              <span class="lux-list__was">{{ wasPrice }}</span>
+            }
+            {{ shopPrice }}
+          </p>
+          <span class="lux-list__cta">{{ 'card.view' | t }} →</span>
+        </div>
+      </a>
+    } @else if (variant === 'luxury') {
       <a [routerLink]="['/product', product.slug]" class="lux-card">
         <div class="lux-card__media">
           <img
@@ -219,6 +261,207 @@ import { TPipe } from '../../i18n/t.pipe';
         font-size: 0.82rem;
       }
 
+      /* —— Luxury list row (marketplace) —— */
+      .lux-list {
+        display: grid;
+        grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+        gap: 0.85rem 1rem;
+        align-items: center;
+        padding: 0.65rem 0.85rem;
+        text-decoration: none;
+        color: inherit;
+        background: var(--color-surface);
+        border: 1px solid var(--color-line);
+        border-radius: 12px;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+      }
+      .lux-list:hover {
+        border-color: var(--color-lux-gold, #c9a961);
+        box-shadow: 0 4px 16px rgba(201, 169, 97, 0.12);
+        transform: translateY(-1px);
+      }
+      .lux-list__thumb {
+        position: relative;
+        width: 5.5rem;
+        height: 5.5rem;
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--color-mist);
+        flex-shrink: 0;
+      }
+      .lux-list__thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .lux-list__sale {
+        position: absolute;
+        top: 0.35rem;
+        left: 0.35rem;
+        padding: 0.12rem 0.4rem;
+        background: var(--color-lux-gold, #c9a961);
+        color: #111;
+        font-size: 0.58rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-radius: 4px;
+      }
+      .lux-list__main {
+        min-width: 0;
+      }
+      .lux-list__tags {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.2rem;
+      }
+      .lux-list__cat {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-lux-gold, #c9a961);
+      }
+      .lux-list__feat {
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 0.1rem 0.4rem;
+        border-radius: 999px;
+        background: var(--color-mist);
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .lux-list__title {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .lux-list__tagline {
+        margin: 0.2rem 0 0;
+        font-size: 0.8rem;
+        color: var(--color-muted);
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .lux-list__meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.35rem 0.65rem;
+        margin-top: 0.35rem;
+        font-size: 0.72rem;
+        color: var(--color-muted);
+      }
+      .lux-list__creator {
+        font-weight: 600;
+        color: var(--color-ink);
+      }
+      .lux-list__rating {
+        color: #c9a227;
+        font-weight: 600;
+      }
+      .lux-list__ago {
+        margin-left: auto;
+      }
+      .lux-list__side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.35rem;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .lux-list__price {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--color-ink);
+        white-space: nowrap;
+      }
+      .lux-list__was {
+        display: block;
+        text-decoration: line-through;
+        color: var(--color-muted);
+        font-weight: 400;
+        font-size: 0.75rem;
+        margin-bottom: 0.1rem;
+      }
+      .lux-list__cta {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: var(--color-lux-gold, #c9a961);
+        opacity: 0;
+        transform: translateX(-4px);
+        transition: opacity 0.18s ease, transform 0.18s ease;
+      }
+      .lux-list:hover .lux-list__cta {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      @media (max-width: 640px) {
+        .lux-list {
+          grid-template-columns: 4.25rem minmax(0, 1fr);
+          grid-template-rows: auto auto;
+          gap: 0.35rem 0.65rem;
+          padding: 0.55rem 0.65rem;
+        }
+        .lux-list__thumb {
+          width: 4.25rem;
+          height: 4.25rem;
+          grid-row: 1 / span 2;
+          align-self: start;
+        }
+        .lux-list__main {
+          grid-column: 2;
+          grid-row: 1;
+        }
+        .lux-list__tagline {
+          display: none;
+        }
+        .lux-list__meta {
+          margin-top: 0.25rem;
+          gap: 0.3rem 0.5rem;
+        }
+        .lux-list__side {
+          grid-column: 2;
+          grid-row: 2;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          padding-top: 0.15rem;
+          border-top: 1px solid var(--color-line);
+        }
+        .lux-list__meta .lux-list__ago {
+          display: none;
+        }
+        .lux-list__price {
+          font-size: 0.88rem;
+        }
+        .lux-list__was {
+          display: inline;
+          margin-right: 0.35rem;
+          margin-bottom: 0;
+        }
+        .lux-list__cta {
+          opacity: 1;
+          transform: none;
+          font-size: 0.68rem;
+        }
+      }
+
       /* —— Chợ Tốt style (landing) —— */
       .ct-card {
         display: block;
@@ -416,6 +659,7 @@ export class ProductCardComponent {
   private readonly i18n = inject(I18nService);
   @Input({ required: true }) product!: Product;
   @Input() variant: 'default' | 'shop' | 'luxury' = 'default';
+  @Input() layout: 'grid' | 'list' = 'grid';
   @Input() currency: 'USD' | 'VND' = 'USD';
   /** Eager-load cover for above-the-fold cards on home. */
   @Input() priority = false;

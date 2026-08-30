@@ -376,18 +376,9 @@
 }
 
 .mkt-grid--list {
-  grid-template-columns: 1fr;
-}
-
-.mkt-grid--list ::ng-deep .shop-card {
-  display: grid;
-  grid-template-columns: 140px minmax(0, 1fr);
-  align-items: stretch;
-}
-
-.mkt-grid--list ::ng-deep .shop-card__media {
-  aspect-ratio: 1;
-  border-radius: 10px 0 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .mkt-empty {
@@ -395,4 +386,19 @@
   text-align: center;
   padding: 3rem 1rem;
   color: var(--color-muted);
+}
+
+.mkt-empty--error {
+  color: #b45309;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+.mkt-empty--error code {
+  font-size: 0.82em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(180, 83, 9, 0.08);
 }
