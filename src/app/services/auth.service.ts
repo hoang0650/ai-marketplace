@@ -43,6 +43,16 @@ export class AuthService {
       .pipe(tap((res) => this.persist(res)), map((res) => res.user));
   }
 
+  loginWithGoogle(payload: { idToken?: string; code?: string }): Observable<User> {
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/google/login`, {
+        idToken: payload.idToken,
+        code: payload.code,
+        redirectUri: 'postmessage',
+      })
+      .pipe(tap((res) => this.persist(res)), map((res) => res.user));
+  }
+
   register(payload: {
     email: string;
     name: string;

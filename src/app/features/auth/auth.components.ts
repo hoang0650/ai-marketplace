@@ -3,13 +3,21 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { SeoService } from '../../services/seo.service';
+import { User } from '../../models/marketplace.models';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
+import { GoogleSignInComponent } from './google-sign-in.component';
+
+function afterAuthRoute(user: User): string {
+  if (user.role === 'admin') return '/admin';
+  if (user.role === 'creator') return '/dashboard';
+  return '/marketplace';
+}
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, TPipe],
+  imports: [FormsModule, RouterLink, TPipe, GoogleSignInComponent],
   template: `
     <section class="page route-enter mx-auto max-w-md">
       <h1 class="section-title">{{ 'auth.login' | t }}</h1>
@@ -20,6 +28,7 @@ import { I18nService } from '../../i18n/i18n.service';
         @if (error()) { <p class="text-sm text-red-500">{{ error() }}</p> }
         <button class="btn btn-fill" type="submit">{{ 'auth.continue' | t }}</button>
       </form>
+      <app-google-sign-in (signedIn)="onGoogleSignedIn($event)" />
       <p class="mt-4 text-sm text-muted">{{ 'auth.noAccount' | t }} <a routerLink="/auth/register" class="text-accent">{{ 'auth.register' | t }}</a></p>
     </section>
   `,
@@ -39,18 +48,22 @@ export class LoginComponent {
 
   submit(): void {
     this.auth.login(this.email, this.password).subscribe({
-      next: (user) => {
-        void this.router.navigateByUrl(user.role === 'admin' ? '/admin' : user.role === 'creator' ? '/dashboard' : '/marketplace');
+      next: (user) => void this.router.navigateByUrl(afterAuthRoute(user)),
+      error: (err) => {
+        this.error.set(err?.error?.message || this.i18n.t('auth.invalid'));
       },
-      error: () => this.error.set(this.i18n.t('auth.invalid')),
     });
+  }
+
+  onGoogleSignedIn(user: User): void {
+    void this.router.navigateByUrl(afterAuthRoute(user));
   }
 }
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink, TPipe],
+  imports: [FormsModule, RouterLink, TPipe, GoogleSignInComponent],
   template: `
     <section class="page route-enter mx-auto max-w-md">
       <h1 class="section-title">{{ 'auth.create' | t }}</h1>
@@ -70,6 +83,7 @@ export class LoginComponent {
         </p>
         <button class="btn btn-fill" type="submit">{{ 'auth.create' | t }}</button>
       </form>
+      <app-google-sign-in (signedIn)="onGoogleSignedIn($event)" />
       <p class="mt-4 text-sm text-muted">{{ 'auth.haveAccount' | t }} <a routerLink="/auth/login" class="text-accent">{{ 'auth.login' | t }}</a></p>
     </section>
   `,
@@ -91,8 +105,10 @@ export class RegisterComponent {
   submit(): void {
     this.auth
       .register({ email: this.email, name: this.name, password: this.password, asCreator: this.asCreator })
-      .subscribe((user) => {
-        void this.router.navigateByUrl(user.role === 'creator' ? '/dashboard' : '/marketplace');
-      });
+      .subscribe((user) => void this.router.navigateByUrl(afterAuthRoute(user)));
+  }
+
+  onGoogleSignedIn(user: User): void {
+    void this.router.navigateByUrl(afterAuthRoute(user));
   }
 }
