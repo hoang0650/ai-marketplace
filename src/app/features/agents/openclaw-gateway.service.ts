@@ -323,7 +323,7 @@ export class OpenClawGatewayService {
       return {
         success: false,
         message:
-          'OpenClaw gateway is not configured. Set openclaw.gatewayUrl + gatewayToken in environment, or configure /api/openclaw/launch.',
+          'OpenClaw gateway is not configured. Set openclaw.gatewayUrl + gatewayToken in environment, or configure /v1/openclaw/launch.',
       };
     }
     return {

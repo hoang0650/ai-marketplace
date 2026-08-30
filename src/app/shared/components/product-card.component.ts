@@ -1,15 +1,47 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Product } from '../../models/marketplace.models';
-import { categoryLabel } from '../../models/categories';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, DecimalPipe],
+  imports: [RouterLink, DecimalPipe, TPipe],
   template: `
-    @if (variant === 'shop') {
+    @if (variant === 'luxury') {
+      <a [routerLink]="['/product', product.slug]" class="lux-card">
+        <div class="lux-card__media">
+          <img
+            [src]="product.coverUrl || placeholder"
+            [alt]="product.name"
+            [attr.loading]="priority ? 'eager' : 'lazy'"
+            [attr.fetchpriority]="priority ? 'high' : null"
+            width="400"
+            height="500"
+          />
+          @if (onSale) {
+            <span class="lux-card__sale">Sale</span>
+          }
+          <div class="lux-card__actions">
+            <button type="button" class="lux-card__btn" [attr.aria-label]="'card.addCart' | t" (click)="onHeart($event)">
+              {{ 'card.addCart' | t }}
+            </button>
+            <button type="button" class="lux-card__wish" [attr.aria-label]="'card.wishlist' | t" (click)="onHeart($event)">♡</button>
+          </div>
+        </div>
+        <div class="lux-card__body">
+          <h3 class="lux-card__title">{{ product.name }}</h3>
+          <p class="lux-card__price">
+            @if (onSale) {
+              <span class="lux-card__was">{{ wasPrice }}</span>
+            }
+            {{ shopPrice }}
+          </p>
+        </div>
+      </a>
+    } @else if (variant === 'shop') {
       <a [routerLink]="['/product', product.slug]" class="shop-card">
         <div class="shop-card__media">
           <img
@@ -30,9 +62,9 @@ import { categoryLabel } from '../../models/categories';
           <p class="shop-card__price">{{ shopPrice }}</p>
           <div class="shop-card__stats">
             <span class="shop-card__stars">★ {{ product.rating | number: '1.1-1' }}</span>
-            <span>Stock {{ stockLabel }}</span>
-            <span>Sold {{ product.installCount | number }}</span>
-            <button type="button" class="shop-card__cart" aria-label="Add" (click)="onHeart($event)">🛒</button>
+            <span>{{ 'card.stock' | t: { n: stockLabel } }}</span>
+            <span>{{ 'card.sold' | t: { n: (product.salesCount || 0) } }}</span>
+            <button type="button" class="shop-card__cart" [attr.aria-label]="'card.add' | t" (click)="onHeart($event)">🛒</button>
           </div>
         </div>
       </a>
@@ -47,7 +79,7 @@ import { categoryLabel } from '../../models/categories';
             width="480"
             height="480"
           />
-          <button type="button" class="ct-card__heart" aria-label="Save" (click)="onHeart($event)">♡</button>
+          <button type="button" class="ct-card__heart" [attr.aria-label]="'card.save' | t" (click)="onHeart($event)">♡</button>
           @if (isRunpod) {
             <span class="ct-card__badge">RunPod</span>
           }
@@ -61,7 +93,7 @@ import { categoryLabel } from '../../models/categories';
           <p class="ct-card__price">{{ priceLabel }}</p>
           <p class="ct-card__meta">
             <span aria-hidden="true">◎</span>
-            {{ label }} · {{ product.creatorName }}
+            {{ label }} · {{ 'card.sold' | t: { n: (product.salesCount || 0) } }}
           </p>
         </div>
       </a>
@@ -69,6 +101,124 @@ import { categoryLabel } from '../../models/categories';
   `,
   styles: [
     `
+      /* —— Luxury Shop style —— */
+      .lux-card {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        background: var(--color-surface);
+        overflow: hidden;
+        transition: transform 0.2s ease;
+      }
+      .lux-card:hover {
+        transform: translateY(-4px);
+      }
+      .lux-card__media {
+        position: relative;
+        aspect-ratio: 3 / 4;
+        background: var(--color-mist);
+        overflow: hidden;
+      }
+      .lux-card__media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+      .lux-card:hover .lux-card__media img {
+        transform: scale(1.05);
+      }
+      .lux-card__sale {
+        position: absolute;
+        top: 0.65rem;
+        left: 0.65rem;
+        padding: 0.2rem 0.55rem;
+        background: var(--color-lux-gold, #c9a961);
+        color: #111;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        z-index: 1;
+      }
+      .lux-card__actions {
+        position: absolute;
+        inset: auto 0 0;
+        display: flex;
+        align-items: stretch;
+        opacity: 0;
+        transform: translateY(100%);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+      .lux-card:hover .lux-card__actions {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .lux-card__btn {
+        flex: 1;
+        appearance: none;
+        border: 0;
+        background: var(--color-lux-dark, #111);
+        color: #fff;
+        font: inherit;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.75rem 0.5rem;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+      .lux-card__btn:hover {
+        background: var(--color-lux-gold, #c9a961);
+        color: #111;
+      }
+      .lux-card__wish {
+        appearance: none;
+        border: 0;
+        border-left: 1px solid rgba(255, 255, 255, 0.15);
+        background: var(--color-lux-dark, #111);
+        color: #fff;
+        width: 2.75rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+      .lux-card__wish:hover {
+        background: var(--color-lux-gold, #c9a961);
+        color: #111;
+      }
+      .lux-card__body {
+        padding: 0.85rem 0.25rem 0.5rem;
+        text-align: center;
+      }
+      .lux-card__title {
+        margin: 0;
+        font-size: 0.88rem;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.5em;
+      }
+      .lux-card__price {
+        margin: 0.45rem 0 0;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--color-ink);
+        letter-spacing: 0.02em;
+      }
+      .lux-card__was {
+        text-decoration: line-through;
+        color: var(--color-muted);
+        font-weight: 400;
+        margin-right: 0.35rem;
+        font-size: 0.82rem;
+      }
+
       /* —— Chợ Tốt style (landing) —— */
       .ct-card {
         display: block;
@@ -263,8 +413,9 @@ import { categoryLabel } from '../../models/categories';
   ],
 })
 export class ProductCardComponent {
+  private readonly i18n = inject(I18nService);
   @Input({ required: true }) product!: Product;
-  @Input() variant: 'default' | 'shop' = 'default';
+  @Input() variant: 'default' | 'shop' | 'luxury' = 'default';
   @Input() currency: 'USD' | 'VND' = 'USD';
   /** Eager-load cover for above-the-fold cards on home. */
   @Input() priority = false;
@@ -276,7 +427,7 @@ export class ProductCardComponent {
     );
 
   get label(): string {
-    return categoryLabel(this.product.category);
+    return this.i18n.catLabel(this.product.category);
   }
 
   get isRunpod(): boolean {
@@ -291,15 +442,30 @@ export class ProductCardComponent {
 
   get priceLabel(): string {
     const p = this.product.pricing;
-    if (p.model === 'free') return 'Free';
+    if (p.model === 'free') return this.i18n.t('card.free');
     if (p.model === 'usage') return `$${p.usageRate}/${p.usageUnit || '1K tokens'}`;
     if (p.model === 'subscription') return `$${p.price}/${p.interval}`;
     return `$${p.price}`;
   }
 
+  get onSale(): boolean {
+    return !!this.product.featured || (this.product.salesCount || 0) > 50;
+  }
+
+  get wasPrice(): string {
+    const p = this.product.pricing;
+    if (p.model === 'free') return '';
+    let usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
+    const inflated = Math.round(usd * 1.25 * 100) / 100;
+    if (this.currency === 'VND') {
+      return `${Math.round(inflated * 25_000).toLocaleString('vi-VN')} đ`;
+    }
+    return `$${inflated.toFixed(2)}`;
+  }
+
   get shopPrice(): string {
     const p = this.product.pricing;
-    if (p.model === 'free') return this.currency === 'VND' ? '0 đ' : 'Free';
+    if (p.model === 'free') return this.currency === 'VND' ? '0 đ' : this.i18n.t('card.free');
     let usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
     if (this.currency === 'VND') {
       const vnd = Math.round(usd * 25_000);
@@ -317,13 +483,13 @@ export class ProductCardComponent {
 
   get ago(): string {
     const raw = this.product.publishedAt;
-    if (!raw) return 'New';
+    if (!raw) return this.i18n.t('card.new');
     const ms = Date.now() - new Date(raw).getTime();
     const hours = Math.max(1, Math.floor(ms / 3_600_000));
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return this.i18n.t('card.agoH', { n: hours });
     const days = Math.floor(hours / 24);
-    if (days < 30) return `${days}d ago`;
-    return `${Math.floor(days / 30)}mo ago`;
+    if (days < 30) return this.i18n.t('card.agoD', { n: days });
+    return this.i18n.t('card.agoM', { n: Math.floor(days / 30) });
   }
 
   onHeart(event: Event): void {

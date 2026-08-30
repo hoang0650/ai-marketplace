@@ -2,16 +2,19 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-settings-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe],
   templateUrl: './settings-shell.component.html',
   styleUrl: './settings-shell.component.scss',
 })
 export class SettingsShellComponent {
   readonly auth = inject(AuthService);
+  readonly i18n = inject(I18nService);
   readonly brand = environment.brandName;
 
   readonly initials = computed(() => {
@@ -22,48 +25,22 @@ export class SettingsShellComponent {
   });
 
   readonly roleLabel = computed(() => {
+    this.i18n.lang();
     const role = this.auth.user()?.role;
-    if (role === 'admin') return 'Admin';
-    if (role === 'creator') return 'Người bán';
-    return 'Thành viên';
+    if (role === 'admin') return this.i18n.t('role.admin');
+    if (role === 'creator') return this.i18n.t('role.seller');
+    return this.i18n.t('role.member');
   });
 
-  readonly links = [
-    {
-      path: '/settings/profile',
-      title: 'Thông tin hồ sơ',
-      desc: 'Quản lý thông tin của tài khoản',
-      icon: '👤',
-    },
-    {
-      path: '/settings/activity',
-      title: 'Lịch sử hoạt động',
-      desc: 'Xem các hoạt động của tài khoản',
-      icon: '🕒',
-    },
-    {
-      path: '/settings/security',
-      title: 'Bảo mật',
-      desc: 'Mật khẩu, 2FA, phiên đăng nhập',
-      icon: '🛡',
-    },
-    {
-      path: '/settings/notifications',
-      title: 'Kênh thông báo',
-      desc: 'Xem nơi nhận cập nhật tài khoản',
-      icon: '📣',
-    },
-    {
-      path: '/settings/connections',
-      title: 'Liên kết tài khoản',
-      desc: 'Kết nối với các nền tảng khác',
-      icon: '🔗',
-    },
-    {
-      path: '/settings/feed',
-      title: 'Feed',
-      desc: 'Cá nhân hóa và quyền riêng tư',
-      icon: '▦',
-    },
-  ];
+  readonly links = computed(() => {
+    this.i18n.lang();
+    return [
+      { path: '/settings/profile', title: this.i18n.t('settings.profile'), desc: this.i18n.t('settings.profileDesc'), icon: '👤' },
+      { path: '/settings/activity', title: this.i18n.t('settings.activity'), desc: this.i18n.t('settings.activityDesc'), icon: '🕒' },
+      { path: '/settings/security', title: this.i18n.t('settings.security'), desc: this.i18n.t('settings.securityDesc'), icon: '🛡' },
+      { path: '/settings/notifications', title: this.i18n.t('settings.noti'), desc: this.i18n.t('settings.notiDesc'), icon: '📣' },
+      { path: '/settings/connections', title: this.i18n.t('settings.conn'), desc: this.i18n.t('settings.connDesc'), icon: '🔗' },
+      { path: '/settings/feed', title: this.i18n.t('settings.feed'), desc: this.i18n.t('settings.feedDesc'), icon: '▦' },
+    ];
+  });
 }

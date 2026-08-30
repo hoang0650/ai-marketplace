@@ -5,7 +5,8 @@ import { ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { Product, CategoryMeta } from '../../models/marketplace.models';
 import { ProductCardComponent } from '../../shared/components/product-card.component';
-import { categoryLabel } from '../../models/categories';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 type SortId = 'featured' | 'bestsellers' | 'price-asc' | 'price-desc' | 'newest';
 
@@ -19,7 +20,7 @@ function sortPrice(p: Product): number {
 @Component({
   selector: 'app-marketplace',
   standalone: true,
-  imports: [RouterLink, FormsModule, ProductCardComponent],
+  imports: [RouterLink, FormsModule, ProductCardComponent, TPipe],
   templateUrl: './marketplace.component.html',
   styleUrl: './marketplace.component.scss',
 })
@@ -28,6 +29,7 @@ export class MarketplaceComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly productsApi = inject(ProductService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
 
   readonly categories = signal<CategoryMeta[]>([]);
   readonly catalog = signal<Product[]>([]);
@@ -39,14 +41,18 @@ export class MarketplaceComponent implements OnInit {
   readonly priceMaxSig = signal(500);
 
   readonly aiCategories = computed(() => this.categories().filter((c) => c.lane === 'ai'));
-  readonly digitalCategories = computed(() => this.categories().filter((c) => c.lane === 'digital'));
+  readonly apiCategories = computed(() => this.categories().filter((c) => c.navGroup === 'apis'));
+  readonly generateCategories = computed(() => this.categories().filter((c) => c.navGroup === 'generate'));
+  readonly platformCategories = computed(() =>
+    this.categories().filter((c) => c.navGroup === 'platform' || c.navGroup === 'talent'),
+  );
 
-  readonly sorts: Array<{ id: SortId; label: string }> = [
-    { id: 'featured', label: 'Featured' },
-    { id: 'bestsellers', label: 'Best sellers' },
-    { id: 'price-asc', label: 'Low price' },
-    { id: 'price-desc', label: 'High price' },
-    { id: 'newest', label: 'Newest' },
+  readonly sorts: Array<{ id: SortId; key: string }> = [
+    { id: 'featured', key: 'mkt.sort.featured' },
+    { id: 'bestsellers', key: 'mkt.sort.bestsellers' },
+    { id: 'price-asc', key: 'mkt.sort.price-asc' },
+    { id: 'price-desc', key: 'mkt.sort.price-desc' },
+    { id: 'newest', key: 'mkt.sort.newest' },
   ];
 
   readonly priceCeiling = 500;
@@ -81,7 +87,7 @@ export class MarketplaceComponent implements OnInit {
 
     switch (this.sort()) {
       case 'bestsellers':
-        rows.sort((a, b) => (b.installCount || 0) - (a.installCount || 0));
+        rows.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
         break;
       case 'price-asc':
         rows.sort((a, b) => sortPrice(a) - sortPrice(b));
@@ -106,8 +112,8 @@ export class MarketplaceComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.set({
-      title: 'Marketplace',
-      description: 'Browse AI models, agents, and skill packs with filters and sorting.',
+      title: this.i18n.t('nav.marketplace'),
+      description: this.i18n.t('home.featuredSub'),
     });
     this.productsApi.categories().subscribe((c) => this.categories.set(c));
     this.productsApi.list().subscribe((items) => this.catalog.set(items));
@@ -126,7 +132,7 @@ export class MarketplaceComponent implements OnInit {
 
   categoryTitle(): string {
     const cat = this.selectedCategory();
-    return cat ? categoryLabel(cat as never) : 'All products';
+    return cat ? this.i18n.catLabel(cat) : this.i18n.t('mkt.all');
   }
 
   categoryCount(id: string): number {

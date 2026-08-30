@@ -5,14 +5,17 @@ import { environment } from '../../environments/environment';
 import {
   AffiliateStats,
   AdminOverview,
+  AdminProductDetail,
+  AdminUserDetail,
+  ModerationStatus,
   Creator,
   DashboardSummary,
   NotificationItem,
   Order,
-  PaymentProvider,
   Product,
   Review,
   UsageStat,
+  WalletSummary,
   WalletTx,
 } from '../models/marketplace.models';
 import { CategoryMeta } from '../models/marketplace.models';
@@ -77,12 +80,16 @@ export class ProductService {
     q?: string;
     featured?: boolean;
     creatorSlug?: string;
+    limit?: number;
+    offset?: number;
   } = {}): Observable<Product[]> {
     let params = new HttpParams();
     if (filter.category) params = params.set('category', filter.category);
     if (filter.q) params = params.set('q', filter.q);
     if (filter.featured) params = params.set('featured', 'true');
     if (filter.creatorSlug) params = params.set('creatorSlug', filter.creatorSlug);
+    if (filter.limit != null) params = params.set('limit', String(filter.limit));
+    if (filter.offset != null) params = params.set('offset', String(filter.offset));
     return this.http.get<Product[]>(`${this.base}/products`, { params });
   }
 
@@ -174,8 +181,28 @@ export class DashboardService {
     return this.http.get<WalletTx[]>(`${this.base}/wallet`);
   }
 
+  walletSummary(): Observable<WalletSummary> {
+    return this.http.get<WalletSummary>(`${this.base}/wallet/summary`);
+  }
+
   withdraw(amount: number): Observable<WalletTx> {
     return this.http.post<WalletTx>(`${this.base}/wallet/withdraw`, { amount });
+  }
+
+  openDispute(orderId: string, reason: string): Observable<Order> {
+    return this.http.post<Order>(`${this.base}/orders/${orderId}/dispute`, { reason });
+  }
+
+  disputes(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.base}/orders/disputes`);
+  }
+
+  adminDisputes(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.base}/admin/disputes`);
+  }
+
+  resolveDispute(orderId: string, resolution: 'seller' | 'buyer', note?: string): Observable<Order> {
+    return this.http.patch<Order>(`${this.base}/admin/disputes/${orderId}`, { resolution, note });
   }
 
   deposit(amount: number): Observable<WalletTx> {
@@ -196,6 +223,36 @@ export class DashboardService {
 
   adminOverview(): Observable<AdminOverview> {
     return this.http.get<AdminOverview>(`${this.base}/admin/overview`);
+  }
+
+  adminUser(id: string): Observable<AdminUserDetail> {
+    return this.http.get<AdminUserDetail>(`${this.base}/admin/users/${id}`);
+  }
+
+  updateUserStatus(
+    id: string,
+    body: { status: ModerationStatus; days?: number; reason?: string },
+  ): Observable<AdminUserDetail> {
+    return this.http.patch<AdminUserDetail>(`${this.base}/admin/users/${id}/status`, body);
+  }
+
+  deleteUser(id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/admin/users/${id}`);
+  }
+
+  adminProduct(id: string): Observable<AdminProductDetail> {
+    return this.http.get<AdminProductDetail>(`${this.base}/admin/products/${id}`);
+  }
+
+  updateProductStatus(
+    id: string,
+    body: { status: ModerationStatus; days?: number; reason?: string },
+  ): Observable<AdminProductDetail> {
+    return this.http.patch<AdminProductDetail>(`${this.base}/admin/products/${id}/status`, body);
+  }
+
+  deleteProduct(id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/admin/products/${id}`);
   }
 }
 
@@ -265,12 +322,29 @@ export class BillingService {
 
   checkout(input: {
     productId: string;
-    provider: PaymentProvider;
-  }): Observable<{ checkoutId: string; provider: string; status: string }> {
-    return this.http.post<{ checkoutId: string; provider: string; status: string }>(
-      `${this.base}/billing/checkout`,
-      input,
-    );
+    quantity?: number;
+  }): Observable<{
+    checkoutId: string;
+    provider: string;
+    status: string;
+    quantity?: number;
+    amount?: number;
+    currency?: string;
+    balance?: number;
+  }> {
+    return this.http.post<{
+      checkoutId: string;
+      provider: string;
+      status: string;
+      quantity?: number;
+      amount?: number;
+      currency?: string;
+      balance?: number;
+    }>(`${this.base}/billing/checkout`, {
+      productId: input.productId,
+      quantity: input.quantity,
+      provider: 'wallet',
+    });
   }
 }
 
@@ -349,5 +423,89 @@ export class AgentChatService {
     sessionId?: string;
   }): Observable<AgentChatResult> {
     return this.http.post<AgentChatResult>(`${this.base}/agents/chat`, input);
+  }
+}
+
+export interface GpuServer {
+  id: string;
+  projectId: string;
+  name: string;
+  provider: string;
+  kind: 'compute' | 'game';
+  status: string;
+  gpu: string;
+  createdAt?: string;
+}
+
+export interface TerminalSessionInfo {
+  sessionId: string;
+  projectId: string;
+  serverId: string;
+  provider: string;
+  status: string;
+}
+
+export interface GameSessionInfo {
+  sessionId: string;
+  projectId: string;
+  serverId: string;
+  provider: string;
+  status: string;
+  streamKind: string;
+  playerUrl: string;
+  publicUrl?: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class GpuGatewayService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  listServers(projectId = 'default'): Observable<GpuServer[]> {
+    return this.http.get<GpuServer[]>(`${this.base}/servers`, { params: { projectId } });
+  }
+
+  createServer(body: {
+    name: string;
+    kind: 'compute' | 'game';
+    projectId?: string;
+    gpuType?: string;
+    provider?: string;
+  }): Observable<GpuServer> {
+    return this.http.post<GpuServer>(`${this.base}/servers`, body);
+  }
+
+  startServer(id: string): Observable<GpuServer> {
+    return this.http.post<GpuServer>(`${this.base}/servers/${id}/start`, {});
+  }
+
+  stopServer(id: string): Observable<GpuServer> {
+    return this.http.post<GpuServer>(`${this.base}/servers/${id}/stop`, {});
+  }
+
+  deleteServer(id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/servers/${id}`);
+  }
+
+  createTerminal(serverId: string, projectId = 'default'): Observable<TerminalSessionInfo> {
+    return this.http.post<TerminalSessionInfo>(`${this.base}/terminal/sessions`, { serverId, projectId });
+  }
+
+  closeTerminal(sessionId: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/terminal/sessions/${sessionId}`);
+  }
+
+  createGameSession(serverId: string, projectId = 'default'): Observable<GameSessionInfo> {
+    return this.http.post<GameSessionInfo>(`${this.base}/game-sessions`, { serverId, projectId });
+  }
+
+  closeGameSession(sessionId: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/game-sessions/${sessionId}`);
+  }
+
+  wsUrl(sessionId: string, token: string): string {
+    const origin = this.base.replace(/\/v1\/?$/, '');
+    const ws = origin.replace(/^http/, 'ws');
+    return `${ws}/ws/terminal/${encodeURIComponent(sessionId)}?access_token=${encodeURIComponent(token)}`;
   }
 }

@@ -377,6 +377,37 @@
   color: var(--color-ink);
 }
 
+.pd-pay {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background: var(--color-mist);
+}
+
+.pd-pay__method {
+  margin: 0;
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+
+.pd-pay__bal {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.pd-pay__topup {
+  margin-left: auto;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--pd-red);
+  text-decoration: none;
+}
+
 .pd-buy__cta {
   border: 0;
   border-radius: 10px;

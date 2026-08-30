@@ -70,7 +70,7 @@
           @if (showPolicy) {
             <ul class="store-policy__list">
               <li>Token usage billed from buyer wallet; seller receives net after 20% platform fee.</li>
-              <li>Disputes handled through PH AI Market support within 72h.</li>
+              <li>Disputes handled through AI Markets support within 72h.</li>
               <li>Refunds apply to unused prepaid credits only.</li>
             </ul>
           }
@@ -164,7 +164,7 @@
         @for (p of filtered(); track p.id) {
           <article class="store-pcard">
             <a [routerLink]="['/product', p.slug]" class="store-pcard__media">
-              @if (p.featured || p.installCount > 50) {
+              @if (p.featured || (p.salesCount || 0) > 50) {
                 <span class="store-pcard__ribbon">BEST SELLER</span>
               }
               <img [src]="p.coverUrl" [alt]="p.name" loading="lazy" />
@@ -175,7 +175,7 @@
               <p class="store-pcard__price">{{ priceOf(p) }}</p>
               <p class="store-pcard__meta">
                 <span class="stars">★ {{ p.rating | number: '1.1-1' }}</span>
-                <span>Sold {{ p.installCount | number }}</span>
+                <span>Đã bán {{ (p.salesCount || 0) | number }}</span>
               </p>
               <div class="store-pcard__footer">
                 <span class="pill pill--green">Warranty 9,999h</span>

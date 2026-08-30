@@ -14,7 +14,7 @@ export class TermsOfServiceComponent implements OnInit {
   ngOnInit(): void {
     this.seo.set({
       title: 'Thỏa thuận sử dụng',
-      description: 'Thỏa thuận chấp thuận bảo vệ và xử lý dữ liệu cá nhân / điều khoản sử dụng PH AI Market.',
+      description: 'Thỏa thuận chấp thuận bảo vệ và xử lý dữ liệu cá nhân / điều khoản sử dụng AI Markets.',
     });
   }
 }

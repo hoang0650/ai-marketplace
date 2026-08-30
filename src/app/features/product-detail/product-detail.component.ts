@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   ProductService,
@@ -9,12 +9,15 @@ import {
   BillingService,
   PlaygroundService,
   AgentChatService,
+  DashboardService,
 } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
-import { PaymentProvider, Product, ProductCategory, Review } from '../../models/marketplace.models';
-import { categoryLabel, isHireCategory, isSkillCategory } from '../../models/categories';
+import { Product, ProductCategory, Review } from '../../models/marketplace.models';
+import { isHireCategory, isSkillCategory } from '../../models/categories';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 import { OpenClawGatewayService } from '../agents/openclaw-gateway.service';
 import {
   RUNPOD_VIDEO_ASPECT,
@@ -51,7 +54,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, FormsModule],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, TPipe],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -64,7 +67,10 @@ export class ProductDetailComponent implements OnInit {
   private readonly playgroundApi = inject(PlaygroundService);
   private readonly agentChatApi = inject(AgentChatService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
   private readonly openclaw = inject(OpenClawGatewayService);
+  private readonly walletApi = inject(DashboardService);
+  private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
   readonly product = signal<Product | null>(null);
@@ -76,7 +82,7 @@ export class ProductDetailComponent implements OnInit {
   readonly resultView = signal<ResultView>('preview');
   readonly runStatus = signal<RunStatus>('idle');
   readonly checkoutMsg = signal('');
-  provider: PaymentProvider = 'stripe';
+  readonly walletBalance = signal(0);
   qty = 1;
   useCoupon = false;
   couponCode = '';
@@ -255,6 +261,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadWallet();
     this.route.paramMap.subscribe((params) => {
       const slug = params.get('slug') || '';
       this.productsApi.bySlug(slug).subscribe((p) => {
@@ -280,15 +287,16 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  displayPrice(p: Product): string {
+  displayPrice(p: Product, units = 1): string {
     const pr = p.pricing;
     if (pr.model === 'free') return this.displayCurrency === 'VND' ? '0 đ' : 'Free';
-    const usd = pr.model === 'usage' ? Number(pr.usageRate) || 0 : Number(pr.price) || 0;
+    const qty = Math.max(1, Number(units) || 1);
+    const usd = (pr.model === 'usage' ? Number(pr.usageRate) || 0 : Number(pr.price) || 0) * qty;
     if (this.displayCurrency === 'VND') {
       return `${Math.round(usd * 25_000).toLocaleString('vi-VN')} đ`;
     }
-    if (pr.model === 'usage') return `$${usd} / ${pr.usageUnit || 'unit'}`;
-    if (pr.model === 'subscription') return `$${usd} / ${pr.interval}`;
+    if (pr.model === 'usage' && qty === 1) return `$${usd} / ${pr.usageUnit || 'unit'}`;
+    if (pr.model === 'subscription' && qty === 1) return `$${usd} / ${pr.interval}`;
     return `$${usd}`;
   }
 
@@ -317,7 +325,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   label(cat: ProductCategory): string {
-    return categoryLabel(cat);
+    return this.i18n.catLabel(cat);
   }
 
   isHire(cat: ProductCategory): boolean {
@@ -981,11 +989,43 @@ export class ProductDetailComponent implements OnInit {
     setTimeout(() => this.apiCopied.set(false), 1600);
   }
 
+  loadWallet(): void {
+    if (!this.auth.user()) {
+      this.walletBalance.set(0);
+      return;
+    }
+    this.walletApi.wallet().subscribe({
+      next: (list) => {
+        const bal = list.reduce(
+          (s, t) => s + (t.type === 'debit' || t.type === 'withdraw' ? -t.amount : t.amount),
+          0,
+        );
+        this.walletBalance.set(bal);
+      },
+      error: () => this.walletBalance.set(0),
+    });
+  }
+
   checkout(): void {
     const p = this.product();
     if (!p) return;
-    this.billing.checkout({ productId: p.id, provider: this.provider }).subscribe((res) => {
-      this.checkoutMsg.set(`Checkout ${res.checkoutId} via ${res.provider} (${res.status})`);
+    if (!this.auth.user()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { redirect: `/product/${p.slug}` } });
+      return;
+    }
+    const quantity = Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
+    this.billing.checkout({ productId: p.id, quantity }).subscribe({
+      next: (res) => {
+        this.checkoutMsg.set(`Đã thanh toán bằng ví aimarkets.vn · ${quantity} đơn vị`);
+        if (typeof res.balance === 'number') this.walletBalance.set(res.balance);
+        else this.loadWallet();
+        this.product.update((cur) => {
+          if (!cur) return cur;
+          const sold = (cur.salesCount || 0) + quantity;
+          return { ...cur, salesCount: sold, installCount: sold };
+        });
+      },
+      error: (err) => this.checkoutMsg.set(err?.error?.message || 'Thanh toán ví thất bại'),
     });
   }
 

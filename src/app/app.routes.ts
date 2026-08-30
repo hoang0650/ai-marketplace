@@ -295,83 +295,60 @@ export const routes: Routes = [
         data: { category: 'hire-build-web', title: 'Build web' },
       },
       {
+        path: 'providers',
+        redirectTo: 'marketplace',
+        pathMatch: 'full',
+      },
+      {
+        path: 'api-endpoint',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'api-endpoint', title: 'Sell API' },
+      },
+      {
+        path: 'openrouter',
+        redirectTo: 'inference',
+        pathMatch: 'full',
+      },
+      {
+        path: 'featherless',
+        redirectTo: 'inference',
+        pathMatch: 'full',
+      },
+      {
+        path: 'runpod-public',
+        redirectTo: 'marketplace',
+        pathMatch: 'full',
+      },
+      {
+        path: 'gpu-compute',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'gpu-compute', title: 'GPU compute' },
+      },
+      {
+        path: 'game-server',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'game-server', title: 'Game servers' },
+      },
+      {
+        path: 'training-service',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'training-service', title: 'Training' },
+      },
+      {
+        path: 'agent-runtime',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'agent-runtime', title: 'Agent runtime' },
+      },
+      {
         path: 'skill-pack',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'skill-pack', title: 'Skill packs' },
-      },
-      // Digital / sản phẩm số (gcmmo-style)
-      {
-        path: 'ai-account',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'ai-account', title: 'Tài khoản AI' },
-      },
-      {
-        path: 'social-account',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'social-account', title: 'Mạng xã hội' },
-      },
-      {
-        path: 'software',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'software', title: 'Phần mềm' },
-      },
-      {
-        path: 'vpn-proxy',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'vpn-proxy', title: 'VPN & Proxy' },
-      },
-      {
-        path: 'license-key',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'license-key', title: 'Key / License' },
-      },
-      {
-        path: 'course',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'course', title: 'Khóa học' },
-      },
-      {
-        path: 'template',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'template', title: 'Template / Source' },
-      },
-      {
-        path: 'email-domain',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'email-domain', title: 'Email & Domain' },
-      },
-      {
-        path: 'boost-service',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'boost-service', title: 'Tăng tương tác' },
-      },
-      {
-        path: 'mmo-tool',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'mmo-tool', title: 'Tool MMO' },
-      },
-      {
-        path: 'design-asset',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'design-asset', title: 'Thiết kế' },
-      },
-      {
-        path: 'cloud-hosting',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'cloud-hosting', title: 'Cloud / Hosting' },
       },
       {
         path: 'store/:creatorSlug',
@@ -479,6 +456,12 @@ export const routes: Routes = [
           import('./features/wallet/wallet.component').then((m) => m.WalletComponent),
       },
       {
+        path: 'account/console',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/account/buyer-console.component').then((m) => m.BuyerConsoleComponent),
+      },
+      {
         path: 'affiliate',
         canActivate: [authGuard],
         loadComponent: () =>
@@ -501,6 +484,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/legal/terms-of-service/terms-of-service.component').then(
             (m) => m.TermsOfServiceComponent,
+          ),
+      },
+      {
+        path: 'admin/users/:id',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/commerce/admin-moderation.components').then((m) => m.AdminUserDetailComponent),
+      },
+      {
+        path: 'admin/products/:id',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/commerce/admin-moderation.components').then(
+            (m) => m.AdminProductDetailComponent,
           ),
       },
       {
@@ -537,7 +534,17 @@ export const routes: Routes = [
           {
             path: 'gpu',
             loadComponent: () =>
-              import('./features/dashboard/dashboard.components').then((m) => m.DashboardGpuComponent),
+              import('./features/gpu/gpu-servers.component').then((m) => m.GpuServersComponent),
+          },
+          {
+            path: 'projects/:projectId/terminal',
+            loadComponent: () =>
+              import('./features/gpu/gpu-terminal.component').then((m) => m.GpuTerminalComponent),
+          },
+          {
+            path: 'servers/:serverId/play',
+            loadComponent: () =>
+              import('./features/gpu/gpu-play.component').then((m) => m.GpuPlayComponent),
           },
           {
             path: 'analytics',

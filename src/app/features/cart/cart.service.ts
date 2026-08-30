@@ -2,7 +2,8 @@ import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { WishlistService } from '../../services/api.services';
 import { Product } from '../../models/marketplace.models';
-import { tap } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { catchError, of, tap } from 'rxjs';
 
 export interface CartLine {
   product: Product;
@@ -13,6 +14,7 @@ export interface CartLine {
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly wishlist = inject(WishlistService);
+  private readonly auth = inject(AuthService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly linesSignal = signal<CartLine[]>([]);
   private readonly qtyMap = signal<Record<string, number>>({});
@@ -31,16 +33,23 @@ export class CartService {
 
   load(): void {
     this.readQty();
-    this.wishlist.list().subscribe((products) => {
-      const qty = this.qtyMap();
-      this.linesSignal.set(
-        products.map((product) => ({
-          product,
-          qty: qty[product.id] || 1,
-          selected: true,
-        })),
-      );
-    });
+    if (!this.auth.isAuthenticated()) {
+      this.linesSignal.set([]);
+      return;
+    }
+    this.wishlist
+      .list()
+      .pipe(catchError(() => of([] as Product[])))
+      .subscribe((products) => {
+        const qty = this.qtyMap();
+        this.linesSignal.set(
+          products.map((product) => ({
+            product,
+            qty: qty[product.id] || 1,
+            selected: true,
+          })),
+        );
+      });
   }
 
   unitPrice(p: Product): number {

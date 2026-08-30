@@ -67,7 +67,11 @@ export class AuthService {
     return this.http.get<User>(`${environment.apiUrl}/auth/me`).pipe(
       tap((user) => this.userSignal.set(user)),
       catchError(() => {
-        this.logout();
+        this.userSignal.set(null);
+        this.tokenSignal.set(null);
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.removeItem('phai.token');
+        }
         return of(null);
       }),
     );

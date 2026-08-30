@@ -6,13 +6,14 @@ import { DashboardService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { WalletTx } from '../../models/marketplace.models';
 import { environment } from '../../../environments/environment';
+import { TPipe } from '../../i18n/t.pipe';
 
 type WalletTab = 'deposit' | 'withdraw' | 'history';
 
 @Component({
   selector: 'app-wallet',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink],
+  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.scss',
 })

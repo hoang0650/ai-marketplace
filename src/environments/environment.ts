@@ -1,22 +1,21 @@
 export const environment = {
   production: false,
-  /** Real backend: ai-marketplace-api (Express + MongoDB) */
-  apiUrl: 'http://localhost:4100/api',
-  /** PHGroup-AI — same as hotelapp for OpenClaw direct-url / pairing */
+  /** Platform + gateway v1 — auth, products, wallet, chat/completions, … */
+  apiUrl: 'http://localhost:4100/v1',
+  /** RunPod-style serverless gateway v2 (/run, /status) */
+  apiV2Url: 'http://localhost:4100/v2',
+  /** PHGroup-AI / OpenClaw admin base */
   aiUrl: 'http://localhost:8080',
-  /** Set true to use in-browser mock interceptor instead of real API */
+  /** OpenAI-compatible AI gateway v1 */
+  aiV1Url: 'http://localhost:8080/v1',
   useMockApi: false,
-  brandName: 'PH AI Market',
+  brandName: 'AI Markets',
   brandTagline: 'AI models, skill packs, and hire talent.',
   openclaw: {
-    /** Hotel / tenant id used for gateway cell resolution */
     tenantId: '',
-    /** Control UI origin, e.g. https://{tenant}.phhotel.vn */
     uiBaseUrl: '',
-    /** wss://… gateway — used when direct-url API is unavailable */
     gatewayUrl: '',
     gatewayToken: '',
-    /** Optional Nest/PHHotel JWT if marketplace token is not accepted by AI admin */
     bearerToken: '',
   },
 };

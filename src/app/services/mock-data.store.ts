@@ -32,6 +32,7 @@ interface MockDb {
 function initMockDb(): MockDb {
   const db = structuredClone(seed as MockDb);
   mergeRunpodIntoMarketplace(db);
+  db.products = db.products.filter((p) => CATEGORY_META.some((c) => c.id === p.category));
   return db;
 }
 
@@ -77,7 +78,7 @@ export class MockDataStore {
           p.tags.some((t) => t.includes(q)),
       );
     }
-    return items.sort((a, b) => b.installCount - a.installCount);
+    return items.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
   }
 
   getProductBySlug(slug: string): Product | undefined {
@@ -198,7 +199,7 @@ export class MockDataStore {
         id: `c-${Date.now()}`,
         slug: user.creatorSlug,
         name: user.name,
-        bio: 'New creator on PH AI Market',
+        bio: 'New creator on AI Markets',
         avatarUrl: user.avatarUrl!,
         coverUrl: 'https://images.unsplash.com/photo-1639322537504-6427a16b0a28?w=1600&q=80',
         verified: false,
@@ -326,6 +327,7 @@ export class MockDataStore {
       pricing: partial.pricing || { model: 'free', price: 0, currency: 'USD' },
       rating: 0,
       reviewCount: 0,
+      salesCount: 0,
       installCount: 0,
       tags: partial.tags?.length ? partial.tags : [category],
       apiDocsMarkdown: partial.apiDocsMarkdown || `## Docs\nPOST \`/v1/${category}/run\``,

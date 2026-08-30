@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DashboardService, ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
-import { Order, Product, WalletTx } from '../../models/marketplace.models';
+import { Order, Product, WalletSummary, WalletTx } from '../../models/marketplace.models';
 import { categoryLabel } from '../../models/categories';
 import { ShopProfileService } from './shop-profile.service';
 
@@ -278,6 +278,19 @@ export class SellPaymentComponent {
       <h1>Rút tiền</h1>
       <div class="grid">
         <form class="card" (ngSubmit)="withdraw()">
+          @if (summary(); as s) {
+            <p class="ok">Có thể rút: {{ s.available | currency: s.currency }} · Đóng băng (từng đơn): {{ s.held | currency: s.currency }}</p>
+            @if (s.holds.length) {
+              <ul>
+                @for (h of s.holds; track h.orderId) {
+                  <li>
+                    <span>{{ h.productName }} · {{ h.kind === 'dispute' ? 'Khiếu nại' : 'Chờ 48h' }}</span>
+                    <strong>{{ h.amount | currency: h.currency }}</strong>
+                  </li>
+                }
+              </ul>
+            }
+          }
           <label>
             <span>Số tiền</span>
             <input type="number" min="1" [(ngModel)]="amount" name="amount" />
@@ -322,18 +335,24 @@ export class SellWithdrawComponent implements OnInit {
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
   readonly txs = signal<WalletTx[]>([]);
+  readonly summary = signal<WalletSummary | null>(null);
   readonly msg = signal('');
   amount = 100;
 
   ngOnInit(): void {
     this.seo.set({ title: 'Rút tiền' });
     this.api.wallet().subscribe((t) => this.txs.set(t));
+    this.api.walletSummary().subscribe((s) => this.summary.set(s));
   }
 
   withdraw(): void {
-    this.api.withdraw(this.amount).subscribe((tx) => {
-      this.txs.update((list) => [tx, ...list]);
-      this.msg.set(`Đã gửi yêu cầu rút ${tx.amount}`);
+    this.api.withdraw(this.amount).subscribe({
+      next: (tx) => {
+        this.txs.update((list) => [tx, ...list]);
+        this.msg.set(`Đã gửi yêu cầu rút ${tx.amount}`);
+        this.api.walletSummary().subscribe((s) => this.summary.set(s));
+      },
+      error: (err) => this.msg.set(err?.error?.message || 'Không rút được'),
     });
   }
 }
@@ -357,7 +376,7 @@ export class SellWithdrawComponent implements OnInit {
             <div>
               <p class="cat">{{ label(p.category) }}</p>
               <a [routerLink]="['/product', p.slug]">{{ p.name }}</a>
-              <p class="meta">{{ p.installCount | number }} lượt · ★ {{ p.rating | number: '1.1-1' }}</p>
+              <p class="meta">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number: '1.1-1' }}</p>
             </div>
             <a class="ghost" [routerLink]="['/deploy', p.slug]">Deploy</a>
           </article>

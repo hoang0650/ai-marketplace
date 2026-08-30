@@ -81,6 +81,17 @@ export class ProfileComponent implements OnInit {
     return 'Đã hoàn';
   }
 
+  openDispute(o: Order): void {
+    const reason = typeof window !== 'undefined' ? window.prompt('Lý do khiếu nại (tối thiểu 8 ký tự):', '') : '';
+    if (!reason || reason.trim().length < 8) return;
+    this.api.openDispute(o.id, reason.trim()).subscribe({
+      next: (updated) => {
+        this.orders.update((list) => list.map((row) => (row.id === updated.id ? updated : row)));
+      },
+      error: (err) => this.shareMsg.set(err?.error?.message || 'Không gửi được khiếu nại'),
+    });
+  }
+
   async shareProfile(): Promise<void> {
     const url = typeof window !== 'undefined' ? window.location.href : '';
     try {

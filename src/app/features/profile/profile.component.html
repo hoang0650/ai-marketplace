@@ -208,6 +208,11 @@
                   <p class="order-list__id">{{ o.id }} · {{ o.createdAt | date: 'dd/MM/yyyy' }}</p>
                 </div>
                 <strong>{{ o.amount | currency: o.currency: 'symbol-narrow': '1.0-0' }}</strong>
+                @if (o.canDispute) {
+                  <button type="button" class="link-accent" (click)="openDispute(o)">Khiếu nại</button>
+                } @else if (o.disputeStatus === 'open') {
+                  <span class="warn-text">Đang khiếu nại</span>
+                }
               </li>
             }
           </ul>

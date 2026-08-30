@@ -1,203 +1,190 @@
-<a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-accent focus:px-3 focus:py-2" href="#main">Skip to content</a>
+<a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-accent focus:px-3 focus:py-2" href="#main">{{ 'skip' | t }}</a>
+
+<!-- Top utility bar (Luxury Shop style) -->
+<div class="lux-topbar">
+  <div class="lux-topbar__inner">
+    <ul class="lux-topbar__links">
+      <li><a routerLink="/cart">{{ 'lux.wishlist' | t }}</a></li>
+      <li><a routerLink="/cart">{{ 'lux.checkout' | t }}</a></li>
+      @if (!auth.isAuthenticated()) {
+        <li><a routerLink="/auth/login">{{ 'nav.login' | t }}</a></li>
+        <li><a routerLink="/auth/register">{{ 'lux.register' | t }}</a></li>
+      }
+    </ul>
+    <div class="lux-topbar__right">
+      <div class="lang-dd" [class.open]="langOpen()">
+        <button type="button" class="lux-topbar__pill" [attr.aria-expanded]="langOpen()" (click)="toggleLang($event)">
+          {{ i18n.lang() === 'en' ? 'English' : 'Tiếng Việt' }} ▾
+        </button>
+        @if (langOpen()) {
+          <div class="lang-dd__panel" role="menu">
+            @for (l of i18n.langs; track l.id) {
+              <button type="button" role="menuitem" class="lang-dd__item" [class.active]="i18n.lang() === l.id" (click)="setLang(l.id)">
+                {{ l.native }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+      <span class="lux-topbar__pill">VND (₫)</span>
+      <div class="lux-cart-dd" [class.open]="cartOpen()">
+        <button type="button" class="lux-topbar__cart" (click)="toggleCart($event)">
+          {{ 'lux.cart' | t }} ({{ cart.count() }})
+        </button>
+        @if (cartOpen()) {
+          <div class="lux-cart-dd__panel" (click)="$event.stopPropagation()">
+            @if (cart.count() === 0) {
+              <p class="lux-cart-dd__empty">{{ 'lux.cartEmpty' | t }}</p>
+            } @else {
+              <ul class="lux-cart-dd__list">
+                @for (line of cart.lines(); track line.product.id) {
+                  <li>
+                    <a routerLink="/product/{{ line.product.slug }}" (click)="closeCart()">
+                      <img [src]="line.product.coverUrl || ''" [alt]="line.product.name" width="48" height="48" />
+                      <div>
+                        <strong>{{ line.product.name }}</strong>
+                        <span>x{{ line.qty }}</span>
+                      </div>
+                    </a>
+                  </li>
+                }
+              </ul>
+              <div class="lux-cart-dd__foot">
+                <a routerLink="/cart" class="btn btn-outline" (click)="closeCart()">{{ 'lux.addToCart' | t }}</a>
+                <a routerLink="/cart" class="btn btn-fill" (click)="closeCart()">{{ 'lux.checkout' | t }}</a>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
 
 <header class="site-header">
   <div class="site-header__bar">
     <div class="site-header__inner">
-      <a routerLink="/" class="brand" aria-label="PH AI Market home">
-        <span class="brand__mark" aria-hidden="true">PH</span>
-        <span class="brand__name font-display">AI Market</span>
+      <a routerLink="/" class="brand font-display" [title]="'nav.homeAria' | t">
+        {{ brand }}
       </a>
 
       <nav class="site-header__nav" aria-label="Primary">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">Home</a>
-        <a routerLink="/marketplace" routerLinkActive="active" class="nav-link">Marketplace</a>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">{{ 'lux.home' | t }}</a>
+        <a routerLink="/marketplace" routerLinkActive="active" class="nav-link">{{ 'lux.shop' | t }}</a>
 
         <div class="nav-dd" [class.open]="categoryOpen()">
-          <button
-            type="button"
-            class="nav-dd__btn"
-            [attr.aria-expanded]="categoryOpen()"
-            aria-haspopup="menu"
-            (click)="toggleCategories()"
-          >
-            Categories
+          <button type="button" class="nav-dd__btn" [attr.aria-expanded]="categoryOpen()" aria-haspopup="menu" (click)="toggleCategories()">
+            {{ 'nav.categories' | t }}
             <span class="nav-dd__chev" aria-hidden="true">▾</span>
           </button>
           @if (categoryOpen()) {
-            <div class="nav-dd__panel" role="menu" aria-label="Categories">
-              <div class="nav-dd__cols nav-dd__cols--2">
+            <div class="nav-dd__panel nav-dd__panel--lux" role="menu">
+              <div class="nav-dd__cols nav-dd__cols--3">
                 <div>
-                  <p class="nav-dd__group">{{ laneTitle('ai') }}</p>
+                  <p class="nav-dd__group">{{ 'group.generate' | t }}</p>
                   <ul>
-                    @for (link of platformLinks; track link.path) {
-                      <li>
-                        <a [routerLink]="link.path" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
-                          <span class="nav-dd__item-title">{{ link.label }}</span>
-                          <span class="nav-dd__item-desc">{{ link.description }}</span>
-                        </a>
-                      </li>
-                    }
-                    @for (c of aiCategories; track c.id) {
+                    @for (c of generateCats; track c.id) {
                       <li>
                         <a [routerLink]="c.hubPath" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
-                          <span class="nav-dd__item-title">{{ c.label }}</span>
-                          <span class="nav-dd__item-desc">{{ c.description }}</span>
+                          <span class="nav-dd__item-title">{{ ('cat.' + c.id + '.label') | t }}</span>
                         </a>
                       </li>
                     }
                   </ul>
                 </div>
                 <div>
-                  <p class="nav-dd__group">{{ laneTitle('digital') }}</p>
+                  <p class="nav-dd__group">{{ 'group.apis' | t }}</p>
                   <ul>
-                    @for (c of digitalCategories; track c.id) {
+                    @for (c of apiCats; track c.id) {
                       <li>
                         <a [routerLink]="c.hubPath" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
-                          <span class="nav-dd__item-title">{{ c.label }}</span>
-                          <span class="nav-dd__item-desc">{{ c.description }}</span>
+                          <span class="nav-dd__item-title">{{ ('cat.' + c.id + '.label') | t }}</span>
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </div>
+                <div>
+                  <p class="nav-dd__group">{{ 'group.platform' | t }}</p>
+                  <ul>
+                    @for (link of platformLinks; track link.path) {
+                      <li>
+                        <a [routerLink]="link.path" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
+                          <span class="nav-dd__item-title">{{ link.labelKey | t }}</span>
                         </a>
                       </li>
                     }
                   </ul>
                 </div>
               </div>
-              <a routerLink="/marketplace" class="nav-dd__all" (click)="closeCategories()">Browse all marketplace →</a>
+              <a routerLink="/marketplace" class="nav-dd__all" (click)="closeCategories()">{{ 'nav.browseAll' | t }}</a>
             </div>
           }
         </div>
+
+        <a routerLink="/hire-agent/marketplace" class="nav-link">{{ 'lux.lookbook' | t }}</a>
+        <a routerLink="/models" class="nav-link">{{ 'lux.about' | t }}</a>
       </nav>
 
       <div class="site-header__actions">
-        <button type="button" class="icon-btn" (click)="toggleTheme()" [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
+        <button type="button" class="icon-btn" (click)="toggleTheme()" [attr.aria-label]="theme.isDark() ? ('nav.themeLight' | t) : ('nav.themeDark' | t)">
           {{ theme.isDark() ? '☀' : '☾' }}
         </button>
         @if (auth.isAuthenticated()) {
-          <a routerLink="/wallet" class="icon-btn hidden sm:inline-flex" title="Ví" aria-label="Ví">💳</a>
-          <a routerLink="/cart" class="icon-btn" title="Giỏ hàng" aria-label="Giỏ hàng">🛒</a>
+          <a routerLink="/wallet" class="icon-btn hidden sm:inline-flex" [title]="'nav.wallet' | t">💳</a>
           <div class="noti-menu" [class.open]="notiOpen()">
-            <button
-              type="button"
-              class="icon-btn"
-              title="Thông báo"
-              aria-label="Thông báo"
-              [attr.aria-expanded]="notiOpen()"
-              (click)="toggleNoti($event)"
-            >
+            <button type="button" class="icon-btn" [attr.aria-expanded]="notiOpen()" (click)="toggleNoti($event)">
               🔔
               @if (unreadCount()) {
                 <span class="icon-btn__badge">{{ unreadCount() > 9 ? '9+' : unreadCount() }}</span>
               }
             </button>
             @if (notiOpen()) {
-              <div class="noti-menu__panel" role="dialog" aria-label="Thông báo" (click)="$event.stopPropagation()">
+              <div class="noti-menu__panel" (click)="$event.stopPropagation()">
                 <div class="noti-menu__head">
-                  <div>
-                    <strong>Thông báo</strong>
-                    @if (unreadCount()) {
-                      <span class="noti-menu__unread">{{ unreadCount() }} chưa đọc</span>
-                    }
-                  </div>
-                  <button type="button" class="noti-menu__mark" (click)="readAllNotifs()" [disabled]="!unreadCount()">
-                    Đánh dấu tất cả đã đọc
-                  </button>
-                </div>
-                <div class="noti-menu__tabs">
-                  <button type="button" [class.active]="notiTab() === 'all'" (click)="setNotiTab('all')">
-                    Tất cả ({{ notifications().length }})
-                  </button>
-                  <button type="button" [class.active]="notiTab() === 'tx'" (click)="setNotiTab('tx')">Giao dịch</button>
-                  <button type="button" [class.active]="notiTab() === 'system'" (click)="setNotiTab('system')">Hệ thống</button>
-                  <button type="button" [class.active]="notiTab() === 'promo'" (click)="setNotiTab('promo')">Khuyến mãi</button>
+                  <strong>{{ 'nav.notifications' | t }}</strong>
+                  <button type="button" class="noti-menu__mark" (click)="readAllNotifs()" [disabled]="!unreadCount()">{{ 'nav.markAllRead' | t }}</button>
                 </div>
                 <ul class="noti-menu__list">
                   @for (n of visibleNotifs(); track n.id) {
                     <li [class.unread]="!n.read">
                       <a [routerLink]="n.href || '/notifications'" (click)="closeNoti()">
-                        <span class="noti-menu__icon" aria-hidden="true">✓</span>
-                        <div>
-                          <p class="noti-menu__title">{{ n.title }}</p>
-                          <p class="noti-menu__body">{{ n.body }}</p>
-                          <time>{{ n.createdAt | date: 'h:mm a, d MMM y' }}</time>
-                        </div>
+                        <p class="noti-menu__title">{{ n.title }}</p>
+                        <p class="noti-menu__body">{{ n.body }}</p>
                       </a>
                     </li>
                   } @empty {
-                    <li class="noti-menu__empty">Không có thông báo.</li>
+                    <li class="noti-menu__empty">{{ 'nav.notiEmpty' | t }}</li>
                   }
                 </ul>
-                <div class="noti-menu__foot">
-                  <a routerLink="/settings/notifications" (click)="closeNoti()">Cài đặt thông báo</a>
-                  <a routerLink="/notifications" class="all" (click)="closeNoti()">Xem tất cả thông báo ›</a>
-                </div>
               </div>
             }
           </div>
-          <a routerLink="/sell" class="btn-post hidden md:inline-flex">+ Publish</a>
-
+          <a routerLink="/sell" class="btn-post hidden md:inline-flex">{{ 'nav.publish' | t }}</a>
           <div class="user-menu" [class.open]="userMenuOpen()">
-            <button
-              type="button"
-              class="avatar-btn"
-              [attr.aria-expanded]="userMenuOpen()"
-              aria-haspopup="menu"
-              (click)="toggleUserMenu($event)"
-            >
+            <button type="button" class="avatar-btn" [attr.aria-expanded]="userMenuOpen()" (click)="toggleUserMenu($event)">
               <span class="avatar-btn__letter">{{ initials() }}</span>
-              <span class="avatar-btn__dot" aria-hidden="true"></span>
             </button>
             @if (userMenuOpen()) {
-              <div class="user-menu__panel" role="menu" aria-label="Account menu">
+              <div class="user-menu__panel" role="menu">
                 <div class="user-menu__head">
                   <p class="user-menu__name">{{ auth.user()?.name }}</p>
                   <p class="user-menu__email">{{ auth.user()?.email }}</p>
                 </div>
                 <ul class="user-menu__list">
-                  <li>
-                    <a routerLink="/profile" role="menuitem" (click)="closeUserMenu()">
-                      <span aria-hidden="true">👤</span> Hồ sơ
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/sell" role="menuitem" (click)="closeUserMenu()">
-                      <span aria-hidden="true">🏪</span>
-                      {{ auth.isCreator() ? 'Gian hàng' : 'Mở gian hàng' }}
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/sell/orders" role="menuitem" (click)="closeUserMenu()">
-                      <span aria-hidden="true">🛍</span> Đơn hàng
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/work" role="menuitem" (click)="closeUserMenu()">
-                      <span aria-hidden="true">💼</span> Work
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/settings" role="menuitem" (click)="closeUserMenu()">
-                      <span aria-hidden="true">⚙</span> Cài đặt
-                    </a>
-                  </li>
-                  @if (auth.isAdmin()) {
-                    <li>
-                      <a routerLink="/admin" role="menuitem" (click)="closeUserMenu()">
-                        <span aria-hidden="true">🛡</span> Admin
-                      </a>
-                    </li>
-                  }
+                  <li><a routerLink="/profile" (click)="closeUserMenu()">{{ 'nav.profile' | t }}</a></li>
+                  <li><a routerLink="/sell" (click)="closeUserMenu()">{{ auth.isCreator() ? ('nav.shop' | t) : ('nav.openShop' | t) }}</a></li>
+                  <li><a routerLink="/settings" (click)="closeUserMenu()">{{ 'nav.settings' | t }}</a></li>
                 </ul>
                 <div class="user-menu__foot">
-                  <button type="button" class="user-menu__logout" role="menuitem" (click)="logout()">
-                    <span aria-hidden="true">↩</span> Đăng xuất
-                  </button>
+                  <button type="button" class="user-menu__logout" (click)="logout()">{{ 'nav.logout' | t }}</button>
                 </div>
               </div>
             }
           </div>
         } @else {
-          <a routerLink="/cart" class="icon-btn" title="Giỏ hàng" aria-label="Giỏ hàng">🛒</a>
-          <a routerLink="/auth/login" class="nav-link">Log in</a>
-          <a routerLink="/auth/register" class="btn-post">+ Publish</a>
+          <a routerLink="/auth/login" class="nav-link hidden sm:inline-flex">{{ 'nav.login' | t }}</a>
+          <a routerLink="/auth/register" class="btn-post">{{ 'nav.publish' | t }}</a>
         }
       </div>
     </div>
@@ -209,56 +196,60 @@
 </main>
 
 <footer class="site-footer">
-  <div class="site-footer__promo">
-    <div class="site-footer__promo-inner">
-      <div>
-        <p class="font-display text-2xl font-bold text-ink md:text-3xl">{{ brand }}</p>
-        <p class="mt-2 max-w-md text-sm text-ink/80">
-          Models, agents &amp; skill packs — deploy on RunPod, meter tokens, pay creators fairly.
-        </p>
-      </div>
-      <div class="site-footer__promo-cta">
-        <a routerLink="/auth/register" class="btn btn-fill">Start selling</a>
-        <a routerLink="/marketplace" class="btn btn-outline">Browse catalog</a>
-      </div>
+  <div class="lux-perks">
+    <div class="lux-perks__item"><span>⚡</span> {{ 'lux.perks.shipping' | t }}</div>
+    <div class="lux-perks__item"><span>🎧</span> {{ 'lux.perks.support' | t }}</div>
+    <div class="lux-perks__item"><span>🏷</span> {{ 'lux.perks.promo' | t }}</div>
+    <div class="lux-perks__item"><span>★</span> {{ 'lux.perks.seller' | t }}</div>
+  </div>
+
+  <div class="lux-newsletter">
+    <div class="lux-newsletter__inner">
+      <h2 class="font-display">{{ 'lux.newsletterTitle' | t }}</h2>
+      <p>{{ 'lux.newsletterDesc' | t }}</p>
+      <form class="lux-newsletter__form" (submit)="onNewsletter($event)">
+        <input type="email" [placeholder]="'lux.newsletterPh' | t" required />
+        <button type="submit" class="btn btn-fill">{{ 'lux.newsletterBtn' | t }}</button>
+      </form>
     </div>
   </div>
-  <div class="site-footer__links mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 md:px-4">
+
+  <div class="site-footer__links">
     <div>
-      <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">{{ laneTitle('ai') }}</p>
-      <ul class="space-y-2 text-sm">
-        <li><a routerLink="/marketplace" class="footer-link">Marketplace</a></li>
-        @for (link of platformLinks; track link.path) {
-          <li><a [routerLink]="link.path" class="footer-link">{{ link.label }}</a></li>
-        }
-        @for (c of aiCategories.slice(0, 8); track c.id) {
-          <li><a [routerLink]="c.hubPath" class="footer-link">{{ c.label }}</a></li>
+      <p class="footer-col-title font-display">{{ brand }}</p>
+      <p class="footer-tagline">{{ 'footer.tagline' | t }}</p>
+      <p class="footer-contact">{{ 'lux.contact' | t }}: support@aimarkets.vn</p>
+    </div>
+    <div>
+      <p class="footer-col-title">{{ 'lux.footer.inspired' | t }}</p>
+      <ul>
+        @for (c of generateCats.slice(0, 6); track c.id) {
+          <li><a [routerLink]="c.hubPath" class="footer-link">{{ ('cat.' + c.id + '.label') | t }}</a></li>
         }
       </ul>
     </div>
     <div>
-      <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">{{ laneTitle('digital') }}</p>
-      <ul class="space-y-2 text-sm">
-        @for (c of digitalCategories; track c.id) {
-          <li><a [routerLink]="c.hubPath" class="footer-link">{{ c.label }}</a></li>
+      <p class="footer-col-title">{{ 'lux.footer.shop' | t }}</p>
+      <ul>
+        <li><a routerLink="/marketplace" class="footer-link">{{ 'nav.marketplace' | t }}</a></li>
+        @for (c of apiCats; track c.id) {
+          <li><a [routerLink]="c.hubPath" class="footer-link">{{ ('cat.' + c.id + '.label') | t }}</a></li>
         }
       </ul>
     </div>
     <div>
-      <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted">Account</p>
-      <ul class="space-y-2 text-sm">
-        <li><a routerLink="/wallet" class="footer-link">Wallet</a></li>
-        <li><a routerLink="/billing" class="footer-link">Billing</a></li>
-        <li><a routerLink="/sell" class="footer-link">Sell</a></li>
-        @if (auth.isAuthenticated()) {
-          <li><button type="button" class="footer-link" (click)="logout()">Log out</button></li>
-        }
-      </ul>
-      <p class="mb-3 mt-8 text-xs font-bold uppercase tracking-[0.16em] text-muted">Legal</p>
-      <ul class="space-y-2 text-sm">
-        <li><a routerLink="/privacy-policy" class="footer-link">Chính sách bảo mật</a></li>
-        <li><a routerLink="/terms-of-service" class="footer-link">Thỏa thuận sử dụng</a></li>
+      <p class="footer-col-title">{{ 'lux.footer.account' | t }}</p>
+      <ul>
+        <li><a routerLink="/wallet" class="footer-link">{{ 'footer.wallet' | t }}</a></li>
+        <li><a routerLink="/billing" class="footer-link">{{ 'footer.billing' | t }}</a></li>
+        <li><a routerLink="/sell" class="footer-link">{{ 'footer.sell' | t }}</a></li>
+        <li><a routerLink="/privacy-policy" class="footer-link">{{ 'footer.privacy' | t }}</a></li>
+        <li><a routerLink="/terms-of-service" class="footer-link">{{ 'footer.terms' | t }}</a></li>
       </ul>
     </div>
+  </div>
+
+  <div class="site-footer__bottom">
+    <p>© {{ year }} {{ brand }}. {{ 'lux.partners' | t }}.</p>
   </div>
 </footer>

@@ -1,9 +1,13 @@
-/** White-label hosts — buyers never see upstream provider domains. */
-export const AIMARKETS_API_HOST = 'https://api.aimarkets.vn';
-export const AIMARKETS_AI_HOST = 'https://ai.aimarkets.vn';
+import { environment } from '../../environments/environment';
+
+/** White-label API host (no version suffix). */
+export const AIMARKETS_API_HOST = environment.apiUrl.replace(/\/v1\/?$/, '');
+export const AIMARKETS_AI_HOST = environment.aiUrl.replace(/\/v1\/?$/, '');
+
+const trimSlash = (url: string) => url.replace(/\/$/, '');
 
 const PROVIDER_HOST_RE =
-  /(api\.runpod\.ai|proxy\.runpod\.net|api\.featherless\.ai|ai-gateway\.vercel\.sh)/i;
+  /(api\.runpod\.ai|proxy\.runpod\.net|api\.featherless\.ai|openrouter\.ai|ai-gateway\.vercel\.sh)/i;
 
 export function isProviderUrl(url?: string | null): boolean {
   return !!url && PROVIDER_HOST_RE.test(url);
@@ -11,12 +15,17 @@ export function isProviderUrl(url?: string | null): boolean {
 
 export function publicGatewayUrls(modelId: string) {
   const id = encodeURIComponent(String(modelId || 'model').replace(/^runpod-/, '') || 'model');
+  const v1 = trimSlash(environment.apiUrl);
+  const v2 = trimSlash(environment.apiV2Url);
+  const aiV1 = trimSlash(environment.aiV1Url);
   return {
-    publicEndpoint: `${AIMARKETS_API_HOST}/v1/models/${id}/runsync`,
-    serverlessEndpoint: `${AIMARKETS_API_HOST}/v1/models/${id}/run`,
-    tokenizeEndpoint: `${AIMARKETS_API_HOST}/v1/models/${id}/tokenize`,
-    gatewayUrl: `${AIMARKETS_AI_HOST}/v1`,
-    statusUrl: `${AIMARKETS_API_HOST}/v1/models/${id}/status/JOB_ID`,
+    /** Sync inference — gateway v1 */
+    publicEndpoint: `${v1}/models/${id}/runsync`,
+    /** Async serverless — gateway v2 (RunPod-style) */
+    serverlessEndpoint: `${v2}/${id}/run`,
+    tokenizeEndpoint: `${v1}/models/${id}/tokenize`,
+    gatewayUrl: aiV1,
+    statusUrl: `${v2}/${id}/status/JOB_ID`,
   };
 }
 

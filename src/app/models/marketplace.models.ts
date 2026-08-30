@@ -1,18 +1,20 @@
 /**
- * Product categories — two catalog lanes (gcmmo-style):
- * - AI: models, agents, skills, hire
- * - Digital: tài khoản, phần mềm, key, khóa học, tool MMO…
+ * Product categories — AI marketplace only (APIs, models, inference, agents).
  */
 export type ProductCategory =
-  // AI
   | 'text-to-text'
   | 'text-to-video'
   | 'image-to-video'
   | 'text-to-image'
   | 'image-to-image'
+  | 'api-endpoint'
+  | 'inference'
   | 'fine-tune'
   | 'dataset'
-  | 'inference'
+  | 'gpu-compute'
+  | 'game-server'
+  | 'training-service'
+  | 'agent-runtime'
   | 'hire-agent'
   | 'hire-marketing'
   | 'hire-seo'
@@ -20,34 +22,68 @@ export type ProductCategory =
   | 'hire-workflow'
   | 'hire-build-app'
   | 'hire-build-web'
-  | 'skill-pack'
-  // Digital (sản phẩm số)
-  | 'ai-account'
-  | 'social-account'
-  | 'software'
-  | 'vpn-proxy'
-  | 'license-key'
-  | 'course'
-  | 'template'
-  | 'email-domain'
-  | 'boost-service'
-  | 'mmo-tool'
-  | 'design-asset'
-  | 'cloud-hosting';
+  | 'skill-pack';
 
-export type CategoryGroup = 'models' | 'skills' | 'hire' | 'digital';
+export type CategoryGroup = 'models' | 'skills' | 'hire' | 'apis';
 
-/** Top-level marketplace lanes — AI vs Digital goods. */
-export type CatalogLane = 'ai' | 'digital';
+export type CatalogLane = 'ai';
 
-/** Header mega-menu sections within AI (digital uses lane only). */
-export type NavGroup = 'generate' | 'platform' | 'talent' | 'digital';
+export type NavGroup = 'generate' | 'apis' | 'platform' | 'talent';
 
 export type PricingModel = 'free' | 'one-time' | 'subscription' | 'usage';
 
-export type PaymentProvider = 'stripe' | 'paypal' | 'paddle' | 'payos';
+export type PaymentProvider = 'wallet' | 'stripe' | 'paypal' | 'paddle' | 'payos';
 
 export type UserRole = 'buyer' | 'creator' | 'admin';
+
+export type ModerationStatus = 'active' | 'suspended' | 'blocked' | 'inactive';
+
+export interface AdminUserDetail {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  creatorSlug?: string;
+  avatarUrl?: string;
+  coverUrl?: string;
+  bio?: string;
+  verified?: boolean;
+  accountStatus: ModerationStatus;
+  storedStatus?: ModerationStatus;
+  suspendedUntil?: string | null;
+  statusReason?: string;
+  statusChangedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  productCount?: number;
+  orderCount?: number;
+  walletByType?: Record<string, number>;
+}
+
+export interface AdminProductDetail {
+  id: string;
+  slug: string;
+  name: string;
+  tagline?: string;
+  description?: string;
+  category: string;
+  productType?: string;
+  provider?: string;
+  creatorId?: string;
+  creatorSlug?: string;
+  creatorName?: string;
+  coverUrl?: string;
+  featured?: boolean;
+  published?: boolean;
+  publishedAt?: string;
+  moderationStatus: ModerationStatus;
+  storedStatus?: ModerationStatus;
+  suspendedUntil?: string | null;
+  statusReason?: string;
+  statusChangedAt?: string | null;
+  salesCount?: number;
+  orderCount?: number;
+}
 
 export interface CategoryMeta {
   id: ProductCategory;
@@ -116,6 +152,8 @@ export interface Product {
   tagline: string;
   description: string;
   category: ProductCategory;
+  productType?: string;
+  provider?: string;
   creatorId: string;
   creatorSlug: string;
   creatorName: string;
@@ -125,6 +163,9 @@ export interface Product {
   runtime?: ProductRuntime;
   rating: number;
   reviewCount: number;
+  /** Paid units sold (from orders). */
+  salesCount?: number;
+  /** Alias of salesCount on the live API. */
   installCount: number;
   tags: string[];
   apiDocsMarkdown: string;
@@ -154,12 +195,44 @@ export interface Order {
   id: string;
   productId: string;
   productName: string;
+  buyerId?: string;
   buyerName: string;
+  sellerId?: string;
+  quantity?: number;
   amount: number;
+  sellerNet?: number;
+  platformFee?: number;
   currency: string;
   status: 'pending' | 'paid' | 'refunded';
   provider: PaymentProvider;
   createdAt: string;
+  completedAt?: string | null;
+  payoutHoldUntil?: string;
+  payoutHeld?: boolean;
+  payoutHoldKind?: 'protection_window' | 'dispute' | null;
+  disputeStatus?: 'none' | 'open' | 'seller_win' | 'buyer_win';
+  disputeReason?: string;
+  disputeOpenedAt?: string | null;
+  disputeResolvedAt?: string | null;
+  canDispute?: boolean;
+}
+
+export interface WalletSummary {
+  currency: string;
+  holdHours: number;
+  balance: number;
+  held: number;
+  available: number;
+  holds: Array<{
+    orderId: string;
+    productName: string;
+    amount: number;
+    currency: string;
+    kind: 'protection_window' | 'dispute';
+    holdUntil: string;
+    disputeStatus: string;
+    disputeReason: string;
+  }>;
 }
 
 export interface WalletTx {
@@ -239,6 +312,8 @@ export interface AdminOverview {
     role: UserRole;
     creatorSlug?: string;
     avatarUrl?: string;
+    accountStatus?: ModerationStatus;
+    suspendedUntil?: string | null;
   }>;
   productsList: Array<{
     id: string;
@@ -247,5 +322,9 @@ export interface AdminOverview {
     creatorSlug?: string;
     creatorName?: string;
     featured?: boolean;
+    moderationStatus?: ModerationStatus;
+    published?: boolean;
+    suspendedUntil?: string | null;
+    salesCount?: number;
   }>;
 }

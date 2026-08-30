@@ -2,15 +2,15 @@
   <section class="pd route-enter playground-page">
     <div class="pd__crumb-row">
       <nav class="pd__crumb" aria-label="Breadcrumb">
-        <a routerLink="/">Home</a>
+        <a routerLink="/">{{ 'mkt.home' | t }}</a>
         <span>/</span>
-        <a routerLink="/marketplace">Marketplace</a>
+        <a routerLink="/marketplace">{{ 'nav.marketplace' | t }}</a>
         <span>/</span>
         <a [routerLink]="['/marketplace', p.category]">{{ label(p.category) }}</a>
         <span>/</span>
         <span class="pd__crumb-current">{{ p.name }}</span>
       </nav>
-      <p class="pd__stock">In stock · metered · protected</p>
+      <p class="pd__stock">{{ 'pd.stock' | t }}</p>
     </div>
 
     <div class="pd__top">
@@ -24,9 +24,9 @@
               <button type="button" class="pd-gallery__tool" (click)="toggleWishlist()" aria-label="Wishlist">♡</button>
             </div>
             <div class="pd-gallery__badges">
-              <span>🛡 Protected checkout</span>
-              <span>⚡ Fast deploy</span>
-              <span>⚙ Seller runtime</span>
+              <span>🛡 {{ 'pd.protected' | t }}</span>
+              <span>⚡ {{ 'pd.fast' | t }}</span>
+              <span>⚙ {{ 'pd.runtime' | t }}</span>
             </div>
           </div>
           <div class="pd-gallery__thumbs">
@@ -54,7 +54,7 @@
           <p class="pd-meta__stats">
             <span class="pd-meta__stars">★ {{ p.rating | number: '1.1-1' }}</span>
             <span>{{ p.reviewCount }} reviews</span>
-            <span>Sold {{ p.installCount | number }}</span>
+            <span>{{ 'pd.sold' | t: { n: (p.salesCount || 0) } }}</span>
           </p>
           <p class="pd-meta__desc">{{ p.description }}</p>
           <ul class="pd-meta__features">
@@ -67,12 +67,12 @@
 
       <aside class="pd-buy">
         <div class="pd-buy__head">
-          <p class="pd-buy__label">Selected package</p>
+          <p class="pd-buy__label">{{ 'pd.package' | t }}</p>
           <p class="pd-buy__price">{{ displayPrice(p) }}</p>
-          <p class="pd-buy__ok">In stock</p>
+          <p class="pd-buy__ok">{{ 'pd.inStock' | t }}</p>
         </div>
 
-        <p class="pd-buy__section">Choose package</p>
+        <p class="pd-buy__section">{{ 'pd.choosePkg' | t }}</p>
         <div class="pd-packages">
           @for (pkg of packages(); track pkg.id) {
             <button
@@ -91,20 +91,23 @@
           }
         </div>
 
-        <label class="pd-buy__section" for="pd-qty">Quantity</label>
+        <label class="pd-buy__section" for="pd-qty">{{ 'pd.qty' | t }}</label>
         <div class="pd-qty">
           <button type="button" (click)="bumpQty(-1)" aria-label="Decrease">−</button>
           <input id="pd-qty" type="number" min="1" max="99" [(ngModel)]="qty" name="qty" />
           <button type="button" (click)="bumpQty(1)" aria-label="Increase">+</button>
         </div>
 
-        <label class="field-label mt-3">Pay with</label>
-        <select class="input input-sm" [(ngModel)]="provider" name="provider">
-          <option value="stripe">Stripe</option>
-          <option value="paypal">PayPal</option>
-          <option value="paddle">Paddle</option>
-          <option value="payos">PayOS</option>
-        </select>
+        <label class="pd-buy__section">Thanh toán</label>
+        <div class="pd-pay">
+          <p class="pd-pay__method">Ví aimarkets.vn</p>
+          @if (auth.user()) {
+            <p class="pd-pay__bal">Số dư {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
+            <a routerLink="/wallet" class="pd-pay__topup">Nạp tiền</a>
+          } @else {
+            <a routerLink="/auth/login" class="pd-pay__topup">Đăng nhập để thanh toán bằng ví</a>
+          }
+        </div>
 
         <button type="button" class="pd-buy__cta" (click)="primaryCta()">
           @if (isHire(p.category)) {
@@ -127,26 +130,26 @@
           @if (useCoupon) {
             <div class="pd-coupon__row">
               <input class="input" [(ngModel)]="couponCode" name="coupon" placeholder="Enter code" />
-              <button type="button" class="pd-coupon__apply" (click)="applyCoupon()">Apply</button>
+              <button type="button" class="pd-coupon__apply" (click)="applyCoupon()">{{ 'pd.apply' | t }}</button>
             </div>
           }
         </div>
 
         <div class="pd-total">
           <div class="pd-total__row">
-            <span>Subtotal</span>
-            <strong>{{ displayPrice(p) }}</strong>
+            <span>{{ 'pd.subtotal' | t }}</span>
+            <strong>{{ displayPrice(p, qty) }}</strong>
           </div>
           <div class="pd-total__row">
-            <span>Fee</span>
-            <span>Free</span>
+            <span>{{ 'pd.fee' | t }}</span>
+            <span>{{ 'pd.free' | t }}</span>
           </div>
           <div class="pd-total__row pd-total__row--sum">
-            <span>Total</span>
-            <strong>{{ displayPrice(p) }}</strong>
+            <span>{{ 'pd.total' | t }}</span>
+            <strong>{{ displayPrice(p, qty) }}</strong>
           </div>
           <div class="pd-wallet">
-            <span>Wallet</span>
+            <span>Hiển thị giá</span>
             <select [(ngModel)]="displayCurrency" name="currency">
               <option value="USD">USD</option>
               <option value="VND">VND</option>
@@ -158,7 +161,7 @@
           <p class="checkout-msg">{{ checkoutMsg() }}</p>
         }
         @if (isHire(p.category) === false && isSkill(p.category) === false) {
-          <a [routerLink]="['/deploy', p.slug]" class="pd-buy__deploy">Seller: configure deploy →</a>
+          <a [routerLink]="['/deploy', p.slug]" class="pd-buy__deploy">{{ 'pd.deploy' | t }}</a>
         }
       </aside>
     </div>
@@ -178,18 +181,18 @@
         <div class="pd-seller__stats">
           <span>★ {{ p.rating | number: '1.1-1' }}</span>
           <span>{{ p.reviewCount }} reviews</span>
-          <span>Sold {{ p.installCount | number }}</span>
+          <span>Sold {{ (p.salesCount || 0) | number }}</span>
         </div>
         <dl class="pd-seller__dl">
-          <div><dt>Orders</dt><dd>Sold {{ p.installCount | number }}</dd></div>
+          <div><dt>Orders</dt><dd>Sold {{ (p.salesCount || 0) | number }}</dd></div>
           <div><dt>Response</dt><dd>≈ 4h</dd></div>
         </dl>
-        <a [routerLink]="['/store', p.creatorSlug]" class="pd-seller__shop">View shop</a>
+        <a [routerLink]="['/store', p.creatorSlug]" class="pd-seller__shop">{{ 'pd.viewShop' | t }}</a>
       </section>
 
       <section class="pd-comments panel">
         <div class="pd-comments__head">
-          <h2>Comments</h2>
+          <h2>{{ 'pd.comments' | t }}</h2>
           <div class="pd-comments__tabs">
             <button type="button" class="active">Top</button>
             <button type="button" (click)="setWorkspace('reviews')">Newest</button>
@@ -212,8 +215,8 @@
     @if (related().length) {
       <section class="pd-related">
         <div class="pd-related__head">
-          <h2>Related products</h2>
-          <a routerLink="/marketplace">Swipe to see →</a>
+          <h2>{{ 'pd.related' | t }}</h2>
+          <a routerLink="/marketplace">{{ 'pd.swipe' | t }}</a>
         </div>
         <div class="pd-related__track">
           @for (r of related(); track r.id) {
@@ -265,13 +268,9 @@
             Skill packs ship as OpenClaw / agent folders (<code>SKILL.md</code>, prompts, tool playbooks). Purchase unlocks download + install instructions.
           </p>
           <div class="field">
-            <label class="field-label">Pay with</label>
-            <select class="input" [(ngModel)]="provider">
-              <option value="stripe">Stripe</option>
-              <option value="paypal">PayPal</option>
-              <option value="paddle">Paddle</option>
-              <option value="payos">PayOS</option>
-            </select>
+            <label class="field-label">Thanh toán</label>
+            <p class="text-sm">Ví aimarkets.vn · số dư {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
+            <a routerLink="/wallet" class="text-sm">Nạp tiền →</a>
           </div>
           <div class="pg-actions">
             <button type="button" class="btn btn-outline" (click)="checkout()">Purchase</button>

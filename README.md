@@ -1,4 +1,4 @@
-# PH AI Market
+# AI Markets
 
 Production-oriented Angular 20 frontend for an AI marketplace: RunPod-style modalities (text-to-text, text-to-video, image-to-video, text-to-image, image-to-image) plus hire talent (agent, marketing, SEO, creator).
 

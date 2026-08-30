@@ -50,7 +50,7 @@ Hosted on **AI Markets** (\`api.aimarkets.vn\` / \`ai.aimarkets.vn\`).
 - **OpenAI base:** \`${g.gatewayUrl}\`
 - **Pricing:** ${ep.pricing}
 
-Auth: marketplace JWT via \`POST /api/playground/run\`
+Auth: marketplace JWT via \`POST /v1/playground/run\`
 `;
 }
 

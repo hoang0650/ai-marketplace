@@ -1,44 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Chợ Tốt–inspired marketplace tokens, adapted for PH AI Market */
+/* Luxury Shop–inspired marketplace tokens */
 :root,
 [data-theme='light'] {
-  --color-ink: #222222;
-  --color-paper: #f4f4f4;
+  --color-ink: #1a1a1a;
+  --color-paper: #f7f5f2;
   --color-surface: #ffffff;
-  --color-mist: #f0f0f0;
-  --color-accent: #ffba00;
-  --color-accent-hover: #f5a623;
-  --color-accent-2: #ffe08a;
-  --color-price: #d0021b;
-  --color-line: #e8e8e8;
-  --color-muted: #777777;
-  --color-cta: #222222;
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-search: 0 8px 28px rgba(0, 0, 0, 0.12);
+  --color-mist: #f0eeeb;
+  --color-accent: #c9a961;
+  --color-accent-hover: #b8944f;
+  --color-accent-2: #e8dcc4;
+  --color-price: #1a1a1a;
+  --color-line: #e5e0d8;
+  --color-muted: #7a756d;
+  --color-cta: #1a1a1a;
+  --color-lux-dark: #111111;
+  --color-lux-gold: #c9a961;
+  --shadow-card: 0 2px 12px rgba(26, 26, 26, 0.06);
+  --shadow-search: 0 12px 40px rgba(26, 26, 26, 0.12);
   --hero-glow: none;
-  --radius-card: 12px;
-  --radius-pill: 999px;
+  --radius-card: 0;
+  --radius-pill: 0;
 }
 
 [data-theme='dark'] {
-  --color-ink: #f2f2f2;
-  --color-paper: #121212;
-  --color-surface: #1c1c1c;
-  --color-mist: #2a2a2a;
-  --color-accent: #ffba00;
-  --color-accent-hover: #ffc933;
-  --color-accent-2: #5a4300;
-  --color-price: #ff5a6a;
+  --color-ink: #f2efe8;
+  --color-paper: #0f0f0f;
+  --color-surface: #1a1a1a;
+  --color-mist: #252525;
+  --color-accent: #c9a961;
+  --color-accent-hover: #d4b872;
+  --color-accent-2: #3d3528;
+  --color-price: #f2efe8;
   --color-line: #333333;
-  --color-muted: #a0a0a0;
-  --color-cta: #ffba00;
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35);
-  --shadow-search: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --color-muted: #a8a29a;
+  --color-cta: #c9a961;
+  --color-lux-dark: #0a0a0a;
+  --color-lux-gold: #c9a961;
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.35);
+  --shadow-search: 0 12px 40px rgba(0, 0, 0, 0.5);
   --hero-glow: none;
 }
 
@@ -49,17 +53,14 @@ body {
 
 body {
   margin: 0;
-  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  font-family: 'Lato', system-ui, sans-serif;
   color: var(--color-ink);
   background: var(--color-paper);
-}
-
-a {
-  color: inherit;
+  letter-spacing: 0.01em;
 }
 
 .font-display {
-  font-family: Sora, 'Be Vietnam Pro', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
 .font-mono {

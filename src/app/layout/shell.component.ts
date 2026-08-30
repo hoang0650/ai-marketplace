@@ -1,40 +1,47 @@
-import { DatePipe } from '@angular/common';
-import { Component, ElementRef, HostListener, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, ElementRef, HostListener, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { AuthService } from '../services/auth.service';
 import { DashboardService } from '../services/api.services';
 import { environment } from '../../environments/environment';
-import {
-  AI_CATEGORIES,
-  CATALOG_LANE_LABEL_VI,
-  DIGITAL_CATEGORIES,
-  NAV_PLATFORM_LINKS,
-} from '../models/categories';
+import { AI_CATEGORIES, NAV_PLATFORM_LINKS, categoriesByNavGroup } from '../models/categories';
 import { CatalogLane, NotificationItem } from '../models/marketplace.models';
+import { I18nService } from '../i18n/i18n.service';
+import { TPipe } from '../i18n/t.pipe';
+import { AppLang } from '../i18n/messages';
+import { CartService } from '../features/cart/cart.service';
 
 type NotiTab = 'all' | 'tx' | 'system' | 'promo';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, DatePipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
-export class ShellComponent implements OnInit {
+export class ShellComponent {
   private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly api = inject(DashboardService);
+  readonly cart = inject(CartService);
   readonly theme = inject(ThemeService);
   readonly auth = inject(AuthService);
+  readonly i18n = inject(I18nService);
   readonly brand = environment.brandName;
-  readonly laneLabel = CATALOG_LANE_LABEL_VI;
+  readonly year = new Date().getFullYear();
   readonly platformLinks = NAV_PLATFORM_LINKS;
+  readonly generateCats = categoriesByNavGroup('generate');
+  readonly apiCats = categoriesByNavGroup('apis');
+  readonly platformCats = categoriesByNavGroup('platform');
+  readonly talentCats = categoriesByNavGroup('talent');
   readonly aiCategories = AI_CATEGORIES;
-  readonly digitalCategories = DIGITAL_CATEGORIES;
   readonly categoryOpen = signal(false);
+  readonly cartOpen = signal(false);
   readonly userMenuOpen = signal(false);
   readonly notiOpen = signal(false);
+  readonly langOpen = signal(false);
   readonly notifications = signal<NotificationItem[]>([]);
   readonly notiTab = signal<NotiTab>('all');
 
@@ -63,16 +70,15 @@ export class ShellComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      if (this.auth.isAuthenticated()) {
+      const authed = this.auth.isAuthenticated();
+      if (!isPlatformBrowser(this.platformId)) return;
+      if (authed) {
         this.loadNotifications();
       } else {
         this.notifications.set([]);
       }
+      this.cart.load();
     });
-  }
-
-  ngOnInit(): void {
-    if (this.auth.isAuthenticated()) this.loadNotifications();
   }
 
   loadNotifications(): void {
@@ -90,6 +96,8 @@ export class ShellComponent implements OnInit {
     this.categoryOpen.update((v) => !v);
     this.userMenuOpen.set(false);
     this.notiOpen.set(false);
+    this.langOpen.set(false);
+    this.cartOpen.set(false);
   }
 
   closeCategories(): void {
@@ -101,6 +109,8 @@ export class ShellComponent implements OnInit {
     this.userMenuOpen.update((v) => !v);
     this.categoryOpen.set(false);
     this.notiOpen.set(false);
+    this.langOpen.set(false);
+    this.cartOpen.set(false);
   }
 
   closeUserMenu(): void {
@@ -113,6 +123,8 @@ export class ShellComponent implements OnInit {
     this.notiOpen.set(next);
     this.userMenuOpen.set(false);
     this.categoryOpen.set(false);
+    this.langOpen.set(false);
+    this.cartOpen.set(false);
     if (next) this.loadNotifications();
   }
 
@@ -146,6 +158,16 @@ export class ShellComponent implements OnInit {
         this.closeNoti();
       }
     }
+    if (this.langOpen()) {
+      if (target && !this.host.nativeElement.querySelector('.lang-dd')?.contains(target)) {
+        this.closeLang();
+      }
+    }
+    if (this.cartOpen()) {
+      if (target && !this.host.nativeElement.querySelector('.lux-cart-dd')?.contains(target)) {
+        this.closeCart();
+      }
+    }
   }
 
   @HostListener('document:keydown.escape')
@@ -153,15 +175,55 @@ export class ShellComponent implements OnInit {
     this.closeCategories();
     this.closeUserMenu();
     this.closeNoti();
+    this.closeLang();
+    this.closeCart();
   }
 
   logout(): void {
     this.closeUserMenu();
     this.closeNoti();
+    this.closeLang();
+    this.closeCart();
     this.auth.logout();
   }
 
-  laneTitle(lane: CatalogLane): string {
-    return this.laneLabel[lane];
+  toggleLang(event: Event): void {
+    event.stopPropagation();
+    this.langOpen.update((v) => !v);
+    this.userMenuOpen.set(false);
+    this.categoryOpen.set(false);
+    this.notiOpen.set(false);
+    this.cartOpen.set(false);
+  }
+
+  closeLang(): void {
+    this.langOpen.set(false);
+  }
+
+  setLang(lang: AppLang): void {
+    this.i18n.setLang(lang);
+    this.closeLang();
+  }
+
+  toggleCart(event: Event): void {
+    event.stopPropagation();
+    this.cartOpen.update((v) => !v);
+    this.userMenuOpen.set(false);
+    this.categoryOpen.set(false);
+    this.notiOpen.set(false);
+    this.langOpen.set(false);
+    this.cart.load();
+  }
+
+  closeCart(): void {
+    this.cartOpen.set(false);
+  }
+
+  onNewsletter(event: Event): void {
+    event.preventDefault();
+  }
+
+  laneTitle(_lane: CatalogLane): string {
+    return this.i18n.t('group.apis');
   }
 }

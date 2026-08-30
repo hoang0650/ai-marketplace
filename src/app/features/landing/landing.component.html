@@ -1,126 +1,142 @@
-<section class="ct-hero route-enter">
-  <div class="ct-hero__glow" aria-hidden="true"></div>
-
-  <div class="ct-hero__inner">
-    <p class="ct-hero__brand font-display">{{ brand }}</p>
-    <h1 class="ct-hero__slogan font-display">{{ slogan }}</h1>
-
-    <form class="ct-search" (ngSubmit)="search()">
-      <label class="ct-search__field">
-        <span class="ct-search__icon" aria-hidden="true">⌕</span>
-        <input
-          type="search"
-          name="q"
-          [(ngModel)]="query"
-          placeholder="Search AI models, agents, skills…"
-          aria-label="Search marketplace"
-          autocomplete="off"
-        />
-      </label>
-      <div class="ct-search__divider" aria-hidden="true"></div>
-      <label class="ct-search__region">
-        <span class="ct-search__pin" aria-hidden="true">◎</span>
-        <select name="category" [(ngModel)]="selectedCategory" aria-label="Category">
-          <option value="">All categories</option>
-          <optgroup label="AI">
-            @for (c of aiCategories; track c.id) {
-              <option [value]="c.id">{{ c.label }}</option>
-            }
-          </optgroup>
-          <optgroup label="Sản phẩm số">
-            @for (c of digitalCategories; track c.id) {
-              <option [value]="c.id">{{ c.label }}</option>
-            }
-          </optgroup>
-        </select>
-      </label>
-      <button type="submit" class="ct-search__btn">Search</button>
-    </form>
-
-    @if (recentTags().length) {
-      <div class="ct-recent" aria-label="Quick searches">
-        @for (tag of recentTags(); track tag) {
-          <button type="button" class="ct-chip" (click)="searchTag(tag)">
-            {{ tag }}
-            <span class="ct-chip__x" aria-label="Remove" (click)="dismissTag(tag, $event)">×</span>
-          </button>
-        }
+<!-- Hero carousel (Luxury Shop style) -->
+<section class="lux-hero route-enter" aria-label="Hero">
+  <div class="lux-hero__slides">
+    @for (slide of slides; track slide.id; let i = $index) {
+      <div class="lux-hero__slide" [class.active]="heroIndex() === i" [style.background-image]="'url(' + slide.bg + ')'">
+        <div class="lux-hero__overlay"></div>
+        <div class="lux-hero__content">
+          <h1 class="font-display">{{ slide.titleKey | t }}</h1>
+          <a routerLink="/marketplace" class="btn btn-fill lux-hero__cta">{{ 'lux.shopNow' | t }}</a>
+        </div>
       </div>
     }
   </div>
+  <button type="button" class="lux-hero__nav lux-hero__nav--prev" (click)="prevSlide()" aria-label="Previous">‹</button>
+  <button type="button" class="lux-hero__nav lux-hero__nav--next" (click)="nextSlide()" aria-label="Next">›</button>
+  <div class="lux-hero__dots">
+    @for (slide of slides; track slide.id; let i = $index) {
+      <button type="button" [class.active]="heroIndex() === i" (click)="goSlide(i)" [attr.aria-label]="'Slide ' + (i + 1)"></button>
+    }
+  </div>
 </section>
 
-<section class="ct-cats" aria-label="Browse categories">
-  <button type="button" class="ct-cats__prev" aria-label="Scroll categories left" (click)="scrollCats(catsTrack, -1)">‹</button>
-  <div class="ct-cats__track" #catsTrack>
-    @for (c of categoryIcons; track c.id) {
-      <a [routerLink]="c.hubPath" class="ct-cat">
-        <span class="ct-cat__icon" [style.background]="c.bg">{{ c.emoji }}</span>
-        <span class="ct-cat__label">{{ c.label }}</span>
+<!-- Promo strip -->
+<section class="lux-promo" aria-label="Promotions">
+  <div class="lux-promo__item">
+    <h3 class="font-display">{{ 'lux.promo1Title' | t }}</h3>
+    <p>{{ 'lux.promo1Desc' | t }}</p>
+  </div>
+  <div class="lux-promo__item lux-promo__item--accent">
+    <h3 class="font-display">{{ 'lux.promo2Title' | t }}</h3>
+    <p>{{ 'lux.promo2Desc' | t }}</p>
+  </div>
+  <div class="lux-promo__item">
+    <h3 class="font-display">{{ 'lux.promo3Title' | t }}</h3>
+    <p>{{ 'lux.promo3Desc' | t }}</p>
+  </div>
+</section>
+
+<!-- Category grid -->
+<section class="lux-cats page" [attr.aria-label]="'home.browseCats' | t">
+  <div class="lux-cats__grid">
+    @for (c of categoryIcons; track c.id; let i = $index) {
+      <a [routerLink]="c.hubPath" class="lux-cat" [class.lux-cat--wide]="i === 0">
+        <div class="lux-cat__img" [style.background]="c.bg">
+          <span class="lux-cat__emoji">{{ c.emoji }}</span>
+        </div>
+        <div class="lux-cat__info">
+          <span class="lux-cat__count">+{{ c.count }}</span>
+          <span class="lux-cat__label">{{ ('cat.' + c.id + '.short') | t }}</span>
+          @if (c.isNew) {
+            <span class="lux-cat__badge">{{ 'lux.footer.new' | t }}</span>
+          }
+        </div>
       </a>
     }
   </div>
-  <button type="button" class="ct-cats__next" aria-label="Scroll categories right" (click)="scrollCats(catsTrack, 1)">›</button>
 </section>
 
-<section class="page ct-section">
-  <div class="ct-section__head">
-    <div>
-      <h2 class="section-title">Featured AI products</h2>
-      <p class="ct-section__sub">Models &amp; agents trending this week</p>
+<!-- Search bar -->
+<section class="lux-search-wrap page">
+  <form class="lux-search" (ngSubmit)="search()">
+    <input
+      type="search"
+      name="q"
+      [(ngModel)]="query"
+      [placeholder]="'home.searchPh' | t"
+      [attr.aria-label]="'home.searchAria' | t"
+      autocomplete="off"
+    />
+    <select name="category" [(ngModel)]="selectedCategory" [attr.aria-label]="'home.category' | t">
+      <option value="">{{ 'home.allCats' | t }}</option>
+      @for (c of aiCategories; track c.id) {
+        <option [value]="c.id">{{ ('cat.' + c.id + '.label') | t }}</option>
+      }
+    </select>
+    <button type="submit" class="btn btn-fill">{{ 'home.search' | t }}</button>
+  </form>
+  @if (recentTags().length) {
+    <div class="lux-tags">
+      @for (tag of recentTags(); track tag) {
+        <button type="button" class="lux-tag" (click)="searchTag(tag)">
+          {{ tag }}
+          <span (click)="dismissTag(tag, $event)">×</span>
+        </button>
+      }
     </div>
-    <a routerLink="/marketplace" class="ct-more">See more</a>
+  }
+</section>
+
+<!-- Featured products -->
+<section class="page lux-section">
+  <div class="lux-section__head">
+    <div>
+      <h2 class="section-title font-display">{{ 'lux.featuredTitle' | t }}</h2>
+      <p class="lux-section__sub">{{ 'lux.featuredDesc' | t }}</p>
+    </div>
+    <a routerLink="/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
   </div>
 
   @if (loadState() === 'loading') {
-    <div class="ct-grid" aria-busy="true" aria-label="Loading catalog">
+    <div class="lux-grid" aria-busy="true">
       @for (slot of skeletonSlots; track slot) {
-        <div class="ct-skel">
-          <div class="ct-skel__media"></div>
-          <div class="ct-skel__line"></div>
-          <div class="ct-skel__line ct-skel__line--short"></div>
+        <div class="lux-skel">
+          <div class="lux-skel__media"></div>
+          <div class="lux-skel__line"></div>
         </div>
       }
     </div>
   } @else if (loadState() === 'error') {
-    <div class="ct-empty">
-      <p class="ct-empty__title">Không tải được catalog</p>
-      <p class="ct-empty__sub">Kiểm tra kết nối hoặc thử lại. Bạn vẫn có thể duyệt marketplace.</p>
-      <div class="ct-empty__actions">
-        <button type="button" class="btn btn-fill" (click)="loadCatalog()">Thử lại</button>
-        <a routerLink="/marketplace" class="btn btn-outline">Browse marketplace</a>
-      </div>
+    <div class="lux-empty">
+      <p>{{ 'home.loadFail' | t }}</p>
+      <button type="button" class="btn btn-fill" (click)="loadCatalog()">{{ 'home.retry' | t }}</button>
     </div>
   } @else if (!featured().length) {
-    <div class="ct-empty">
-      <p class="ct-empty__title">Chưa có sản phẩm nổi bật</p>
-      <p class="ct-empty__sub">Hãy là người đầu tiên đăng model hoặc agent lên {{ brand }}.</p>
-      <div class="ct-empty__actions">
-        <a routerLink="/auth/register" class="btn btn-fill">Start selling</a>
-        <a routerLink="/marketplace" class="btn btn-outline">Browse marketplace</a>
-      </div>
+    <div class="lux-empty">
+      <p>{{ 'home.empty' | t }}</p>
+      <a routerLink="/marketplace" class="btn btn-outline">{{ 'footer.browse' | t }}</a>
     </div>
   } @else {
-    <div class="ct-grid">
+    <div class="lux-grid">
       @for (p of featured(); track p.id; let i = $index) {
-        <app-product-card [product]="p" [priority]="i < 4" />
+        <app-product-card [product]="p" variant="luxury" [priority]="i < 4" />
       }
     </div>
   }
 </section>
 
 @if (loadState() === 'ready' && hireProducts().length) {
-  <section class="page ct-section ct-section--hire">
-    <div class="ct-section__head">
+  <section class="page lux-section">
+    <div class="lux-section__head">
       <div>
-        <h2 class="section-title">Hire agents &amp; talent</h2>
-        <p class="ct-section__sub">OpenClaw agents and specialist packs ready to launch</p>
+        <h2 class="section-title font-display">{{ 'home.hire' | t }}</h2>
+        <p class="lux-section__sub">{{ 'home.hireSub' | t }}</p>
       </div>
-      <a routerLink="/hire-agent/marketplace" class="ct-more">See more</a>
+      <a routerLink="/hire-agent/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
     </div>
-    <div class="ct-grid">
+    <div class="lux-grid">
       @for (p of hireProducts(); track p.id) {
-        <app-product-card [product]="p" />
+        <app-product-card [product]="p" variant="luxury" />
       }
     </div>
   </section>

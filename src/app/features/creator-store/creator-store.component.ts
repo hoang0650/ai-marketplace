@@ -124,14 +124,14 @@ export class CreatorStoreComponent implements OnInit {
     if (this.priceMax != null && this.priceMax > 0) {
       rows = rows.filter((p) => priceValue(p) <= this.priceMax!);
     }
-    if (this.filterBest) rows = rows.filter((p) => !!p.featured || p.installCount > 20);
+    if (this.filterBest) rows = rows.filter((p) => !!p.featured || (p.salesCount || 0) > 20);
     if (this.filterHighRating) rows = rows.filter((p) => (p.rating || 0) >= 4);
     // filterStock / filterAuto / filterWarranty are display badges for digital goods — keep all when on
     if (this.filterAuto) rows = rows.filter((p) => !!p.runtime?.serverlessEndpoint || !!p.runtime?.publicEndpoint);
 
     switch (this.sort) {
       case 'bestsellers':
-        rows.sort((a, b) => (b.installCount || 0) - (a.installCount || 0));
+        rows.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
         break;
       case 'price-asc':
         rows.sort((a, b) => priceValue(a) - priceValue(b));

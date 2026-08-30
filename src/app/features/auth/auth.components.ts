@@ -3,22 +3,24 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { SeoService } from '../../services/seo.service';
+import { TPipe } from '../../i18n/t.pipe';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TPipe],
   template: `
     <section class="page route-enter mx-auto max-w-md">
-      <h1 class="section-title">Log in</h1>
-      <p class="mt-2 text-sm text-muted">Demo sellers: nova@creators.dev · orbit@creators.dev · pulse@creators.dev (any password)</p>
+      <h1 class="section-title">{{ 'auth.login' | t }}</h1>
+      <p class="mt-2 text-sm text-muted">{{ 'auth.loginHint' | t }}</p>
       <form class="mt-8 grid gap-3" (ngSubmit)="submit()">
-        <input class="input" type="email" name="email" [(ngModel)]="email" required placeholder="Email" />
-        <input class="input" type="password" name="password" [(ngModel)]="password" required placeholder="Password" />
+        <input class="input" type="email" name="email" [(ngModel)]="email" required [placeholder]="'auth.email' | t" />
+        <input class="input" type="password" name="password" [(ngModel)]="password" required [placeholder]="'auth.password' | t" />
         @if (error()) { <p class="text-sm text-red-500">{{ error() }}</p> }
-        <button class="btn btn-fill" type="submit">Continue</button>
+        <button class="btn btn-fill" type="submit">{{ 'auth.continue' | t }}</button>
       </form>
-      <p class="mt-4 text-sm text-muted">No account? <a routerLink="/auth/register" class="text-accent">Register</a></p>
+      <p class="mt-4 text-sm text-muted">{{ 'auth.noAccount' | t }} <a routerLink="/auth/register" class="text-accent">{{ 'auth.register' | t }}</a></p>
     </section>
   `,
 })
@@ -26,12 +28,13 @@ export class LoginComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
   email = 'buyer@example.com';
   password = 'demo';
   readonly error = signal('');
 
   constructor() {
-    this.seo.set({ title: 'Log in' });
+    this.seo.set({ title: this.i18n.t('auth.login') });
   }
 
   submit(): void {
@@ -39,7 +42,7 @@ export class LoginComponent {
       next: (user) => {
         void this.router.navigateByUrl(user.role === 'admin' ? '/admin' : user.role === 'creator' ? '/dashboard' : '/marketplace');
       },
-      error: () => this.error.set('Invalid credentials'),
+      error: () => this.error.set(this.i18n.t('auth.invalid')),
     });
   }
 }
@@ -47,27 +50,27 @@ export class LoginComponent {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TPipe],
   template: `
     <section class="page route-enter mx-auto max-w-md">
-      <h1 class="section-title">Create account</h1>
+      <h1 class="section-title">{{ 'auth.create' | t }}</h1>
       <form class="mt-8 grid gap-3" (ngSubmit)="submit()">
-        <input class="input" name="name" [(ngModel)]="name" required placeholder="Name" />
-        <input class="input" type="email" name="email" [(ngModel)]="email" required placeholder="Email" />
-        <input class="input" type="password" name="password" [(ngModel)]="password" required placeholder="Password" />
+        <input class="input" name="name" [(ngModel)]="name" required [placeholder]="'auth.name' | t" />
+        <input class="input" type="email" name="email" [(ngModel)]="email" required [placeholder]="'auth.email' | t" />
+        <input class="input" type="password" name="password" [(ngModel)]="password" required [placeholder]="'auth.password' | t" />
         <label class="flex items-center gap-2 text-sm">
           <input type="checkbox" [(ngModel)]="asCreator" name="asCreator" />
-          I want to sell on PH AI Market
+          {{ 'auth.wantSell' | t }}
         </label>
         <p class="text-xs text-muted">
-          By creating an account you agree to our
-          <a routerLink="/terms-of-service" class="text-accent">Terms</a>
-          and
-          <a routerLink="/privacy-policy" class="text-accent">Privacy Policy</a>.
+          {{ 'auth.agree' | t }}
+          <a routerLink="/terms-of-service" class="text-accent">{{ 'auth.terms' | t }}</a>
+          {{ 'auth.and' | t }}
+          <a routerLink="/privacy-policy" class="text-accent">{{ 'auth.privacy' | t }}</a>.
         </p>
-        <button class="btn btn-fill" type="submit">Create account</button>
+        <button class="btn btn-fill" type="submit">{{ 'auth.create' | t }}</button>
       </form>
-      <p class="mt-4 text-sm text-muted">Have an account? <a routerLink="/auth/login" class="text-accent">Log in</a></p>
+      <p class="mt-4 text-sm text-muted">{{ 'auth.haveAccount' | t }} <a routerLink="/auth/login" class="text-accent">{{ 'auth.login' | t }}</a></p>
     </section>
   `,
 })
@@ -75,13 +78,14 @@ export class RegisterComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
   name = '';
   email = '';
   password = '';
   asCreator = false;
 
   constructor() {
-    this.seo.set({ title: 'Register' });
+    this.seo.set({ title: this.i18n.t('auth.register') });
   }
 
   submit(): void {

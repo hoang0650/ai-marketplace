@@ -8,43 +8,37 @@ import {
 
 export const CATALOG_LANE_LABEL: Record<CatalogLane, string> = {
   ai: 'AI',
-  digital: 'Digital',
 };
 
 export const CATALOG_LANE_LABEL_VI: Record<CatalogLane, string> = {
-  ai: 'AI',
-  digital: 'Sản phẩm số',
+  ai: 'Sàn AI',
 };
 
 export const CATEGORY_GROUP_LABEL: Record<CategoryGroup, string> = {
   models: 'AI models',
   skills: 'Skill packs',
   hire: 'Hire talent',
-  digital: 'Digital goods',
+  apis: 'APIs & inference',
 };
 
 export const NAV_GROUP_LABEL: Record<NavGroup, string> = {
   generate: 'Generate',
+  apis: 'APIs & inference',
   platform: 'Platform',
   talent: 'Hire talent',
-  digital: 'Sản phẩm số',
 };
 
-/** Extra hub links shown under AI → Platform. */
-export const NAV_PLATFORM_LINKS: ReadonlyArray<{ label: string; description: string; path: string }> = [
-  {
-    label: 'AI Models hub',
-    description: 'Browse and deploy hosted models.',
-    path: '/models',
-  },
-  {
-    label: 'Agent Browser',
-    description: 'Explore runnable agent templates.',
-    path: '/agent-browser',
-  },
+/** Extra hub links shown under Platform. */
+export const NAV_PLATFORM_LINKS: ReadonlyArray<{
+  labelKey: string;
+  descKey: string;
+  path: string;
+}> = [
+  { labelKey: 'hub.models', descKey: 'hub.modelsDesc', path: '/models' },
+  { labelKey: 'hub.console', descKey: 'hub.consoleDesc', path: '/account/console' },
+  { labelKey: 'hub.gpu', descKey: 'hub.gpuDesc', path: '/dashboard/gpu' },
 ];
 
-/** —— Lane 1: AI —— */
 export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'text-to-text',
@@ -92,6 +86,60 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     lane: 'ai',
   },
   {
+    id: 'api-endpoint',
+    label: 'Sell API',
+    description: 'Metered OpenAI-compatible APIs for buyers.',
+    hubPath: '/api-endpoint',
+    group: 'apis',
+    navGroup: 'apis',
+    lane: 'ai',
+  },
+  {
+    id: 'inference',
+    label: 'Inference',
+    description: 'Hosted inference endpoints and GPU runtimes.',
+    hubPath: '/inference',
+    group: 'apis',
+    navGroup: 'apis',
+    lane: 'ai',
+  },
+  {
+    id: 'gpu-compute',
+    label: 'GPU compute',
+    description: 'Rent GPU by the hour from any registered provider.',
+    hubPath: '/gpu-compute',
+    group: 'apis',
+    navGroup: 'platform',
+    lane: 'ai',
+  },
+  {
+    id: 'game-server',
+    label: 'Game server',
+    description: 'GPU game servers and live streams.',
+    hubPath: '/game-server',
+    group: 'apis',
+    navGroup: 'platform',
+    lane: 'ai',
+  },
+  {
+    id: 'training-service',
+    label: 'Training',
+    description: 'Fine-tune and training jobs on provider GPUs.',
+    hubPath: '/training-service',
+    group: 'models',
+    navGroup: 'platform',
+    lane: 'ai',
+  },
+  {
+    id: 'agent-runtime',
+    label: 'Agent runtime',
+    description: 'Deploy open-source agents as containers.',
+    hubPath: '/agent-runtime',
+    group: 'hire',
+    navGroup: 'platform',
+    lane: 'ai',
+  },
+  {
     id: 'fine-tune',
     label: 'Fine-tune',
     description: 'Fine-tune LLMs and vision models on your data.',
@@ -105,15 +153,6 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     label: 'Dataset',
     description: 'Curated datasets for training and evaluation.',
     hubPath: '/dataset',
-    group: 'models',
-    navGroup: 'platform',
-    lane: 'ai',
-  },
-  {
-    id: 'inference',
-    label: 'Inference',
-    description: 'Hosted inference endpoints and GPU runtimes.',
-    hubPath: '/inference',
     group: 'models',
     navGroup: 'platform',
     lane: 'ai',
@@ -192,121 +231,13 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   },
 ];
 
-/** —— Lane 2: Digital / sản phẩm số (gcmmo-style) —— */
-export const DIGITAL_CATEGORIES: CategoryMeta[] = [
-  {
-    id: 'ai-account',
-    label: 'Tài khoản AI',
-    description: 'ChatGPT, Midjourney, Claude, CapCut Pro và tài khoản AI khác.',
-    hubPath: '/ai-account',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'social-account',
-    label: 'Mạng xã hội',
-    description: 'VIA, clone, BM, TikTok, YouTube, Gmail…',
-    hubPath: '/social-account',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'software',
-    label: 'Phần mềm',
-    description: 'Phần mềm bản quyền, app desktop/mobile.',
-    hubPath: '/software',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'vpn-proxy',
-    label: 'VPN & Proxy',
-    description: 'VPN, proxy IPv4/IPv6, antidetect.',
-    hubPath: '/vpn-proxy',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'license-key',
-    label: 'Key / License',
-    description: 'Key kích hoạt, license Windows, Office, plugin.',
-    hubPath: '/license-key',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'course',
-    label: 'Khóa học',
-    description: 'Khóa học MMO, AI, marketing, automation.',
-    hubPath: '/course',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'template',
-    label: 'Template / Source',
-    description: 'Template web, source code, prompt pack, script.',
-    hubPath: '/template',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'email-domain',
-    label: 'Email & Domain',
-    description: 'Email aged, domain, hosting mail.',
-    hubPath: '/email-domain',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'boost-service',
-    label: 'Tăng tương tác',
-    description: 'Buff like, sub, view, comment đa nền tảng.',
-    hubPath: '/boost-service',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'mmo-tool',
-    label: 'Tool MMO',
-    description: 'Tool nuôi nick, auto post, scrape, tiện ích MMO.',
-    hubPath: '/mmo-tool',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'design-asset',
-    label: 'Thiết kế',
-    description: 'Adobe, Canva Pro, font, asset đồ họa.',
-    hubPath: '/design-asset',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-  {
-    id: 'cloud-hosting',
-    label: 'Cloud / Hosting',
-    description: 'VPS, cloud credit, hosting, storage.',
-    hubPath: '/cloud-hosting',
-    group: 'digital',
-    navGroup: 'digital',
-    lane: 'digital',
-  },
-];
+/** @deprecated Digital goods lane removed — AI marketplace only. */
+export const DIGITAL_CATEGORIES: CategoryMeta[] = [];
 
-export const CATEGORY_META: CategoryMeta[] = [...AI_CATEGORIES, ...DIGITAL_CATEGORIES];
+export const CATEGORY_META: CategoryMeta[] = [...AI_CATEGORIES];
 
 export function categoryLabel(id: ProductCategory | string): string {
+  if (id === 'openrouter' || id === 'featherless' || id === 'runpod-public') return 'Inference';
   return CATEGORY_META.find((c) => c.id === id)?.label ?? id;
 }
 
@@ -330,10 +261,10 @@ export function isSkillCategory(id: ProductCategory): boolean {
   return CATEGORY_META.find((c) => c.id === id)?.group === 'skills';
 }
 
-export function isDigitalCategory(id: ProductCategory | string): boolean {
-  return CATEGORY_META.find((c) => c.id === id)?.lane === 'digital';
+export function isDigitalCategory(_id?: ProductCategory | string): boolean {
+  return false;
 }
 
 export function isAiCategory(id: ProductCategory | string): boolean {
-  return CATEGORY_META.find((c) => c.id === id)?.lane === 'ai';
+  return CATEGORY_META.some((c) => c.id === id);
 }

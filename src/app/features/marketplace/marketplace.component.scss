@@ -1,7 +1,7 @@
 .mkt {
-  --mkt-red: #e53935;
-  --mkt-red-soft: #ffe8e6;
-  --mkt-red-border: #ffc9c4;
+  --mkt-accent: var(--color-lux-gold, #c9a961);
+  --mkt-accent-soft: #f0ebe0;
+  --mkt-accent-border: #e8dcc4;
   margin: 0 auto;
   max-width: 80rem;
   padding: 0.75rem 1rem 2.5rem;
@@ -23,7 +23,7 @@
 }
 
 .mkt__crumb a:hover {
-  color: var(--mkt-red);
+  color: var(--mkt-accent);
 }
 
 .mkt__layout {
@@ -97,7 +97,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--mkt-red);
+  color: var(--mkt-accent);
   border-top: 1px solid var(--color-line);
 }
 
@@ -136,8 +136,8 @@
 }
 
 .mkt-filter__cat.active {
-  background: var(--mkt-red-soft);
-  color: var(--mkt-red);
+  background: var(--mkt-accent-soft);
+  color: var(--mkt-accent);
   font-weight: 600;
 }
 
@@ -148,7 +148,7 @@
 }
 
 .mkt-filter__cat.active .mkt-filter__count {
-  color: var(--mkt-red);
+  color: var(--mkt-accent);
 }
 
 .mkt-filter__range {
@@ -158,7 +158,7 @@
 
 .mkt-filter__range input[type='range'] {
   width: 100%;
-  accent-color: var(--mkt-red);
+  accent-color: var(--mkt-accent);
 }
 
 .mkt-filter__price-inputs {
@@ -197,7 +197,7 @@
 }
 
 .mkt-filter__check input {
-  accent-color: var(--mkt-red);
+  accent-color: var(--mkt-accent);
 }
 
 .mkt-filter__apply,
@@ -213,7 +213,7 @@
 
 .mkt-filter__apply {
   border: 0;
-  background: var(--mkt-red);
+  background: var(--mkt-accent);
   color: #fff;
   margin-bottom: 0.5rem;
 }
@@ -223,9 +223,9 @@
 }
 
 .mkt-filter__reset {
-  border: 1px solid var(--mkt-red);
+  border: 1px solid var(--mkt-accent);
   background: transparent;
-  color: var(--mkt-red);
+  color: var(--mkt-accent);
 }
 
 /* —— Main —— */
@@ -289,9 +289,9 @@
 
 .mkt-sort.active,
 .mkt-view.active {
-  border-color: var(--mkt-red);
-  color: var(--mkt-red);
-  background: var(--mkt-red-soft);
+  border-color: var(--mkt-accent);
+  color: var(--mkt-accent);
+  background: var(--mkt-accent-soft);
 }
 
 .mkt-toolbar__view {
@@ -343,7 +343,7 @@
   margin-top: 0.75rem;
   padding: 0.55rem 0.95rem;
   border-radius: 8px;
-  background: var(--mkt-red);
+  background: var(--mkt-accent);
   color: #fff;
   font-size: 0.85rem;
   font-weight: 700;

@@ -6,35 +6,38 @@ import { BillingService, DashboardService, ProductService } from '../../services
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/marketplace.models';
-import { environment } from '../../../environments/environment';
+import { forkJoin } from 'rxjs';
 import { CartService } from './cart.service';
-import { categoryLabel } from '../../models/categories';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, FormsModule],
+  imports: [RouterLink, CurrencyPipe, FormsModule, TPipe],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
 })
 export class CartComponent implements OnInit {
   readonly cart = inject(CartService);
   readonly auth = inject(AuthService);
-  readonly brand = environment.brandName;
   private readonly seo = inject(SeoService);
   private readonly walletApi = inject(DashboardService);
   private readonly billing = inject(BillingService);
   private readonly productsApi = inject(ProductService);
+  private readonly i18n = inject(I18nService);
 
   readonly balance = signal(0);
   readonly walletCurrency = signal('USD');
-  readonly useWallet = signal(true);
   readonly coupon = signal('');
   readonly couponApplied = signal(0);
   readonly msg = signal('');
   readonly paying = signal(false);
   readonly suggested = signal<Product[]>([]);
-  readonly categoryLabel = categoryLabel;
+
+  catLabel(id: string): string {
+    return this.i18n.catLabel(id);
+  }
 
   readonly allSelected = computed(
     () => this.cart.lines().length > 0 && this.cart.lines().every((l) => l.selected),
@@ -88,16 +91,24 @@ export class CartComponent implements OnInit {
       this.msg.set('Chọn ít nhất một sản phẩm.');
       return;
     }
-    if (this.useWallet() && this.balance() < this.total()) {
-      this.msg.set('Số dư ví không đủ. Hãy nạp thêm tiền.');
+    if (this.balance() < this.total()) {
+      this.msg.set('Số dư ví aimarkets.vn không đủ. Hãy nạp thêm tiền.');
       return;
     }
     this.paying.set(true);
-    const first = selected[0].product;
-    this.billing.checkout({ productId: first.id, provider: 'payos' }).subscribe({
-      next: (res) => {
+    const requests = selected.map((line) =>
+      this.billing.checkout({
+        productId: line.product.id,
+        quantity: line.qty,
+      }),
+    );
+    forkJoin(requests).subscribe({
+      next: (rows) => {
         this.paying.set(false);
-        this.msg.set(`Thanh toán ${res.checkoutId} · ${res.provider} (${res.status})`);
+        const units = selected.reduce((s, l) => s + l.qty, 0);
+        const last = rows[rows.length - 1];
+        if (typeof last?.balance === 'number') this.balance.set(last.balance);
+        this.msg.set(`Đã thanh toán ${rows.length} sản phẩm · ${units} đơn vị bằng ví aimarkets.vn`);
       },
       error: (err) => {
         this.paying.set(false);

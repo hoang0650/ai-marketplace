@@ -16,8 +16,8 @@ module.exports = {
         surface: 'var(--color-surface)',
       },
       fontFamily: {
-        display: ['"Sora"', 'sans-serif'],
-        body: ['"Be Vietnam Pro"', 'sans-serif'],
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        body: ['"Lato"', 'sans-serif'],
         mono: ['ui-monospace', 'monospace'],
       },
       boxShadow: {

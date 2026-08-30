@@ -4,7 +4,7 @@ import { ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { Product, ProductCategory } from '../../models/marketplace.models';
 import { ProductCardComponent } from '../../shared/components/product-card.component';
-import { categoryLabel } from '../../models/categories';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
   selector: 'app-category-hub',
@@ -26,6 +26,7 @@ export class CategoryHubComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly productsApi = inject(ProductService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
 
   readonly products = signal<Product[]>([]);
   readonly title = signal('Category');
@@ -34,9 +35,9 @@ export class CategoryHubComponent implements OnInit {
   ngOnInit(): void {
     this.route.data.subscribe((data) => {
       const category = (data['category'] as ProductCategory) || 'text-to-text';
-      const title = (data['title'] as string) || categoryLabel(category);
-      this.title.set(title);
-      this.subtitle.set(`Curated ${title} listings on PH AI Market.`);
+      const title = (data['title'] as string) || this.i18n.catLabel(category);
+      this.title.set(this.i18n.catLabel(category) || title);
+      this.subtitle.set(this.i18n.t('hub.subtitle', { title: this.title() }));
       this.seo.set({ title, description: this.subtitle() });
       this.productsApi.list({ category }).subscribe((items) => this.products.set(items));
     });

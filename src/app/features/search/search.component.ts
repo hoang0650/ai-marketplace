@@ -5,17 +5,19 @@ import { ProductService, CreatorService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { Creator, Product } from '../../models/marketplace.models';
 import { ProductCardComponent } from '../../shared/components/product-card.component';
+import { TPipe } from '../../i18n/t.pipe';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, ProductCardComponent, RouterLink],
+  imports: [FormsModule, ProductCardComponent, RouterLink, TPipe],
   template: `
     <section class="page route-enter">
-      <h1 class="section-title">Search</h1>
+      <h1 class="section-title">{{ 'search.title' | t }}</h1>
       <form class="mt-6 flex max-w-2xl gap-2" (ngSubmit)="run()">
-        <input class="input" name="q" [(ngModel)]="q" placeholder="Text-to-text, video, image models..." aria-label="Search" />
-        <button class="btn btn-fill" type="submit">Search</button>
+        <input class="input" name="q" [(ngModel)]="q" [placeholder]="'search.ph' | t" [attr.aria-label]="'search.title' | t" />
+        <button class="btn btn-fill" type="submit">{{ 'home.search' | t }}</button>
       </form>
       <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         @for (p of products(); track p.id) {
@@ -23,7 +25,7 @@ import { ProductCardComponent } from '../../shared/components/product-card.compo
         }
       </div>
       @if (creators().length) {
-        <h2 class="section-title mt-12 text-2xl">Creators</h2>
+        <h2 class="section-title mt-12 text-2xl">{{ 'search.creators' | t }}</h2>
         <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           @for (c of creators(); track c.id) {
             <a [routerLink]="['/store', c.slug]" class="panel block no-underline">
@@ -42,13 +44,14 @@ export class SearchComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly creatorsApi = inject(CreatorService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
 
   q = '';
   readonly products = signal<Product[]>([]);
   readonly creators = signal<Creator[]>([]);
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Search' });
+    this.seo.set({ title: this.i18n.t('search.title') });
     this.route.queryParamMap.subscribe((p) => {
       this.q = p.get('q') || '';
       this.run(false);

@@ -16,7 +16,7 @@ export class PrivacyPolicyComponent implements OnInit {
   ngOnInit(): void {
     this.seo.set({
       title: 'Chính sách bảo mật',
-      description: 'Chính sách bảo mật và xử lý dữ liệu cá nhân của PH AI Market (AI Markets).',
+      description: 'Chính sách bảo mật và xử lý dữ liệu cá nhân của AI Markets.',
     });
   }
 }

@@ -1,51 +1,37 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
-import { BillingService, DashboardService, ReviewService } from '../../services/api.services';
+import { DashboardService, ReviewService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import {
-  AffiliateStats,
   AdminOverview,
-  PaymentProvider,
+  AffiliateStats,
+  Order,
   Review,
 } from '../../models/marketplace.models';
 
 @Component({
   selector: 'app-billing',
   standalone: true,
-  imports: [FormsModule],
+  imports: [RouterLink],
   template: `
     <section class="page route-enter max-w-2xl">
       <h1 class="section-title">Billing</h1>
-      <p class="mt-2 text-muted">Choose a payment provider for subscriptions and one-time purchases.</p>
-      <form class="panel mt-8 grid gap-3" (ngSubmit)="pay()">
-        <label class="text-xs uppercase tracking-wider text-muted">Provider</label>
-        <select class="input" [(ngModel)]="provider" name="provider">
-          <option value="stripe">Stripe</option>
-          <option value="paypal">PayPal</option>
-          <option value="paddle">Paddle</option>
-          <option value="payos">PayOS</option>
-        </select>
-        <button class="btn btn-fill w-fit" type="submit">Start checkout demo</button>
-        @if (msg()) {
-          <p class="font-mono text-xs text-accent">{{ msg() }}</p>
-        }
-      </form>
+      <p class="mt-2 text-muted">
+        Mọi đơn hàng trên AI Markets được thanh toán bằng ví aimarkets.vn. Nạp tiền vào ví rồi mua trên trang sản phẩm hoặc giỏ hàng.
+      </p>
+      <div class="panel mt-8 grid gap-3">
+        <p class="text-sm">Phương thức: ví aimarkets.vn (không Stripe / PayPal / Paddle / PayOS).</p>
+        <a class="btn btn-fill w-fit" routerLink="/wallet">Mở ví & nạp tiền</a>
+      </div>
     </section>
   `,
 })
 export class BillingComponent {
-  private readonly billing = inject(BillingService);
   private readonly seo = inject(SeoService);
-  provider: PaymentProvider = 'stripe';
-  readonly msg = signal('');
   constructor() {
     this.seo.set({ title: 'Billing' });
-  }
-  pay(): void {
-    this.billing.checkout({ productId: 'p-concierge', provider: this.provider }).subscribe((r) => {
-      this.msg.set(`${r.provider} checkout ${r.checkoutId}`);
-    });
   }
 }
 
@@ -92,7 +78,7 @@ export class AffiliateComponent implements OnInit {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CurrencyPipe, DecimalPipe, PercentPipe],
+  imports: [CurrencyPipe, DecimalPipe, PercentPipe, DatePipe, RouterLink],
   template: `
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
@@ -191,9 +177,11 @@ export class AffiliateComponent implements OnInit {
             <h2 class="font-display text-2xl">Recent users</h2>
             <ul class="mt-4 space-y-2 text-sm">
               @for (u of d.usersList; track u.id) {
-                <li class="flex justify-between border-b border-line py-2">
-                  <span>{{ u.name }}</span>
-                  <span class="text-muted">{{ u.role }}</span>
+                <li class="border-b border-line py-2">
+                  <a class="flex justify-between gap-3 hover:text-accent" [routerLink]="['/admin/users', u.id]">
+                    <span>{{ u.name }}</span>
+                    <span class="text-muted">{{ u.role }} · {{ u.accountStatus || 'active' }}</span>
+                  </a>
                 </li>
               }
             </ul>
@@ -202,13 +190,43 @@ export class AffiliateComponent implements OnInit {
             <h2 class="font-display text-2xl">Recent products</h2>
             <ul class="mt-4 space-y-2 text-sm">
               @for (p of d.productsList; track p.id) {
-                <li class="flex justify-between border-b border-line py-2">
-                  <span>{{ p.name }}</span>
-                  <span class="text-muted">{{ p.category }}</span>
+                <li class="border-b border-line py-2">
+                  <a class="flex justify-between gap-3 hover:text-accent" [routerLink]="['/admin/products', p.id]">
+                    <span>{{ p.name }}</span>
+                    <span class="text-muted">{{ p.category }} · bán {{ p.salesCount || 0 }}</span>
+                  </a>
                 </li>
               }
             </ul>
           </div>
+        </div>
+
+        <div class="panel mt-8">
+          <h2 class="font-display text-2xl">Disputes</h2>
+          <p class="mt-1 text-sm text-muted">Chỉ đóng băng seller net của đơn bị khiếu nại, không khóa cả ví.</p>
+          <ul class="mt-4 space-y-3 text-sm">
+            @for (o of disputes(); track o.id) {
+              <li class="border-b border-line py-3">
+                <p class="font-medium">{{ o.productName }} · {{ o.amount | currency: o.currency }}</p>
+                <p class="text-muted">{{ o.disputeStatus }} · {{ o.disputeReason }}</p>
+                <p class="text-xs text-muted">
+                  Held {{ o.sellerNet | currency: o.currency }} · {{ o.disputeOpenedAt | date: 'short' }}
+                </p>
+                @if (o.disputeStatus === 'open') {
+                  <div class="mt-2 flex flex-wrap gap-2">
+                    <button class="btn btn-fill text-xs" type="button" (click)="resolve(o, 'seller')">
+                      Seller keeps payout
+                    </button>
+                    <button class="btn btn-outline text-xs" type="button" (click)="resolve(o, 'buyer')">
+                      Refund buyer
+                    </button>
+                  </div>
+                }
+              </li>
+            } @empty {
+              <li class="text-muted">No disputes.</li>
+            }
+          </ul>
         </div>
       }
     </section>
@@ -218,9 +236,17 @@ export class AdminComponent implements OnInit {
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
   readonly data = signal<AdminOverview | null>(null);
+  readonly disputes = signal<Order[]>([]);
   ngOnInit(): void {
     this.seo.set({ title: 'Admin' });
     this.api.adminOverview().subscribe((d) => this.data.set(d));
+    this.api.adminDisputes().subscribe((list) => this.disputes.set(list));
+  }
+
+  resolve(o: Order, resolution: 'seller' | 'buyer'): void {
+    this.api.resolveDispute(o.id, resolution).subscribe((updated) => {
+      this.disputes.update((list) => list.map((row) => (row.id === updated.id ? updated : row)));
+    });
   }
 }
 

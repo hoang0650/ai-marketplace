@@ -12,25 +12,27 @@ import {
   ProductCategory,
   PricingModel,
   UsageStat,
+  WalletSummary,
   WalletTx,
 } from '../../models/marketplace.models';
-import { AI_CATEGORIES, DIGITAL_CATEGORIES, CATEGORY_META, categoryLabel } from '../../models/categories';
+import { AI_CATEGORIES, CATEGORY_META, categoryLabel } from '../../models/categories';
 import {
   RUNPOD_PUBLIC_ENDPOINTS,
   RunpodPublicEndpoint,
   runtimeFromRunpodPublicEndpoint,
 } from '../../models/runpod-public-endpoints';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-dashboard-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe],
   template: `
     <section class="page route-enter">
-      <h1 class="section-title">Creator dashboard</h1>
-      <nav class="mt-6 flex flex-wrap gap-2" aria-label="Dashboard">
+      <h1 class="section-title">{{ 'dash.title' | t }}</h1>
+      <nav class="mt-6 flex flex-wrap gap-2" [attr.aria-label]="'dash.title' | t">
         @for (l of links; track l.path) {
-          <a [routerLink]="l.path" routerLinkActive="btn-fill" class="btn btn-outline text-xs">{{ l.label }}</a>
+          <a [routerLink]="l.path" routerLinkActive="btn-fill" class="btn btn-outline text-xs">{{ l.key | t }}</a>
         }
       </nav>
       <div class="mt-8">
@@ -41,26 +43,27 @@ import {
 })
 export class DashboardShellComponent {
   readonly links = [
-    { path: '/dashboard', label: 'Overview' },
-    { path: '/dashboard/orders', label: 'Orders' },
-    { path: '/dashboard/usage', label: 'Usage' },
-    { path: '/dashboard/tokens', label: 'Tokens' },
-    { path: '/dashboard/gpu', label: 'GPU' },
-    { path: '/dashboard/analytics', label: 'Analytics' },
-    { path: '/dashboard/products', label: 'Products' },
-    { path: '/dashboard/withdraw', label: 'Withdraw' },
+    { path: '/dashboard', key: 'dash.overview' },
+    { path: '/dashboard/orders', key: 'dash.orders' },
+    { path: '/dashboard/usage', key: 'dash.usage' },
+    { path: '/dashboard/tokens', key: 'dash.tokens' },
+    { path: '/dashboard/gpu', key: 'dash.gpu' },
+    { path: '/account/console', key: 'dash.console' },
+    { path: '/dashboard/analytics', key: 'dash.analytics' },
+    { path: '/dashboard/products', key: 'dash.products' },
+    { path: '/dashboard/withdraw', key: 'dash.withdraw' },
   ];
 }
 
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CurrencyPipe, DecimalPipe],
+  imports: [CurrencyPipe, DecimalPipe, TPipe],
   template: `
     @if (summary(); as s) {
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="panel"><p class="text-xs uppercase text-muted">Revenue</p><p class="mt-2 font-display text-3xl">{{ s.revenue | currency: s.currency }}</p></div>
-        <div class="panel"><p class="text-xs uppercase text-muted">Orders</p><p class="mt-2 font-display text-3xl">{{ s.orders | number }}</p></div>
+        <div class="panel"><p class="text-xs uppercase text-muted">{{ 'dash.revenue' | t }}</p><p class="mt-2 font-display text-3xl">{{ s.revenue | currency: s.currency }}</p></div>
+        <div class="panel"><p class="text-xs uppercase text-muted">{{ 'dash.orders' | t }}</p><p class="mt-2 font-display text-3xl">{{ s.orders | number }}</p></div>
         <div class="panel"><p class="text-xs uppercase text-muted">Token usage</p><p class="mt-2 font-display text-3xl">{{ s.tokenUsage | number }}</p></div>
         <div class="panel"><p class="text-xs uppercase text-muted">GPU hours</p><p class="mt-2 font-display text-3xl">{{ s.gpuHours | number:'1.1-1' }}</p></div>
       </div>
@@ -86,7 +89,7 @@ export class DashboardHomeComponent implements OnInit {
     <div class="panel overflow-x-auto">
       <table class="w-full min-w-[640px] text-left text-sm">
         <thead class="text-xs uppercase text-muted">
-          <tr><th class="pb-3">Order</th><th>Product</th><th>Buyer</th><th>Amount</th><th>Provider</th><th>Date</th></tr>
+          <tr><th class="pb-3">Order</th><th>Product</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Date</th></tr>
         </thead>
         <tbody>
           @for (o of orders(); track o.id) {
@@ -95,7 +98,20 @@ export class DashboardHomeComponent implements OnInit {
               <td>{{ o.productName }}</td>
               <td>{{ o.buyerName }}</td>
               <td>{{ o.amount | currency: o.currency }}</td>
-              <td>{{ o.provider }}</td>
+              <td>
+                {{ o.status }}
+                @if (o.payoutHeld) {
+                  <span class="block text-xs text-muted">
+                    {{ o.payoutHoldKind === 'dispute' ? 'Đóng băng khiếu nại' : 'Giữ 48h' }}
+                    · {{ o.sellerNet | currency: o.currency }}
+                  </span>
+                }
+                @if (o.canDispute) {
+                  <button class="mt-1 text-xs text-accent underline" type="button" (click)="openDispute(o)">
+                    Khiếu nại
+                  </button>
+                }
+              </td>
               <td>{{ o.createdAt | date: 'short' }}</td>
             </tr>
           }
@@ -109,6 +125,14 @@ export class DashboardOrdersComponent implements OnInit {
   readonly orders = signal<Order[]>([]);
   ngOnInit(): void {
     this.api.orders().subscribe((o) => this.orders.set(o));
+  }
+
+  openDispute(o: Order): void {
+    const reason = typeof window !== 'undefined' ? window.prompt('Lý do khiếu nại (tối thiểu 8 ký tự):', '') : '';
+    if (!reason || reason.trim().length < 8) return;
+    this.api.openDispute(o.id, reason.trim()).subscribe({
+      next: (updated) => this.orders.update((list) => list.map((row) => (row.id === updated.id ? updated : row))),
+    });
   }
 }
 
@@ -262,15 +286,10 @@ export class DashboardAnalyticsComponent implements OnInit {
           <textarea class="input min-h-24" [(ngModel)]="draft.description" name="description" placeholder="What buyers get + how to call the API"></textarea>
         </div>
         <div>
-          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Modality (RunPod-style)</label>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">AI category</label>
           <select class="input" [(ngModel)]="draft.category" name="category" required>
             <optgroup label="AI">
               @for (c of aiCategories; track c.id) {
-                <option [ngValue]="c.id">{{ c.label }}</option>
-              }
-            </optgroup>
-            <optgroup label="Sản phẩm số">
-              @for (c of digitalCategories; track c.id) {
                 <option [ngValue]="c.id">{{ c.label }}</option>
               }
             </optgroup>
@@ -365,7 +384,7 @@ export class DashboardAnalyticsComponent implements OnInit {
           <div>
             <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ categoryLabel(p.category) }}</p>
             <a [routerLink]="['/product', p.slug]" class="font-display text-xl no-underline">{{ p.name }}</a>
-            <p class="text-sm text-muted">{{ p.installCount | number }} installs · ★ {{ p.rating | number:'1.1-1' }}</p>
+            <p class="text-sm text-muted">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number:'1.1-1' }}</p>
             @if (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint) {
               <p class="mt-1 max-w-xl truncate font-mono text-[11px] text-muted">
                 {{ p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint }}
@@ -390,7 +409,6 @@ export class DashboardProductsComponent implements OnInit {
   readonly products = signal<Product[]>([]);
   readonly categories = CATEGORY_META;
   readonly aiCategories = AI_CATEGORIES;
-  readonly digitalCategories = DIGITAL_CATEGORIES;
   readonly categoryLabel = categoryLabel;
   readonly runpodCatalog: RunpodPublicEndpoint[] = RUNPOD_PUBLIC_ENDPOINTS;
   catalogSlug = '';
@@ -550,9 +568,24 @@ export class DashboardProductsComponent implements OnInit {
     <div class="grid gap-6 lg:grid-cols-2">
       <form class="panel grid gap-3" (ngSubmit)="withdraw()">
         <h2 class="font-display text-2xl">Withdraw</h2>
+        @if (summary(); as s) {
+          <p class="text-sm text-muted">Ledger {{ s.balance | currency: s.currency }}</p>
+          <p class="text-sm text-muted">Held (48h / dispute, per order) {{ s.held | currency: s.currency }}</p>
+          <p class="font-display text-2xl">Available {{ s.available | currency: s.currency }}</p>
+        }
         <input class="input" type="number" min="1" [(ngModel)]="amount" name="amount" />
         <button class="btn btn-fill w-fit" type="submit">Request payout</button>
         @if (msg()) { <p class="text-sm text-accent">{{ msg() }}</p> }
+        @if (summary()?.holds?.length) {
+          <ul class="mt-2 space-y-2 text-xs text-muted">
+            @for (h of summary()!.holds; track h.orderId) {
+              <li>
+                {{ h.productName }} · {{ h.amount | currency: h.currency }} ·
+                {{ h.kind === 'dispute' ? 'Khiếu nại' : 'Chờ 48h' }}
+              </li>
+            }
+          </ul>
+        }
       </form>
       <div class="panel">
         <h2 class="font-display text-2xl">Wallet history</h2>
@@ -571,17 +604,27 @@ export class DashboardProductsComponent implements OnInit {
 export class DashboardWithdrawComponent implements OnInit {
   private readonly api = inject(DashboardService);
   readonly txs = signal<WalletTx[]>([]);
+  readonly summary = signal<WalletSummary | null>(null);
   readonly msg = signal('');
   amount = 100;
 
   ngOnInit(): void {
+    this.reload();
+  }
+
+  reload(): void {
     this.api.wallet().subscribe((t) => this.txs.set(t));
+    this.api.walletSummary().subscribe((s) => this.summary.set(s));
   }
 
   withdraw(): void {
-    this.api.withdraw(this.amount).subscribe((tx) => {
-      this.txs.update((list) => [tx, ...list]);
-      this.msg.set(`Withdraw ${tx.amount} queued`);
+    this.api.withdraw(this.amount).subscribe({
+      next: (tx) => {
+        this.txs.update((list) => [tx, ...list]);
+        this.msg.set(`Withdraw ${tx.amount} queued`);
+        this.api.walletSummary().subscribe((s) => this.summary.set(s));
+      },
+      error: (err) => this.msg.set(err?.error?.message || 'Withdraw failed'),
     });
   }
 }

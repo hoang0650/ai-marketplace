@@ -144,8 +144,8 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       if (req.method === 'POST' && path === '/billing/checkout') {
         return jsonOk({
           checkoutId: `chk_${Date.now()}`,
-          provider: (req.body as { provider: string }).provider,
-          status: 'created',
+          provider: 'wallet',
+          status: 'paid',
         });
       }
       if (req.method === 'POST' && path === '/agents/chat') {
