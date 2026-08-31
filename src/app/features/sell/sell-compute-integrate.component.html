@@ -1,0 +1,143 @@
+<section class="seller-docs route-enter">
+  <p class="seller-docs__crumb">{{ 'sellCompute.crumb' | t }}</p>
+  <h1>{{ 'sellCompute.title' | t }}</h1>
+  <p class="seller-docs__lede">{{ 'sellCompute.lede' | t }}</p>
+
+  <article class="seller-docs__section">
+    <h2>{{ 'sellCompute.flow.title' | t }}</h2>
+    <pre class="seller-docs__diagram">{{ flowDiagram }}</pre>
+    <p>{{ 'sellCompute.flow.p1' | t }}</p>
+    <div class="seller-docs__actions">
+      <a routerLink="/sell/docs/api-usage" class="btn btn--ghost">{{ 'sellCompute.flow.docsApi' | t }}</a>
+      <a [href]="apiBase + '/seller/compute/schema'" target="_blank" rel="noopener" class="btn btn--ghost">JSON schema</a>
+    </div>
+  </article>
+
+  <article class="seller-docs__section">
+    <h2>{{ 'sellCompute.register.title' | t }}</h2>
+    <p class="seller-docs__hint">{{ 'sellCompute.register.hint' | t }}</p>
+
+    <form class="integrate-form" (ngSubmit)="submit()">
+      <div class="field">
+        <label class="field-label" for="sc-product">{{ 'sellCompute.field.product' | t }}</label>
+        <select id="sc-product" class="input" [(ngModel)]="productSlug" name="productSlug" required>
+          <option value="">{{ 'sellCompute.field.productPick' | t }}</option>
+          @for (p of products(); track p.id) {
+            <option [value]="p.slug">{{ p.name }} ({{ p.slug }})</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="sc-name">{{ 'sellCompute.field.name' | t }}</label>
+        <input id="sc-name" class="input" [(ngModel)]="name" name="name" placeholder="EU Game Box" />
+      </div>
+
+      <div class="field">
+        <span class="field-label">{{ 'sellCompute.field.kind' | t }}</span>
+        <div class="segmented">
+          <button type="button" [class.active]="kind === 'game'" (click)="kind = 'game'">Game</button>
+          <button type="button" [class.active]="kind === 'compute'" (click)="kind = 'compute'">GPU</button>
+        </div>
+      </div>
+
+      <label class="check-row">
+        <input type="checkbox" [(ngModel)]="useWebhook" name="useWebhook" />
+        <span><strong>{{ 'sellCompute.field.useWebhook' | t }}</strong></span>
+      </label>
+
+      @if (useWebhook) {
+        <div class="field">
+          <label class="field-label" for="sc-hook">{{ 'sellCompute.field.webhookUrl' | t }}</label>
+          <input id="sc-hook" class="input" type="url" [(ngModel)]="webhookUrl" name="webhookUrl" placeholder="https://seller.example.com/aim/webhook" />
+        </div>
+        <div class="field">
+          <label class="field-label" for="sc-secret">{{ 'sellCompute.field.webhookSecret' | t }}</label>
+          <input id="sc-secret" class="input" [(ngModel)]="webhookSecret" name="webhookSecret" placeholder="whsec_..." />
+        </div>
+      } @else {
+        <div class="field">
+          <label class="field-label" for="sc-host">{{ 'sellCompute.field.streamHost' | t }}</label>
+          <input id="sc-host" class="input" [(ngModel)]="streamHost" name="streamHost" placeholder="10.0.0.5" />
+        </div>
+        <div class="field grid-2">
+          <div>
+            <label class="field-label" for="sc-port">{{ 'sellCompute.field.streamPort' | t }}</label>
+            <input id="sc-port" class="input" type="number" [(ngModel)]="streamPort" name="streamPort" />
+          </div>
+          <div>
+            <label class="field-label" for="sc-kind">{{ 'sellCompute.field.streamKind' | t }}</label>
+            <select id="sc-kind" class="input" [(ngModel)]="streamKind" name="streamKind">
+              <option value="novnc">noVNC</option>
+              <option value="hls">HLS</option>
+              <option value="iframe">iframe</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="sc-path">{{ 'sellCompute.field.streamPath' | t }}</label>
+          <input id="sc-path" class="input" [(ngModel)]="streamPath" name="streamPath" />
+        </div>
+        <label class="check-row">
+          <input type="checkbox" [(ngModel)]="streamTls" name="streamTls" />
+          <span>TLS upstream</span>
+        </label>
+      }
+
+      <div class="field">
+        <label class="field-label" for="sc-iframe">{{ 'sellCompute.field.iframeUrl' | t }}</label>
+        <input id="sc-iframe" class="input" type="url" [(ngModel)]="iframeUrl" name="iframeUrl" placeholder="Optional embed URL" />
+      </div>
+      <div class="field grid-2">
+        <div>
+          <label class="field-label" for="sc-health">{{ 'sellCompute.field.healthUrl' | t }}</label>
+          <input id="sc-health" class="input" type="url" [(ngModel)]="healthUrl" name="healthUrl" />
+        </div>
+        <div>
+          <label class="field-label" for="sc-region">{{ 'sellCompute.field.region' | t }}</label>
+          <input id="sc-region" class="input" [(ngModel)]="region" name="region" placeholder="eu-west" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label" for="sc-max">{{ 'sellCompute.field.maxConcurrent' | t }}</label>
+        <input id="sc-max" class="input" type="number" min="1" max="100" [(ngModel)]="maxConcurrent" name="maxConcurrent" />
+      </div>
+
+      @if (err()) {
+        <p class="seller-docs__warn">{{ err() }}</p>
+      }
+      @if (msg()) {
+        <p class="seller-docs__hint">{{ msg() }}</p>
+      }
+
+      <button type="submit" class="btn" [disabled]="busy()">
+        {{ busy() ? ('sellCompute.saving' | t) : ('sellCompute.save' | t) }}
+      </button>
+    </form>
+  </article>
+
+  <article class="seller-docs__section">
+    <h2>{{ 'sellCompute.nodes.title' | t }}</h2>
+    @if (nodes().length) {
+      <div class="node-list">
+        @for (n of nodes(); track n.id) {
+          <article class="node-card">
+            <div>
+              <p class="node-card__name">{{ n.name }}</p>
+              <p class="node-card__meta">
+                {{ n.productSlug }} · {{ n.status }} · {{ n.region || '—' }}
+                · stream {{ n.hasStream ? '✓' : '—' }}
+              </p>
+            </div>
+            <div class="node-card__actions">
+              <button type="button" class="btn btn--ghost btn-sm" (click)="pingNode(n.id)">Ping</button>
+              <button type="button" class="btn btn--ghost btn-sm" (click)="offlineNode(n.id)">{{ 'sellCompute.nodes.offline' | t }}</button>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="seller-docs__hint">{{ 'sellCompute.nodes.empty' | t }}</p>
+    }
+  </article>
+</section>

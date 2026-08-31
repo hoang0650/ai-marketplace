@@ -52,6 +52,7 @@ export class SupportComponent implements OnInit {
         { id: 's1', qKey: 'support.faq.s1.q', aKey: 'support.faq.s1.a' },
         { id: 's2', qKey: 'support.faq.s2.q', aKey: 'support.faq.s2.a' },
         { id: 's3', qKey: 'support.faq.s3.q', aKey: 'support.faq.s3.a' },
+        { id: 's4', qKey: 'support.faq.s4.q', aKey: 'support.faq.s4.a' },
       ],
     },
     {

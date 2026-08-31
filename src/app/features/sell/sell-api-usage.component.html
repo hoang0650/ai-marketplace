@@ -1,0 +1,99 @@
+<section class="seller-docs page route-enter">
+  <p class="seller-docs__crumb">
+    <a routerLink="/docs">{{ 'docs.crumb' | t }}</a> / {{ 'sellDocs.short' | t }}
+  </p>
+  <h1>{{ 'sellDocs.title' | t }}</h1>
+  <p class="seller-docs__lede">{{ 'sellDocs.lede' | t: { brand } }}</p>
+
+  <nav class="seller-docs__toc" aria-label="Mục lục">
+    @for (item of toc; track item.id) {
+      <a [href]="'#' + item.id">{{ item.labelKey | t }}</a>
+    }
+  </nav>
+
+  <article id="principle" class="seller-docs__section">
+    <h2>{{ 'sellDocs.principle.title' | t }}</h2>
+    <p>{{ 'sellDocs.principle.p1' | t }}</p>
+    <div class="seller-docs__table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'sellDocs.principle.col.how' | t }}</th>
+            <th>{{ 'sellDocs.principle.col.count' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ 'sellDocs.principle.row1.how' | t }}</td>
+            <td>{{ 'sellDocs.principle.row1.count' | t }}</td>
+          </tr>
+          <tr>
+            <td>{{ 'sellDocs.principle.row2.how' | t }}</td>
+            <td>{{ 'sellDocs.principle.row2.count' | t }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="seller-docs__warn">{{ 'sellDocs.principle.warn' | t }}</p>
+  </article>
+
+  <article id="flow" class="seller-docs__section">
+    <h2>{{ 'sellDocs.flow.title' | t }}</h2>
+    <pre class="seller-docs__diagram">{{ flowDiagram }}</pre>
+    <p>{{ 'sellDocs.flow.p1' | t }}</p>
+    <pre class="seller-docs__code">{{ sampleResponse }}</pre>
+  </article>
+
+  <article id="seller-setup" class="seller-docs__section">
+    <h2>{{ 'sellDocs.setup.title' | t }}</h2>
+    <ol>
+      <li>{{ 'sellDocs.setup.l1' | t }}</li>
+      <li>{{ 'sellDocs.setup.l2' | t: { apiBase } }}</li>
+      <li>{{ 'sellDocs.setup.l3' | t }}</li>
+      <li>{{ 'sellDocs.setup.l4' | t }}</li>
+    </ol>
+    <div class="seller-docs__actions">
+      <a routerLink="/sell/products" class="btn">{{ 'sellDocs.setup.products' | t }}</a>
+      <a routerLink="/dashboard/usage" class="btn btn--ghost">{{ 'sellDocs.setup.usage' | t }}</a>
+    </div>
+  </article>
+
+  <article id="buyer-api" class="seller-docs__section">
+    <h2>{{ 'sellDocs.buyerApi.title' | t }}</h2>
+    <p>{{ 'sellDocs.buyerApi.p1' | t: { apiBase } }}</p>
+    <ul>
+      <li><code>GET {{ apiBase }}/models</code></li>
+      <li><code>POST {{ apiBase }}/chat/completions</code></li>
+      <li><code>POST {{ apiBase }}/embeddings</code></li>
+      <li><code>POST {{ apiBase }}/api-keys</code> — {{ 'sellDocs.buyerApi.keys' | t }}</li>
+    </ul>
+    <h3>{{ 'sellDocs.buyerApi.example' | t }}</h3>
+    <pre class="seller-docs__code">{{ curlExample }}</pre>
+    <p class="seller-docs__hint">{{ 'sellDocs.buyerApi.hint' | t }}</p>
+  </article>
+
+  <article id="seller-stats" class="seller-docs__section">
+    <h2>{{ 'sellDocs.stats.title' | t }}</h2>
+    <p>{{ 'sellDocs.stats.p1' | t }}</p>
+    <ul>
+      <li><code>GET {{ apiBase }}/usage</code> — {{ 'sellDocs.stats.usage' | t }}</li>
+      <li><code>GET {{ apiBase }}/dashboard/summary</code> — {{ 'sellDocs.stats.summary' | t }}</li>
+      <li><code>GET {{ apiBase }}/deployments/:id/usage</code> — {{ 'sellDocs.stats.deploy' | t }}</li>
+    </ul>
+    <p>{{ 'sellDocs.stats.fee' | t }}</p>
+  </article>
+
+  <article id="faq" class="seller-docs__section">
+    <h2>{{ 'sellDocs.faq.title' | t }}</h2>
+    @for (item of faq; track item.qKey) {
+      <details class="seller-docs__faq">
+        <summary>{{ item.qKey | t }}</summary>
+        <p>{{ item.aKey | t }}</p>
+      </details>
+    }
+  </article>
+
+  <footer class="seller-docs__foot">
+    <p>{{ 'sellDocs.foot' | t: { email: supportEmail } }}</p>
+  </footer>
+</section>

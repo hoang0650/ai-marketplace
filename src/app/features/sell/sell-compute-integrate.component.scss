@@ -1,0 +1,88 @@
+@import './sell-api-usage.component.scss';
+
+.integrate-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 36rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.grid-2 {
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.segmented button {
+  border: 0;
+  background: transparent;
+  padding: 0.45rem 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.segmented button.active {
+  background: var(--color-accent, #e53935);
+  color: #fff;
+}
+
+.check-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.node-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.node-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-surface, #fff);
+}
+
+.node-card__name {
+  margin: 0;
+  font-weight: 800;
+}
+
+.node-card__meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.node-card__actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-sm {
+  font-size: 0.78rem;
+  padding: 0.35rem 0.65rem;
+}

@@ -15,7 +15,7 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Product, ProductCategory, Review } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory } from '../../models/categories';
+import { isHireCategory, isSkillCategory, isComputeStreamCategory } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -29,7 +29,7 @@ import {
   runpodVideoPriceHint,
 } from '../../models/runpod-playground';
 
-type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews';
+type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews' | 'stream';
 type ResultView = 'preview' | 'json';
 type InputMode = 'messages' | 'prompt';
 type RunStatus = 'idle' | 'running' | 'done' | 'error';
@@ -278,7 +278,13 @@ export class ProductDetailComponent implements OnInit {
         });
         this.resetPlayground(p);
         this.workspaceTab.set(
-          isHireCategory(p.category) ? 'hire' : isSkillCategory(p.category) ? 'install' : 'playground',
+          isComputeStreamCategory(p.category)
+            ? 'stream'
+            : isHireCategory(p.category)
+              ? 'hire'
+              : isSkillCategory(p.category)
+                ? 'install'
+                : 'playground',
         );
         this.hireSent.set(false);
         this.skillInstalled.set(false);
@@ -340,6 +346,20 @@ export class ProductDetailComponent implements OnInit {
 
   isSkill(cat: ProductCategory): boolean {
     return isSkillCategory(cat);
+  }
+
+  isComputeStream(cat: ProductCategory): boolean {
+    return isComputeStreamCategory(cat);
+  }
+
+  launchComputeStream(): void {
+    const p = this.product();
+    if (!p) return;
+    if (!this.auth.user()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { redirect: `/play/${p.slug}` } });
+      return;
+    }
+    void this.router.navigate(['/play', p.slug]);
   }
 
   installSkill(): void {
@@ -426,6 +446,10 @@ export class ProductDetailComponent implements OnInit {
   primaryCta(): void {
     const p = this.product();
     if (!p) return;
+    if (isComputeStreamCategory(p.category)) {
+      this.launchComputeStream();
+      return;
+    }
     if (p.category === 'hire-agent' || p.slug === 'openclaw-ops-agent') {
       this.launchOpenClaw();
       return;

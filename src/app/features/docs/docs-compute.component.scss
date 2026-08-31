@@ -1,0 +1,11 @@
+@import '../sell/sell-api-usage.component.scss';
+
+.seller-docs__crumb a {
+  color: var(--color-muted);
+  text-decoration: none;
+  font-weight: 700;
+
+  &:hover {
+    color: var(--color-ink);
+  }
+}

@@ -60,6 +60,10 @@ import { ShopProfileService } from './shop-profile.service';
               <strong>Đơn hàng</strong>
               <span>Theo dõi đơn mua gần đây</span>
             </a>
+            <a routerLink="/sell/docs/api-usage" class="card">
+              <strong>Docs API & token</strong>
+              <span>Hướng dẫn buyer đếm token qua Gateway</span>
+            </a>
             <a routerLink="/sell/payment" class="card">
               <strong>Thanh toán</strong>
               <span>Thiết lập nhận tiền</span>

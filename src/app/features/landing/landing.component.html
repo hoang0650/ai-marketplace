@@ -41,15 +41,18 @@
   <div class="lux-cats__grid">
     @for (c of categoryIcons; track c.id; let i = $index) {
       <a [routerLink]="c.hubPath" class="lux-cat" [class.lux-cat--wide]="i === 0">
+        @if (c.isNew) {
+          <span class="lux-cat__badge">{{ 'lux.footer.new' | t }}</span>
+        }
         <div class="lux-cat__img" [style.background]="c.bg">
-          <span class="lux-cat__emoji">{{ c.emoji }}</span>
+          <span class="lux-cat__glow" [style.background]="c.accent"></span>
+          <span class="lux-cat__icon-wrap">
+            <app-category-icon [name]="c.id" size="lg" />
+          </span>
         </div>
         <div class="lux-cat__info">
           <span class="lux-cat__count">+{{ c.count }}</span>
           <span class="lux-cat__label">{{ ('cat.' + c.id + '.short') | t }}</span>
-          @if (c.isNew) {
-            <span class="lux-cat__badge">{{ 'lux.footer.new' | t }}</span>
-          }
         </div>
       </a>
     }

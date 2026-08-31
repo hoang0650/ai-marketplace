@@ -1,0 +1,69 @@
+<section class="seller-docs page route-enter">
+  <p class="seller-docs__crumb">
+    <a routerLink="/docs">{{ 'docs.crumb' | t }}</a> / {{ 'docsCompute.short' | t }}
+  </p>
+  <h1>{{ 'docsCompute.title' | t }}</h1>
+  <p class="seller-docs__lede">{{ 'docsCompute.lede' | t }}</p>
+
+  <nav class="seller-docs__toc" aria-label="TOC">
+    @for (item of toc; track item.id) {
+      <a [href]="'#' + item.id">{{ item.labelKey | t }}</a>
+    }
+  </nav>
+
+  <article id="overview" class="seller-docs__section">
+    <h2>{{ 'docsCompute.overview.title' | t }}</h2>
+    <p>{{ 'docsCompute.overview.p1' | t }}</p>
+    <pre class="seller-docs__diagram">{{ flowDiagram }}</pre>
+    <ul>
+      <li>{{ 'docsCompute.overview.l1' | t }}</li>
+      <li>{{ 'docsCompute.overview.l2' | t }}</li>
+      <li>{{ 'docsCompute.overview.l3' | t }}</li>
+    </ul>
+  </article>
+
+  <article id="register" class="seller-docs__section">
+    <h2>{{ 'docsCompute.register.title' | t }}</h2>
+    <p>{{ 'docsCompute.register.p1' | t }}</p>
+    <pre class="seller-docs__code">{{ registerExample }}</pre>
+    <div class="seller-docs__actions">
+      <a routerLink="/sell/integrate" class="btn">{{ 'docsCompute.register.cta' | t }}</a>
+      <a [href]="apiBase + '/seller/compute/schema'" target="_blank" rel="noopener" class="btn btn--ghost">JSON schema</a>
+    </div>
+  </article>
+
+  <article id="webhook" class="seller-docs__section">
+    <h2>{{ 'docsCompute.webhook.title' | t }}</h2>
+    <p>{{ 'docsCompute.webhook.p1' | t }}</p>
+    <p class="seller-docs__hint">{{ 'docsCompute.webhook.sig' | t }}</p>
+    <h3>{{ 'docsCompute.webhook.events' | t }}</h3>
+    <ul>
+      <li><code>session.start</code> — {{ 'docsCompute.webhook.e1' | t }}</li>
+      <li><code>session.stop</code> — {{ 'docsCompute.webhook.e2' | t }}</li>
+      <li><code>session.ping</code> — {{ 'docsCompute.webhook.e3' | t }}</li>
+    </ul>
+    <h3>{{ 'docsCompute.webhook.response' | t }}</h3>
+    <pre class="seller-docs__code">{{ webhookResponse }}</pre>
+  </article>
+
+  <article id="buyer" class="seller-docs__section">
+    <h2>{{ 'docsCompute.buyer.title' | t }}</h2>
+    <p>{{ 'docsCompute.buyer.p1' | t }}</p>
+    <pre class="seller-docs__code">{{ buyerExample }}</pre>
+    <p class="seller-docs__hint">{{ 'docsCompute.buyer.hint' | t }}</p>
+  </article>
+
+  <article id="billing" class="seller-docs__section">
+    <h2>{{ 'docsCompute.billing.title' | t }}</h2>
+    <p>{{ 'docsCompute.billing.p1' | t }}</p>
+    <ul>
+      <li>{{ 'docsCompute.billing.l1' | t }}</li>
+      <li>{{ 'docsCompute.billing.l2' | t }}</li>
+      <li>{{ 'docsCompute.billing.l3' | t }}</li>
+    </ul>
+  </article>
+
+  <footer class="seller-docs__foot">
+    <p>{{ 'docsCompute.foot' | t: { email: supportEmail } }}</p>
+  </footer>
+</section>

@@ -454,6 +454,24 @@ export interface GameSessionInfo {
   streamKind: string;
   playerUrl: string;
   publicUrl?: string;
+  productSlug?: string;
+}
+
+export interface ComputeNode {
+  id: string;
+  productSlug?: string;
+  productName?: string;
+  name: string;
+  kind: 'compute' | 'game';
+  provider: string;
+  status: string;
+  external: boolean;
+  region: string;
+  webhookUrl: boolean;
+  hasStream: boolean;
+  maxConcurrent: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -495,17 +513,98 @@ export class GpuGatewayService {
     return this.http.delete<{ ok: boolean }>(`${this.base}/terminal/sessions/${sessionId}`);
   }
 
-  createGameSession(serverId: string, projectId = 'default'): Observable<GameSessionInfo> {
-    return this.http.post<GameSessionInfo>(`${this.base}/game-sessions`, { serverId, projectId });
+  createGameSession(
+    serverIdOrOpts: string | { serverId?: string; productSlug?: string; projectId?: string },
+    projectId = 'default',
+  ): Observable<GameSessionInfo> {
+    if (typeof serverIdOrOpts === 'string') {
+      return this.http.post<GameSessionInfo>(`${this.base}/game-sessions`, {
+        serverId: serverIdOrOpts,
+        projectId,
+      });
+    }
+    const opts = serverIdOrOpts;
+    const body: Record<string, string> = { projectId: opts.projectId ?? 'default' };
+    if (opts.productSlug) body['productSlug'] = opts.productSlug;
+    if (opts.serverId) body['serverId'] = opts.serverId;
+    return this.http.post<GameSessionInfo>(`${this.base}/game-sessions`, body);
   }
 
-  closeGameSession(sessionId: string): Observable<{ ok: boolean }> {
-    return this.http.delete<{ ok: boolean }>(`${this.base}/game-sessions/${sessionId}`);
+  closeGameSession(sessionId: string): Observable<{ ok: boolean; billedCost?: number }> {
+    return this.http.delete<{ ok: boolean; billedCost?: number }>(
+      `${this.base}/game-sessions/${sessionId}`,
+    );
   }
 
   wsUrl(sessionId: string, token: string): string {
     const origin = this.base.replace(/\/v1\/?$/, '');
     const ws = origin.replace(/^http/, 'ws');
     return `${ws}/ws/terminal/${encodeURIComponent(sessionId)}?access_token=${encodeURIComponent(token)}`;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SellerComputeService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  listNodes(): Observable<ComputeNode[]> {
+    return this.http.get<ComputeNode[]>(`${this.base}/seller/compute/nodes`);
+  }
+
+  registerNode(body: {
+    productSlug: string;
+    name?: string;
+    kind?: 'compute' | 'game';
+    nodeId?: string;
+    webhookUrl?: string;
+    webhookSecret?: string;
+    streamHost?: string;
+    streamPort?: number;
+    streamPath?: string;
+    streamKind?: string;
+    streamTls?: boolean;
+    iframeUrl?: string;
+    healthUrl?: string;
+    region?: string;
+    maxConcurrent?: number;
+  }): Observable<ComputeNode> {
+    return this.http.post<ComputeNode>(`${this.base}/seller/compute/nodes`, body);
+  }
+
+  updateNode(
+    id: string,
+    body: Partial<{
+      name: string;
+      status: string;
+      webhookUrl: string;
+      webhookSecret: string;
+      streamHost: string;
+      streamPort: number;
+      streamPath: string;
+      streamKind: string;
+      streamTls: boolean;
+      iframeUrl: string;
+      healthUrl: string;
+      region: string;
+      maxConcurrent: number;
+    }>,
+  ): Observable<ComputeNode> {
+    return this.http.patch<ComputeNode>(`${this.base}/seller/compute/nodes/${id}`, body);
+  }
+
+  deleteNode(id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/seller/compute/nodes/${id}`);
+  }
+
+  pingNode(id: string): Observable<{ ok: boolean; via?: string; message?: string; status?: number }> {
+    return this.http.post<{ ok: boolean; via?: string; message?: string; status?: number }>(
+      `${this.base}/seller/compute/nodes/${id}/ping`,
+      {},
+    );
+  }
+
+  schema(): Observable<Record<string, unknown>> {
+    return this.http.get<Record<string, unknown>>(`${this.base}/seller/compute/schema`);
   }
 }

@@ -166,6 +166,41 @@
           }
         </div>
 
+        <div class="nav-dd docs-dd" [class.open]="docsOpen()">
+          <button type="button" class="nav-dd__btn" [attr.aria-expanded]="docsOpen()" aria-haspopup="menu" (click)="toggleDocs($event)">
+            {{ 'nav.docs' | t }}
+            <span class="nav-dd__chev" aria-hidden="true">▾</span>
+          </button>
+          @if (docsOpen()) {
+            <div class="nav-dd__panel docs-dd__panel" role="menu">
+              <p class="nav-dd__group">{{ 'nav.docsGroup' | t }}</p>
+              <ul>
+                <li>
+                  <a routerLink="/docs" role="menuitem" class="nav-dd__item" (click)="closeDocs()">
+                    <span class="nav-dd__item-title">{{ 'nav.docsOverview' | t }}</span>
+                    <span class="nav-dd__item-desc">{{ 'nav.docsOverviewDesc' | t }}</span>
+                  </a>
+                </li>
+                <li>
+                  <a routerLink="/docs/api-usage" role="menuitem" class="nav-dd__item" (click)="closeDocs()">
+                    <span class="nav-dd__item-title">{{ 'nav.docsApi' | t }}</span>
+                    <span class="nav-dd__item-desc">{{ 'nav.docsApiDesc' | t }}</span>
+                  </a>
+                </li>
+                <li>
+                  <a routerLink="/docs/compute-streaming" role="menuitem" class="nav-dd__item" (click)="closeDocs()">
+                    <span class="nav-dd__item-title">{{ 'nav.docsCompute' | t }}</span>
+                    <span class="nav-dd__item-desc">{{ 'nav.docsComputeDesc' | t }}</span>
+                  </a>
+                </li>
+              </ul>
+              @if (auth.isAuthenticated()) {
+                <a routerLink="/sell/integrate" class="nav-dd__post" (click)="closeDocs()">{{ 'nav.docsIntegrate' | t }}</a>
+              }
+            </div>
+          }
+        </div>
+
         <a routerLink="/support" routerLinkActive="active" class="nav-link">{{ 'nav.support' | t }}</a>
       </nav>
 
@@ -291,6 +326,7 @@
         <li><a routerLink="/wallet" class="footer-link">{{ 'footer.wallet' | t }}</a></li>
         <li><a routerLink="/billing" class="footer-link">{{ 'footer.billing' | t }}</a></li>
         <li><a routerLink="/sell" class="footer-link">{{ 'footer.sell' | t }}</a></li>
+        <li><a routerLink="/docs" class="footer-link">{{ 'nav.docs' | t }}</a></li>
         <li><a routerLink="/privacy-policy" class="footer-link">{{ 'footer.privacy' | t }}</a></li>
         <li><a routerLink="/terms-of-service" class="footer-link">{{ 'footer.terms' | t }}</a></li>
       </ul>

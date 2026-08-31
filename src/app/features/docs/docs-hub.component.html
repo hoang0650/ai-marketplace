@@ -1,0 +1,48 @@
+<section class="docs-hub page route-enter">
+  <header class="docs-hub__hero">
+    <p class="docs-hub__crumb">{{ 'docs.crumb' | t }}</p>
+    <h1>{{ 'docs.title' | t }}</h1>
+    <p class="docs-hub__lede">{{ 'docs.lede' | t: { brand } }}</p>
+    <p class="docs-hub__base">
+      {{ 'docs.baseUrl' | t }}: <code>{{ apiBase }}</code>
+    </p>
+  </header>
+
+  <section class="docs-hub__guides" aria-label="Guides">
+    @for (g of guides; track g.path) {
+      <a [routerLink]="g.path" class="docs-card">
+        <span class="docs-card__icon" [attr.data-icon]="g.icon" aria-hidden="true"></span>
+        <span class="docs-card__tag">{{ g.tagKey | t }}</span>
+        <h2>{{ g.titleKey | t }}</h2>
+        <p>{{ g.descKey | t }}</p>
+        <span class="docs-card__link">{{ 'docs.readGuide' | t }} →</span>
+      </a>
+    }
+  </section>
+
+  <section class="docs-hub__steps panel">
+    <h2>{{ 'docs.steps.title' | t }}</h2>
+    <p class="docs-hub__steps-lede">{{ 'docs.steps.lede' | t }}</p>
+    <ol class="docs-steps">
+      @for (s of steps; track s.n) {
+        <li>
+          <span class="docs-steps__n">{{ s.n }}</span>
+          <div>
+            <strong>{{ s.titleKey | t }}</strong>
+            <p>{{ s.bodyKey | t: { apiBase, brand } }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+    <div class="docs-hub__actions">
+      <a routerLink="/sell/products" class="btn btn-fill">{{ 'docs.cta.products' | t }}</a>
+      <a routerLink="/sell/integrate" class="btn btn-outline">{{ 'docs.cta.integrate' | t }}</a>
+      <a routerLink="/support" class="btn btn-outline">{{ 'docs.cta.support' | t }}</a>
+    </div>
+  </section>
+
+  <aside class="docs-hub__warn panel">
+    <h3>{{ 'docs.warn.title' | t }}</h3>
+    <p>{{ 'docs.warn.body' | t }}</p>
+  </aside>
+</section>

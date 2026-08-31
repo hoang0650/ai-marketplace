@@ -91,7 +91,10 @@ export class SellShellComponent {
       title: 'Nhà phát triển',
       key: 'dev',
       collapsible: true,
-      items: [{ label: 'Tích hợp', path: '/sell/integrate' }],
+      items: [
+        { label: 'Docs API & token', path: '/sell/docs/api-usage' },
+        { label: 'Tích hợp', path: '/sell/integrate' },
+      ],
     },
   ];
 

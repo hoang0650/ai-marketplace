@@ -135,10 +135,16 @@ export const routes: Routes = [
           import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
       },
       {
-        path: 'integrate',
-        data: { page: 'integrate' },
+        path: 'docs/api-usage',
         loadComponent: () =>
-          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+          import('./features/sell/sell-api-usage.component').then((m) => m.SellApiUsageDocsComponent),
+      },
+      {
+        path: 'integrate',
+        loadComponent: () =>
+          import('./features/sell/sell-compute-integrate.component').then(
+            (m) => m.SellComputeIntegrateComponent,
+          ),
       },
     ],
   },
@@ -189,6 +195,12 @@ export const routes: Routes = [
           import('./features/product-detail/product-detail.component').then(
             (m) => m.ProductDetailComponent,
           ),
+      },
+      {
+        path: 'play/:productSlug',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/gpu/gpu-play.component').then((m) => m.GpuPlayComponent),
       },
       {
         path: 'text-to-text',
@@ -476,6 +488,21 @@ export const routes: Routes = [
         path: 'support',
         loadComponent: () =>
           import('./features/support/support.component').then((m) => m.SupportComponent),
+      },
+      {
+        path: 'docs',
+        loadComponent: () =>
+          import('./features/docs/docs-hub.component').then((m) => m.DocsHubComponent),
+      },
+      {
+        path: 'docs/api-usage',
+        loadComponent: () =>
+          import('./features/sell/sell-api-usage.component').then((m) => m.SellApiUsageDocsComponent),
+      },
+      {
+        path: 'docs/compute-streaming',
+        loadComponent: () =>
+          import('./features/docs/docs-compute.component').then((m) => m.DocsComputeComponent),
       },
       {
         path: 'work',

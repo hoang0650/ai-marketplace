@@ -268,3 +268,9 @@ export function isDigitalCategory(_id?: ProductCategory | string): boolean {
 export function isAiCategory(id: ProductCategory | string): boolean {
   return CATEGORY_META.some((c) => c.id === id);
 }
+
+const COMPUTE_STREAM_CATEGORIES = new Set<ProductCategory>(['gpu-compute', 'game-server']);
+
+export function isComputeStreamCategory(id: ProductCategory | string): boolean {
+  return COMPUTE_STREAM_CATEGORIES.has(id as ProductCategory);
+}

@@ -43,6 +43,7 @@ export class ShellComponent {
   readonly aiCategories = AI_CATEGORIES;
   readonly categoryOpen = signal(false);
   readonly workOpen = signal(false);
+  readonly docsOpen = signal(false);
   readonly cartOpen = signal(false);
   readonly userMenuOpen = signal(false);
   readonly notiOpen = signal(false);
@@ -103,6 +104,7 @@ export class ShellComponent {
   toggleCategories(): void {
     this.categoryOpen.update((v) => !v);
     this.workOpen.set(false);
+    this.docsOpen.set(false);
     this.userMenuOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
@@ -118,6 +120,7 @@ export class ShellComponent {
     event.stopPropagation();
     this.workOpen.update((v) => !v);
     this.categoryOpen.set(false);
+    this.docsOpen.set(false);
     this.userMenuOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
@@ -129,11 +132,28 @@ export class ShellComponent {
     this.workOpen.set(false);
   }
 
+  toggleDocs(event: Event): void {
+    event.stopPropagation();
+    this.docsOpen.update((v) => !v);
+    this.categoryOpen.set(false);
+    this.workOpen.set(false);
+    this.userMenuOpen.set(false);
+    this.notiOpen.set(false);
+    this.langOpen.set(false);
+    this.currencyOpen.set(false);
+    this.cartOpen.set(false);
+  }
+
+  closeDocs(): void {
+    this.docsOpen.set(false);
+  }
+
   toggleUserMenu(event: Event): void {
     event.stopPropagation();
     this.userMenuOpen.update((v) => !v);
     this.categoryOpen.set(false);
     this.workOpen.set(false);
+    this.docsOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
     this.currencyOpen.set(false);
@@ -181,6 +201,11 @@ export class ShellComponent {
         this.closeWork();
       }
     }
+    if (this.docsOpen()) {
+      if (target && !this.host.nativeElement.querySelector('.docs-dd')?.contains(target)) {
+        this.closeDocs();
+      }
+    }
     if (this.userMenuOpen()) {
       if (target && !this.host.nativeElement.querySelector('.user-menu')?.contains(target)) {
         this.closeUserMenu();
@@ -212,6 +237,7 @@ export class ShellComponent {
   onEscape(): void {
     this.closeCategories();
     this.closeWork();
+    this.closeDocs();
     this.closeUserMenu();
     this.closeNoti();
     this.closeLang();

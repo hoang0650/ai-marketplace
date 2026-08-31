@@ -192,11 +192,13 @@
   text-decoration: none;
   color: inherit;
   overflow: hidden;
-  transition: transform 0.2s ease;
+  border-radius: 2px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .lux-cat:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
 .lux-cat__img {
@@ -204,11 +206,47 @@
   display: grid;
   place-items: center;
   position: relative;
+  overflow: hidden;
 }
 
-.lux-cat__emoji {
-  font-size: 2.5rem;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.12));
+.lux-cat__glow {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+.lux-cat__icon-wrap {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+}
+
+.lux-cat:hover .lux-cat__icon-wrap {
+  transform: scale(1.06);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.lux-cat__img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.35) 100%);
+  pointer-events: none;
 }
 
 .lux-cat__info {
@@ -240,13 +278,16 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  padding: 0.15rem 0.45rem;
+  z-index: 2;
+  padding: 0.2rem 0.5rem;
   background: var(--color-lux-gold);
   color: #111;
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Search */

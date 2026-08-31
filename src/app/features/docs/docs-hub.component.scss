@@ -1,0 +1,214 @@
+.docs-hub {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding-bottom: 3rem;
+}
+
+.docs-hub__hero {
+  margin-bottom: 2rem;
+}
+
+.docs-hub__crumb {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.docs-hub h1 {
+  margin: 0 0 0.65rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+  font-weight: 700;
+}
+
+.docs-hub__lede {
+  margin: 0 0 0.75rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+  max-width: 42rem;
+}
+
+.docs-hub__base {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-muted);
+
+  code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.85rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 6px;
+    background: var(--color-mist);
+    border: 1px solid var(--color-line);
+    color: var(--color-ink);
+  }
+}
+
+.docs-hub__guides {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.docs-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  background: var(--color-surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+
+  &:hover {
+    border-color: var(--color-lux-gold, #c9a961);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.12rem;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--color-muted);
+    line-height: 1.55;
+  }
+}
+
+.docs-card__tag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--color-mist);
+  color: var(--color-muted);
+}
+
+.docs-card__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: var(--color-mist);
+  border: 1px solid var(--color-line);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0.55rem;
+    background: currentColor;
+    color: var(--color-ink);
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  &[data-icon='api']::after {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M8 8L4 12l4 4M16 8l4 4-4 4M14 4l-4 16'/%3E%3C/svg%3E");
+  }
+
+  &[data-icon='gpu']::after {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='4' y='4' width='16' height='16' rx='2'/%3E%3Cpath d='M9 9h6v6H9zM2 12h2M20 12h2M12 2v2M12 20v2'/%3E%3C/svg%3E");
+  }
+}
+
+.docs-card__link {
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-lux-gold, #9a7b2e);
+}
+
+.docs-hub__steps {
+  margin-bottom: 1rem;
+  padding: 1.35rem 1.5rem;
+
+  h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+}
+
+.docs-hub__steps-lede {
+  margin: 0 0 1rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.docs-steps {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+
+  li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.85rem;
+    align-items: start;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--color-muted);
+    line-height: 1.55;
+  }
+}
+
+.docs-steps__n {
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 50%;
+  background: var(--color-lux-dark, #111);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.docs-hub__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.docs-hub__warn {
+  padding: 1rem 1.25rem;
+  border-left: 3px solid var(--color-lux-gold, #c9a961);
+
+  h3 {
+    margin: 0 0 0.35rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--color-muted);
+    line-height: 1.55;
+  }
+}

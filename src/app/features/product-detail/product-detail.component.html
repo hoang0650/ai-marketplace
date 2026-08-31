@@ -110,7 +110,9 @@
         </div>
 
         <button type="button" class="pd-buy__cta" (click)="primaryCta()">
-          @if (isHire(p.category)) {
+          @if (isComputeStream(p.category)) {
+            {{ 'compute.cta.play' | t }}
+          } @else if (isHire(p.category)) {
             {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
           } @else if (isSkill(p.category)) {
             Buy / Install
@@ -242,6 +244,10 @@
       } @else if (isSkill(p.category)) {
         <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'install'" (click)="setWorkspace('install')">
           Install
+        </button>
+      } @else if (isComputeStream(p.category)) {
+        <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'stream'" (click)="setWorkspace('stream')">
+          {{ 'compute.tab.stream' | t }}
         </button>
       } @else {
         <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'playground'" (click)="setWorkspace('playground')">
@@ -376,6 +382,23 @@
             <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
           </div>
         </aside>
+      </div>
+    }
+
+    @if (workspaceTab() === 'stream') {
+      <div class="panel stream-launch">
+        <h2 class="font-display text-2xl">{{ 'compute.stream.title' | t }}</h2>
+        <p class="text-muted">{{ 'compute.stream.desc' | t }}</p>
+        <p class="cost-hint">{{ priceHint() }}</p>
+        @if (auth.user()) {
+          <p class="text-sm">{{ 'pd.walletBalance' | t }} {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
+        }
+        <div class="pg-actions mt-4">
+          <button type="button" class="btn btn-run" (click)="launchComputeStream()">
+            {{ 'compute.cta.launch' | t }}
+          </button>
+          <a routerLink="/wallet" class="btn btn-outline">{{ 'cart.topUp' | t }}</a>
+        </div>
       </div>
     }
 
