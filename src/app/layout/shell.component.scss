@@ -956,6 +956,23 @@
   }
 }
 
+.footer-brand {
+  display: inline-block;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.88;
+  }
+}
+
+.footer-brand__logo {
+  display: block;
+  width: min(17.5rem, 100%);
+  height: auto;
+}
+
 .footer-col-title {
   margin: 0 0 0.85rem;
   font-size: 1rem;

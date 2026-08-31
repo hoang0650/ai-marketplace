@@ -262,7 +262,9 @@
 
   <div class="site-footer__links">
     <div>
-      <p class="footer-col-title font-display">{{ brand }}</p>
+      <a routerLink="/" class="footer-brand" [title]="'nav.homeAria' | t">
+        <img src="/ai-markets-logo.png" alt="AI Markets" class="footer-brand__logo" width="280" height="80" />
+      </a>
       <p class="footer-tagline">{{ 'footer.tagline' | t }}</p>
       <p class="footer-contact">{{ 'lux.contact' | t }}: support@aimarkets.vn</p>
     </div>
