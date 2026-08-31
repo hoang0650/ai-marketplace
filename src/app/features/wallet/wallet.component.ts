@@ -7,6 +7,7 @@ import { SeoService } from '../../services/seo.service';
 import { WalletTx } from '../../models/marketplace.models';
 import { environment } from '../../../environments/environment';
 import { TPipe } from '../../i18n/t.pipe';
+import { I18nService } from '../../i18n/i18n.service';
 
 type WalletTab = 'deposit' | 'withdraw' | 'history';
 
@@ -20,6 +21,7 @@ type WalletTab = 'deposit' | 'withdraw' | 'history';
 export class WalletComponent implements OnInit {
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
 
   readonly brand = environment.brandName;
   readonly txs = signal<WalletTx[]>([]);
@@ -38,7 +40,13 @@ export class WalletComponent implements OnInit {
     return Array.from({ length: 6 }, (_, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      return { key, label: `tháng ${d.getMonth() + 1} năm ${d.getFullYear()}` };
+      return {
+        key,
+        label: this.i18n.t('wallet.monthLabel', {
+          month: d.getMonth() + 1,
+          year: d.getFullYear(),
+        }),
+      };
     });
   });
 
@@ -63,7 +71,7 @@ export class WalletComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Ví của bạn' });
+    this.seo.set({ title: this.i18n.t('wallet.title') });
     this.reload();
   }
 
@@ -90,30 +98,30 @@ export class WalletComponent implements OnInit {
 
   deposit(): void {
     if (!this.depositAmount || this.depositAmount < 1) {
-      this.msg.set('Nhập số tiền hợp lệ.');
+      this.msg.set(this.i18n.t('wallet.err.amount'));
       return;
     }
     this.api.deposit(this.depositAmount).subscribe({
       next: () => {
-        this.msg.set('Đã tạo yêu cầu nạp / ghi có vào ví.');
+        this.msg.set(this.i18n.t('wallet.msg.depositOk'));
         this.reload();
         this.tab.set('history');
       },
-      error: (err) => this.msg.set(err?.error?.message || 'Nạp tiền thất bại.'),
+      error: (err) => this.msg.set(err?.error?.message || this.i18n.t('wallet.msg.depositFail')),
     });
   }
 
   typeLabel(type: WalletTx['type']): string {
-    if (type === 'deposit') return 'Nạp tiền';
-    if (type === 'credit') return 'Hoàn tiền / ghi có';
-    if (type === 'withdraw') return 'Rút tiền';
-    return 'Thanh toán đơn hàng';
+    if (type === 'deposit') return this.i18n.t('wallet.type.deposit');
+    if (type === 'credit') return this.i18n.t('wallet.type.credit');
+    if (type === 'withdraw') return this.i18n.t('wallet.type.withdraw');
+    return this.i18n.t('wallet.type.debit');
   }
 
   methodLabel(type: WalletTx['type']): string {
-    if (type === 'deposit') return 'Chuyển khoản';
-    if (type === 'withdraw') return 'Rút ví';
-    return 'Ví nội bộ';
+    if (type === 'deposit') return this.i18n.t('wallet.method.transfer');
+    if (type === 'withdraw') return this.i18n.t('wallet.method.withdraw');
+    return this.i18n.t('wallet.method.internal');
   }
 
   isCredit(type: WalletTx['type']): boolean {

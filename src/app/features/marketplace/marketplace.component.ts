@@ -8,6 +8,7 @@ import { SeoService } from '../../services/seo.service';
 import { Product, CategoryMeta } from '../../models/marketplace.models';
 import { ProductCardComponent } from '../../shared/components/product-card.component';
 import { I18nService } from '../../i18n/i18n.service';
+import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
 
 type SortId = 'featured' | 'bestsellers' | 'price-asc' | 'price-desc' | 'newest';
@@ -32,6 +33,7 @@ export class MarketplaceComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
+  readonly currencySvc = inject(CurrencyService);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly categories = signal<CategoryMeta[]>([]);
@@ -66,7 +68,7 @@ export class MarketplaceComponent implements OnInit {
   filterQuery = '';
   priceMin = 0;
   priceMax = 500;
-  currency: 'USD' | 'VND' = 'USD';
+  currency: AppCurrency = 'USD';
   inStockOnly = true;
 
   readonly totalCount = computed(() => this.catalog().length);
@@ -119,6 +121,7 @@ export class MarketplaceComponent implements OnInit {
       title: this.i18n.t('nav.marketplace'),
       description: this.i18n.t('home.featuredSub'),
     });
+    this.currency = this.currencySvc.currency();
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.productsApi
@@ -162,6 +165,7 @@ export class MarketplaceComponent implements OnInit {
   }
 
   applyFilters(): void {
+    this.currencySvc.setCurrency(this.currency);
     this.appliedQuery.set(this.filterQuery);
     this.selectedCategory.set(this.draftCategory);
     this.priceMinSig.set(Number(this.priceMin) || 0);
@@ -177,6 +181,7 @@ export class MarketplaceComponent implements OnInit {
     this.priceMin = 0;
     this.priceMax = this.priceCeiling;
     this.currency = 'USD';
+    this.currencySvc.setCurrency('USD');
     this.inStockOnly = true;
     this.appliedQuery.set('');
     this.selectedCategory.set('');

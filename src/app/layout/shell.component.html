@@ -14,7 +14,7 @@
     <div class="lux-topbar__right">
       <div class="lang-dd" [class.open]="langOpen()">
         <button type="button" class="lux-topbar__pill" [attr.aria-expanded]="langOpen()" (click)="toggleLang($event)">
-          {{ i18n.lang() === 'en' ? 'English' : 'Tiếng Việt' }} ▾
+          {{ i18n.langLabel() }} ▾
         </button>
         @if (langOpen()) {
           <div class="lang-dd__panel" role="menu">
@@ -26,7 +26,26 @@
           </div>
         }
       </div>
-      <span class="lux-topbar__pill">VND (₫)</span>
+      <div class="currency-dd" [class.open]="currencyOpen()">
+        <button type="button" class="lux-topbar__pill" [attr.aria-expanded]="currencyOpen()" (click)="toggleCurrency($event)">
+          {{ currencyLabel() }} ▾
+        </button>
+        @if (currencyOpen()) {
+          <div class="lang-dd__panel currency-dd__panel" role="menu">
+            @for (c of currencies; track c.id) {
+              <button
+                type="button"
+                role="menuitem"
+                class="lang-dd__item"
+                [class.active]="currencySvc.currency() === c.id"
+                (click)="setCurrency(c.id)"
+              >
+                {{ ('currency.' + c.id.toLowerCase()) | t }}
+              </button>
+            }
+          </div>
+        }
+      </div>
       <div class="lux-cart-dd" [class.open]="cartOpen()">
         <button type="button" class="lux-topbar__cart" (click)="toggleCart($event)">
           {{ 'lux.cart' | t }} ({{ cart.count() }})

@@ -376,6 +376,14 @@
   position: relative;
 }
 
+.currency-dd {
+  position: relative;
+}
+
+.currency-dd__panel {
+  min-width: 11rem;
+}
+
 .lang-btn {
   appearance: none;
   border: 1px solid var(--color-line);

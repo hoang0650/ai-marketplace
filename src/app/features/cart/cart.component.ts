@@ -49,7 +49,7 @@ export class CartComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Giỏ hàng' });
+    this.seo.set({ title: this.i18n.t('cart.title') });
     this.cart.load();
     this.walletApi.wallet().subscribe((list) => {
       const bal = list.reduce(
@@ -73,26 +73,26 @@ export class CartComponent implements OnInit {
   applyCoupon(): void {
     const code = this.coupon().trim().toUpperCase();
     if (!code) {
-      this.msg.set('Nhập mã giảm giá trước.');
+      this.msg.set(this.i18n.t('cart.err.couponEmpty'));
       return;
     }
     if (code === 'PHAI10' || code === 'WELCOME') {
       this.couponApplied.set(Math.min(this.cart.subtotal() * 0.1, this.cart.subtotal()));
-      this.msg.set(`Đã áp dụng mã ${code}`);
+      this.msg.set(this.i18n.t('cart.err.couponOk', { code }));
     } else {
       this.couponApplied.set(0);
-      this.msg.set('Mã không hợp lệ (thử PHAI10).');
+      this.msg.set(this.i18n.t('cart.err.couponInvalid'));
     }
   }
 
   pay(): void {
     const selected = this.cart.selectedLines();
     if (!selected.length) {
-      this.msg.set('Chọn ít nhất một sản phẩm.');
+      this.msg.set(this.i18n.t('cart.err.selectProduct'));
       return;
     }
     if (this.balance() < this.total()) {
-      this.msg.set('Số dư ví aimarkets.vn không đủ. Hãy nạp thêm tiền.');
+      this.msg.set(this.i18n.t('cart.err.insufficient'));
       return;
     }
     this.paying.set(true);
@@ -108,11 +108,13 @@ export class CartComponent implements OnInit {
         const units = selected.reduce((s, l) => s + l.qty, 0);
         const last = rows[rows.length - 1];
         if (typeof last?.balance === 'number') this.balance.set(last.balance);
-        this.msg.set(`Đã thanh toán ${rows.length} sản phẩm · ${units} đơn vị bằng ví aimarkets.vn`);
+        this.msg.set(
+          this.i18n.t('cart.msg.paid', { orders: rows.length, units }),
+        );
       },
       error: (err) => {
         this.paying.set(false);
-        this.msg.set(err?.error?.message || 'Thanh toán thất bại.');
+        this.msg.set(err?.error?.message || this.i18n.t('cart.err.payFail'));
       },
     });
   }

@@ -116,9 +116,10 @@
 
       <div class="mkt-filter__block">
         <p class="mkt-filter__label">{{ 'mkt.currency' | t }}</p>
-        <select class="mkt-filter__select" [(ngModel)]="currency">
-          <option value="USD">USD ($)</option>
-          <option value="VND">VND (đ)</option>
+        <select class="mkt-filter__select" [(ngModel)]="currency" (ngModelChange)="currencySvc.setCurrency($event)">
+          <option value="USD">{{ 'currency.usd' | t }}</option>
+          <option value="VND">{{ 'currency.vnd' | t }}</option>
+          <option value="CNY">{{ 'currency.cny' | t }}</option>
         </select>
       </div>
 

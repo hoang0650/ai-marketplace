@@ -13,30 +13,30 @@
 
   <div class="wallet-panel">
     <div class="tabs" role="tablist">
-      <button type="button" role="tab" [class.active]="tab() === 'deposit'" (click)="setTab('deposit')">Nạp tiền</button>
-      <button type="button" role="tab" [class.active]="tab() === 'withdraw'" (click)="setTab('withdraw')">Rút tiền</button>
-      <button type="button" role="tab" [class.active]="tab() === 'history'" (click)="setTab('history')">Lịch sử</button>
+      <button type="button" role="tab" [class.active]="tab() === 'deposit'" (click)="setTab('deposit')">{{ 'wallet.tab.deposit' | t }}</button>
+      <button type="button" role="tab" [class.active]="tab() === 'withdraw'" (click)="setTab('withdraw')">{{ 'wallet.tab.withdraw' | t }}</button>
+      <button type="button" role="tab" [class.active]="tab() === 'history'" (click)="setTab('history')">{{ 'wallet.tab.history' | t }}</button>
     </div>
 
     @if (tab() === 'deposit') {
       <div class="tab-body">
-        <h2>Phương thức nạp tiền</h2>
+        <h2>{{ 'wallet.deposit.title' | t }}</h2>
         <div class="method selected">
           <span class="method__icon" aria-hidden="true">🏦</span>
           <div>
-            <strong>Chuyển khoản ngân hàng</strong>
-            <p>Đối soát tự động qua SePay</p>
+            <strong>{{ 'wallet.deposit.methodName' | t }}</strong>
+            <p>{{ 'wallet.deposit.methodDesc' | t }}</p>
           </div>
         </div>
-        <p class="hint">Hiện hệ thống chỉ hỗ trợ nạp bằng chuyển khoản ngân hàng qua SePay.</p>
+        <p class="hint">{{ 'wallet.deposit.hint' | t }}</p>
 
         <div class="amount-row">
           <label>
-            <span>Số tiền ({{ currency() }})</span>
+            <span>{{ 'wallet.deposit.amount' | t: { currency: currency() } }}</span>
             <input type="number" min="1" [(ngModel)]="depositAmount" name="depositAmount" />
           </label>
           <div class="quick">
-            <span>Chọn nhanh</span>
+            <span>{{ 'wallet.deposit.quick' | t }}</span>
             <div class="quick__btns">
               @for (q of quickAmounts; track q) {
                 <button type="button" [class.active]="depositAmount === q" (click)="pickAmount(q)">
@@ -48,8 +48,8 @@
         </div>
 
         <div class="actions">
-          <button type="button" class="btn-dark" (click)="deposit()">Tạo phiên chuyển khoản</button>
-          <p class="note">♥ Yêu cầu nạp và kết quả đối soát được lưu trong lịch sử ví.</p>
+          <button type="button" class="btn-dark" (click)="deposit()">{{ 'wallet.deposit.submit' | t }}</button>
+          <p class="note">♥ {{ 'wallet.deposit.note' | t }}</p>
         </div>
         @if (msg()) {
           <p class="msg">{{ msg() }}</p>
@@ -60,34 +60,32 @@
     @if (tab() === 'withdraw') {
       <div class="tab-body withdraw">
         <div class="withdraw__icon" aria-hidden="true">💸</div>
-        <h2>Rút tiền từ ví mua hàng</h2>
-        <p class="lede">
-          Số dư ví mua hàng dùng để thanh toán trên {{ brand }}. Thu nhập người bán được quản lý riêng tại kênh bán hàng.
-        </p>
+        <h2>{{ 'wallet.withdraw.title' | t }}</h2>
+        <p class="lede">{{ 'wallet.withdraw.lede' | t: { brand } }}</p>
         <div class="alert">
-          <strong>Chưa hỗ trợ rút tiền trực tiếp</strong>
-          <p>Vui lòng liên hệ hỗ trợ nếu bạn cần hỗ trợ rút/hoàn số dư ví mua hàng.</p>
+          <strong>{{ 'wallet.withdraw.alertTitle' | t }}</strong>
+          <p>{{ 'wallet.withdraw.alertBody' | t }}</p>
         </div>
         <div class="actions">
-          <a routerLink="/marketplace" class="btn-dark">Liên hệ hỗ trợ</a>
-          <a routerLink="/sell/withdraw" class="btn-outline">Quản lý chi trả người bán</a>
+          <a routerLink="/marketplace" class="btn-dark">{{ 'wallet.withdraw.support' | t }}</a>
+          <a routerLink="/sell/withdraw" class="btn-outline">{{ 'wallet.withdraw.sellerPayout' | t }}</a>
         </div>
       </div>
     }
 
     @if (tab() === 'history') {
       <div class="tab-body">
-        <h2>Lịch sử giao dịch gần đây</h2>
+        <h2>{{ 'wallet.history.title' | t }}</h2>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Thời gian</th>
-                <th>Loại giao dịch</th>
-                <th>Số tiền</th>
-                <th>Phương thức</th>
-                <th>Trạng thái</th>
-                <th>Ghi chú</th>
+                <th>{{ 'wallet.history.time' | t }}</th>
+                <th>{{ 'wallet.history.type' | t }}</th>
+                <th>{{ 'wallet.history.amount' | t }}</th>
+                <th>{{ 'wallet.history.method' | t }}</th>
+                <th>{{ 'wallet.history.status' | t }}</th>
+                <th>{{ 'wallet.history.note' | t }}</th>
               </tr>
             </thead>
             <tbody>
@@ -104,12 +102,12 @@
                     {{ t.amount | currency: t.currency: 'symbol-narrow': '1.0-0' }}
                   </td>
                   <td>{{ methodLabel(t.type) }}</td>
-                  <td><span class="pill">Thành công</span></td>
+                  <td><span class="pill">{{ 'wallet.history.success' | t }}</span></td>
                   <td class="note-cell">{{ t.note || ('#' + t.id) }}</td>
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="6" class="empty">Chưa có giao dịch nào.</td>
+                  <td colspan="6" class="empty">{{ 'wallet.history.empty' | t }}</td>
                 </tr>
               }
             </tbody>
@@ -125,22 +123,22 @@
         <span class="mini-card__icon" aria-hidden="true">👛</span>
         <div>
           <p class="mini-card__label">
-            Số dư {{ currency() }}
-            <em>Khả dụng</em>
+            {{ 'wallet.mini.label' | t: { currency: currency() } }}
+            <em>{{ 'wallet.mini.available' | t }}</em>
           </p>
           <p class="mini-card__amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.0-0' }}</p>
         </div>
       </div>
       <div class="mini-card__actions">
-        <button type="button" (click)="setTab('deposit')">Nạp tiền</button>
-        <button type="button" (click)="setTab('history')">Lịch sử</button>
-        <a routerLink="/marketplace">Liên hệ hỗ trợ</a>
+        <button type="button" (click)="setTab('deposit')">{{ 'wallet.tab.deposit' | t }}</button>
+        <button type="button" (click)="setTab('history')">{{ 'wallet.tab.history' | t }}</button>
+        <a routerLink="/marketplace">{{ 'wallet.withdraw.support' | t }}</a>
       </div>
     </article>
 
     <article class="mini-card overview">
       <div class="overview__head">
-        <h3>Tổng quan {{ monthLabel() }}</h3>
+        <h3>{{ 'wallet.overview.title' | t: { month: monthLabel() } }}</h3>
         <select [ngModel]="monthKey()" (ngModelChange)="monthKey.set($event)" name="monthKey">
           @for (o of monthOptions(); track o.key) {
             <option [ngValue]="o.key">{{ o.label }}</option>
@@ -149,19 +147,19 @@
       </div>
       <div class="overview__grid">
         <div>
-          <p class="k">Tổng nạp</p>
+          <p class="k">{{ 'wallet.overview.deposit' | t }}</p>
           <p class="v">{{ monthStats().deposit | currency: currency(): 'symbol-narrow': '1.0-0' }}</p>
-          <p class="d">0% so với tháng trước</p>
+          <p class="d">{{ 'wallet.overview.vsLastMonth' | t }}</p>
         </div>
         <div>
-          <p class="k">Tổng chi tiêu</p>
+          <p class="k">{{ 'wallet.overview.spend' | t }}</p>
           <p class="v">{{ monthStats().spend | currency: currency(): 'symbol-narrow': '1.0-0' }}</p>
-          <p class="d">0% so với tháng trước</p>
+          <p class="d">{{ 'wallet.overview.vsLastMonth' | t }}</p>
         </div>
         <div>
-          <p class="k">Số giao dịch</p>
+          <p class="k">{{ 'wallet.overview.count' | t }}</p>
           <p class="v">{{ monthStats().count }}</p>
-          <p class="d">0 so với tháng trước</p>
+          <p class="d">{{ 'wallet.overview.vsLastMonthCount' | t }}</p>
         </div>
       </div>
     </article>

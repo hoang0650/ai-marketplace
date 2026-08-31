@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Product } from '../../models/marketplace.models';
 import { I18nService } from '../../i18n/i18n.service';
+import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
@@ -657,10 +658,11 @@ import { TPipe } from '../../i18n/t.pipe';
 })
 export class ProductCardComponent {
   private readonly i18n = inject(I18nService);
+  private readonly currencySvc = inject(CurrencyService);
   @Input({ required: true }) product!: Product;
   @Input() variant: 'default' | 'shop' | 'luxury' = 'default';
   @Input() layout: 'grid' | 'list' = 'grid';
-  @Input() currency: 'USD' | 'VND' = 'USD';
+  @Input() currency: AppCurrency = 'USD';
   /** Eager-load cover for above-the-fold cards on home. */
   @Input() priority = false;
 
@@ -699,25 +701,24 @@ export class ProductCardComponent {
   get wasPrice(): string {
     const p = this.product.pricing;
     if (p.model === 'free') return '';
-    let usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
+    const usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
     const inflated = Math.round(usd * 1.25 * 100) / 100;
-    if (this.currency === 'VND') {
-      return `${Math.round(inflated * 25_000).toLocaleString('vi-VN')} đ`;
-    }
-    return `$${inflated.toFixed(2)}`;
+    return this.currencySvc.formatFromUsd(inflated, this.currency);
   }
 
   get shopPrice(): string {
     const p = this.product.pricing;
-    if (p.model === 'free') return this.currency === 'VND' ? '0 đ' : this.i18n.t('card.free');
-    let usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
-    if (this.currency === 'VND') {
-      const vnd = Math.round(usd * 25_000);
-      return `${vnd.toLocaleString('vi-VN')} đ`;
+    if (p.model === 'free') {
+      return this.currency === 'VND' ? '0 đ' : this.i18n.t('card.free');
     }
-    if (p.model === 'usage') return `$${usd}/${p.usageUnit || '1K tokens'}`;
-    if (p.model === 'subscription') return `$${usd}/${p.interval}`;
-    return `$${usd}`;
+    const usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
+    if (p.model === 'usage') {
+      return this.currencySvc.formatUsageFromUsd(usd, p.usageUnit || '1K tokens', this.currency);
+    }
+    if (p.model === 'subscription') {
+      return `${this.currencySvc.formatFromUsd(usd, this.currency)}/${p.interval}`;
+    }
+    return this.currencySvc.formatFromUsd(usd, this.currency);
   }
 
   get stockLabel(): string {

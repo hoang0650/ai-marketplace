@@ -98,14 +98,14 @@
           <button type="button" (click)="bumpQty(1)" aria-label="Increase">+</button>
         </div>
 
-        <label class="pd-buy__section">Thanh toán</label>
+        <label class="pd-buy__section">{{ 'pd.pay' | t }}</label>
         <div class="pd-pay">
-          <p class="pd-pay__method">Ví aimarkets.vn</p>
+          <p class="pd-pay__method">{{ 'pd.walletMethod' | t }}</p>
           @if (auth.user()) {
-            <p class="pd-pay__bal">Số dư {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
-            <a routerLink="/wallet" class="pd-pay__topup">Nạp tiền</a>
+            <p class="pd-pay__bal">{{ 'pd.walletBalance' | t }} {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
+            <a routerLink="/wallet" class="pd-pay__topup">{{ 'cart.topUp' | t }}</a>
           } @else {
-            <a routerLink="/auth/login" class="pd-pay__topup">Đăng nhập để thanh toán bằng ví</a>
+            <a routerLink="/auth/login" class="pd-pay__topup">{{ 'pd.loginToPay' | t }}</a>
           }
         </div>
 
@@ -119,7 +119,7 @@
           }
         </button>
         <button type="button" class="pd-buy__cart" (click)="toggleWishlist()">
-          🛒 Thêm vào giỏ
+          🛒 {{ 'lux.addToCart' | t }}
         </button>
 
         <div class="pd-coupon">
@@ -149,10 +149,11 @@
             <strong>{{ displayPrice(p, qty) }}</strong>
           </div>
           <div class="pd-wallet">
-            <span>Hiển thị giá</span>
+            <span>{{ 'pd.showPrice' | t }}</span>
             <select [(ngModel)]="displayCurrency" name="currency">
-              <option value="USD">USD</option>
-              <option value="VND">VND</option>
+              <option value="USD">{{ 'currency.usd' | t }}</option>
+              <option value="VND">{{ 'currency.vnd' | t }}</option>
+              <option value="CNY">{{ 'currency.cny' | t }}</option>
             </select>
           </div>
         </div>
@@ -269,7 +270,7 @@
           </p>
           <div class="field">
             <label class="field-label">Thanh toán</label>
-            <p class="text-sm">Ví aimarkets.vn · số dư {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
+            <p class="text-sm">{{ 'pd.walletMethod' | t }} · {{ 'pd.walletBalance' | t }} {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
             <a routerLink="/wallet" class="text-sm">Nạp tiền →</a>
           </div>
           <div class="pg-actions">

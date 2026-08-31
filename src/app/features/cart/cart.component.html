@@ -47,24 +47,24 @@
             <div class="line__side">
               <p class="price">{{ cart.unitPrice(line.product) | currency: line.product.pricing.currency: 'symbol-narrow': '1.0-2' }}</p>
               <div class="qty">
-                <button type="button" (click)="cart.setQty(line.product.id, line.qty - 1)" aria-label="Giảm">−</button>
+                <button type="button" (click)="cart.setQty(line.product.id, line.qty - 1)" [attr.aria-label]="'cart.qtyDecrease' | t">−</button>
                 <span>{{ line.qty }}</span>
-                <button type="button" (click)="cart.setQty(line.product.id, line.qty + 1)" aria-label="Tăng">+</button>
+                <button type="button" (click)="cart.setQty(line.product.id, line.qty + 1)" [attr.aria-label]="'cart.qtyIncrease' | t">+</button>
               </div>
-              <button type="button" class="trash" (click)="cart.remove(line.product.id)" aria-label="Xóa">🗑</button>
+              <button type="button" class="trash" (click)="cart.remove(line.product.id)" [attr.aria-label]="'cart.remove' | t">🗑</button>
             </div>
           </article>
         } @empty {
           <div class="empty">
-            <p>Giỏ hàng trống.</p>
-            <a routerLink="/marketplace" class="btn-primary">Khám phá sản phẩm</a>
+            <p>{{ 'cart.empty' | t }}</p>
+            <a routerLink="/marketplace" class="btn-primary">{{ 'cart.explore' | t }}</a>
           </div>
         }
       </div>
 
       @if (suggested().length) {
         <section class="suggest">
-          <h2>Có thể bạn cũng thích</h2>
+          <h2>{{ 'cart.suggestTitle' | t }}</h2>
           <div class="suggest__grid">
             @for (p of suggested(); track p.id) {
               <article class="suggest__card">
@@ -76,7 +76,7 @@
                   <p class="suggest__price">
                     {{ cart.unitPrice(p) | currency: p.pricing.currency: 'symbol-narrow': '1.0-2' }}
                   </p>
-                  <a [routerLink]="['/product', p.slug]" class="suggest__link">Xem chi tiết</a>
+                  <a [routerLink]="['/product', p.slug]" class="suggest__link">{{ 'cart.viewDetails' | t }}</a>
                 </div>
               </article>
             }
@@ -88,25 +88,25 @@
     <aside class="cart-aside">
       <div class="wallet-card">
         <div>
-          <p class="wallet-card__label">Ví aimarkets.vn · {{ walletCurrency() }}</p>
+          <p class="wallet-card__label">{{ 'cart.walletLabel' | t: { currency: walletCurrency() } }}</p>
           <p class="wallet-card__bal">{{ balance() | currency: walletCurrency(): 'symbol-narrow': '1.0-0' }}</p>
         </div>
-        <a routerLink="/wallet" class="btn-outline">Nạp tiền</a>
+        <a routerLink="/wallet" class="btn-outline">{{ 'cart.topUp' | t }}</a>
       </div>
 
       <div class="pay-card">
-        <h2>Thanh toán</h2>
+        <h2>{{ 'cart.payTitle' | t }}</h2>
         <dl>
           <div>
-            <dt>Tạm tính</dt>
+            <dt>{{ 'cart.subtotal' | t }}</dt>
             <dd>{{ cart.subtotal() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
           </div>
           <div>
-            <dt>Giảm giá người bán</dt>
+            <dt>{{ 'cart.discountSeller' | t }}</dt>
             <dd>{{ discountSeller() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
           </div>
           <div>
-            <dt>Giảm giá nền tảng</dt>
+            <dt>{{ 'cart.discountPlatform' | t }}</dt>
             <dd>{{ discountPlatform() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
           </div>
         </dl>
@@ -116,20 +116,20 @@
             type="text"
             [ngModel]="coupon()"
             (ngModelChange)="coupon.set($event)"
-            placeholder="Nhập mã giảm giá"
+            [placeholder]="'cart.couponPh' | t"
           />
-          <button type="button" (click)="applyCoupon()">Áp dụng</button>
+          <button type="button" (click)="applyCoupon()">{{ 'cart.apply' | t }}</button>
         </div>
 
-        <p class="pay-only">Chỉ thanh toán bằng ví aimarkets.vn</p>
+        <p class="pay-only">{{ 'cart.payOnly' | t }}</p>
 
         <div class="total">
-          <span>Tổng thanh toán</span>
+          <span>{{ 'cart.payTotal' | t }}</span>
           <strong>{{ total() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</strong>
         </div>
 
         <button type="button" class="btn-pay" [disabled]="paying() || !cart.selectedLines().length" (click)="pay()">
-          {{ paying() ? 'Đang xử lý…' : 'Thanh toán bằng ví aimarkets.vn' }}
+          {{ paying() ? ('cart.paying' | t) : ('cart.payBtn' | t) }}
         </button>
 
         @if (msg()) {
@@ -138,9 +138,9 @@
       </div>
 
       <div class="trust">
-        <div><span>🛡</span><p>Thanh toán an toàn</p></div>
-        <div><span>☎</span><p>Hỗ trợ 24/7</p></div>
-        <div><span>⚡</span><p>Giao hàng tức thì</p></div>
+        <div><span>🛡</span><p>{{ 'cart.trust.secure' | t }}</p></div>
+        <div><span>☎</span><p>{{ 'cart.trust.support' | t }}</p></div>
+        <div><span>⚡</span><p>{{ 'cart.trust.instant' | t }}</p></div>
       </div>
     </aside>
   </div>

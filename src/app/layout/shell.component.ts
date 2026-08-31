@@ -12,6 +12,7 @@ import { TPipe } from '../i18n/t.pipe';
 import { AppLang } from '../i18n/messages';
 import { CartService } from '../features/cart/cart.service';
 import { GoogleSignInComponent } from '../features/auth/google-sign-in.component';
+import { CurrencyService, AppCurrency, CURRENCIES } from '../i18n/currency.service';
 
 type NotiTab = 'all' | 'tx' | 'system' | 'promo';
 
@@ -27,6 +28,8 @@ export class ShellComponent {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly api = inject(DashboardService);
   readonly cart = inject(CartService);
+  readonly currencySvc = inject(CurrencyService);
+  readonly currencies = CURRENCIES;
   readonly theme = inject(ThemeService);
   readonly auth = inject(AuthService);
   readonly i18n = inject(I18nService);
@@ -43,6 +46,7 @@ export class ShellComponent {
   readonly userMenuOpen = signal(false);
   readonly notiOpen = signal(false);
   readonly langOpen = signal(false);
+  readonly currencyOpen = signal(false);
   readonly notifications = signal<NotificationItem[]>([]);
   readonly notiTab = signal<NotiTab>('all');
 
@@ -58,13 +62,15 @@ export class ShellComponent {
     const list = this.notifications();
     const tab = this.notiTab();
     if (tab === 'tx') {
-      return list.filter((n) => /đơn|ví|thanh toán|giao dịch|order|wallet|payment/i.test(`${n.title} ${n.body}`));
+      return list.filter((n) =>
+        /đơn|ví|thanh toán|giao dịch|order|wallet|payment|交易|支付|钱包/i.test(`${n.title} ${n.body}`),
+      );
     }
     if (tab === 'system') {
-      return list.filter((n) => /hệ thống|system|bảo mật|security/i.test(`${n.title} ${n.body}`));
+      return list.filter((n) => /hệ thống|system|bảo mật|security|系统|安全/i.test(`${n.title} ${n.body}`));
     }
     if (tab === 'promo') {
-      return list.filter((n) => /khuyến mãi|promo|giảm giá|coupon/i.test(`${n.title} ${n.body}`));
+      return list.filter((n) => /khuyến mãi|promo|giảm giá|coupon|促销|优惠/i.test(`${n.title} ${n.body}`));
     }
     return list.slice(0, 8);
   });
@@ -98,6 +104,7 @@ export class ShellComponent {
     this.userMenuOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
+    this.currencyOpen.set(false);
     this.cartOpen.set(false);
   }
 
@@ -111,6 +118,7 @@ export class ShellComponent {
     this.categoryOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
+    this.currencyOpen.set(false);
     this.cartOpen.set(false);
   }
 
@@ -125,6 +133,7 @@ export class ShellComponent {
     this.userMenuOpen.set(false);
     this.categoryOpen.set(false);
     this.langOpen.set(false);
+    this.currencyOpen.set(false);
     this.cartOpen.set(false);
     if (next) this.loadNotifications();
   }
@@ -164,6 +173,11 @@ export class ShellComponent {
         this.closeLang();
       }
     }
+    if (this.currencyOpen()) {
+      if (target && !this.host.nativeElement.querySelector('.currency-dd')?.contains(target)) {
+        this.closeCurrency();
+      }
+    }
     if (this.cartOpen()) {
       if (target && !this.host.nativeElement.querySelector('.lux-cart-dd')?.contains(target)) {
         this.closeCart();
@@ -177,6 +191,7 @@ export class ShellComponent {
     this.closeUserMenu();
     this.closeNoti();
     this.closeLang();
+    this.closeCurrency();
     this.closeCart();
   }
 
@@ -184,6 +199,7 @@ export class ShellComponent {
     this.closeUserMenu();
     this.closeNoti();
     this.closeLang();
+    this.closeCurrency();
     this.closeCart();
     this.auth.logout();
   }
@@ -194,11 +210,35 @@ export class ShellComponent {
     this.userMenuOpen.set(false);
     this.categoryOpen.set(false);
     this.notiOpen.set(false);
+    this.currencyOpen.set(false);
     this.cartOpen.set(false);
   }
 
   closeLang(): void {
     this.langOpen.set(false);
+  }
+
+  closeCurrency(): void {
+    this.currencyOpen.set(false);
+  }
+
+  toggleCurrency(event: Event): void {
+    event.stopPropagation();
+    this.currencyOpen.update((v) => !v);
+    this.langOpen.set(false);
+    this.userMenuOpen.set(false);
+    this.categoryOpen.set(false);
+    this.notiOpen.set(false);
+    this.cartOpen.set(false);
+  }
+
+  setCurrency(code: AppCurrency): void {
+    this.currencySvc.setCurrency(code);
+    this.closeCurrency();
+  }
+
+  currencyLabel(): string {
+    return this.i18n.t(`currency.${this.currencySvc.currency().toLowerCase()}`);
   }
 
   setLang(lang: AppLang): void {
@@ -213,6 +253,7 @@ export class ShellComponent {
     this.categoryOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
+    this.currencyOpen.set(false);
     this.cart.load();
   }
 

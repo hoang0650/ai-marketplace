@@ -17,6 +17,7 @@ import { environment } from '../../../environments/environment';
 import { Product, ProductCategory, Review } from '../../models/marketplace.models';
 import { isHireCategory, isSkillCategory } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
+import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { OpenClawGatewayService } from '../agents/openclaw-gateway.service';
 import {
@@ -68,6 +69,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly agentChatApi = inject(AgentChatService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
+  private readonly currencySvc = inject(CurrencyService);
   private readonly openclaw = inject(OpenClawGatewayService);
   private readonly walletApi = inject(DashboardService);
   private readonly router = inject(Router);
@@ -86,7 +88,7 @@ export class ProductDetailComponent implements OnInit {
   qty = 1;
   useCoupon = false;
   couponCode = '';
-  displayCurrency: 'USD' | 'VND' = 'USD';
+  displayCurrency: AppCurrency = 'USD';
 
   readonly mediaList = computed(() => {
     const p = this.product();
@@ -261,6 +263,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.displayCurrency = this.currencySvc.currency();
     this.loadWallet();
     this.route.paramMap.subscribe((params) => {
       const slug = params.get('slug') || '';
@@ -289,15 +292,18 @@ export class ProductDetailComponent implements OnInit {
 
   displayPrice(p: Product, units = 1): string {
     const pr = p.pricing;
-    if (pr.model === 'free') return this.displayCurrency === 'VND' ? '0 đ' : 'Free';
+    if (pr.model === 'free') {
+      return this.displayCurrency === 'VND' ? '0 đ' : this.i18n.t('card.free');
+    }
     const qty = Math.max(1, Number(units) || 1);
     const usd = (pr.model === 'usage' ? Number(pr.usageRate) || 0 : Number(pr.price) || 0) * qty;
-    if (this.displayCurrency === 'VND') {
-      return `${Math.round(usd * 25_000).toLocaleString('vi-VN')} đ`;
+    if (pr.model === 'usage' && qty === 1) {
+      return this.currencySvc.formatUsageFromUsd(usd, pr.usageUnit || 'unit', this.displayCurrency);
     }
-    if (pr.model === 'usage' && qty === 1) return `$${usd} / ${pr.usageUnit || 'unit'}`;
-    if (pr.model === 'subscription' && qty === 1) return `$${usd} / ${pr.interval}`;
-    return `$${usd}`;
+    if (pr.model === 'subscription' && qty === 1) {
+      return `${this.currencySvc.formatFromUsd(usd, this.displayCurrency)}/${pr.interval}`;
+    }
+    return this.currencySvc.formatFromUsd(usd, this.displayCurrency);
   }
 
   bumpQty(delta: number): void {
