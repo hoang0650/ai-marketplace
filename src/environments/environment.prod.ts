@@ -9,6 +9,8 @@ export const environment = {
   /** OpenAI-compatible AI gateway v1 */
   aiV1Url: 'https://ai.aimarkets.vn/v1',
   useMockApi: false,
+  /** Public Web OAuth client ID — must match GOOGLE_CLIENT_ID on api.aimarkets.vn */
+  googleClientId: '',
   brandName: 'AI Markets',
   brandTagline: 'AI models, skill packs, and hire talent.',
   openclaw: {
@@ -17,5 +19,7 @@ export const environment = {
     gatewayUrl: '',
     gatewayToken: '',
     bearerToken: '',
+
+    
   },
 };

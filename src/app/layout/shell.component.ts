@@ -11,13 +11,14 @@ import { I18nService } from '../i18n/i18n.service';
 import { TPipe } from '../i18n/t.pipe';
 import { AppLang } from '../i18n/messages';
 import { CartService } from '../features/cart/cart.service';
+import { GoogleSignInComponent } from '../features/auth/google-sign-in.component';
 
 type NotiTab = 'all' | 'tx' | 'system' | 'promo';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe, GoogleSignInComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })

@@ -36,13 +36,15 @@ export class GoogleAuthService {
 
   constructor(private readonly http: HttpClient) {}
 
+  private resolveConfig(config?: Partial<GoogleAuthConfig>): GoogleAuthConfig {
+    const clientId = String(config?.clientId || environment.googleClientId || '').trim();
+    return { enabled: !!clientId, clientId };
+  }
+
   getConfig(): Observable<GoogleAuthConfig> {
     return this.http.get<GoogleAuthConfig>(`${environment.apiUrl}/auth/google/config`).pipe(
-      map((config) => ({
-        enabled: !!config?.enabled && !!config?.clientId,
-        clientId: config?.clientId || '',
-      })),
-      catchError(() => of({ enabled: false, clientId: '' })),
+      map((config) => this.resolveConfig(config)),
+      catchError(() => of(this.resolveConfig())),
     );
   }
 

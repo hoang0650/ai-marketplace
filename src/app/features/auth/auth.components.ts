@@ -22,13 +22,15 @@ function afterAuthRoute(user: User): string {
     <section class="page route-enter mx-auto max-w-md">
       <h1 class="section-title">{{ 'auth.login' | t }}</h1>
       <p class="mt-2 text-sm text-muted">{{ 'auth.loginHint' | t }}</p>
-      <form class="mt-8 grid gap-3" (ngSubmit)="submit()">
+      <div class="mt-8">
+        <app-google-sign-in divider="bottom" (signedIn)="onGoogleSignedIn($event)" />
+      </div>
+      <form class="mt-4 grid gap-3" (ngSubmit)="submit()">
         <input class="input" type="email" name="email" [(ngModel)]="email" required [placeholder]="'auth.email' | t" />
         <input class="input" type="password" name="password" [(ngModel)]="password" required [placeholder]="'auth.password' | t" />
         @if (error()) { <p class="text-sm text-red-500">{{ error() }}</p> }
         <button class="btn btn-fill" type="submit">{{ 'auth.continue' | t }}</button>
       </form>
-      <app-google-sign-in (signedIn)="onGoogleSignedIn($event)" />
       <p class="mt-4 text-sm text-muted">{{ 'auth.noAccount' | t }} <a routerLink="/auth/register" class="text-accent">{{ 'auth.register' | t }}</a></p>
     </section>
   `,
@@ -67,7 +69,10 @@ export class LoginComponent {
   template: `
     <section class="page route-enter mx-auto max-w-md">
       <h1 class="section-title">{{ 'auth.create' | t }}</h1>
-      <form class="mt-8 grid gap-3" (ngSubmit)="submit()">
+      <div class="mt-8">
+        <app-google-sign-in divider="bottom" (signedIn)="onGoogleSignedIn($event)" />
+      </div>
+      <form class="mt-4 grid gap-3" (ngSubmit)="submit()">
         <input class="input" name="name" [(ngModel)]="name" required [placeholder]="'auth.name' | t" />
         <input class="input" type="email" name="email" [(ngModel)]="email" required [placeholder]="'auth.email' | t" />
         <input class="input" type="password" name="password" [(ngModel)]="password" required [placeholder]="'auth.password' | t" />
@@ -83,7 +88,6 @@ export class LoginComponent {
         </p>
         <button class="btn btn-fill" type="submit">{{ 'auth.create' | t }}</button>
       </form>
-      <app-google-sign-in (signedIn)="onGoogleSignedIn($event)" />
       <p class="mt-4 text-sm text-muted">{{ 'auth.haveAccount' | t }} <a routerLink="/auth/login" class="text-accent">{{ 'auth.login' | t }}</a></p>
     </section>
   `,

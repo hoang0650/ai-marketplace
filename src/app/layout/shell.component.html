@@ -183,8 +183,11 @@
             }
           </div>
         } @else {
-          <a routerLink="/auth/login" class="nav-link hidden sm:inline-flex">{{ 'nav.login' | t }}</a>
-          <a routerLink="/auth/register" class="btn-post">{{ 'nav.publish' | t }}</a>
+          <div class="nav-auth">
+            <app-google-sign-in [compact]="true" divider="none" [redirect]="true" />
+            <a routerLink="/auth/login" class="nav-link hidden sm:inline-flex">{{ 'nav.login' | t }}</a>
+            <a routerLink="/auth/register" class="btn-post">{{ 'nav.publish' | t }}</a>
+          </div>
         }
       </div>
     </div>

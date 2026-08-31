@@ -9,6 +9,8 @@ export const environment = {
   /** OpenAI-compatible AI gateway v1 */
   aiV1Url: 'http://localhost:8080/v1',
   useMockApi: false,
+  /** Optional fallback when /auth/google/config is unavailable (public Web client ID). */
+  googleClientId: '',
   brandName: 'AI Markets',
   brandTagline: 'AI models, skill packs, and hire talent.',
   openclaw: {
