@@ -455,6 +455,7 @@ export interface GameSessionInfo {
   playerUrl: string;
   publicUrl?: string;
   productSlug?: string;
+  hosting?: 'external' | 'aimarkets';
 }
 
 export interface ComputeNode {
@@ -466,6 +467,7 @@ export interface ComputeNode {
   provider: string;
   status: string;
   external: boolean;
+  hosting?: 'external' | 'aimarkets' | 'lab';
   region: string;
   webhookUrl: boolean;
   hasStream: boolean;
@@ -554,8 +556,11 @@ export class SellerComputeService {
 
   registerNode(body: {
     productSlug: string;
+    hosting?: 'external' | 'aimarkets' | 'hosted' | 'internal';
     name?: string;
     kind?: 'compute' | 'game';
+    gpuType?: string;
+    provider?: string;
     nodeId?: string;
     webhookUrl?: string;
     webhookSecret?: string;

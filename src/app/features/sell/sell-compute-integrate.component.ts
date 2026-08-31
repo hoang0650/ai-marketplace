@@ -46,13 +46,14 @@ export class SellComputeIntegrateComponent implements OnInit {
   region = '';
   maxConcurrent = 10;
   useWebhook = true;
+  hostingMode: 'external' | 'aimarkets' = 'external';
+  gpuType = 'NVIDIA GeForce RTX 4090';
 
   readonly flowDiagram = `Buyer → POST /v1/game-sessions { productSlug }
-  → AI Markets webhook session.start → Seller infra
-  ← streamHost / streamPort (internal)
-  → Proxied player /v1/game-sessions/:id/player
-  → Buyer streams on aimarkets.vn
-Stop → session.stop → bill usage (wallet)`;
+  → (1) External seller webhook OR
+  → (2) AI Markets RunPod Pod via denglish-api (ai.aimarkets.vn)
+  → Proxied player on aimarkets.vn
+Stop → bill usage (wallet)`;
 
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('sellCompute.title') });
@@ -82,23 +83,29 @@ Stop → session.stop → bill usage (wallet)`;
     this.msg.set('');
     const body: Record<string, unknown> = {
       productSlug: this.productSlug.trim().toLowerCase(),
+      hosting: this.hostingMode,
       name: this.name.trim() || undefined,
       kind: this.kind,
       region: this.region.trim() || undefined,
       maxConcurrent: this.maxConcurrent,
-      healthUrl: this.healthUrl.trim() || undefined,
     };
-    if (this.useWebhook) {
-      body['webhookUrl'] = this.webhookUrl.trim();
-      body['webhookSecret'] = this.webhookSecret.trim() || undefined;
+    if (this.hostingMode === 'aimarkets') {
+      body['gpuType'] = this.gpuType.trim() || undefined;
+      body['provider'] = 'runpod';
     } else {
-      body['streamHost'] = this.streamHost.trim();
-      body['streamPort'] = Number(this.streamPort) || 0;
-      body['streamPath'] = this.streamPath.trim() || '/';
-      body['streamKind'] = this.streamKind.trim() || 'novnc';
-      body['streamTls'] = this.streamTls;
+      body['healthUrl'] = this.healthUrl.trim() || undefined;
+      if (this.useWebhook) {
+        body['webhookUrl'] = this.webhookUrl.trim();
+        body['webhookSecret'] = this.webhookSecret.trim() || undefined;
+      } else {
+        body['streamHost'] = this.streamHost.trim();
+        body['streamPort'] = Number(this.streamPort) || 0;
+        body['streamPath'] = this.streamPath.trim() || '/';
+        body['streamKind'] = this.streamKind.trim() || 'novnc';
+        body['streamTls'] = this.streamTls;
+      }
+      if (this.iframeUrl.trim()) body['iframeUrl'] = this.iframeUrl.trim();
     }
-    if (this.iframeUrl.trim()) body['iframeUrl'] = this.iframeUrl.trim();
 
     this.computeApi.registerNode(body as Parameters<SellerComputeService['registerNode']>[0]).subscribe({
       next: () => {

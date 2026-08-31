@@ -20,22 +20,36 @@ export class DocsComputeComponent implements OnInit {
   readonly supportEmail = 'support@aimarkets.vn';
 
   readonly flowDiagram = `Buyer → POST /v1/game-sessions { productSlug }
-  → AI Markets webhook session.start
-  ← streamHost / streamPort (internal)
+  → (1) External: webhook session.start → streamHost/port
+  → (2) Hosted: RunPod Pod via denglish-api (ai.aimarkets.vn)
   → Proxied player /v1/game-sessions/:id/player
-  → Stream on aimarkets.vn
-Stop → session.stop → bill usage (wallet)`;
+Stop → bill usage (wallet)`;
 
-  readonly registerExample = `POST ${environment.production ? 'https://api.aimarkets.vn/v1' : 'http://localhost:4100/v1'}/seller/compute/nodes
-Authorization: Bearer <seller_jwt>
-
+  readonly registerExample = `# External (seller infra)
+POST .../seller/compute/nodes
 {
   "productSlug": "my-game-box",
+  "hosting": "external",
   "webhookUrl": "https://seller.example.com/aim/webhook",
-  "webhookSecret": "whsec_...",
   "streamHost": "10.0.0.5",
-  "streamPort": 6080,
-  "streamKind": "novnc"
+  "streamPort": 6080
+}
+
+# AI Markets hosted (RunPod Pod)
+POST .../seller/compute/nodes
+{
+  "productSlug": "my-game-box",
+  "hosting": "aimarkets",
+  "gpuType": "NVIDIA GeForce RTX 4090",
+  "kind": "game"
+}`;
+
+  readonly hostedExample = `{
+  "hosting": "aimarkets",
+  "productSlug": "my-game-box",
+  "gpuType": "NVIDIA GeForce RTX 4090",
+  "kind": "game",
+  "provider": "runpod"
 }`;
 
   readonly webhookResponse = `{
@@ -54,6 +68,7 @@ Authorization: Bearer <buyer_jwt>
   readonly toc = [
     { id: 'overview', labelKey: 'docsCompute.toc.overview' },
     { id: 'register', labelKey: 'docsCompute.toc.register' },
+    { id: 'hosted', labelKey: 'docsCompute.toc.hosted' },
     { id: 'webhook', labelKey: 'docsCompute.toc.webhook' },
     { id: 'buyer', labelKey: 'docsCompute.toc.buyer' },
     { id: 'billing', labelKey: 'docsCompute.toc.billing' },

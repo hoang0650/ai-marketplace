@@ -41,6 +41,27 @@
         </div>
       </div>
 
+      <div class="field">
+        <span class="field-label">{{ 'sellCompute.field.hosting' | t }}</span>
+        <div class="segmented">
+          <button type="button" [class.active]="hostingMode === 'external'" (click)="hostingMode = 'external'">
+            {{ 'sellCompute.hosting.external' | t }}
+          </button>
+          <button type="button" [class.active]="hostingMode === 'aimarkets'" (click)="hostingMode = 'aimarkets'">
+            {{ 'sellCompute.hosting.aimarkets' | t }}
+          </button>
+        </div>
+        <p class="seller-docs__hint">{{ hostingMode === 'aimarkets' ? ('sellCompute.hosting.aimarketsHint' | t) : ('sellCompute.hosting.externalHint' | t) }}</p>
+      </div>
+
+      @if (hostingMode === 'aimarkets') {
+        <div class="field">
+          <label class="field-label" for="sc-gpu">{{ 'sellCompute.field.gpuType' | t }}</label>
+          <input id="sc-gpu" class="input" [(ngModel)]="gpuType" name="gpuType" placeholder="NVIDIA GeForce RTX 4090" />
+        </div>
+      }
+
+      @if (hostingMode === 'external') {
       <label class="check-row">
         <input type="checkbox" [(ngModel)]="useWebhook" name="useWebhook" />
         <span><strong>{{ 'sellCompute.field.useWebhook' | t }}</strong></span>
@@ -88,19 +109,21 @@
         <label class="field-label" for="sc-iframe">{{ 'sellCompute.field.iframeUrl' | t }}</label>
         <input id="sc-iframe" class="input" type="url" [(ngModel)]="iframeUrl" name="iframeUrl" placeholder="Optional embed URL" />
       </div>
+      <div class="field">
+        <label class="field-label" for="sc-health">{{ 'sellCompute.field.healthUrl' | t }}</label>
+        <input id="sc-health" class="input" type="url" [(ngModel)]="healthUrl" name="healthUrl" />
+      </div>
+      }
+
       <div class="field grid-2">
-        <div>
-          <label class="field-label" for="sc-health">{{ 'sellCompute.field.healthUrl' | t }}</label>
-          <input id="sc-health" class="input" type="url" [(ngModel)]="healthUrl" name="healthUrl" />
-        </div>
         <div>
           <label class="field-label" for="sc-region">{{ 'sellCompute.field.region' | t }}</label>
           <input id="sc-region" class="input" [(ngModel)]="region" name="region" placeholder="eu-west" />
         </div>
-      </div>
-      <div class="field">
-        <label class="field-label" for="sc-max">{{ 'sellCompute.field.maxConcurrent' | t }}</label>
-        <input id="sc-max" class="input" type="number" min="1" max="100" [(ngModel)]="maxConcurrent" name="maxConcurrent" />
+        <div>
+          <label class="field-label" for="sc-max">{{ 'sellCompute.field.maxConcurrent' | t }}</label>
+          <input id="sc-max" class="input" type="number" min="1" max="100" [(ngModel)]="maxConcurrent" name="maxConcurrent" />
+        </div>
       </div>
 
       @if (err()) {
@@ -125,8 +148,8 @@
             <div>
               <p class="node-card__name">{{ n.name }}</p>
               <p class="node-card__meta">
-                {{ n.productSlug }} · {{ n.status }} · {{ n.region || '—' }}
-                · stream {{ n.hasStream ? '✓' : '—' }}
+                {{ n.productSlug }} · {{ n.hosting || (n.external ? 'external' : 'aimarkets') }} · {{ n.status }}
+                · {{ n.region || '—' }} · stream {{ n.hasStream ? '✓' : '—' }}
               </p>
             </div>
             <div class="node-card__actions">
