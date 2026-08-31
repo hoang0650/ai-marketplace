@@ -1,0 +1,135 @@
+<section class="work-detail page route-enter">
+  @if (job(); as j) {
+    <a routerLink="/work/jobs" class="work-detail__back">← {{ 'work.detail.backJobs' | t }}</a>
+
+    <div class="work-detail__hero">
+      <div class="work-detail__hero-main">
+        <div class="work-detail__company-icon" aria-hidden="true">🏢</div>
+        <div>
+          <p class="work-detail__headline">{{ j.company || ('work.detail.independentRecruiter' | t) }}</p>
+          <h1 class="work-detail__name">{{ j.title }}</h1>
+          <div class="work-detail__meta">
+            <span>{{ j.remote ? ('work.remote' | t) : ('work.onsite' | t) }}</span>
+            <span>📍 {{ j.location }}</span>
+            <span>{{ 'work.detail.flexDeadline' | t }}</span>
+          </div>
+          <div class="work-detail__stats">
+            <div class="work-detail__stat">
+              <strong>{{ views() }}</strong>
+              <span>{{ 'work.detail.views' | t }}</span>
+            </div>
+            <div class="work-detail__stat">
+              <strong>{{ j.applicationsCount || 0 }}</strong>
+              <span>{{ 'work.detail.applications' | t }}</span>
+            </div>
+            <div class="work-detail__stat">
+              <strong>0</strong>
+              <span>{{ 'work.detail.screening' | t }}</span>
+            </div>
+            <div class="work-detail__stat">
+              <strong>1</strong>
+              <span>{{ 'work.detail.positions' | t }}</span>
+            </div>
+          </div>
+          <div class="work-detail__tags">
+            @for (s of j.skills; track s) {
+              <span class="work-detail__tag">{{ s }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="work-detail__layout">
+      <div class="work-detail__main panel">
+        <div class="work-detail__tabs" role="tablist">
+          @for (tab of tabs; track tab.id) {
+            <button type="button" class="work-detail__tab" [class.active]="activeTab() === tab.id" (click)="activeTab.set(tab.id)">
+              {{ tab.labelKey | t }}
+            </button>
+          }
+        </div>
+
+        @if (activeTab() === 'description') {
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.jobDescription' | t }}</h3>
+            <p>{{ j.description }}</p>
+          </div>
+        }
+
+        @if (activeTab() === 'deliverables') {
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.deliverables' | t }}</h3>
+            <p class="work-detail__empty">{{ 'work.detail.emptyDeliverables' | t }}</p>
+          </div>
+        }
+
+        @if (activeTab() === 'responsibilities') {
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.responsibilities' | t }}</h3>
+            <p class="work-detail__empty">{{ 'work.detail.emptyResponsibilities' | t }}</p>
+          </div>
+        }
+
+        @if (activeTab() === 'comments') {
+          <div class="work-detail__section">
+            <p class="work-detail__empty">{{ 'work.detail.emptyComments' | t }}</p>
+          </div>
+        }
+
+        @if (activeTab() === 'screening') {
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.screeningTitle' | t }}</h3>
+            <p class="work-detail__empty">{{ 'work.detail.emptyScreening' | t }}</p>
+          </div>
+        }
+      </div>
+
+      <aside class="work-detail__sidebar">
+        <div class="work-detail__sidebar-card">
+          @if (auth.isAuthenticated()) {
+            <button type="button" class="work-detail__cta" style="width:100%;" (click)="apply()">{{ 'work.detail.applyNow' | t }}</button>
+          } @else {
+            <a routerLink="/auth/login" [queryParams]="{ returnUrl: '/work/jobs/' + j.slug }" class="work-detail__cta" style="width:100%;">
+              {{ 'work.detail.applyNow' | t }}
+            </a>
+          }
+          <button type="button" class="work-detail__cta work-detail__cta--outline" style="width:100%; margin-top:0.55rem;" (click)="toggleSave()">
+            {{ saved() ? ('work.detail.saved' | t) : ('work.detail.saveJob' | t) }}
+          </button>
+          <p class="work-detail__hint">{{ 'work.detail.applyHint' | t }}</p>
+        </div>
+
+        <div class="work-detail__sidebar-card">
+          <h3>{{ 'work.detail.budget' | t }}</h3>
+          <div class="work-detail__budget">💳 {{ salaryLabel(j) }}</div>
+          <div class="work-detail__sidebar-row">
+            <span>{{ 'work.detail.jobType' | t }}</span>
+            <strong>{{ employmentLabel(j.employmentType) }}</strong>
+          </div>
+          <div class="work-detail__sidebar-row">
+            <span>{{ 'work.detail.experienceLevel' | t }}</span>
+            <strong>{{ 'work.detail.expert' | t }}</strong>
+          </div>
+          <div class="work-detail__sidebar-row">
+            <span>{{ 'work.detail.workplace' | t }}</span>
+            <strong>{{ j.remote ? ('work.remote' | t) : ('work.onsite' | t) }}</strong>
+          </div>
+        </div>
+
+        <div class="work-detail__sidebar-card">
+          <div class="work-detail__sidebar-row">
+            <span>{{ j.postedByName || j.company }}</span>
+            <a href="mailto:support@aimarkets.vn" class="work-detail__report">{{ 'work.detail.report' | t }}</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    @if (applyMsg()) {
+      <p class="msg ok" style="margin-top:1rem;">{{ applyMsg() }}</p>
+    }
+  } @else {
+    <div class="work-empty panel">{{ 'work.jobNotFound' | t }}</div>
+  }
+</section>

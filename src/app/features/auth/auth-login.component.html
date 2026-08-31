@@ -1,0 +1,89 @@
+<div class="auth-page route-enter">
+  <div class="auth-page__layout">
+    <aside class="auth-page__aside">
+      <a routerLink="/" class="auth-page__brand font-display">{{ brand }}</a>
+      <h1>{{ 'auth.login' | t }}</h1>
+      <p>{{ 'auth.loginSubtitle' | t }}</p>
+      <ul class="auth-page__benefits">
+        <li>{{ 'auth.benefit1' | t }}</li>
+        <li>{{ 'auth.benefit2' | t }}</li>
+        <li>{{ 'auth.benefit3' | t }}</li>
+      </ul>
+    </aside>
+
+    <div class="auth-page__card">
+      <div class="auth-page__mobile-head">
+        <h1>{{ 'auth.login' | t }}</h1>
+        <p>{{ 'auth.loginSubtitle' | t }}</p>
+      </div>
+
+      <nav class="auth-page__tabs" aria-label="Auth">
+        <a routerLink="/auth/login" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'auth.login' | t }}</a>
+        <a routerLink="/auth/register" routerLinkActive="active">{{ 'auth.register' | t }}</a>
+      </nav>
+
+      <app-google-sign-in divider="bottom" (signedIn)="onGoogleSignedIn($event)" />
+
+      <form class="auth-form" (ngSubmit)="submit()">
+        <div class="auth-field">
+          <label for="login-email">{{ 'auth.email' | t }}</label>
+          <input
+            id="login-email"
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            autocomplete="email"
+            [placeholder]="'auth.emailPh' | t"
+          />
+        </div>
+
+        <div class="auth-field">
+          <label for="login-password">{{ 'auth.password' | t }}</label>
+          <div class="auth-field__pw">
+            <input
+              id="login-password"
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              [(ngModel)]="password"
+              required
+              autocomplete="current-password"
+              [placeholder]="'auth.passwordPh' | t"
+            />
+            <button
+              type="button"
+              class="auth-field__toggle"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? ('auth.hidePassword' | t) : ('auth.showPassword' | t)"
+            >
+              {{ showPassword ? ('auth.hidePassword' | t) : ('auth.showPassword' | t) }}
+            </button>
+          </div>
+        </div>
+
+        @if (error()) {
+          <div class="auth-alert" role="alert">{{ error() }}</div>
+        }
+
+        <button class="auth-submit" type="submit" [disabled]="loading()">
+          @if (loading()) {
+            <span class="auth-submit__spin" aria-hidden="true"></span>
+            {{ 'auth.loading' | t }}
+          } @else {
+            {{ 'auth.continue' | t }}
+          }
+        </button>
+      </form>
+
+      <details class="auth-demo">
+        <summary>{{ 'auth.demoAccounts' | t }}</summary>
+        <p>{{ 'auth.loginHint' | t }}</p>
+      </details>
+
+      <p class="auth-page__foot">
+        {{ 'auth.noAccount' | t }}
+        <a routerLink="/auth/register">{{ 'auth.register' | t }}</a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -2,10 +2,12 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
 
+import { TPipe } from '../../i18n/t.pipe';
+
 @Component({
   selector: 'app-work-placeholder',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TPipe],
   template: `
     <section>
       <p class="crumb">{{ crumb }}</p>
@@ -13,7 +15,7 @@ import { SeoService } from '../../services/seo.service';
       <div class="card">
         <p>{{ desc }}</p>
         <div class="actions">
-          <a routerLink="/work" class="link">Về GC Work →</a>
+          <a routerLink="/work" class="link">{{ 'work.backToWork' | t }} →</a>
           @if (ctaPath) {
             <a [routerLink]="ctaPath" class="btn">{{ ctaLabel }}</a>
           }

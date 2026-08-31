@@ -88,32 +88,7 @@
       </a>
 
       <nav class="site-header__nav" aria-label="Primary">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">{{ 'lux.home' | t }}</a>
-        <a routerLink="/marketplace" routerLinkActive="active" class="nav-link">{{ 'lux.shop' | t }}</a>
-
-        <div class="nav-dd work-dd" [class.open]="workOpen()">
-          <button type="button" class="nav-dd__btn" [attr.aria-expanded]="workOpen()" aria-haspopup="menu" (click)="toggleWork($event)">
-            {{ 'work.nav.label' | t }}
-            <span class="badge-beta">BETA</span>
-            <span class="nav-dd__chev" aria-hidden="true">▾</span>
-          </button>
-          @if (workOpen()) {
-            <div class="nav-dd__panel work-dd__panel" role="menu">
-              <p class="nav-dd__group">{{ 'work.nav.explore' | t }}</p>
-              <ul>
-                <li><a routerLink="/work" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.overview' | t }}</span></a></li>
-                <li><a routerLink="/work/jobs" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.jobs' | t }}</span></a></li>
-                <li><a routerLink="/work/talents" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.talents' | t }}</span></a></li>
-                <li><a routerLink="/work/talents" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.seekers' | t }}</span></a></li>
-                <li><a routerLink="/marketplace" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.services' | t }}</span></a></li>
-                <li><a routerLink="/work/manage/contests" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.contests' | t }}</span></a></li>
-              </ul>
-              <a routerLink="/work/post" class="nav-dd__post" (click)="closeWork()">+ {{ 'work.postJob' | t }}</a>
-            </div>
-          }
-        </div>
-
-        <a routerLink="/support" routerLinkActive="active" class="nav-link">{{ 'nav.support' | t }}</a>
+        <a routerLink="/marketplace" routerLinkActive="active" class="nav-link">{{ 'nav.marketplace' | t }}</a>
 
         <div class="nav-dd" [class.open]="categoryOpen()">
           <button type="button" class="nav-dd__btn" [attr.aria-expanded]="categoryOpen()" aria-haspopup="menu" (click)="toggleCategories()">
@@ -165,8 +140,32 @@
           }
         </div>
 
-        <a routerLink="/hire-agent/marketplace" class="nav-link">{{ 'lux.lookbook' | t }}</a>
-        <a routerLink="/models" class="nav-link">{{ 'lux.about' | t }}</a>
+        <a routerLink="/hire-agent/marketplace" routerLinkActive="active" class="nav-link">{{ 'nav.agent' | t }}</a>
+        <a routerLink="/models" routerLinkActive="active" class="nav-link">{{ 'nav.model' | t }}</a>
+
+        <div class="nav-dd work-dd" [class.open]="workOpen()">
+          <button type="button" class="nav-dd__btn" [attr.aria-expanded]="workOpen()" aria-haspopup="menu" (click)="toggleWork($event)">
+            {{ 'work.nav.label' | t }}
+            <span class="badge-beta">BETA</span>
+            <span class="nav-dd__chev" aria-hidden="true">▾</span>
+          </button>
+          @if (workOpen()) {
+            <div class="nav-dd__panel work-dd__panel" role="menu">
+              <p class="nav-dd__group">{{ 'work.nav.explore' | t }}</p>
+              <ul>
+                <li><a routerLink="/work" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.overview' | t }}</span></a></li>
+                <li><a routerLink="/work/jobs" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.jobs' | t }}</span></a></li>
+                <li><a routerLink="/work/talents" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.talents' | t }}</span></a></li>
+                <li><a routerLink="/work/talents" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.seekers' | t }}</span></a></li>
+                <li><a routerLink="/marketplace" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.services' | t }}</span></a></li>
+                <li><a routerLink="/work/manage/contests" role="menuitem" class="nav-dd__item" (click)="closeWork()"><span class="nav-dd__item-title">{{ 'work.nav.contests' | t }}</span></a></li>
+              </ul>
+              <a routerLink="/work/post" class="nav-dd__post" (click)="closeWork()">+ {{ 'work.postJob' | t }}</a>
+            </div>
+          }
+        </div>
+
+        <a routerLink="/support" routerLinkActive="active" class="nav-link">{{ 'nav.support' | t }}</a>
       </nav>
 
       <div class="site-header__actions">

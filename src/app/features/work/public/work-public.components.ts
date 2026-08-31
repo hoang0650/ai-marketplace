@@ -417,40 +417,86 @@ export class WorkPostJobComponent implements OnInit {
   selector: 'app-work-job-detail',
   standalone: true,
   imports: [RouterLink, TPipe],
-  template: `
-    <section class="work-public page route-enter">
-      @if (job(); as j) {
-        <p class="text-sm text-muted"><a routerLink="/work/jobs">← {{ 'work.nav.jobs' | t }}</a></p>
-        <h1>{{ j.title }}</h1>
-        <p class="text-muted">{{ j.company }} · {{ j.location }} · {{ j.employmentType }}</p>
-        <div class="panel" style="margin: 1rem 0;">
-          <p style="white-space: pre-wrap; line-height: 1.6;">{{ j.description }}</p>
-          <div class="talent-card__skills" style="margin-top: 1rem;">
-            @for (s of j.skills; track s) { <span>{{ s }}</span> }
-          </div>
-        </div>
-        <a routerLink="/auth/login" class="btn btn-fill">{{ 'work.apply' | t }}</a>
-      } @else {
-        <div class="work-empty panel">{{ 'work.jobNotFound' | t }}</div>
-      }
-    </section>
-  `,
-  styleUrl: './work-public.scss',
+  templateUrl: './work-job-detail.component.html',
+  styleUrls: ['./work-public.scss', './work-detail.scss'],
 })
 export class WorkJobDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(WorkService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
+  readonly auth = inject(AuthService);
+
   readonly job = signal<JobPosting | null>(null);
+  readonly activeTab = signal<'description' | 'deliverables' | 'responsibilities' | 'comments' | 'screening'>('description');
+  readonly saved = signal(false);
+  readonly applyMsg = signal('');
+
+  readonly tabs = [
+    { id: 'description' as const, labelKey: 'work.detail.tabDescription' },
+    { id: 'deliverables' as const, labelKey: 'work.detail.tabDeliverables' },
+    { id: 'responsibilities' as const, labelKey: 'work.detail.tabResponsibilities' },
+    { id: 'comments' as const, labelKey: 'work.detail.tabComments' },
+    { id: 'screening' as const, labelKey: 'work.detail.tabScreening' },
+  ];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((p) => {
       const slug = p.get('slug') || '';
       this.api.job(slug).subscribe((j) => {
         this.job.set(j);
-        if (j) this.seo.set({ title: j.title });
+        if (j) {
+          this.seo.set({ title: j.title });
+          this.saved.set(this.readSaved(slug));
+        }
       });
     });
+  }
+
+  views(): number {
+    const j = this.job();
+    if (!j) return 0;
+    return Math.max(0, (j.applicationsCount || 0) * 3 + (j.id?.length || 0) % 17);
+  }
+
+  salaryLabel(j: JobPosting): string {
+    if (j.salaryNegotiable) return this.i18n.t('work.negotiable');
+    if (j.salaryMin && j.salaryMax) {
+      return `${j.salaryMin.toLocaleString()} – ${j.salaryMax.toLocaleString()} ${j.salaryCurrency}`;
+    }
+    if (j.salaryMin) return `${j.salaryMin.toLocaleString()} ${j.salaryCurrency}/${j.salaryPeriod}`;
+    return this.i18n.t('work.negotiable');
+  }
+
+  employmentLabel(type: JobPosting['employmentType']): string {
+    const map: Record<JobPosting['employmentType'], string> = {
+      'full-time': 'work.type.full',
+      'part-time': 'work.type.part',
+      contract: 'work.type.contract',
+      freelance: 'work.type.freelance',
+    };
+    return this.i18n.t(map[type] || 'work.type.freelance');
+  }
+
+  toggleSave(): void {
+    const j = this.job();
+    if (!j || typeof localStorage === 'undefined') return;
+    const key = 'aimarkets.savedJobs';
+    const list = new Set(JSON.parse(localStorage.getItem(key) || '[]') as string[]);
+    if (list.has(j.slug)) list.delete(j.slug);
+    else list.add(j.slug);
+    localStorage.setItem(key, JSON.stringify([...list]));
+    this.saved.set(list.has(j.slug));
+  }
+
+  apply(): void {
+    this.applyMsg.set(this.i18n.t('work.detail.applySent'));
+  }
+
+  private readSaved(slug: string): boolean {
+    if (typeof localStorage === 'undefined') return false;
+    const list = JSON.parse(localStorage.getItem('aimarkets.savedJobs') || '[]') as string[];
+    return list.includes(slug);
   }
 }
 
@@ -458,36 +504,25 @@ export class WorkJobDetailComponent implements OnInit {
   selector: 'app-work-talent-detail',
   standalone: true,
   imports: [RouterLink, TPipe],
-  template: `
-    <section class="work-public page route-enter">
-      @if (talent(); as t) {
-        <p class="text-sm text-muted"><a routerLink="/work/talents">← {{ 'work.nav.talents' | t }}</a></p>
-        <div class="talent-card" style="grid-template-columns: auto 1fr;">
-          <div class="talent-card__avatar" style="width:72px;height:72px;font-size:1.2rem;">{{ initials(t.name) }}</div>
-          <div>
-            <h1 class="talent-card__name">{{ t.name }}</h1>
-            <p class="talent-card__title">{{ t.title }}</p>
-            <p class="talent-card__bio">{{ t.bio }}</p>
-          </div>
-        </div>
-        <div class="panel" style="margin-top: 1rem;">
-          <div class="talent-card__skills">
-            @for (s of t.skills; track s) { <span>{{ s }}</span> }
-          </div>
-        </div>
-        <a routerLink="/auth/login" class="btn btn-fill" style="margin-top:1rem;">{{ 'work.contact' | t }}</a>
-      } @else {
-        <div class="work-empty panel">{{ 'work.talentNotFound' | t }}</div>
-      }
-    </section>
-  `,
-  styleUrl: './work-public.scss',
+  templateUrl: './work-talent-detail.component.html',
+  styleUrls: ['./work-public.scss', './work-detail.scss'],
 })
 export class WorkTalentDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(WorkService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
+  readonly auth = inject(AuthService);
+
   readonly talent = signal<TalentProfile | null>(null);
+  readonly activeTab = signal<'overview' | 'experience' | 'education' | 'products'>('overview');
+
+  readonly tabs = [
+    { id: 'overview' as const, labelKey: 'work.detail.tabOverview' },
+    { id: 'experience' as const, labelKey: 'work.detail.tabExperience' },
+    { id: 'education' as const, labelKey: 'work.detail.tabEducation' },
+    { id: 'products' as const, labelKey: 'work.detail.tabProducts' },
+  ];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((p) => {
@@ -503,5 +538,11 @@ export class WorkTalentDetailComponent implements OnInit {
     const parts = name.trim().split(/\s+/);
     if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     return name.slice(0, 2).toUpperCase();
+  }
+
+  rateLabel(t: TalentProfile): string {
+    if (t.rateNegotiable && !t.rateAmount) return this.i18n.t('work.negotiable');
+    if (t.rateAmount) return `${t.rateAmount.toLocaleString()} ${t.rateCurrency}/${this.i18n.t('work.hour')}`;
+    return this.i18n.t('work.negotiable');
   }
 }

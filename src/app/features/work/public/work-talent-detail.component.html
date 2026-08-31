@@ -1,0 +1,134 @@
+<section class="work-detail page route-enter">
+  @if (talent(); as t) {
+    <a routerLink="/work/talents" class="work-detail__back">← {{ 'work.detail.backTalents' | t }}</a>
+
+    <div class="work-detail__hero">
+      <div class="work-detail__hero-main">
+        <div class="work-detail__avatar">
+          @if (t.avatarUrl) {
+            <img [src]="t.avatarUrl" [alt]="t.name" />
+          } @else {
+            {{ initials(t.name) }}
+          }
+          @if (t.available) {
+            <span class="work-detail__avatar-dot" [title]="'work.availableNow' | t"></span>
+          }
+        </div>
+        <div>
+          <h1 class="work-detail__name">{{ t.name }}</h1>
+          <p class="work-detail__headline">{{ t.title }}</p>
+          <div class="work-detail__meta">
+            <span>📍 {{ 'work.detail.location' | t }}</span>
+            <span>{{ 'work.experience' | t: { n: t.experienceYears } }}</span>
+            <span>{{ 'work.hoursWeek' | t: { n: t.hoursPerWeek } }}</span>
+          </div>
+          <p class="work-detail__bio">{{ t.bio }}</p>
+        </div>
+      </div>
+      <div class="work-detail__hero-side">
+        @if (t.available) {
+          <p class="work-detail__status">{{ 'work.availableNow' | t }}</p>
+        }
+        <p class="work-detail__fee-label">{{ 'work.detail.refFee' | t }}</p>
+        <p class="work-detail__fee">{{ rateLabel(t) }}</p>
+        @if (auth.isAuthenticated()) {
+          <a routerLink="/work/post" class="work-detail__cta">{{ 'work.detail.inviteApply' | t }}</a>
+        } @else {
+          <a routerLink="/auth/login" [queryParams]="{ returnUrl: '/work/talents/' + t.slug }" class="work-detail__cta">
+            {{ 'work.detail.loginInvite' | t }}
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="work-detail__layout">
+      <div class="work-detail__main panel">
+        <div class="work-detail__tabs" role="tablist">
+          @for (tab of tabs; track tab.id) {
+            <button type="button" class="work-detail__tab" [class.active]="activeTab() === tab.id" (click)="activeTab.set(tab.id)">
+              {{ tab.labelKey | t }}
+            </button>
+          }
+        </div>
+
+        @if (activeTab() === 'overview') {
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.intro' | t }}</h3>
+            <p>{{ t.bio || ('work.detail.emptyIntro' | t) }}</p>
+          </div>
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.skills' | t }}</h3>
+            @if (t.skills.length) {
+              <div class="work-detail__skills-inline">
+                @for (s of t.skills; track s) { <span>{{ s }}</span> }
+              </div>
+            } @else {
+              <p class="work-detail__empty">{{ 'work.detail.emptySkills' | t }}</p>
+            }
+          </div>
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.experienceTitle' | t }}</h3>
+            <p class="work-detail__empty">{{ 'work.detail.emptyExperience' | t }}</p>
+          </div>
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.educationTitle' | t }}</h3>
+            <p class="work-detail__empty">{{ 'work.detail.emptyEducation' | t }}</p>
+          </div>
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.productsTitle' | t }}</h3>
+            <p class="work-detail__empty">{{ 'work.detail.emptyProducts' | t }}</p>
+          </div>
+        }
+
+        @if (activeTab() === 'experience') {
+          <div class="work-detail__section">
+            <p class="work-detail__empty">{{ 'work.detail.emptyExperience' | t }}</p>
+          </div>
+        }
+
+        @if (activeTab() === 'education') {
+          <div class="work-detail__section">
+            <p class="work-detail__empty">{{ 'work.detail.emptyEducation' | t }}</p>
+          </div>
+        }
+
+        @if (activeTab() === 'products') {
+          <div class="work-detail__section">
+            <p class="work-detail__empty">{{ 'work.detail.emptyProducts' | t }}</p>
+          </div>
+        }
+      </div>
+
+      <aside class="work-detail__sidebar">
+        <div class="work-detail__sidebar-card">
+          <h3>{{ 'work.detail.profileOverview' | t }}</h3>
+          <div class="work-detail__sidebar-row">
+            <span>{{ 'work.detail.status' | t }}</span>
+            <strong>{{ t.available ? ('work.availableNow' | t) : ('work.detail.unavailable' | t) }}</strong>
+          </div>
+          <div class="work-detail__sidebar-row">
+            <span>{{ 'work.detail.contractsDone' | t }}</span>
+            <strong>{{ t.contractsCount }}</strong>
+          </div>
+          <div class="work-detail__sidebar-row">
+            <span>{{ 'work.detail.rating' | t }}</span>
+            <strong>{{ t.reviewsCount ? (t.rating + '/5') : ('work.detail.noRating' | t) }}</strong>
+          </div>
+          <div class="work-detail__sidebar-row">
+            <span>{{ 'work.detail.onTime' | t }}</span>
+            <strong>{{ 'work.detail.noData' | t }}</strong>
+          </div>
+        </div>
+
+        <div class="work-detail__sidebar-card work-detail__promo">
+          <h3>{{ 'work.detail.interested' | t }}</h3>
+          <p>{{ 'work.detail.interestedDesc' | t }}</p>
+          <a routerLink="/work/post" class="work-detail__cta">{{ 'work.detail.postOpportunity' | t }}</a>
+          <a href="mailto:support@aimarkets.vn" class="work-detail__report">{{ 'work.detail.report' | t }}</a>
+        </div>
+      </aside>
+    </div>
+  } @else {
+    <div class="work-empty panel">{{ 'work.talentNotFound' | t }}</div>
+  }
+</section>

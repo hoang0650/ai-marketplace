@@ -1,0 +1,115 @@
+<div class="auth-page route-enter">
+  <div class="auth-page__layout">
+    <aside class="auth-page__aside">
+      <a routerLink="/" class="auth-page__brand font-display">{{ brand }}</a>
+      <h1>{{ 'auth.create' | t }}</h1>
+      <p>{{ 'auth.registerSubtitle' | t: { brand } }}</p>
+      <ul class="auth-page__benefits">
+        <li>{{ 'auth.benefit1' | t }}</li>
+        <li>{{ 'auth.benefit2' | t }}</li>
+        <li>{{ 'auth.benefit3' | t }}</li>
+      </ul>
+    </aside>
+
+    <div class="auth-page__card">
+      <div class="auth-page__mobile-head">
+        <h1>{{ 'auth.create' | t }}</h1>
+        <p>{{ 'auth.registerSubtitle' | t: { brand } }}</p>
+      </div>
+
+      <nav class="auth-page__tabs" aria-label="Auth">
+        <a routerLink="/auth/login" routerLinkActive="active">{{ 'auth.login' | t }}</a>
+        <a routerLink="/auth/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'auth.register' | t }}</a>
+      </nav>
+
+      <app-google-sign-in divider="bottom" (signedIn)="onGoogleSignedIn($event)" />
+
+      <form class="auth-form" (ngSubmit)="submit()">
+        <div class="auth-field">
+          <label for="register-name">{{ 'auth.name' | t }}</label>
+          <input
+            id="register-name"
+            name="name"
+            [(ngModel)]="name"
+            required
+            autocomplete="name"
+            [placeholder]="'auth.namePh' | t"
+          />
+        </div>
+
+        <div class="auth-field">
+          <label for="register-email">{{ 'auth.email' | t }}</label>
+          <input
+            id="register-email"
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            autocomplete="email"
+            [placeholder]="'auth.emailPh' | t"
+          />
+        </div>
+
+        <div class="auth-field">
+          <label for="register-password">{{ 'auth.password' | t }}</label>
+          <div class="auth-field__pw">
+            <input
+              id="register-password"
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              [(ngModel)]="password"
+              required
+              minlength="6"
+              autocomplete="new-password"
+              [placeholder]="'auth.passwordPh' | t"
+            />
+            <button
+              type="button"
+              class="auth-field__toggle"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? ('auth.hidePassword' | t) : ('auth.showPassword' | t)"
+            >
+              {{ showPassword ? ('auth.hidePassword' | t) : ('auth.showPassword' | t) }}
+            </button>
+          </div>
+        </div>
+
+        <label class="auth-option">
+          <input type="checkbox" [(ngModel)]="asCreator" name="asCreator" />
+          <span>
+            <strong>{{ 'auth.wantSell' | t }}</strong>
+            <small>{{ 'auth.wantSellDesc' | t }}</small>
+          </span>
+        </label>
+
+        <label class="auth-check">
+          <input type="checkbox" [(ngModel)]="agreed" name="agreed" required />
+          <span>
+            {{ 'auth.agree' | t }}
+            <a routerLink="/terms-of-service" target="_blank">{{ 'auth.terms' | t }}</a>
+            {{ 'auth.and' | t }}
+            <a routerLink="/privacy-policy" target="_blank">{{ 'auth.privacy' | t }}</a>.
+          </span>
+        </label>
+
+        @if (error()) {
+          <div class="auth-alert" role="alert">{{ error() }}</div>
+        }
+
+        <button class="auth-submit" type="submit" [disabled]="loading()">
+          @if (loading()) {
+            <span class="auth-submit__spin" aria-hidden="true"></span>
+            {{ 'auth.loading' | t }}
+          } @else {
+            {{ 'auth.create' | t }}
+          }
+        </button>
+      </form>
+
+      <p class="auth-page__foot">
+        {{ 'auth.haveAccount' | t }}
+        <a routerLink="/auth/login">{{ 'auth.login' | t }}</a>
+      </p>
+    </div>
+  </div>
+</div>
