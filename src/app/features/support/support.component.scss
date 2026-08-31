@@ -1,0 +1,142 @@
+.support-hero {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 900px) {
+  .support-hero {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+
+.support-hero__copy h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-weight: 800;
+}
+
+.support-hero__copy p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.6;
+  max-width: 36rem;
+}
+
+.support-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.support-hero__video h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.support-hero__video p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.support-hero__thumb {
+  margin: 1rem 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  color: #e53935;
+}
+
+.support-hero__link {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.support-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .support-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.support-group__head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+
+.support-group__head h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.support-faq {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.support-faq__q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+
+.support-faq li:first-child .support-faq__q {
+  border-top: 0;
+}
+
+.support-faq__a {
+  padding: 0 0 0.85rem;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.support-contact {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.support-contact h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+
+.support-contact p {
+  margin: 0.25rem 0;
+  color: var(--color-muted);
+}
+
+.support-contact a {
+  color: var(--color-accent);
+  font-weight: 700;
+}

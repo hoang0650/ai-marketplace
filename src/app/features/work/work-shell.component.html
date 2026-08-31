@@ -64,7 +64,7 @@
             <div class="user-menu__panel" (click)="$event.stopPropagation()">
               <p class="name">{{ auth.user()?.name }}</p>
               <a routerLink="/profile" (click)="closeUserMenu()">Hồ sơ</a>
-              <a routerLink="/work" (click)="closeUserMenu()">Work</a>
+              <a routerLink="/work/manage" (click)="closeUserMenu()">Work</a>
               <a routerLink="/sell" (click)="closeUserMenu()">Kênh bán hàng</a>
               <button type="button" class="logout" (click)="logout()">Đăng xuất</button>
             </div>

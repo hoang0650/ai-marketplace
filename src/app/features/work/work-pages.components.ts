@@ -13,7 +13,7 @@ import { SeoService } from '../../services/seo.service';
       <div class="card">
         <p>{{ desc }}</p>
         <div class="actions">
-          <a routerLink="/work" class="link">Về bảng công việc →</a>
+          <a routerLink="/work" class="link">Về GC Work →</a>
           @if (ctaPath) {
             <a [routerLink]="ctaPath" class="btn">{{ ctaLabel }}</a>
           }

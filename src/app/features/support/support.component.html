@@ -1,0 +1,50 @@
+<section class="support page route-enter">
+  <div class="support-hero">
+    <div class="support-hero__copy">
+      <h1>{{ 'support.title' | t }}</h1>
+      <p>{{ 'support.lede' | t }}</p>
+      <div class="support-hero__actions">
+        <a routerLink="/sell/products" class="btn btn-fill">{{ 'support.createProduct' | t }}</a>
+        <a [href]="'mailto:' + supportEmail" class="btn btn-outline">{{ 'support.private' | t }}</a>
+      </div>
+    </div>
+    <aside class="support-hero__video panel">
+      <h2>{{ 'support.videoTitle' | t }}</h2>
+      <p>{{ 'support.videoDesc' | t }}</p>
+      <div class="support-hero__thumb" aria-hidden="true">
+        <span>▶</span>
+      </div>
+      <a routerLink="/sell" class="support-hero__link">{{ 'support.videoCta' | t }}</a>
+    </aside>
+  </div>
+
+  <div class="support-grid">
+    @for (g of groups; track g.id) {
+      <article class="support-group panel">
+        <header class="support-group__head">
+          <span aria-hidden="true">{{ g.icon }}</span>
+          <h2>{{ g.titleKey | t }}</h2>
+        </header>
+        <ul class="support-faq">
+          @for (item of g.items; track item.id) {
+            <li [class.open]="openId() === item.id">
+              <button type="button" class="support-faq__q" (click)="toggle(item.id)">
+                {{ item.qKey | t }}
+                <span aria-hidden="true">{{ openId() === item.id ? '−' : '+' }}</span>
+              </button>
+              @if (openId() === item.id) {
+                <div class="support-faq__a">{{ item.aKey | t: { brand } }}</div>
+              }
+            </li>
+          }
+        </ul>
+      </article>
+    }
+  </div>
+
+  <div class="support-contact panel">
+    <h2>{{ 'support.contactTitle' | t }}</h2>
+    <p>{{ 'support.contactDesc' | t }}</p>
+    <p><a [href]="'mailto:' + supportEmail">{{ supportEmail }}</a></p>
+  </div>
+</section>

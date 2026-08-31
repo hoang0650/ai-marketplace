@@ -42,6 +42,7 @@ export class ShellComponent {
   readonly talentCats = categoriesByNavGroup('talent');
   readonly aiCategories = AI_CATEGORIES;
   readonly categoryOpen = signal(false);
+  readonly workOpen = signal(false);
   readonly cartOpen = signal(false);
   readonly userMenuOpen = signal(false);
   readonly notiOpen = signal(false);
@@ -101,6 +102,7 @@ export class ShellComponent {
 
   toggleCategories(): void {
     this.categoryOpen.update((v) => !v);
+    this.workOpen.set(false);
     this.userMenuOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
@@ -112,10 +114,26 @@ export class ShellComponent {
     this.categoryOpen.set(false);
   }
 
+  toggleWork(event: Event): void {
+    event.stopPropagation();
+    this.workOpen.update((v) => !v);
+    this.categoryOpen.set(false);
+    this.userMenuOpen.set(false);
+    this.notiOpen.set(false);
+    this.langOpen.set(false);
+    this.currencyOpen.set(false);
+    this.cartOpen.set(false);
+  }
+
+  closeWork(): void {
+    this.workOpen.set(false);
+  }
+
   toggleUserMenu(event: Event): void {
     event.stopPropagation();
     this.userMenuOpen.update((v) => !v);
     this.categoryOpen.set(false);
+    this.workOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
     this.currencyOpen.set(false);
@@ -158,6 +176,11 @@ export class ShellComponent {
         this.closeCategories();
       }
     }
+    if (this.workOpen()) {
+      if (target && !this.host.nativeElement.querySelector('.work-dd')?.contains(target)) {
+        this.closeWork();
+      }
+    }
     if (this.userMenuOpen()) {
       if (target && !this.host.nativeElement.querySelector('.user-menu')?.contains(target)) {
         this.closeUserMenu();
@@ -188,6 +211,7 @@ export class ShellComponent {
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.closeCategories();
+    this.closeWork();
     this.closeUserMenu();
     this.closeNoti();
     this.closeLang();
@@ -209,6 +233,7 @@ export class ShellComponent {
     this.langOpen.update((v) => !v);
     this.userMenuOpen.set(false);
     this.categoryOpen.set(false);
+    this.workOpen.set(false);
     this.notiOpen.set(false);
     this.currencyOpen.set(false);
     this.cartOpen.set(false);
@@ -228,6 +253,7 @@ export class ShellComponent {
     this.langOpen.set(false);
     this.userMenuOpen.set(false);
     this.categoryOpen.set(false);
+    this.workOpen.set(false);
     this.notiOpen.set(false);
     this.cartOpen.set(false);
   }
@@ -251,6 +277,7 @@ export class ShellComponent {
     this.cartOpen.update((v) => !v);
     this.userMenuOpen.set(false);
     this.categoryOpen.set(false);
+    this.workOpen.set(false);
     this.notiOpen.set(false);
     this.langOpen.set(false);
     this.currencyOpen.set(false);

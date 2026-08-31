@@ -40,27 +40,27 @@ export class WorkShellComponent {
     {
       title: 'Tổng quan',
       items: [
-        { label: 'Bảng công việc', path: '/work', exact: true },
-        { label: 'Hồ sơ năng lực', path: '/work/profile' },
-        { label: 'Việc đã lưu', path: '/work/saved' },
-        { label: 'Hồ sơ tìm việc', path: '/work/job-profile' },
+        { label: 'Bảng công việc', path: '/work/manage', exact: true },
+        { label: 'Hồ sơ năng lực', path: '/work/manage/profile' },
+        { label: 'Việc đã lưu', path: '/work/manage/saved' },
+        { label: 'Hồ sơ tìm việc', path: '/work/manage/job-profile' },
       ],
     },
     {
       title: 'Tuyển dụng',
       items: [
         { label: 'Đăng việc mới', path: '/work/post' },
-        { label: 'Tổ chức', path: '/work/org' },
-        { label: 'Dịch vụ của tôi', path: '/work/services' },
-        { label: 'Cuộc thi của tôi', path: '/work/contests' },
+        { label: 'Tổ chức', path: '/work/manage/org' },
+        { label: 'Dịch vụ của tôi', path: '/work/manage/services' },
+        { label: 'Cuộc thi của tôi', path: '/work/manage/contests' },
       ],
     },
     {
       title: 'Tài chính & bảo vệ',
       items: [
-        { label: 'Hợp đồng', path: '/work/contracts' },
-        { label: 'Tranh chấp', path: '/work/disputes' },
-        { label: 'Rút tiền', path: '/work/withdraw' },
+        { label: 'Hợp đồng', path: '/work/manage/contracts' },
+        { label: 'Tranh chấp', path: '/work/manage/disputes' },
+        { label: 'Rút tiền', path: '/work/manage/withdraw' },
       ],
     },
   ];

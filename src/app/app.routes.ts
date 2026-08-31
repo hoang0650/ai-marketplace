@@ -3,7 +3,7 @@ import { authGuard, creatorGuard, adminGuard } from './guards/auth.guards';
 
 export const routes: Routes = [
   {
-    path: 'work',
+    path: 'work/manage',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/work/work-shell.component').then((m) => m.WorkShellComponent),
@@ -471,6 +471,42 @@ export const routes: Routes = [
         path: 'reviews',
         loadComponent: () =>
           import('./features/commerce/commerce.components').then((m) => m.ReviewsPageComponent),
+      },
+      {
+        path: 'support',
+        loadComponent: () =>
+          import('./features/support/support.component').then((m) => m.SupportComponent),
+      },
+      {
+        path: 'work',
+        loadComponent: () =>
+          import('./features/work/public/work-public.components').then((m) => m.WorkOverviewComponent),
+      },
+      {
+        path: 'work/jobs',
+        loadComponent: () =>
+          import('./features/work/public/work-public.components').then((m) => m.WorkJobsComponent),
+      },
+      {
+        path: 'work/jobs/:slug',
+        loadComponent: () =>
+          import('./features/work/public/work-public.components').then((m) => m.WorkJobDetailComponent),
+      },
+      {
+        path: 'work/talents',
+        loadComponent: () =>
+          import('./features/work/public/work-public.components').then((m) => m.WorkTalentsComponent),
+      },
+      {
+        path: 'work/talents/:slug',
+        loadComponent: () =>
+          import('./features/work/public/work-public.components').then((m) => m.WorkTalentDetailComponent),
+      },
+      {
+        path: 'work/post',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/work/public/work-public.components').then((m) => m.WorkPostJobComponent),
       },
       {
         path: 'privacy-policy',
