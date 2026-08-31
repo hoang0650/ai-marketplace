@@ -6,6 +6,7 @@ export interface MarketplaceAgent {
   name: string;
   description: string;
   icon: 'openclaw' | 'hermes' | 'nano' | 'webui' | 'tavern' | 'space';
+  logoUrl: string;
   version: string;
   model: string;
   docsUrl: string;

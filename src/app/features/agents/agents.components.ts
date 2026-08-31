@@ -96,7 +96,7 @@ export class MyAgentsComponent implements OnInit {
 @Component({
   selector: 'app-agent-marketplace',
   standalone: true,
-  imports: [RouterLink, NgClass],
+  imports: [RouterLink],
   styleUrl: './agents.styles.scss',
   template: `
     <section class="agents-page route-enter">
@@ -122,7 +122,7 @@ export class MyAgentsComponent implements OnInit {
         @for (agent of agents(); track agent.id) {
           <article class="agent-card">
             <div class="agent-card__head">
-              <span class="agent-icon" [ngClass]="'agent-icon--' + agent.icon" aria-hidden="true"></span>
+              <img class="agent-icon" [src]="agent.logoUrl" [alt]="agent.name" width="40" height="40" loading="lazy" />
               <h2>{{ agent.name }}</h2>
             </div>
             <p class="agent-card__desc">{{ agent.description }}</p>
@@ -199,7 +199,10 @@ export class AgentMarketplaceComponent implements OnInit {
       @if (agent(); as a) {
         <p class="agents-crumb"><a routerLink="/hire-agent">Agents</a> / Detail</p>
         <div class="agents-header">
-          <h1 class="agents-title">{{ hired()?.name || a.name }}</h1>
+          <div class="agents-header__title">
+            <img class="agent-icon agent-icon--lg" [src]="a.logoUrl" [alt]="a.name" width="48" height="48" />
+            <h1 class="agents-title">{{ hired()?.name || a.name }}</h1>
+          </div>
           <div class="agents-header__actions">
             <button type="button" class="agents-btn agents-btn--primary" (click)="launch()" [disabled]="busy()">
               {{ busy() ? 'Opening…' : 'Launch OpenClaw' }}
