@@ -43,10 +43,16 @@
 .auth-page__brand {
   display: inline-block;
   margin-bottom: 1.75rem;
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--color-lux-gold);
   text-decoration: none;
+}
+
+.auth-page__brand-img {
+  display: block;
+  width: min(11rem, 100%);
+  height: auto;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.65rem;
+  background: #fff;
 }
 
 .auth-page__aside h1 {

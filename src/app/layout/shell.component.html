@@ -83,8 +83,9 @@
 <header class="site-header">
   <div class="site-header__bar">
     <div class="site-header__inner">
-      <a routerLink="/" class="brand font-display" [title]="'nav.homeAria' | t">
-        {{ brand }}
+      <a routerLink="/" class="brand" [title]="'nav.homeAria' | t">
+        <img src="/ai-markets-icon.png" alt="" class="brand__logo" width="36" height="36" />
+        <span class="brand__text font-display">{{ brand }}</span>
       </a>
 
       <nav class="site-header__nav" aria-label="Primary">

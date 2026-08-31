@@ -1,7 +1,9 @@
 <div class="auth-page route-enter">
   <div class="auth-page__layout">
     <aside class="auth-page__aside">
-      <a routerLink="/" class="auth-page__brand font-display">{{ brand }}</a>
+      <a routerLink="/" class="auth-page__brand">
+        <img src="/ai-markets-logo.png" alt="AI Markets" class="auth-page__brand-img" width="200" height="56" />
+      </a>
       <h1>{{ 'auth.create' | t }}</h1>
       <p>{{ 'auth.registerSubtitle' | t: { brand } }}</p>
       <ul class="auth-page__benefits">

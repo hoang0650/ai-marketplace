@@ -174,15 +174,26 @@
   gap: 0.55rem;
   text-decoration: none;
   flex-shrink: 0;
-  font-size: 1.65rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--color-ink);
-  transition: color 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .brand:hover {
-  color: var(--color-lux-gold);
+  opacity: 0.88;
+}
+
+.brand__logo {
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 0.55rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.brand__text {
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
 }
 
 .brand__mark {
