@@ -24,6 +24,8 @@ Giá hiển thị phải nêu rõ:
 - phí bổ sung nếu có;
 - thuế/phí được áp dụng theo trường hợp.
 
+**Phí sàn 20%** không cộng vào giá khách trừ khi product/category có pricing model khác.
+
 ## Điều 3. Order
 
 Mỗi giao dịch tạo Order ID duy nhất.

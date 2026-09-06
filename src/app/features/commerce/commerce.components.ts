@@ -83,7 +83,7 @@ export class AffiliateComponent implements OnInit {
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
       <p class="mt-2 max-w-2xl text-muted">
-        Marketplace GMV, platform fee (20%), per-shop revenue, and buyer wallet deposits.
+        GMV, phí sàn (commission, mặc định 20%), thuế khấu trừ và seller payable theo snapshot đơn — không tính lại 80% trên tổng GMV.
       </p>
 
       @if (data(); as d) {
@@ -94,14 +94,14 @@ export class AffiliateComponent implements OnInit {
             <p class="mt-1 text-xs text-muted">{{ d.paidOrders | number }} paid orders</p>
           </div>
           <div class="panel">
-            <p class="text-xs uppercase tracking-wider text-muted">Phí nền tảng</p>
+            <p class="text-xs uppercase tracking-wider text-muted">Phí sàn (commission)</p>
             <p class="mt-2 font-display text-3xl">{{ d.platformFee | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">{{ d.platformFeeRate | percent }} of GMV</p>
+            <p class="mt-1 text-xs text-muted">Mặc định {{ d.platformFeeRate | percent }} — không phải thuế</p>
           </div>
           <div class="panel">
-            <p class="text-xs uppercase tracking-wider text-muted">Seller net (80%)</p>
+            <p class="text-xs uppercase tracking-wider text-muted">Seller payable (net)</p>
             <p class="mt-2 font-display text-3xl">{{ d.sellerNet | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">Across all shops</p>
+            <p class="mt-1 text-xs text-muted">Sau phí sàn / thuế khấu trừ / điều chỉnh</p>
           </div>
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Buyer nạp tiền</p>
@@ -131,7 +131,7 @@ export class AffiliateComponent implements OnInit {
 
         <div class="panel mt-8">
           <h2 class="font-display text-2xl">Doanh thu từng shop</h2>
-          <p class="mt-1 text-sm text-muted">Gross · platform fee 20% · seller net 80%</p>
+          <p class="mt-1 text-sm text-muted">Gross · phí sàn (snapshot) · seller payable — không đồng nhất với 80%</p>
           <div class="mt-4 overflow-x-auto">
             <table class="w-full min-w-[640px] text-left text-sm">
               <thead class="text-xs uppercase tracking-wider text-muted">
@@ -140,7 +140,7 @@ export class AffiliateComponent implements OnInit {
                   <th class="py-2 pr-3 font-medium">Orders</th>
                   <th class="py-2 pr-3 font-medium">Gross</th>
                   <th class="py-2 pr-3 font-medium">Platform 20%</th>
-                  <th class="py-2 font-medium">Seller net</th>
+                  <th class="py-2 font-medium">Seller payable</th>
                 </tr>
               </thead>
               <tbody>

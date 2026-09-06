@@ -63,10 +63,21 @@ Seller có thể bị đình chỉ nếu:
 
 ## Điều 6. Doanh thu và payout
 
-Seller earnings được ghi nhận trong ledger nội bộ. Payout được thực hiện theo cơ chế thanh toán của nền tảng và điều kiện áp dụng.
+**Phí sàn mặc định 20%** (platform commission) được khấu trừ khỏi khoản phải trả seller, **không phải thuế**.
 
-Seller không được coi số dư ledger là tiền gửi tại nền tảng.
+Công thức đối soát (conceptual):
+
+- Doanh thu gộp
+- trừ phí sàn (snapshot tại lúc order)
+- trừ thuế khấu trừ nếu Tax Engine áp dụng
+- trừ phí thanh toán nếu seller chịu
+- trừ hoàn tiền / chargeback
+- bằng **seller net payable**
+
+Không hiển thị “bạn nhận 80%” như số thực nhận cuối cùng.
+
+Seller earnings được ghi nhận trong **Marketplace Ledger** nội bộ. Payout theo trạng thái PENDING / APPROVED / PAID / ON_HOLD. Số dư ledger không phải tiền gửi.
 
 ## Điều 7. Thuế
 
-Seller tự chịu trách nhiệm đối với nghĩa vụ thuế của mình theo pháp luật áp dụng, trừ trường hợp pháp luật hoặc thỏa thuận quy định nền tảng thực hiện nghĩa vụ thay seller.
+Seller tự chịu trách nhiệm đối với nghĩa vụ thuế theo loại hình và pháp luật áp dụng. Sàn có thể khấu trừ khi có Tax Rule / hồ sơ yêu cầu. Tỷ lệ thuế không hard-code trong chính sách.

@@ -134,6 +134,20 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     summary: 'Retention, legal hold và yêu cầu cơ quan nhà nước.',
     group: 'data',
   },
+  {
+    slug: 'chinh-sach-thue',
+    file: '18-chinh-sach-thue.md',
+    title: 'Chính sách thuế',
+    summary: 'Phí sàn 20% không phải thuế; khấu trừ theo Tax Engine.',
+    group: 'commerce',
+  },
+  {
+    slug: 'chinh-sach-hoa-don',
+    file: '19-chinh-sach-hoa-don.md',
+    title: 'Chính sách hóa đơn',
+    summary: 'Phân biệt hóa đơn sàn (commission) và hóa đơn seller.',
+    group: 'commerce',
+  },
 ];
 
 const ALIASES: Record<string, string> = {
@@ -153,6 +167,8 @@ const ALIASES: Record<string, string> = {
   'data-policy': 'chinh-sach-bao-mat-va-du-lieu',
   'seller-agreement': 'mau-hop-dong-cung-cap-dich-vu-nguoi-ban',
   cookies: 'chinh-sach-cookies',
+  'tax-policy': 'chinh-sach-thue',
+  'invoice-policy': 'chinh-sach-hoa-don',
 };
 
 export function resolveLegalPolicy(slugOrAlias: string | null | undefined): LegalPolicyMeta | undefined {

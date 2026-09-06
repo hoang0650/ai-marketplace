@@ -67,6 +67,25 @@ export class DashboardShellComponent {
         <div class="panel"><p class="text-xs uppercase text-muted">Token usage</p><p class="mt-2 font-display text-3xl">{{ s.tokenUsage | number }}</p></div>
         <div class="panel"><p class="text-xs uppercase text-muted">GPU hours</p><p class="mt-2 font-display text-3xl">{{ s.gpuHours | number:'1.1-1' }}</p></div>
       </div>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="panel">
+          <p class="text-xs uppercase text-muted">Phí sàn (commission)</p>
+          <p class="mt-2 font-display text-2xl">{{ (s.platformCommission || 0) | currency: s.currency }}</p>
+          <p class="mt-1 text-xs text-muted">Mặc định 20% — không phải thuế</p>
+        </div>
+        <div class="panel">
+          <p class="text-xs uppercase text-muted">Thuế khấu trừ</p>
+          <p class="mt-2 font-display text-2xl">{{ (s.taxWithholding || 0) | currency: s.currency }}</p>
+        </div>
+        <div class="panel">
+          <p class="text-xs uppercase text-muted">Hoàn tiền</p>
+          <p class="mt-2 font-display text-2xl">{{ (s.refunds || 0) | currency: s.currency }}</p>
+        </div>
+        <div class="panel">
+          <p class="text-xs uppercase text-muted">Thực nhận (net payable)</p>
+          <p class="mt-2 font-display text-2xl">{{ (s.netPayable || 0) | currency: s.currency }}</p>
+        </div>
+      </div>
     }
   `,
 })

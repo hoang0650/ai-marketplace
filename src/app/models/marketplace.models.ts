@@ -336,6 +336,11 @@ export interface DashboardSummary {
   gpuHours: number;
   activeProducts: number;
   currency: string;
+  grossSales?: number;
+  platformCommission?: number;
+  taxWithholding?: number;
+  refunds?: number;
+  netPayable?: number;
 }
 
 export interface AdminShopRevenue {
