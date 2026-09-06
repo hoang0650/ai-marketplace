@@ -22,7 +22,10 @@ export type ProductCategory =
   | 'hire-workflow'
   | 'hire-build-app'
   | 'hire-build-web'
-  | 'skill-pack';
+  | 'skill-pack'
+  | 'voice-clone'
+  | 'ai-film-series'
+  | 'story-book';
 
 export type CategoryGroup = 'models' | 'skills' | 'hire' | 'apis';
 
@@ -124,9 +127,34 @@ export interface ProductPricing {
   model: PricingModel;
   price: number;
   currency: string;
-  interval?: 'month' | 'year';
+  interval?: 'day' | 'month' | 'year';
   usageUnit?: string;
   usageRate?: number;
+}
+
+export interface ProductContentMeta {
+  kind?: 'voice' | 'series' | 'story' | '';
+  voiceModes?: Array<'tts' | 'stt'>;
+  voiceSampleUrl?: string;
+  creditUnit?: 'character' | 'word' | '';
+  charactersPerCredit?: number;
+  episodeCount?: number;
+  licenseTerm?: 'day' | 'month' | 'year' | '';
+  licensePrices?: { day?: number; month?: number; year?: number };
+}
+
+export interface IssuedLicense {
+  id: string;
+  licenseKey: string;
+  orderId?: string;
+  productId?: string;
+  productName?: string;
+  category?: string;
+  term: 'day' | 'month' | 'year';
+  startsAt: string | null;
+  expiresAt: string | null;
+  status: 'active' | 'expired' | 'revoked';
+  valid: boolean;
 }
 
 /** Seller RunPod / gateway runtime attached to a catalog product. */
@@ -181,6 +209,7 @@ export interface Product {
   coverUrl: string;
   gallery: string[];
   pricing: ProductPricing;
+  contentMeta?: ProductContentMeta | null;
   runtime?: ProductRuntime;
   rating: number;
   reviewCount: number;

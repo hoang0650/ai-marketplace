@@ -86,6 +86,33 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     lane: 'ai',
   },
   {
+    id: 'voice-clone',
+    label: 'Voice clone',
+    description: 'Rent cloned/uploaded voices for TTS and STT (credits or monthly).',
+    hubPath: '/voice-clone',
+    group: 'models',
+    navGroup: 'generate',
+    lane: 'ai',
+  },
+  {
+    id: 'ai-film-series',
+    label: 'AI film series',
+    description: 'Multi-episode AI films with a day / month / year license key.',
+    hubPath: '/ai-film-series',
+    group: 'models',
+    navGroup: 'generate',
+    lane: 'ai',
+  },
+  {
+    id: 'story-book',
+    label: 'Stories & books',
+    description: 'AI story and audiobook reading with a time-bound license key.',
+    hubPath: '/story-book',
+    group: 'models',
+    navGroup: 'generate',
+    lane: 'ai',
+  },
+  {
     id: 'api-endpoint',
     label: 'Sell API',
     description: 'Metered OpenAI-compatible APIs for buyers.',
@@ -270,7 +297,17 @@ export function isAiCategory(id: ProductCategory | string): boolean {
 }
 
 const COMPUTE_STREAM_CATEGORIES = new Set<ProductCategory>(['gpu-compute', 'game-server']);
+const LICENSE_CATEGORIES = new Set<ProductCategory>(['ai-film-series', 'story-book']);
+const VOICE_CATEGORIES = new Set<ProductCategory>(['voice-clone']);
 
 export function isComputeStreamCategory(id: ProductCategory | string): boolean {
   return COMPUTE_STREAM_CATEGORIES.has(id as ProductCategory);
+}
+
+export function isLicenseCategory(id: ProductCategory | string): boolean {
+  return LICENSE_CATEGORIES.has(id as ProductCategory);
+}
+
+export function isVoiceCategory(id: ProductCategory | string): boolean {
+  return VOICE_CATEGORIES.has(id as ProductCategory);
 }

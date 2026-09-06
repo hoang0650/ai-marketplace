@@ -15,8 +15,8 @@ import {
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
-import { Product, ProductCategory, Review } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory, isComputeStreamCategory } from '../../models/categories';
+import { Product, ProductCategory, Review, IssuedLicense } from '../../models/marketplace.models';
+import { isHireCategory, isSkillCategory, isComputeStreamCategory, isLicenseCategory, isVoiceCategory } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -88,8 +88,11 @@ export class ProductDetailComponent implements OnInit {
   readonly resultView = signal<ResultView>('preview');
   readonly runStatus = signal<RunStatus>('idle');
   readonly checkoutMsg = signal('');
+  readonly issuedLicense = signal<IssuedLicense | null>(null);
   readonly walletBalance = signal(0);
   qty = 1;
+  licenseTerm: 'day' | 'month' | 'year' = 'month';
+  readonly licenseTerms = ['day', 'month', 'year'] as const;
   useCoupon = false;
   couponCode = '';
   displayCurrency: AppCurrency = 'USD';
@@ -276,6 +279,9 @@ export class ProductDetailComponent implements OnInit {
       const slug = params.get('slug') || '';
       this.productsApi.bySlug(slug).subscribe((p) => {
         this.product.set(p);
+        this.issuedLicense.set(null);
+        const term = p.contentMeta?.licenseTerm;
+        if (term === 'day' || term === 'month' || term === 'year') this.licenseTerm = term;
         this.mediaIndex.set(0);
         this.selectedPackage.set('std');
         this.seo.set({ title: p.name, description: p.tagline, image: p.coverUrl });
@@ -309,7 +315,12 @@ export class ProductDetailComponent implements OnInit {
       return this.displayCurrency === 'VND' ? '0 đ' : this.i18n.t('card.free');
     }
     const qty = Math.max(1, Number(units) || 1);
-    const usd = (pr.model === 'usage' ? Number(pr.usageRate) || 0 : Number(pr.price) || 0) * qty;
+    const unitUsd = isLicenseCategory(p.category)
+      ? this.licensePrice(p)
+      : pr.model === 'usage'
+        ? Number(pr.usageRate) || 0
+        : Number(pr.price) || 0;
+    const usd = unitUsd * (isLicenseCategory(p.category) ? 1 : qty);
     if (pr.model === 'usage' && qty === 1) {
       return this.currencySvc.formatUsageFromUsd(usd, pr.usageUnit || 'unit', this.displayCurrency);
     }
@@ -357,6 +368,21 @@ export class ProductDetailComponent implements OnInit {
 
   isComputeStream(cat: ProductCategory): boolean {
     return isComputeStreamCategory(cat);
+  }
+
+  isLicense(cat: ProductCategory): boolean {
+    return isLicenseCategory(cat);
+  }
+
+  isVoice(cat: ProductCategory): boolean {
+    return isVoiceCategory(cat);
+  }
+
+  licensePrice(p: Product, term: 'day' | 'month' | 'year' = this.licenseTerm): number {
+    const map = p.contentMeta?.licensePrices || {};
+    const n = Number(map[term]);
+    if (n > 0) return n;
+    return Number(p.pricing?.price) || 0;
   }
 
   launchComputeStream(): void {
@@ -1110,9 +1136,17 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
     const quantity = Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
-    this.billing.checkout({ productId: p.id, quantity }).subscribe({
+    const licenseTerm = isLicenseCategory(p.category) ? this.licenseTerm : undefined;
+    this.billing.checkout({ productId: p.id, quantity, licenseTerm }).subscribe({
       next: (res) => {
-        this.checkoutMsg.set(`Đã thanh toán bằng ví aimarkets.vn · ${quantity} đơn vị`);
+        if (res.license?.licenseKey) {
+          this.issuedLicense.set(res.license);
+          this.checkoutMsg.set(
+            `Đã thuê · license ${res.license.licenseKey} · hết hạn ${res.license.expiresAt || ''}`,
+          );
+        } else {
+          this.checkoutMsg.set(`Đã thanh toán bằng ví aimarkets.vn · ${quantity} đơn vị`);
+        }
         if (typeof res.balance === 'number') this.walletBalance.set(res.balance);
         else this.loadWallet();
         this.product.update((cur) => {

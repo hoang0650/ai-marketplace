@@ -14,8 +14,9 @@ import {
   UsageStat,
   WalletSummary,
   WalletTx,
+  IssuedLicense,
 } from '../../models/marketplace.models';
-import { AI_CATEGORIES, CATEGORY_META, categoryLabel } from '../../models/categories';
+import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isLicenseCategory, isVoiceCategory } from '../../models/categories';
 import {
   RUNPOD_PUBLIC_ENDPOINTS,
   RunpodPublicEndpoint,
@@ -51,6 +52,7 @@ export class DashboardShellComponent {
     { path: '/account/console', key: 'dash.console' },
     { path: '/dashboard/analytics', key: 'dash.analytics' },
     { path: '/dashboard/products', key: 'dash.products' },
+    { path: '/dashboard/licenses', key: 'dash.licenses' },
     { path: '/dashboard/withdraw', key: 'dash.withdraw' },
   ];
 }
@@ -318,7 +320,7 @@ export class DashboardAnalyticsComponent implements OnInit {
         </div>
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">AI category</label>
-          <select class="input" [(ngModel)]="draft.category" name="category" required>
+          <select class="input" [(ngModel)]="draft.category" name="category" required (ngModelChange)="onCategoryChange()">
             <optgroup label="AI">
               @for (c of aiCategories; track c.id) {
                 <option [ngValue]="c.id">{{ c.label }}</option>
@@ -355,9 +357,46 @@ export class DashboardAnalyticsComponent implements OnInit {
           <div>
             <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Interval</label>
             <select class="input" [(ngModel)]="draft.interval" name="interval">
+              <option value="day">day</option>
               <option value="month">month</option>
               <option value="year">year</option>
             </select>
+          </div>
+        }
+        @if (isVoiceDraft()) {
+          <div class="md:col-span-2 rounded-lg border border-line p-3">
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Giọng clone — TTS / STT</p>
+            <div class="flex flex-wrap gap-4 text-sm">
+              <label class="flex items-center gap-2"><input type="checkbox" [(ngModel)]="draft.voiceTts" name="voiceTts" /> TTS (đọc văn bản)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" [(ngModel)]="draft.voiceStt" name="voiceStt" /> STT (nhận giọng)</label>
+            </div>
+            <label class="mt-3 mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">URL mẫu giọng / file clone</label>
+            <input class="input" [(ngModel)]="draft.voiceSampleUrl" name="voiceSampleUrl" placeholder="https://… (audio sample)" />
+            <label class="mt-3 mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Ký tự / 1 credit</label>
+            <input class="input" type="number" min="1" [(ngModel)]="draft.charactersPerCredit" name="charactersPerCredit" />
+            <p class="mt-2 text-xs text-muted">Usage = credit theo khối văn bản. Subscription = thuê giọng theo tháng.</p>
+          </div>
+        }
+        @if (isLicenseDraft()) {
+          <div class="md:col-span-2 rounded-lg border border-line p-3">
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">License key theo thời hạn thuê</p>
+            <p class="mb-3 text-xs text-muted">Khi buyer thuê, hệ thống cấp key AIM-xxxx chỉ dùng được trong ngày / tháng / năm đã mua. Hoàn tiền sẽ thu hồi key.</p>
+            <div class="grid gap-3 md:grid-cols-3">
+              <div>
+                <label class="mb-1 block text-xs uppercase text-muted">Giá / ngày (USD)</label>
+                <input class="input" type="number" min="0" step="0.01" [(ngModel)]="draft.priceDay" name="priceDay" />
+              </div>
+              <div>
+                <label class="mb-1 block text-xs uppercase text-muted">Giá / tháng</label>
+                <input class="input" type="number" min="0" step="0.01" [(ngModel)]="draft.priceMonth" name="priceMonth" />
+              </div>
+              <div>
+                <label class="mb-1 block text-xs uppercase text-muted">Giá / năm</label>
+                <input class="input" type="number" min="0" step="0.01" [(ngModel)]="draft.priceYear" name="priceYear" />
+              </div>
+            </div>
+            <label class="mt-3 mb-1 block text-xs uppercase text-muted">Số tập (phim) / chương</label>
+            <input class="input" type="number" min="0" [(ngModel)]="draft.episodeCount" name="episodeCount" />
           </div>
         }
         <div class="md:col-span-2">
@@ -368,6 +407,7 @@ export class DashboardAnalyticsComponent implements OnInit {
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Tags (comma-separated)</label>
           <input class="input" [(ngModel)]="draft.tags" name="tags" placeholder="llm, vietnamese, text-to-text" />
         </div>
+        @if (!isVoiceDraft() && !isLicenseDraft()) {
         <div class="md:col-span-2 border-t border-line pt-3">
           <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">AI Markets endpoints (optional — editable later in Deployments)</p>
         </div>
@@ -404,6 +444,7 @@ export class DashboardAnalyticsComponent implements OnInit {
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Skills (comma-separated)</label>
           <input class="input" [(ngModel)]="draft.skillsText" name="skillsText" placeholder="web-search, code-exec, memory" />
         </div>
+        }
         <div class="md:col-span-2">
           <button class="btn btn-fill" type="submit">Publish</button>
         </div>
@@ -491,7 +532,7 @@ export class DashboardProductsComponent implements OnInit {
       price: 29,
       usageRate: 0.05,
       usageUnit: '1K tokens',
-      interval: 'month' as 'month' | 'year',
+      interval: 'month' as 'day' | 'month' | 'year',
       coverUrl: '',
       tags: '',
       serverlessEndpoint: '',
@@ -500,7 +541,35 @@ export class DashboardProductsComponent implements OnInit {
       gatewayUrl: '',
       envText: '',
       skillsText: '',
+      voiceTts: true,
+      voiceStt: false,
+      voiceSampleUrl: '',
+      charactersPerCredit: 1000,
+      episodeCount: 0,
+      priceDay: 0,
+      priceMonth: 9,
+      priceYear: 79,
     };
+  }
+
+  isVoiceDraft(): boolean {
+    return isVoiceCategory(this.draft.category);
+  }
+
+  isLicenseDraft(): boolean {
+    return isLicenseCategory(this.draft.category);
+  }
+
+  onCategoryChange(): void {
+    if (this.isVoiceDraft()) {
+      this.draft.pricingModel = 'usage';
+      this.draft.usageUnit = '1K characters';
+      this.draft.usageRate = 0.02;
+    } else if (this.isLicenseDraft()) {
+      this.draft.pricingModel = 'subscription';
+      this.draft.interval = 'month';
+      this.draft.price = Number(this.draft.priceMonth) || 9;
+    }
   }
 
   reload(): void {
@@ -541,6 +610,30 @@ export class DashboardProductsComponent implements OnInit {
               }
             : { model: 'free' as const, price: 0, currency: 'USD' };
 
+    const contentMeta = this.isVoiceDraft()
+      ? {
+          kind: 'voice' as const,
+          voiceModes: [
+            ...(this.draft.voiceTts ? (['tts'] as const) : []),
+            ...(this.draft.voiceStt ? (['stt'] as const) : []),
+          ],
+          voiceSampleUrl: this.draft.voiceSampleUrl,
+          creditUnit: 'character' as const,
+          charactersPerCredit: Number(this.draft.charactersPerCredit) || 1000,
+        }
+      : this.isLicenseDraft()
+        ? {
+            kind: (this.draft.category === 'story-book' ? 'story' : 'series') as 'story' | 'series',
+            episodeCount: Number(this.draft.episodeCount) || 0,
+            licenseTerm: this.draft.interval,
+            licensePrices: {
+              day: Number(this.draft.priceDay) || 0,
+              month: Number(this.draft.priceMonth) || Number(this.draft.price) || 0,
+              year: Number(this.draft.priceYear) || 0,
+            },
+          }
+        : undefined;
+
     this.productsApi
       .create({
         name: this.draft.name,
@@ -550,6 +643,7 @@ export class DashboardProductsComponent implements OnInit {
         creatorName: user?.name || 'Creator',
         category: this.draft.category,
         pricing,
+        contentMeta,
         runtime: {
           serverlessEndpoint: this.draft.serverlessEndpoint.trim(),
           publicEndpoint: this.draft.publicEndpoint.trim(),
@@ -657,5 +751,52 @@ export class DashboardWithdrawComponent implements OnInit {
       },
       error: (err) => this.msg.set(err?.error?.message || 'Withdraw failed'),
     });
+  }
+}
+
+@Component({
+  selector: 'app-dashboard-licenses',
+  standalone: true,
+  imports: [DatePipe],
+  template: `
+    <div class="panel overflow-x-auto">
+      <h2 class="font-display text-2xl">License keys</h2>
+      <p class="mt-1 text-sm text-muted">
+        Phim AI và đọc truyện/sách: key chỉ dùng được đến hạn. Hết hạn hoặc hoàn tiền thì key vô hiệu.
+      </p>
+      <table class="mt-4 w-full min-w-[640px] text-left text-sm">
+        <thead class="text-xs uppercase text-muted">
+          <tr>
+            <th class="pb-3">Key</th>
+            <th>Sản phẩm</th>
+            <th>Hạn</th>
+            <th>Hết hạn</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (k of keys(); track k.id) {
+            <tr class="border-t border-line">
+              <td class="py-3 font-mono text-xs">{{ k.licenseKey }}</td>
+              <td>{{ k.productName }}</td>
+              <td>{{ k.term }}</td>
+              <td>{{ k.expiresAt | date: 'short' }}</td>
+              <td>{{ k.valid ? 'active' : k.status }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="py-6 text-muted" colspan="5">Chưa có license key.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  `,
+})
+export class DashboardLicensesComponent implements OnInit {
+  private readonly api = inject(DashboardService);
+  readonly keys = signal<IssuedLicense[]>([]);
+  ngOnInit(): void {
+    this.api.licenses().subscribe((rows) => this.keys.set(rows));
   }
 }

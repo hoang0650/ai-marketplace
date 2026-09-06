@@ -37,7 +37,7 @@ export class CategoryHubComponent implements OnInit {
       const category = (data['category'] as ProductCategory) || 'text-to-text';
       const title = (data['title'] as string) || this.i18n.catLabel(category);
       this.title.set(this.i18n.catLabel(category) || title);
-      this.subtitle.set(this.i18n.t('hub.subtitle', { title: this.title() }));
+      this.subtitle.set(this.i18n.catDesc(category) || this.i18n.t('hub.subtitle', { title: this.title() }));
       this.seo.set({ title, description: this.subtitle() });
       this.productsApi.list({ category }).subscribe((items) => this.products.set(items));
     });

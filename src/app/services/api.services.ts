@@ -19,6 +19,7 @@ import {
   WalletTx,
   SellerProfile,
   LegalDocumentMeta,
+  IssuedLicense,
 } from '../models/marketplace.models';
 import { CategoryMeta } from '../models/marketplace.models';
 import {
@@ -230,6 +231,10 @@ export class DashboardService {
     return this.http.get<AdminOverview>(`${this.base}/admin/overview`);
   }
 
+  licenses(): Observable<IssuedLicense[]> {
+    return this.http.get<IssuedLicense[]>(`${this.base}/licenses/me`);
+  }
+
   adminUser(id: string): Observable<AdminUserDetail> {
     return this.http.get<AdminUserDetail>(`${this.base}/admin/users/${id}`);
   }
@@ -328,6 +333,7 @@ export class BillingService {
   checkout(input: {
     productId: string;
     quantity?: number;
+    licenseTerm?: 'day' | 'month' | 'year';
   }): Observable<{
     checkoutId: string;
     provider: string;
@@ -336,6 +342,7 @@ export class BillingService {
     amount?: number;
     currency?: string;
     balance?: number;
+    license?: IssuedLicense | null;
   }> {
     return this.http.post<{
       checkoutId: string;
@@ -345,9 +352,11 @@ export class BillingService {
       amount?: number;
       currency?: string;
       balance?: number;
+      license?: IssuedLicense | null;
     }>(`${this.base}/billing/checkout`, {
       productId: input.productId,
       quantity: input.quantity,
+      licenseTerm: input.licenseTerm,
       provider: 'wallet',
     });
   }

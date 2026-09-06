@@ -8,7 +8,10 @@ export type CategoryIconId =
   | 'inference'
   | 'api-endpoint'
   | 'hire-agent'
-  | 'skill-pack';
+  | 'skill-pack'
+  | 'voice-clone'
+  | 'ai-film-series'
+  | 'story-book';
 
 @Component({
   selector: 'app-category-icon',
@@ -195,6 +198,29 @@ export type CategoryIconId =
           />
           <path
             d="M24 10v28M10 17l14 7 14-7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+        }
+        @case ('voice-clone') {
+          <circle cx="18" cy="22" r="6" stroke="currentColor" stroke-width="2" />
+          <path d="M18 16v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path
+            d="M28 18c3 2 4 4 4 6s-1 4-4 6M32 15c5 3 6 6 6 9s-1 6-6 9"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        }
+        @case ('ai-film-series') {
+          <rect x="8" y="14" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+          <rect x="20" y="18" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2" opacity="0.7" />
+          <path d="M28 24l6 4-6 4v-8z" fill="currentColor" />
+        }
+        @case ('story-book') {
+          <path
+            d="M12 12h10c2 0 4 2 4 4v20c0-2-2-4-4-4H12V12zM36 12H26c-2 0-4 2-4 4v20c0-2 2-4 4-4h10V12z"
             stroke="currentColor"
             stroke-width="2"
             stroke-linejoin="round"

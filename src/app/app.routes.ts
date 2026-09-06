@@ -226,6 +226,24 @@ export const routes: Routes = [
         data: { category: 'image-to-video', title: 'Image to Video' },
       },
       {
+        path: 'voice-clone',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'voice-clone', title: 'Voice clone' },
+      },
+      {
+        path: 'ai-film-series',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'ai-film-series', title: 'AI film series' },
+      },
+      {
+        path: 'story-book',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'story-book', title: 'Stories & books' },
+      },
+      {
         path: 'text-to-image',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
@@ -669,6 +687,13 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/dashboard/dashboard.components').then(
                 (m) => m.DashboardAnalyticsComponent,
+              ),
+          },
+          {
+            path: 'licenses',
+            loadComponent: () =>
+              import('./features/dashboard/dashboard.components').then(
+                (m) => m.DashboardLicensesComponent,
               ),
           },
           {

@@ -98,6 +98,31 @@
           <button type="button" (click)="bumpQty(1)" aria-label="Increase">+</button>
         </div>
 
+        @if (isLicense(p.category)) {
+          <label class="pd-buy__section">Thời hạn thuê</label>
+          <div class="pd-qty" style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            @for (t of licenseTerms; track t) {
+              <button type="button" class="btn" [class.btn-fill]="licenseTerm === t" (click)="licenseTerm = t">
+                {{ t === 'day' ? 'Ngày' : t === 'month' ? 'Tháng' : 'Năm' }}
+              </button>
+            }
+          </div>
+          @if (p.contentMeta?.episodeCount) {
+            <p class="text-xs text-muted">{{ p.contentMeta?.episodeCount }} tập / chương</p>
+          }
+        }
+        @if (isVoice(p.category)) {
+          <p class="text-xs text-muted">
+            TTS/STT
+            @if (p.contentMeta?.voiceModes?.length) {
+              · {{ p.contentMeta?.voiceModes?.join(', ') }}
+            }
+            @if (p.pricing.model === 'usage') {
+              · credit theo {{ p.pricing.usageUnit || '1K characters' }}
+            }
+          </p>
+        }
+
         <label class="pd-buy__section">{{ 'pd.pay' | t }}</label>
         <div class="pd-pay">
           <p class="pd-pay__method">{{ 'pd.walletMethod' | t }}</p>
@@ -114,8 +139,12 @@
             {{ 'compute.cta.play' | t }}
           } @else if (isHire(p.category)) {
             {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
-          } @else if (isSkill(p.category)) {
+          }           @else if (isSkill(p.category)) {
             Buy / Install
+          } @else if (isLicense(p.category)) {
+            Thuê · cấp license key
+          } @else if (isVoice(p.category)) {
+            Thuê giọng / mua credit
           } @else {
             Buy now
           }
@@ -163,7 +192,12 @@
         @if (checkoutMsg()) {
           <p class="checkout-msg">{{ checkoutMsg() }}</p>
         }
-        @if (isHire(p.category) === false && isSkill(p.category) === false) {
+        @if (issuedLicense(); as lic) {
+          <p class="checkout-msg font-mono text-xs">
+            Key: {{ lic.licenseKey }} · {{ lic.term }} · đến {{ lic.expiresAt }}
+          </p>
+        }
+        @if (isHire(p.category) === false && isSkill(p.category) === false && isLicense(p.category) === false) {
           <a [routerLink]="['/deploy', p.slug]" class="pd-buy__deploy">{{ 'pd.deploy' | t }}</a>
         }
       </aside>
