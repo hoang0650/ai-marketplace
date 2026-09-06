@@ -145,6 +145,16 @@ export interface ProductRuntime {
   maxTokens: number;
 }
 
+export type OwnershipType = 'PLATFORM_DIRECT' | 'THIRD_PARTY_SELLER';
+
+export type SellerVerificationStatus =
+  | 'PENDING'
+  | 'VERIFICATION_REQUIRED'
+  | 'VERIFIED'
+  | 'SUSPENDED'
+  | 'REJECTED'
+  | 'TERMINATED';
+
 export interface Product {
   id: string;
   slug: string;
@@ -153,7 +163,18 @@ export interface Product {
   description: string;
   category: ProductCategory;
   productType?: string;
+  /** Infra provider only (runpod/openrouter/…). Not the marketplace seller. */
   provider?: string;
+  infraProvider?: string;
+  ownershipType?: OwnershipType;
+  soldByPlatform?: boolean;
+  sellerId?: string;
+  sellerSlug?: string;
+  sellerName?: string;
+  license?: string;
+  termsSummary?: string;
+  complianceStatus?: string;
+  moderationStatus?: string;
   creatorId: string;
   creatorSlug: string;
   creatorName: string;
@@ -198,13 +219,18 @@ export interface Order {
   buyerId?: string;
   buyerName: string;
   sellerId?: string;
+  ownershipType?: OwnershipType;
   quantity?: number;
   amount: number;
   sellerNet?: number;
   platformFee?: number;
   currency: string;
   status: 'pending' | 'paid' | 'refunded';
-  provider: PaymentProvider;
+  paymentStatus?: string;
+  fulfillmentStatus?: string;
+  paymentProvider?: PaymentProvider | 'internal_ledger';
+  provider: PaymentProvider | 'internal_ledger';
+  contractSnapshot?: Record<string, unknown> | null;
   createdAt: string;
   completedAt?: string | null;
   payoutHoldUntil?: string;
@@ -215,6 +241,40 @@ export interface Order {
   disputeOpenedAt?: string | null;
   disputeResolvedAt?: string | null;
   canDispute?: boolean;
+}
+
+export interface SellerProfile {
+  id: string;
+  userId: string;
+  sellerType: string;
+  legalName: string;
+  displayName: string;
+  taxCode: string;
+  businessRegistrationNumber: string;
+  businessAddress: string;
+  contactEmail: string;
+  contactPhone: string;
+  identityVerificationStatus: string;
+  verificationStatus: SellerVerificationStatus;
+  complianceStatus: string;
+  sellerAgreementVersion: string;
+  sellerAgreementAcceptedAt: string | null;
+  verifiedAt: string | null;
+  statusReason: string;
+  canPublish: boolean;
+}
+
+export interface LegalDocumentMeta {
+  id: string;
+  documentType: string;
+  version: string;
+  title: string;
+  locale: string;
+  summary: string;
+  effectiveAt: string | null;
+  publishedAt: string | null;
+  status: string;
+  content?: string;
 }
 
 export interface WalletSummary {

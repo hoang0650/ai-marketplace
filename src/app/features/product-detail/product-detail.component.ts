@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   ProductService,
@@ -10,6 +10,7 @@ import {
   PlaygroundService,
   AgentChatService,
   DashboardService,
+  UploadService,
 } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
@@ -20,14 +21,16 @@ import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { OpenClawGatewayService } from '../agents/openclaw-gateway.service';
+import { isRunpodProduct, resolveRunpodEndpoint } from '../../models/runpod-playground';
 import {
-  RUNPOD_VIDEO_ASPECT,
-  RUNPOD_VIDEO_DURATIONS,
-  estimateSeedanceCost,
-  isRunpodProduct,
-  resolveRunpodEndpoint,
-  runpodVideoPriceHint,
-} from '../../models/runpod-playground';
+  RunpodField,
+  RunpodModelSchema,
+  buildRunpodInput,
+  defaultValues,
+  fallbackSchema,
+  quoteRunpod,
+  schemaFields,
+} from '../../models/runpod-schema';
 
 type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews' | 'stream';
 type ResultView = 'preview' | 'json';
@@ -55,7 +58,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, TPipe],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -72,6 +75,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly currencySvc = inject(CurrencyService);
   private readonly openclaw = inject(OpenClawGatewayService);
   private readonly walletApi = inject(DashboardService);
+  private readonly uploadApi = inject(UploadService);
   private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
@@ -124,42 +128,42 @@ export class ProductDetailComponent implements OnInit {
   });
   inputMode: InputMode = 'messages';
   modelVariant = '';
-  prompt = '';
   systemPrompt = 'You are a helpful assistant.';
-  negativePrompt = '';
-  /** RunPod video duration (seconds), e.g. Seedance 4–12. */
-  duration = 5;
-  imageUrl = '';
-  endImageUrl = '';
-  temperature = 1;
-  maxTokens = 2048;
-  seed = '-1';
+
+  /**
+   * Every RunPod `input` field, keyed as in the model's docs. Dotted keys address
+   * nested objects (`sampling_params.max_tokens`). Populated from the model schema
+   * so the form always matches the endpoint the buyer is calling.
+   */
+  paramValues: Record<string, unknown> = {};
+  readonly modelSchema = signal<RunpodModelSchema | null>(null);
+  readonly uploadingKey = signal('');
+
+  readonly fields = computed(() => schemaFields(this.modelSchema()));
+  readonly primaryFields = computed(() => this.fields().filter((f) => !f.advanced));
+  readonly advancedFields = computed(() => this.fields().filter((f) => f.advanced));
+  readonly isChatModel = computed(() => !!this.modelSchema()?.chatStyle);
+
+  /** Variants served by one endpoint (Kimi), else the endpoint/OpenAI model ids. */
+  readonly modelOptions = computed<Array<{ value: string; label: string }>>(() => {
+    const variants = this.modelSchema()?.params?.['model']?.enum;
+    if (variants?.length) return variants.map((v) => ({ value: String(v), label: String(v) }));
+    const ep = this.runpodEndpoint();
+    if (ep) {
+      const out = [{ value: ep.endpointId, label: ep.endpointId }];
+      if (ep.openaiModel) out.push({ value: ep.openaiModel, label: ep.openaiModel });
+      return out;
+    }
+    const p = this.product();
+    return p ? [{ value: p.slug, label: p.slug }] : [];
+  });
 
   /** fine-tune structured fields (not JSON-in-prompt) */
   ftBaseModel = '';
   ftMethod: 'qlora' | 'lora' | 'full' = 'qlora';
   ftEpochs = 3;
-
-  /** text/image-to-video advanced (RunPod field names) */
-  videoResolution: '480p' | '720p' | '1080p' = '720p';
-  aspectRatio: (typeof RUNPOD_VIDEO_ASPECT)[number] | '3:2' | '2:3' = '16:9';
-  fps = 24;
-  enableSafetyChecker = false;
-  draftMode = false;
-  saveAudio = true;
-  promptUpsampling = true;
-  cameraFixed = false;
-  generateAudio = false;
-
-  /** image-to-image advanced */
-  imageSize: '1024×1024' | '1024×1280' | '1280×1024' | '1280×1280' | '1280×1536' | '1536×1080' =
-    '1024×1024';
-  outputFormat: 'png' | 'jpeg' = 'jpeg';
-  enableBase64Output = false;
   enableSyncMode = false;
-  loraIds: string[] = [];
-  loraDraft = '';
-  textImageSize: '1024×1024' | '1024×1280' | '1280×1024' = '1024×1024';
+  previewRows = 20;
 
   hireBrief = '';
   hireBudget = '';
@@ -206,18 +210,6 @@ export class ProductDetailComponent implements OnInit {
   readonly logsPageSize = signal(10);
   readonly logsPage = signal(1);
 
-  readonly videoAspectOptions = RUNPOD_VIDEO_ASPECT;
-  readonly videoDurationOptions = RUNPOD_VIDEO_DURATIONS;
-  readonly imageSizeOptions = [
-    '1024×1024',
-    '1024×1280',
-    '1280×1024',
-    '1280×1280',
-    '1280×1536',
-    '1536×1080',
-  ] as const;
-  readonly fpsOptions = [8, 12, 16, 24, 30] as const;
-
   previewText = '';
   resultJson = '';
   resultMediaUrl = '';
@@ -235,18 +227,33 @@ export class ProductDetailComponent implements OnInit {
     return p ? resolveRunpodEndpoint(p) ?? null : null;
   });
 
+  /** The prompt lives in the schema bag, but plenty of shared code still reads it directly. */
+  get prompt(): string {
+    return String(this.paramValues['prompt'] ?? '');
+  }
+  set prompt(value: string) {
+    this.paramValues['prompt'] = value;
+  }
+
+  get imageUrl(): string {
+    return String(this.paramValues['image'] ?? '');
+  }
+  set imageUrl(value: string) {
+    this.paramValues['image'] = value;
+  }
+
   priceHint(): string {
     const p = this.product();
     if (!p) return '';
     const ep = this.runpodEndpoint();
-    if (isRunpodProduct(p) && (p.category === 'image-to-video' || p.category === 'text-to-video')) {
-      const hint = runpodVideoPriceHint(ep ?? undefined, this.videoResolution);
-      if (ep?.slug === 'seedance-1-5-pro' || hint.includes('0.024')) {
-        const res = this.videoResolution === '480p' ? '480p' : '720p';
-        const est = estimateSeedanceCost(this.duration, res);
-        return `${hint} · Est. $${est.toFixed(3)} for ${this.duration}s ${res}`;
+    const schema = this.modelSchema();
+    if (schema) {
+      const quote = quoteRunpod(schema, this.runpodInput());
+      if (quote?.cost !== null && quote?.cost !== undefined) {
+        return quote.quantity > 1
+          ? `${quote.rateLabel} · est. $${quote.cost.toFixed(4)} for ${quote.quantity}s`
+          : `Est. $${quote.cost.toFixed(4)} per run`;
       }
-      return hint || ep?.pricing || p.tagline;
     }
     if (isRunpodProduct(p) && ep?.pricing) {
       return `RunPod Public Endpoint · ${ep.pricing}`;
@@ -484,120 +491,223 @@ export class ProductDetailComponent implements OnInit {
     this.lastCost = 0;
     this.resultView.set('preview');
     this.inputMode = 'messages';
-    this.temperature = 1;
-    this.maxTokens = 2048;
-    this.seed = '-1';
-    this.duration = 5;
-    this.negativePrompt = '';
-    this.imageUrl = '';
-    this.endImageUrl = '';
-    this.videoResolution = '720p';
-    this.aspectRatio = '16:9';
-    this.fps = 24;
-    this.enableSafetyChecker = false;
-    this.draftMode = false;
-    this.saveAudio = true;
-    this.promptUpsampling = true;
-    this.cameraFixed = false;
-    this.generateAudio = false;
-    this.imageSize = '1024×1024';
-    this.outputFormat = 'jpeg';
-    this.enableBase64Output = false;
-    this.enableSyncMode = true;
-    this.loraIds = [];
-    this.loraDraft = '';
-    this.textImageSize = '1024×1024';
     this.ftMethod = 'qlora';
     this.ftEpochs = 3;
+    this.enableSyncMode = true;
+    this.previewRows = 20;
     this.apiAction = 'runsync';
 
     if (!product) return;
-    const ep = resolveRunpodEndpoint(product);
-    this.modelVariant = ep?.endpointId || product.runtime?.baseModel || product.slug;
     this.ftBaseModel = product.runtime?.baseModel || product.name;
     this.systemPrompt = `You are ${product.name}.`;
+    this.loadSchema(product);
+  }
 
-    switch (product.category) {
-      case 'text-to-text':
-        this.prompt = 'What is Runpod?';
-        break;
-      case 'text-to-video':
-        this.prompt =
-          'A kitten chases a bouncing rubber ball across a polished wooden floor, sliding slightly and bumping into a potted plant.';
-        break;
-      case 'image-to-video':
-        this.prompt = 'The character slowly turns and smiles at the camera';
-        this.imageUrl =
-          ep?.slug === 'seedance-1-5-pro'
-            ? 'https://image.runpod.ai/asset/bytedance/seedance-v1-5-pro-i2.png'
-            : product.coverUrl;
-        this.duration = 5;
-        this.videoResolution = '720p';
-        break;
-      case 'text-to-image':
-        this.prompt = 'A beautiful sunset over mountains';
-        break;
-      case 'image-to-image':
-        this.prompt = 'Keep composition, restyle as watercolor with warm pastel palette.';
-        this.imageUrl = product.coverUrl;
-        break;
-      case 'fine-tune':
-        this.prompt = 'Train on customer-support dialogues (Vietnamese + English).';
-        this.ftBaseModel = product.runtime?.baseModel || 'sea-flash';
-        break;
-      case 'dataset':
-        this.prompt = 'Request sample rows / schema preview.';
-        break;
-      case 'inference':
-        this.prompt = 'What is Runpod?';
-        this.systemPrompt = `You are ${product.name}.`;
-        break;
+  /**
+   * Render the form from the endpoint's published schema, falling back to a
+   * generic per-modality shape while the catalog request is in flight (or when
+   * denglish-api is unreachable).
+   */
+  private loadSchema(product: Product): void {
+    const ep = this.runpodEndpoint();
+    this.applySchema(fallbackSchema(product.category, ep), product, false);
+    if (!ep) return;
+    this.playgroundApi.modelSchema(ep.slug).subscribe({
+      next: (schema) => this.applySchema(schema, product, true),
+      error: () => {
+        /* offline or catalog unavailable — the fallback form stays in place */
+      },
+    });
+  }
+
+  private applySchema(schema: RunpodModelSchema | null, product: Product, keepEdits: boolean): void {
+    const previous = keepEdits ? this.paramValues : {};
+    const next = defaultValues(schema);
+    for (const key of Object.keys(next)) {
+      const edited = previous[key];
+      if (edited !== undefined && edited !== '' && !(Array.isArray(edited) && !edited.length)) {
+        next[key] = edited;
+      }
+    }
+    // Chat models express the prompt through `messages`, so it has no schema
+    // entry of its own — carry it across anyway.
+    if (next['prompt'] === undefined && previous['prompt'] !== undefined) {
+      next['prompt'] = previous['prompt'];
+    }
+
+    this.modelSchema.set(schema);
+    this.paramValues = next;
+    this.modelVariant =
+      (schema?.params?.['model']?.default as string) ||
+      this.modelOptions()[0]?.value ||
+      product.runtime?.baseModel ||
+      product.slug;
+    if (!keepEdits) this.seedSampleInput(product);
+  }
+
+  /** Prefill the same example inputs the RunPod Hub playground ships with. */
+  private seedSampleInput(product: Product): void {
+    const ep = this.runpodEndpoint();
+    const samples: Partial<Record<ProductCategory, string>> = {
+      'text-to-text': 'What is Runpod?',
+      inference: 'What is Runpod?',
+      'text-to-image': 'A beautiful sunset over mountains',
+      'image-to-image': 'Keep composition, restyle as watercolor with warm pastel palette.',
+      'text-to-video':
+        'A kitten chases a bouncing rubber ball across a polished wooden floor, sliding slightly and bumping into a potted plant.',
+      'image-to-video': 'The character slowly turns and smiles at the camera',
+      'fine-tune': 'Train on customer-support dialogues (Vietnamese + English).',
+      dataset: 'Request sample rows / schema preview.',
+    };
+    this.prompt = samples[product.category] ?? '';
+
+    if ('image' in this.paramValues || 'images' in this.paramValues) {
+      const reference =
+        ep?.slug === 'seedance-1-5-pro'
+          ? 'https://image.runpod.ai/asset/bytedance/seedance-v1-5-pro-i2.png'
+          : product.coverUrl;
+      if ('image' in this.paramValues) this.paramValues['image'] = reference;
+      if ('images' in this.paramValues) this.paramValues['images'] = reference ? [reference] : [];
     }
   }
 
-  bumpMaxTokens(delta: number): void {
-    this.maxTokens = Math.min(8192, Math.max(16, this.maxTokens + delta));
+  // ------------------------------------------------------- dynamic fields --
+
+  stringValue(key: string): string {
+    const value = this.paramValues[key];
+    return value === undefined || value === null ? '' : String(value);
   }
 
-  bumpTemperature(delta: number): void {
-    const next = Math.round((this.temperature + delta) * 100) / 100;
-    this.temperature = Math.min(2, Math.max(0, next));
+  /** null keeps optional numeric inputs blank instead of showing a misleading 0. */
+  numberValue(key: string): number | null {
+    const value = this.paramValues[key];
+    if (value === undefined || value === null || value === '') return null;
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
   }
 
-  addLora(): void {
-    const id = this.loraDraft.trim();
-    if (!id || this.loraIds.includes(id)) return;
-    this.loraIds = [...this.loraIds, id];
-    this.loraDraft = '';
+  boolValue(key: string): boolean {
+    return !!this.paramValues[key];
   }
 
-  removeLora(id: string): void {
-    this.loraIds = this.loraIds.filter((x) => x !== id);
+  listValue(key: string): string[] {
+    const value = this.paramValues[key];
+    return Array.isArray(value) ? (value as string[]) : [];
   }
 
-  onImageFile(event: Event): void {
+  loraValue(key: string): Array<{ path: string; scale: number }> {
+    const value = this.paramValues[key];
+    return Array.isArray(value) ? (value as Array<{ path: string; scale: number }>) : [];
+  }
+
+  setValue(key: string, value: unknown): void {
+    this.paramValues[key] = value;
+  }
+
+  isSelected(key: string, option: string | number): boolean {
+    const current = this.paramValues[key];
+    return current !== undefined && String(current) === String(option);
+  }
+
+  bumpNumber(field: RunpodField, direction: 1 | -1): void {
+    const step = field.spec.step ?? (field.spec.type === 'float' ? 0.1 : 1);
+    const raw = Number(this.paramValues[field.key] ?? field.spec.default ?? 0) + step * direction;
+    const rounded = Math.round(raw * 1e6) / 1e6;
+    const min = field.spec.min ?? Number.NEGATIVE_INFINITY;
+    const max = field.spec.max ?? Number.POSITIVE_INFINITY;
+    this.paramValues[field.key] = Math.min(max, Math.max(min, rounded));
+  }
+
+  addListItem(key: string, url: string): void {
+    const value = url.trim();
+    if (!value) return;
+    const list = this.listValue(key);
+    if (list.includes(value)) return;
+    this.paramValues[key] = [...list, value];
+  }
+
+  removeListItem(key: string, index: number): void {
+    this.paramValues[key] = this.listValue(key).filter((_, i) => i !== index);
+  }
+
+  addLora(key: string, path: string): void {
+    const value = path.trim();
+    if (!value) return;
+    this.paramValues[key] = [...this.loraValue(key), { path: value, scale: 1 }];
+  }
+
+  clearValue(key: string): void {
+    const current = this.paramValues[key];
+    this.paramValues[key] = Array.isArray(current) ? [] : '';
+  }
+
+  /** Upload to MinIO, then store the public URL in the field the buyer clicked. */
+  onFieldImage(event: Event, key: string, asList = false): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+    input.value = '';
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.imageUrl = String(reader.result || '');
-    };
-    reader.readAsDataURL(file);
+
+    if (file.size > 16 * 1024 * 1024) {
+      this.runStatus.set('error');
+      this.previewText = 'Image must be 16MB or smaller.';
+      return;
+    }
+    if (!this.auth.user()) {
+      this.runStatus.set('error');
+      this.previewText = 'Log in to upload images.';
+      return;
+    }
+
+    this.uploadingKey.set(key);
+    this.uploadApi.uploadImage(file).subscribe({
+      next: (res) => {
+        this.uploadingKey.set('');
+        if (asList) this.addListItem(key, res.url);
+        else this.paramValues[key] = res.url;
+      },
+      error: (e) => {
+        this.uploadingKey.set('');
+        this.runStatus.set('error');
+        this.previewText = e?.error?.message || 'Image upload failed.';
+      },
+    });
   }
 
-  clearImage(): void {
-    this.imageUrl = '';
+  /** Required schema fields the buyer has not filled in yet. */
+  missingRequired(): RunpodField[] {
+    return this.fields().filter((f) => {
+      if (!f.required) return false;
+      const value = this.paramValues[f.key];
+      if (Array.isArray(value)) return value.length === 0;
+      return value === undefined || value === null || String(value).trim() === '';
+    });
+  }
+
+  canRun(): boolean {
+    const p = this.product();
+    if (!p || this.runStatus() === 'running') return false;
+    if (this.isChatModel() || !this.fields().length) {
+      return p.category === 'fine-tune' || !!this.prompt.trim();
+    }
+    return this.missingRequired().length === 0;
   }
 
   run(): void {
     const p = this.product();
     if (!p) return;
-    if (p.category !== 'fine-tune' && !this.prompt.trim()) return;
-    if ((p.category === 'image-to-video' || p.category === 'image-to-image') && !this.imageUrl.trim()) {
+    const missing = this.missingRequired();
+    if (missing.length) {
       this.runStatus.set('error');
-      this.previewText = 'Image is required for this modality.';
-      this.resultJson = JSON.stringify({ error: 'image_required' }, null, 2);
+      this.previewText = `${missing.map((f) => f.label).join(', ')} is required for this model.`;
+      this.resultJson = JSON.stringify(
+        { error: 'missing_required', fields: missing.map((f) => f.name) },
+        null,
+        2,
+      );
+      return;
+    }
+    if (p.category !== 'fine-tune' && !this.isChatModel() && !this.fields().length && !this.prompt.trim()) {
       return;
     }
     if (!this.auth.user()) {
@@ -616,8 +726,8 @@ export class ProductDetailComponent implements OnInit {
     this.lastCost = 0;
 
     const started = typeof performance !== 'undefined' ? performance.now() : Date.now();
-    const payload = this.buildRequestPayload(p);
-    const input = (payload['input'] as Record<string, unknown>) || payload;
+    const input = this.runpodInput();
+    const payload = { input };
     const ep = resolveRunpodEndpoint(p);
 
     this.playgroundApi
@@ -798,134 +908,85 @@ export class ProductDetailComponent implements OnInit {
     return `phai.requestLogs.${productId}`;
   }
 
-  private buildRequestPayload(p: Product): Record<string, unknown> {
-    const ep = resolveRunpodEndpoint(p);
-    const model = this.modelVariant || ep?.openaiModel || ep?.endpointId || p.slug;
-    const seedNum = this.seed === '' || this.seed === undefined ? -1 : Number(this.seed);
-    const imageRef = this.imageUrl.startsWith('data:') ? this.imageUrl : this.imageUrl;
+  /** The `input` object exactly as the endpoint's docs describe it. */
+  runpodInput(): Record<string, unknown> {
+    const p = this.product();
+    const schema = this.modelSchema();
+    if (!p) return {};
 
-    if (p.category === 'text-to-text' || p.category === 'inference') {
-      const useMessages = this.inputMode === 'messages';
-      const input: Record<string, unknown> = useMessages
-        ? {
-            messages: [
-              { role: 'system', content: this.systemPrompt },
-              { role: 'user', content: this.prompt },
-            ],
-            sampling_params: {
-              max_tokens: this.maxTokens,
-              temperature: this.temperature,
-              seed: seedNum,
-            },
-          }
-        : {
-            prompt: this.prompt,
-            max_tokens: this.maxTokens,
-            temperature: this.temperature,
-          };
-      if (ep?.openaiModel || model) input['model'] = model;
-      return { input };
-    }
-
-    if (p.category === 'text-to-video') {
-      return {
-        input: {
-          prompt: this.prompt,
-          duration: this.duration,
-          seed: seedNum,
-          resolution: this.videoResolution,
-          aspect_ratio: this.aspectRatio,
-          enable_safety_checker: this.enableSafetyChecker,
-          prompt_expansion: this.promptUpsampling,
-        },
-      };
-    }
-
-    if (p.category === 'image-to-video') {
-      return {
-        input: {
-          prompt: this.prompt,
-          image: imageRef,
-          last_image: this.endImageUrl || undefined,
-          duration: this.duration,
-          resolution: this.videoResolution === '1080p' ? '720p' : this.videoResolution,
-          aspect_ratio: this.aspectRatio,
-          camera_fixed: this.cameraFixed,
-          generate_audio: this.generateAudio,
-          seed: seedNum,
-        },
-      };
-    }
-
-    if (p.category === 'text-to-image') {
-      const [w, h] = this.textImageSize.split('×').map(Number);
-      return {
-        input: {
-          prompt: this.prompt,
-          negative_prompt: this.negativePrompt || undefined,
-          width: w || 1024,
-          height: h || 1024,
-          seed: seedNum,
-          output_format: this.outputFormat,
-        },
-      };
-    }
-
-    if (p.category === 'fine-tune') {
-      return {
-        input: {
+    if (!schema) {
+      if (p.category === 'fine-tune') {
+        return {
           base_model: this.ftBaseModel,
           method: this.ftMethod,
           epochs: this.ftEpochs,
           notes: this.prompt || undefined,
-          seed: seedNum,
           wait_for_completion: this.enableSyncMode,
-        },
-      };
+        };
+      }
+      if (p.category === 'dataset') {
+        return {
+          query: this.prompt,
+          preview_rows: Math.min(100, Math.max(1, this.previewRows)),
+        };
+      }
+      return { prompt: this.prompt };
     }
 
-    if (p.category === 'dataset') {
-      return {
-        input: { query: this.prompt, preview_rows: Math.min(100, Math.max(1, this.maxTokens)) },
-      };
+    const extra: Record<string, unknown> = {};
+    if (schema.params['model']) extra['model'] = this.modelVariant;
+    if (schema.chatStyle) {
+      if (this.inputMode === 'messages') {
+        extra['messages'] = [
+          { role: 'system', content: this.systemPrompt },
+          { role: 'user', content: this.prompt },
+        ];
+      } else {
+        extra['prompt'] = this.prompt;
+      }
     }
+    return buildRunpodInput(schema, this.paramValues, extra);
+  }
 
-    // image-to-image
-    return {
-      input: {
-        prompt: this.prompt,
-        image: imageRef,
-        seed: seedNum,
-        size: this.imageSize,
-        output_format: this.outputFormat,
-        loras: this.loraIds.length ? this.loraIds : undefined,
-        enable_base64_output: this.enableBase64Output,
-      },
-    };
+
+  /** Which of image/video/audio/text the result is; the API reports it per RunPod model. */
+  private resolveResultKind(p: Product, output: Record<string, unknown> | undefined): 'image' | 'video' | 'audio' | 'text' {
+    const reported = String(output?.['kind'] || '');
+    if (reported === 'image' || reported === 'video' || reported === 'audio' || reported === 'text') {
+      return reported;
+    }
+    if (output?.['video_url']) return 'video';
+    if (output?.['audio_url']) return 'audio';
+    if (output?.['image_url']) return 'image';
+    if (p.category === 'text-to-video' || p.category === 'image-to-video') return 'video';
+    if (p.category === 'text-to-text' || p.category === 'inference' || p.category === 'fine-tune' || p.category === 'dataset') {
+      return 'text';
+    }
+    return 'image';
   }
 
   private applyPreview(p: Product, response: Record<string, unknown>): void {
     const output = response['output'] as Record<string, unknown> | undefined;
     this.lastCost = Number(output?.['cost'] ?? this.lastCost) || 0;
+    const kind = this.resolveResultKind(p, output);
+    this.resultMediaKind = kind;
 
-    if (p.category === 'text-to-text' || p.category === 'inference' || p.category === 'fine-tune' || p.category === 'dataset') {
+    if (kind === 'text') {
       const choices = output?.['choices'] as Array<{ tokens?: string[]; message?: { content?: string } }> | undefined;
       const tokenText = choices?.[0]?.tokens?.join('') || choices?.[0]?.message?.content || '';
       this.previewText =
-        tokenText ||
-        String(output?.['text'] || output?.['ai_response_text'] || '');
+        String(output?.['text'] || '') || tokenText || String(output?.['ai_response_text'] || '');
       this.resultMediaUrl = '';
-      this.resultMediaKind = 'text';
       return;
     }
-    if (p.category === 'text-to-video' || p.category === 'image-to-video') {
+
+    if (kind === 'video') {
       this.resultMediaUrl = String(output?.['video_url'] || p.coverUrl);
-      this.resultMediaKind = 'video';
-      this.previewText = this.lastCost ? `Cost $${this.lastCost}` : 'Generation complete.';
-      return;
+    } else if (kind === 'audio') {
+      this.resultMediaUrl = String(output?.['audio_url'] || '');
+    } else {
+      this.resultMediaUrl = String(output?.['image_url'] || output?.['url'] || this.imageUrl || p.coverUrl);
     }
-    this.resultMediaUrl = String(output?.['image_url'] || output?.['url'] || this.imageUrl || p.coverUrl);
-    this.resultMediaKind = 'image';
     this.previewText = this.lastCost ? `Cost $${this.lastCost}` : 'Generation complete.';
   }
 
@@ -940,7 +1001,12 @@ export class ProductDetailComponent implements OnInit {
     a.href = this.resultMediaUrl;
     a.target = '_blank';
     a.rel = 'noopener';
-    a.download = this.resultMediaKind === 'video' ? 'output.mp4' : 'output.png';
+    a.download =
+      this.resultMediaKind === 'video'
+        ? 'output.mp4'
+        : this.resultMediaKind === 'audio'
+          ? 'output.wav'
+          : 'output.png';
     a.click();
   }
 
@@ -948,7 +1014,7 @@ export class ProductDetailComponent implements OnInit {
     const url = this.apiEndpoint(p);
     const wrapped = {
       productSlug: p.slug,
-      input: (this.buildRequestPayload(p)['input'] as Record<string, unknown>) || {},
+      input: this.runpodInput(),
       action: this.apiAction === 'run' ? 'run' : 'runsync',
     };
     const auth = 'Authorization: Bearer $MARKETPLACE_JWT';

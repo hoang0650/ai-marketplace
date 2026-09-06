@@ -1,0 +1,32 @@
+<div class="legal-hub">
+  <header class="legal-hub__hero">
+    <p class="legal-hub__eyebrow">AI Markets · aimarkets.vn</p>
+    <h1>Trung tâm pháp lý</h1>
+    <p class="legal-hub__lead">
+      Bộ chính sách của sàn thương mại điện tử trung gian: phân biệt
+      <strong>Platform</strong>, <strong>Seller</strong>, <strong>Buyer</strong> và
+      <strong>Provider</strong> hạ tầng. Hàng
+      <em>Bán bởi sàn</em> khác hàng <em>Bán bởi Seller</em>.
+    </p>
+  </header>
+
+  @for (group of groups; track group.id) {
+    <section class="legal-hub__group">
+      <h2>{{ group.label }}</h2>
+      <ul>
+        @for (doc of docsIn(group.id); track doc.slug) {
+          <li>
+            <a [routerLink]="['/legal', doc.slug]">
+              <span class="legal-hub__title">{{ doc.title }}</span>
+              <span class="legal-hub__summary">{{ doc.summary }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <p class="legal-hub__note">
+    Nội dung là khung vận hành, không thay thế tư vấn luật sư. Điền thông tin pháp nhân trước khi nộp hồ sơ TMĐT.
+  </p>
+</div>

@@ -17,6 +17,8 @@ import {
   UsageStat,
   WalletSummary,
   WalletTx,
+  SellerProfile,
+  LegalDocumentMeta,
 } from '../models/marketplace.models';
 import { CategoryMeta } from '../models/marketplace.models';
 import {
@@ -30,6 +32,9 @@ import {
   RunpodEndpointKind,
   RunpodPublicEndpoint,
 } from '../models/runpod-public-endpoints';
+import { RunpodModelSchema } from '../models/runpod-schema';
+
+export type { RunpodModelSchema, RunpodParamSpec } from '../models/runpod-schema';
 
 @Injectable({ providedIn: 'root' })
 export class RunpodService {
@@ -366,6 +371,17 @@ export interface PlaygroundRunResult {
     quantity?: number;
   };
   cost?: number;
+  /** Sell price for the generation: RunPod's cost plus the platform markup. */
+  providerCost?: number;
+  /** What RunPod itself charged, before the markup. */
+  upstreamCost?: number;
+  /** Markup applied over the upstream cost, as a fraction (0.25 = +25%). */
+  markup?: number;
+  platformFee?: number;
+  sellerNet?: number;
+  currency?: string;
+  /** Inputs that were coerced or dropped because the model does not accept them. */
+  warnings?: string[];
   sandbox?: boolean;
   message?: string;
 }
@@ -386,6 +402,13 @@ export class PlaygroundService {
     action?: string;
   }): Observable<PlaygroundRunResult> {
     return this.http.post<PlaygroundRunResult>(`${this.base}/playground/run`, input);
+  }
+
+  /** Exact `input` schema + pricing formula for a RunPod Public Endpoint. */
+  modelSchema(slugOrEndpointId: string): Observable<RunpodModelSchema> {
+    return this.http.get<RunpodModelSchema>(
+      `${this.base}/runpod/public-endpoints/${encodeURIComponent(slugOrEndpointId)}/schema`,
+    );
   }
 }
 
@@ -611,5 +634,64 @@ export class SellerComputeService {
 
   schema(): Observable<Record<string, unknown>> {
     return this.http.get<Record<string, unknown>>(`${this.base}/seller/compute/schema`);
+  }
+}
+
+export interface UploadImageResult {
+  ok: boolean;
+  url: string;
+  objectName?: string;
+  bucket?: string;
+  filename?: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class UploadService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  uploadImage(file: File): Observable<UploadImageResult> {
+    const form = new FormData();
+    form.append('image', file, file.name);
+    return this.http.post<UploadImageResult>(`${this.base}/uploads/image`, form);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SellerService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  me(): Observable<SellerProfile | null> {
+    return this.http.get<SellerProfile | null>(`${this.base}/sellers/me`);
+  }
+
+  apply(payload: Partial<SellerProfile>): Observable<SellerProfile> {
+    return this.http.post<SellerProfile>(`${this.base}/sellers/apply`, payload);
+  }
+
+  acceptAgreement(): Observable<SellerProfile> {
+    return this.http.post<SellerProfile>(`${this.base}/sellers/accept-agreement`, {});
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class LegalService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  list(): Observable<LegalDocumentMeta[]> {
+    return this.http.get<LegalDocumentMeta[]>(`${this.base}/legal`);
+  }
+
+  get(documentType: string): Observable<LegalDocumentMeta> {
+    return this.http.get<LegalDocumentMeta>(`${this.base}/legal/${documentType}`);
+  }
+
+  accept(documentType: string, context = 'manual'): Observable<{ documentType: string; version: string; acceptedAt: string }> {
+    return this.http.post<{ documentType: string; version: string; acceptedAt: string }>(
+      `${this.base}/legal/${documentType}/accept`,
+      { context },
+    );
   }
 }

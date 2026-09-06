@@ -1,0 +1,78 @@
+.legal-hub {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+  color: var(--color-ink);
+}
+
+.legal-hub__eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.legal-hub h1 {
+  margin: 0 0 0.75rem;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.legal-hub__lead {
+  margin: 0 0 2rem;
+  color: var(--color-muted);
+  line-height: 1.65;
+  font-size: 1.05rem;
+}
+
+.legal-hub__group {
+  margin-bottom: 2rem;
+}
+
+.legal-hub__group h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.legal-hub__group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.legal-hub__group a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.legal-hub__group a:hover {
+  border-color: var(--color-accent);
+}
+
+.legal-hub__title {
+  font-weight: 650;
+}
+
+.legal-hub__summary {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+
+.legal-hub__note {
+  margin-top: 2.5rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  line-height: 1.5;
+}

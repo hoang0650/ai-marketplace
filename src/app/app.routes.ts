@@ -92,6 +92,11 @@ export const routes: Routes = [
           import('./features/sell/sell-profile.component').then((m) => m.SellProfileComponent),
       },
       {
+        path: 'verification',
+        loadComponent: () =>
+          import('./features/sell/sell-verification.component').then((m) => m.SellVerificationComponent),
+      },
+      {
         path: 'images',
         loadComponent: () =>
           import('./features/sell/sell-pages.components').then((m) => m.SellImagesComponent),
@@ -537,17 +542,67 @@ export const routes: Routes = [
       },
       {
         path: 'privacy-policy',
+        data: { policySlug: 'chinh-sach-bao-mat-va-du-lieu' },
         loadComponent: () =>
-          import('./features/legal/privacy-policy/privacy-policy.component').then(
-            (m) => m.PrivacyPolicyComponent,
-          ),
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
       },
       {
         path: 'terms-of-service',
+        data: { policySlug: 'dieu-khoan-su-dung' },
         loadComponent: () =>
-          import('./features/legal/terms-of-service/terms-of-service.component').then(
-            (m) => m.TermsOfServiceComponent,
-          ),
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'legal',
+        loadComponent: () =>
+          import('./features/legal/legal-hub.component').then((m) => m.LegalHubComponent),
+      },
+      {
+        path: 'legal/:slug',
+        loadComponent: () =>
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'marketplace-rules',
+        data: { policySlug: 'quy-che-hoat-dong-san-tmdt' },
+        loadComponent: () =>
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'seller-policy',
+        data: { policySlug: 'chinh-sach-nguoi-ban' },
+        loadComponent: () =>
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'buyer-policy',
+        data: { policySlug: 'chinh-sach-nguoi-mua' },
+        loadComponent: () =>
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'payment-policy',
+        data: { policySlug: 'chinh-sach-thanh-toan-doi-soat' },
+        loadComponent: () =>
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'refund-policy',
+        data: { policySlug: 'chinh-sach-hoan-tien' },
+        loadComponent: () =>
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'dispute-policy',
+        data: { policySlug: 'chinh-sach-khieu-nai-tranh-chap' },
+        loadComponent: () =>
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'complaint-policy',
+        data: { policySlug: 'chinh-sach-khieu-nai-tranh-chap' },
+        loadComponent: () =>
+          import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
       },
       {
         path: 'admin/users/:id',

@@ -414,20 +414,15 @@
 
           <div class="field">
             <label class="field-label" for="model">Model</label>
-            <select id="model" class="input" [(ngModel)]="modelVariant">
-              @if (runpodEndpoint(); as ep) {
-                <option [ngValue]="ep.endpointId">{{ ep.endpointId }}</option>
-                @if (ep.openaiModel) {
-                  <option [ngValue]="ep.openaiModel">{{ ep.openaiModel }}</option>
-                }
-              } @else {
-                <option [ngValue]="p.slug">{{ p.slug }}</option>
-                <option [ngValue]="p.runtime?.baseModel || (p.slug + '-base')">{{ p.runtime?.baseModel || p.slug + '-base' }}</option>
+            <p class="setting-help">Model to use</p>
+            <select id="model" class="input" [(ngModel)]="modelVariant" name="modelVariant">
+              @for (opt of modelOptions(); track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
               }
             </select>
           </div>
 
-          @if (p.category === 'text-to-text' || p.category === 'inference') {
+          @if (isChatModel()) {
             <div class="field">
               <span class="field-label">Input type</span>
               <div class="segmented" role="group" aria-label="Input type">
@@ -435,6 +430,19 @@
                 <button type="button" [class.active]="inputMode === 'prompt'" (click)="inputMode = 'prompt'">Prompt</button>
               </div>
             </div>
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="prompt">Prompt</label>
+                <span class="req">Required</span>
+              </div>
+              <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" name="prompt" placeholder="Enter a prompt"></textarea>
+            </div>
+            @if (inputMode === 'messages') {
+              <div class="field">
+                <label class="field-label" for="system">System prompt</label>
+                <textarea id="system" class="input textarea" rows="3" [(ngModel)]="systemPrompt" name="systemPrompt"></textarea>
+              </div>
+            }
           }
 
           @if (p.category === 'fine-tune') {
@@ -456,232 +464,55 @@
             </div>
           }
 
-          <div class="field">
-            <div class="field-label-row">
-              <label class="field-label" for="prompt">{{ p.category === 'fine-tune' ? 'Notes' : 'Prompt' }}</label>
-              @if (p.category !== 'fine-tune') {
-                <span class="req">Required</span>
-              }
-            </div>
-            <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" [placeholder]="p.category === 'fine-tune' ? 'Optional training notes' : 'Enter a prompt'"></textarea>
-          </div>
-
-          @if (p.category === 'text-to-text' || p.category === 'inference') {
+          @if (!isChatModel() && !fields().length) {
             <div class="field">
-              <label class="field-label" for="system">System prompt</label>
-              <textarea id="system" class="input textarea" rows="3" [(ngModel)]="systemPrompt"></textarea>
-            </div>
-          }
-
-          @if (p.category === 'text-to-video' || p.category === 'image-to-video') {
-            <div class="field">
-              <span class="field-label">Duration</span>
-              <div class="chip-row wrap" role="group" aria-label="Duration">
-                @for (d of videoDurationOptions; track d) {
-                  <button type="button" class="chip" [class.active]="duration === d" (click)="duration = d">{{ d }}s</button>
+              <div class="field-label-row">
+                <label class="field-label" for="prompt">{{ p.category === 'fine-tune' ? 'Notes' : 'Prompt' }}</label>
+                @if (p.category !== 'fine-tune') {
+                  <span class="req">Required</span>
                 }
               </div>
+              <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" name="prompt" [placeholder]="p.category === 'fine-tune' ? 'Optional training notes' : 'Enter a prompt'"></textarea>
             </div>
           }
 
-          @if (p.category === 'image-to-video' || p.category === 'image-to-image') {
-            <div class="field">
-              <label class="field-label">Image</label>
-              <div class="image-drop">
-                <input class="input input-sm" type="url" [(ngModel)]="imageUrl" name="imageUrl" placeholder="Enter URL or base64 data" />
-                <p class="setting-help">Supports jpeg, jpg, png · up to 16MB</p>
-                @if (imageUrl) {
-                  <img [src]="imageUrl" alt="Reference" />
-                  <button type="button" class="btn btn-outline btn-sm" (click)="clearImage()">Remove</button>
+          @for (f of primaryFields(); track f.key) {
+            <ng-container [ngTemplateOutlet]="fieldControl" [ngTemplateOutletContext]="{ $implicit: f }" />
+          }
+
+          @if (advancedFields().length || p.category === 'fine-tune' || p.category === 'dataset') {
+            <details class="settings">
+              <summary>Additional settings</summary>
+              <div class="settings-body">
+                @for (f of advancedFields(); track f.key) {
+                  <ng-container [ngTemplateOutlet]="fieldControl" [ngTemplateOutletContext]="{ $implicit: f }" />
                 }
-                <input type="file" accept="image/jpeg,image/jpg,image/png" (change)="onImageFile($event)" />
-              </div>
-            </div>
-          }
 
-          @if (p.category === 'text-to-image') {
-            <div class="field">
-              <label class="field-label" for="neg">Negative prompt</label>
-              <textarea id="neg" class="input textarea" rows="2" [(ngModel)]="negativePrompt" placeholder="Optional"></textarea>
-            </div>
-          }
+                @if (p.category === 'fine-tune') {
+                  <label class="check-row">
+                    <input type="checkbox" [(ngModel)]="enableSyncMode" name="ftSync" />
+                    <span>
+                      <strong>Wait for job completion</strong>
+                      <small>Use /runsync style blocking (sandbox).</small>
+                    </span>
+                  </label>
+                }
 
-          <details class="settings">
-            <summary>Additional settings</summary>
-            <div class="settings-body">
-              @if (p.category === 'text-to-text' || p.category === 'inference') {
-                <div class="setting-block">
-                  <label class="field-label" for="maxTok">Max tokens</label>
-                  <p class="setting-help">Maximum number of tokens to generate.</p>
-                  <div class="stepper">
-                    <button type="button" class="stepper-btn" (click)="bumpMaxTokens(-64)" aria-label="Decrease max tokens">−</button>
-                    <input id="maxTok" class="stepper-input" type="number" min="16" max="8192" [(ngModel)]="maxTokens" />
-                    <button type="button" class="stepper-btn" (click)="bumpMaxTokens(64)" aria-label="Increase max tokens">+</button>
-                  </div>
-                </div>
-                <div class="setting-block">
-                  <label class="field-label" for="temp">Temperature</label>
-                  <p class="setting-help">Controls randomness. Lower values are more deterministic.</p>
-                  <div class="stepper">
-                    <button type="button" class="stepper-btn" (click)="bumpTemperature(-0.1)" aria-label="Decrease temperature">−</button>
-                    <input id="temp" class="stepper-input" type="number" min="0" max="2" step="0.1" [(ngModel)]="temperature" />
-                    <button type="button" class="stepper-btn" (click)="bumpTemperature(0.1)" aria-label="Increase temperature">+</button>
-                  </div>
-                </div>
-                <div class="setting-block">
-                  <label class="field-label" for="seedTxt">Seed</label>
-                  <input id="seedTxt" class="input input-sm" type="text" [(ngModel)]="seed" />
-                </div>
-              }
-
-              @if (p.category === 'fine-tune') {
-                <div class="setting-block">
-                  <label class="field-label" for="seedFt">Seed</label>
-                  <input id="seedFt" class="input input-sm" type="text" [(ngModel)]="seed" />
-                </div>
-                <label class="check-row">
-                  <input type="checkbox" [(ngModel)]="enableSyncMode" name="ftSync" />
-                  <span>
-                    <strong>Wait for job completion</strong>
-                    <small>Use /runsync style blocking (sandbox).</small>
-                  </span>
-                </label>
-              }
-
-              @if (p.category === 'dataset') {
-                <div class="setting-block">
-                  <label class="field-label" for="previewRows">Preview rows</label>
-                  <input id="previewRows" class="input input-sm" type="number" min="1" max="100" [(ngModel)]="maxTokens" />
-                </div>
-              }
-
-              @if (p.category === 'text-to-video' || p.category === 'image-to-video') {
-                <div class="setting-block">
-                  <label class="field-label" for="seedVid">Seed</label>
-                  <p class="setting-help">Set to -1 for random.</p>
-                  <input id="seedVid" class="input input-sm" type="text" [(ngModel)]="seed" />
-                </div>
-                <div class="setting-block">
-                  <span class="field-label">Resolution</span>
-                  <div class="chip-row" role="group" aria-label="Resolution">
-                    <button type="button" class="chip" [class.active]="videoResolution === '480p'" (click)="videoResolution = '480p'">480p</button>
-                    <button type="button" class="chip" [class.active]="videoResolution === '720p'" (click)="videoResolution = '720p'">720p</button>
-                    @if (p.category === 'text-to-video' && !isRunpod()) {
-                      <button type="button" class="chip" [class.active]="videoResolution === '1080p'" (click)="videoResolution = '1080p'">1080p</button>
-                    }
-                  </div>
-                </div>
-                <div class="setting-block">
-                  <span class="field-label">Aspect ratio</span>
-                  <div class="chip-row wrap" role="group" aria-label="Aspect ratio">
-                    @for (ar of videoAspectOptions; track ar) {
-                      <button type="button" class="chip" [class.active]="aspectRatio === ar" (click)="aspectRatio = ar">{{ ar }}</button>
-                    }
-                  </div>
-                </div>
-                @if (p.category === 'image-to-video') {
+                @if (p.category === 'dataset') {
                   <div class="setting-block">
-                    <label class="field-label" for="endImg">Last image (optional)</label>
-                    <input id="endImg" class="input input-sm" type="url" [(ngModel)]="endImageUrl" name="endImageUrl" placeholder="Ending frame URL" />
+                    <label class="field-label" for="previewRows">Preview rows</label>
+                    <input id="previewRows" class="input input-sm" type="number" min="1" max="100" [(ngModel)]="previewRows" name="previewRows" />
                   </div>
-                  <label class="check-row">
-                    <input type="checkbox" [(ngModel)]="cameraFixed" name="camFixed" />
-                    <span>
-                      <strong>Camera fixed</strong>
-                      <small>Keep camera position fixed during video.</small>
-                    </span>
-                  </label>
-                  <label class="check-row">
-                    <input type="checkbox" [(ngModel)]="generateAudio" name="genAudio" />
-                    <span>
-                      <strong>Generate audio</strong>
-                      <small>Generate accompanying audio.</small>
-                    </span>
-                  </label>
                 }
-                @if (p.category === 'text-to-video') {
-                  <label class="check-row">
-                    <input type="checkbox" [(ngModel)]="enableSafetyChecker" name="safety" />
-                    <span><strong>Enable safety checker</strong></span>
-                  </label>
-                  <label class="check-row">
-                    <input type="checkbox" [(ngModel)]="promptUpsampling" name="upsample" />
-                    <span><strong>Prompt expansion</strong></span>
-                  </label>
-                }
-              }
-
-              @if (p.category === 'image-to-image') {
-                <div class="setting-block">
-                  <label class="field-label" for="seedImg">Seed</label>
-                  <p class="setting-help">Use -1 for random seed.</p>
-                  <input id="seedImg" class="input input-sm" type="text" [(ngModel)]="seed" />
-                </div>
-                <div class="setting-block">
-                  <span class="field-label">Size</span>
-                  <div class="chip-row wrap" role="group" aria-label="Image size">
-                    @for (sz of imageSizeOptions; track sz) {
-                      <button type="button" class="chip" [class.active]="imageSize === sz" (click)="imageSize = sz">{{ sz }}</button>
-                    }
-                  </div>
-                </div>
-                <div class="setting-block">
-                  <span class="field-label">Output format</span>
-                  <div class="chip-row" role="group" aria-label="Output format">
-                    <button type="button" class="chip" [class.active]="outputFormat === 'png'" (click)="outputFormat = 'png'">png</button>
-                    <button type="button" class="chip" [class.active]="outputFormat === 'jpeg'" (click)="outputFormat = 'jpeg'">jpeg</button>
-                  </div>
-                </div>
-                <div class="setting-block">
-                  <span class="field-label">LoRAs</span>
-                  <div class="lora-row">
-                    <input class="input input-sm" [(ngModel)]="loraDraft" name="lora" placeholder="Add LoRA id" (keydown.enter)="$event.preventDefault(); addLora()" />
-                    <button type="button" class="btn btn-outline btn-sm" (click)="addLora()">Add LoRA</button>
-                  </div>
-                  @if (loraIds.length) {
-                    <div class="chip-row wrap">
-                      @for (id of loraIds; track id) {
-                        <button type="button" class="chip active" (click)="removeLora(id)" [attr.aria-label]="'Remove ' + id">{{ id }} ×</button>
-                      }
-                    </div>
-                  }
-                </div>
-              }
-
-              @if (p.category === 'text-to-image') {
-                <div class="setting-block">
-                  <label class="field-label" for="seedOther">Seed</label>
-                  <input id="seedOther" class="input input-sm" type="text" [(ngModel)]="seed" />
-                </div>
-                <div class="setting-block">
-                  <span class="field-label">Size</span>
-                  <div class="chip-row wrap" role="group">
-                    <button type="button" class="chip" [class.active]="textImageSize === '1024×1024'" (click)="textImageSize = '1024×1024'">1024×1024</button>
-                    <button type="button" class="chip" [class.active]="textImageSize === '1024×1280'" (click)="textImageSize = '1024×1280'">1024×1280</button>
-                    <button type="button" class="chip" [class.active]="textImageSize === '1280×1024'" (click)="textImageSize = '1280×1024'">1280×1024</button>
-                  </div>
-                </div>
-                <div class="setting-block">
-                  <span class="field-label">Output format</span>
-                  <div class="chip-row">
-                    <button type="button" class="chip" [class.active]="outputFormat === 'png'" (click)="outputFormat = 'png'">png</button>
-                    <button type="button" class="chip" [class.active]="outputFormat === 'jpeg'" (click)="outputFormat = 'jpeg'">jpeg</button>
-                  </div>
-                </div>
-              }
-            </div>
-          </details>
+              </div>
+            </details>
+          }
 
           <p class="cost-hint">{{ priceHint() }}</p>
 
           <div class="pg-actions">
             <button type="button" class="btn btn-outline" (click)="resetPlayground()">Reset</button>
-            <button
-              type="button"
-              class="btn btn-run"
-              [disabled]="runStatus() === 'running' || (p.category !== 'fine-tune' && !prompt.trim())"
-              (click)="run()"
-            >
+            <button type="button" class="btn btn-run" [disabled]="!canRun()" (click)="run()">
               {{ runStatus() === 'running' ? 'Running…' : 'Run' }}
             </button>
           </div>
@@ -705,9 +536,9 @@
               <button type="button" role="tab" [class.active]="resultView() === 'preview'" (click)="setResultView('preview')">Preview</button>
               <button type="button" role="tab" [class.active]="resultView() === 'json'" (click)="setResultView('json')">JSON</button>
             </div>
-            @if (runStatus() === 'done' && resultMediaUrl && (resultMediaKind === 'video' || resultMediaKind === 'image')) {
+            @if (runStatus() === 'done' && resultMediaUrl && resultMediaKind !== 'text' && resultMediaKind !== '') {
               <button type="button" class="btn btn-outline btn-sm" (click)="downloadResult()">
-                {{ resultMediaKind === 'video' ? 'Download video' : 'Download image' }}
+                {{ resultMediaKind === 'video' ? 'Download video' : resultMediaKind === 'audio' ? 'Download audio' : 'Download image' }}
               </button>
             }
           </div>
@@ -724,6 +555,11 @@
                 <video [src]="resultMediaUrl" controls playsinline poster="{{ p.coverUrl }}"></video>
                 <p class="result-caption">{{ previewText }}</p>
               </div>
+            } @else if (resultMediaKind === 'audio' && resultMediaUrl) {
+              <div class="result-media">
+                <audio [src]="resultMediaUrl" controls></audio>
+                <p class="result-caption">{{ previewText }}</p>
+              </div>
             } @else if (resultMediaKind === 'image' && resultMediaUrl) {
               <div class="result-media">
                 <img [src]="resultMediaUrl" [alt]="p.name + ' output'" />
@@ -734,6 +570,105 @@
             }
           </div>
         </section>
+
+        <!-- One control per parameter in the endpoint's published input schema. -->
+        <ng-template #fieldControl let-f>
+          @if (f.control === 'toggle') {
+            <label class="check-row">
+              <input type="checkbox" [ngModel]="boolValue(f.key)" (ngModelChange)="setValue(f.key, $event)" [name]="f.key" />
+              <span>
+                <strong>{{ f.label }}</strong>
+                @if (f.help) { <small>{{ f.help }}</small> }
+              </span>
+            </label>
+          } @else {
+            <div class="field setting-block">
+              <div class="field-label-row">
+                <span class="field-label">{{ f.label }}</span>
+                @if (f.required) { <span class="req">Required</span> }
+              </div>
+              @if (f.help) { <p class="setting-help">{{ f.help }}</p> }
+
+              @switch (f.control) {
+                @case ('textarea') {
+                  <textarea class="input textarea" rows="4" [ngModel]="stringValue(f.key)" (ngModelChange)="setValue(f.key, $event)" [name]="f.key" [placeholder]="f.required ? 'Required' : 'Optional'"></textarea>
+                }
+                @case ('chips') {
+                  <div class="chip-row wrap" role="group" [attr.aria-label]="f.label">
+                    @for (opt of f.options; track opt.value) {
+                      <button type="button" class="chip" [class.active]="isSelected(f.key, opt.value)" (click)="setValue(f.key, opt.value)">{{ opt.label }}</button>
+                    }
+                  </div>
+                }
+                @case ('select') {
+                  <select class="input input-sm" [ngModel]="stringValue(f.key)" (ngModelChange)="setValue(f.key, $event)" [name]="f.key">
+                    @for (opt of f.options; track opt.value) {
+                      <option [value]="opt.value">{{ opt.label }}</option>
+                    }
+                  </select>
+                }
+                @case ('stepper') {
+                  <div class="stepper">
+                    <button type="button" class="stepper-btn" (click)="bumpNumber(f, -1)" [attr.aria-label]="'Decrease ' + f.label">−</button>
+                    <input class="stepper-input" type="number" [min]="f.spec.min" [max]="f.spec.max" [step]="f.spec.step || 1" [ngModel]="numberValue(f.key)" (ngModelChange)="setValue(f.key, $event)" [name]="f.key" />
+                    <button type="button" class="stepper-btn" (click)="bumpNumber(f, 1)" [attr.aria-label]="'Increase ' + f.label">+</button>
+                  </div>
+                }
+                @case ('number') {
+                  <input class="input input-sm" type="number" [ngModel]="numberValue(f.key)" (ngModelChange)="setValue(f.key, $event)" [name]="f.key" />
+                }
+                @case ('image') {
+                  <div class="image-drop">
+                    <input class="input input-sm" type="url" [ngModel]="stringValue(f.key)" (ngModelChange)="setValue(f.key, $event)" [name]="f.key" placeholder="Enter URL or upload to MinIO" />
+                    @if (uploadingKey() === f.key) { <p class="setting-help">Uploading…</p> }
+                    @if (stringValue(f.key)) {
+                      <img [src]="stringValue(f.key)" [alt]="f.label" />
+                      <button type="button" class="btn btn-outline btn-sm" (click)="clearValue(f.key)">Remove</button>
+                    }
+                    <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" (change)="onFieldImage($event, f.key)" [disabled]="uploadingKey() === f.key" />
+                  </div>
+                }
+                @case ('imageList') {
+                  <div class="image-drop">
+                    @for (url of listValue(f.key); track url; let i = $index) {
+                      <div class="image-item">
+                        <img [src]="url" [alt]="f.label + ' ' + (i + 1)" />
+                        <button type="button" class="btn btn-outline btn-sm" (click)="removeListItem(f.key, i)">Remove</button>
+                      </div>
+                    }
+                    @if (uploadingKey() === f.key) { <p class="setting-help">Uploading…</p> }
+                    @if (!f.spec.max_items || listValue(f.key).length < f.spec.max_items) {
+                      <div class="lora-row">
+                        <input class="input input-sm" type="url" #listUrl placeholder="Paste an image URL" />
+                        <button type="button" class="btn btn-outline btn-sm" (click)="addListItem(f.key, listUrl.value); listUrl.value = ''">Add</button>
+                      </div>
+                      <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" (change)="onFieldImage($event, f.key, true)" [disabled]="uploadingKey() === f.key" />
+                    }
+                  </div>
+                }
+                @case ('mediaUrl') {
+                  <input class="input input-sm" type="url" [ngModel]="stringValue(f.key)" (ngModelChange)="setValue(f.key, $event)" [name]="f.key" placeholder="https://…" />
+                }
+                @case ('loras') {
+                  @for (lora of loraValue(f.key); track $index; let i = $index) {
+                    <div class="lora-row">
+                      <input class="input input-sm" [(ngModel)]="lora.path" [name]="f.key + '.path.' + i" />
+                      <input class="input input-sm input-narrow" type="number" step="0.05" [(ngModel)]="lora.scale" [name]="f.key + '.scale.' + i" />
+                      <button type="button" class="btn btn-outline btn-sm" (click)="removeListItem(f.key, i)">Remove</button>
+                    </div>
+                  }
+                  <div class="lora-row">
+                    <input class="input input-sm" #loraPath placeholder="LoRA path or URL" />
+                    <button type="button" class="btn btn-outline btn-sm" (click)="addLora(f.key, loraPath.value); loraPath.value = ''">Add LoRA</button>
+                  </div>
+                }
+                @default {
+                  <input class="input input-sm" type="text" [ngModel]="stringValue(f.key)" (ngModelChange)="setValue(f.key, $event)" [name]="f.key" [placeholder]="f.spec.format || ''" />
+                }
+              }
+            </div>
+          }
+        </ng-template>
       </div>
     }
 

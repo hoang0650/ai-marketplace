@@ -38,6 +38,7 @@ import { TPipe } from '../../i18n/t.pipe';
           }
           <div class="lux-list__meta">
             <span class="lux-list__creator">{{ product.creatorName }}</span>
+            <span class="lux-list__badge">{{ sellerBadge }}</span>
             <span class="lux-list__rating">★ {{ product.rating | number: '1.1-1' }}</span>
             <span>{{ 'card.sold' | t: { n: (product.salesCount || 0) } }}</span>
             <span class="lux-list__ago">{{ ago }}</span>
@@ -75,6 +76,7 @@ import { TPipe } from '../../i18n/t.pipe';
           </div>
         </div>
         <div class="lux-card__body">
+          <p class="lux-card__seller">{{ sellerBadge }} · {{ product.creatorName }}</p>
           <h3 class="lux-card__title">{{ product.name }}</h3>
           <p class="lux-card__price">
             @if (onSale) {
@@ -136,7 +138,7 @@ import { TPipe } from '../../i18n/t.pipe';
           <p class="ct-card__price">{{ priceLabel }}</p>
           <p class="ct-card__meta">
             <span aria-hidden="true">◎</span>
-            {{ label }} · {{ 'card.sold' | t: { n: (product.salesCount || 0) } }}
+            {{ sellerBadge }} · {{ label }} · {{ 'card.sold' | t: { n: (product.salesCount || 0) } }}
           </p>
         </div>
       </a>
@@ -367,6 +369,19 @@ import { TPipe } from '../../i18n/t.pipe';
       .lux-list__creator {
         font-weight: 600;
         color: var(--color-ink);
+      }
+      .lux-list__badge {
+        display: inline-block;
+        padding: 0.1rem 0.45rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        background: color-mix(in srgb, currentColor 8%, transparent);
+        opacity: 0.85;
+      }
+      .lux-card__seller {
+        margin: 0 0 0.35rem;
+        font-size: 0.75rem;
+        opacity: 0.65;
       }
       .lux-list__rating {
         color: #c9a227;
@@ -677,13 +692,20 @@ export class ProductCardComponent {
   }
 
   get isRunpod(): boolean {
+    const infra = (this.product.infraProvider || this.product.provider || '').toLowerCase();
     return (
-      this.product.creatorSlug === 'runpod' ||
-      this.product.creatorSlug === 'aimarkets' ||
+      infra.includes('runpod') ||
       this.product.tags?.includes('public-endpoint') ||
-      this.product.tags?.includes('aimarkets') ||
       this.product.slug?.startsWith('runpod-')
     );
+  }
+
+  /** VN e-com disclosure: platform direct vs third-party seller (never conflate with infra provider). */
+  get sellerBadge(): string {
+    if (this.product.soldByPlatform || this.product.ownershipType === 'PLATFORM_DIRECT') {
+      return this.i18n.t('card.soldByPlatform');
+    }
+    return this.i18n.t('card.soldBySeller');
   }
 
   get priceLabel(): string {

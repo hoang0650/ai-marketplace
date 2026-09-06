@@ -62,6 +62,7 @@ export class SellShellComponent {
       key: 'setup',
       collapsible: true,
       items: [
+        { label: 'Xác minh Seller', path: '/sell/verification', badge: true },
         { label: 'Hồ sơ gian hàng', path: '/sell/profile', badge: true },
         { label: 'Hình ảnh', path: '/sell/images' },
       ],

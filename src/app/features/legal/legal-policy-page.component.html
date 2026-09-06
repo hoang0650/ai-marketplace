@@ -1,0 +1,28 @@
+<div class="legal-doc">
+  <aside class="legal-doc__nav">
+    <a routerLink="/legal" class="legal-doc__index">← Trung tâm pháp lý</a>
+    <p class="legal-doc__nav-title">Chính sách</p>
+    <nav>
+      @for (item of nav; track item.slug) {
+        <a
+          [routerLink]="['/legal', item.slug]"
+          routerLinkActive="is-active"
+          [class.is-active]="meta?.slug === item.slug">
+          {{ item.title }}
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <article class="legal-doc__main">
+    @if (loading) {
+      <p class="legal-doc__status">Đang tải tài liệu…</p>
+    }
+    @if (error) {
+      <p class="legal-doc__error">{{ error }}</p>
+    }
+    @if (html) {
+      <div class="legal-doc__body" [innerHTML]="html"></div>
+    }
+  </article>
+</div>

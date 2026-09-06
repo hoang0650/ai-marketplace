@@ -32,6 +32,11 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "*.md",
+                "input": "../AI_Marketplace_Policies",
+                "output": "/assets/legal"
               }
             ],
             "styles": [

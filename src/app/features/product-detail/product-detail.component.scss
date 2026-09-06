@@ -1179,6 +1179,15 @@
   flex: 1;
 }
 
+.lora-row .input-narrow {
+  flex: 0 0 5.5rem;
+}
+
+.image-item {
+  display: grid;
+  gap: 0.4rem;
+}
+
 .range {
   width: 100%;
   accent-color: #5b6cff;
