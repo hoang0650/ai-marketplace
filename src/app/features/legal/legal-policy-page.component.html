@@ -20,6 +20,9 @@
     }
     @if (error) {
       <p class="legal-doc__error">{{ error }}</p>
+      <p class="legal-doc__status">
+        <a routerLink="/legal">Quay lại trung tâm pháp lý</a>
+      </p>
     }
     @if (html) {
       <div class="legal-doc__body" [innerHTML]="html"></div>
