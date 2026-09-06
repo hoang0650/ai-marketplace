@@ -6,7 +6,7 @@
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 07/09/2026  
 
 ---
 
@@ -65,16 +65,23 @@ Seller có thể bị đình chỉ nếu:
 
 **Phí sàn mặc định 20%** (platform commission) được khấu trừ khỏi khoản phải trả seller, **không phải thuế**.
 
+**Phí cửa hàng ứng dụng** (chỉ khi Buyer thanh toán In-App Purchase):
+- **Google Play / CHPlay:** phí dịch vụ mặc định **15%** trên giá niêm yết. Google có thể áp 15% hoặc 30% theo điều khoản Google Play tại thời điểm giao dịch.
+- **App Store:** hoa hồng Apple mặc định **30%** trên giá niêm yết. Có thể 15% theo Apple Small Business Program hoặc subscription sau năm đầu.
+- Phí này **do Google/Apple thu**, không phải doanh thu AI Markets, không phải phí sàn, không phải thuế.
+- Giao dịch web / ví aimarkets.vn: phí CHPlay/App Store = **0**.
+
 Công thức đối soát (conceptual):
 
-- Doanh thu gộp
+- Doanh thu gộp (giá niêm yết)
 - trừ phí sàn (snapshot tại lúc order)
+- trừ phí CHPlay hoặc App Store nếu kênh IAP (snapshot)
 - trừ thuế khấu trừ nếu Tax Engine áp dụng
 - trừ phí thanh toán nếu seller chịu
 - trừ hoàn tiền / chargeback
 - bằng **seller net payable**
 
-Không hiển thị “bạn nhận 80%” như số thực nhận cuối cùng.
+Không hiển thị “bạn nhận 80%” như số thực nhận cuối cùng. Đơn IAP App Store có thể còn khoảng 50% sau 20% sàn + 30% Apple; đơn CHPlay khoảng 65% sau 20% sàn + 15% Google — trước thuế và hoàn tiền.
 
 Seller earnings được ghi nhận trong **Marketplace Ledger** nội bộ. Payout theo trạng thái PENDING / APPROVED / PAID / ON_HOLD. Số dư ledger không phải tiền gửi.
 

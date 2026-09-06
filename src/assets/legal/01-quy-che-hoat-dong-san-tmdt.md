@@ -90,6 +90,7 @@ Phí nền tảng được công bố trước khi giao dịch hoặc theo thỏ
 
 Các khoản có thể gồm:
 - platform fee/commission;
+- phí Google Play (CHPlay) / App Store khi thanh toán In-App Purchase (do Google/Apple thu, không phải doanh thu sàn);
 - phí sử dụng hạ tầng;
 - phí xử lý thanh toán;
 - phí triển khai;

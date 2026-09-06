@@ -6,7 +6,7 @@
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 07/09/2026  
 
 ---
 ## Điều 1. Phương thức thanh toán
@@ -26,6 +26,17 @@ Giá hiển thị phải nêu rõ:
 
 **Phí sàn 20%** không cộng vào giá khách trừ khi product/category có pricing model khác.
 
+## Điều 2a. Phí Google Play (CHPlay) và App Store
+
+Khi thanh toán bằng In-App Purchase trên ứng dụng:
+
+- **Google Play / CHPlay:** Google thu phí dịch vụ theo điều khoản Google tại thời điểm giao dịch. Mặc định đối soát **15%** trên giá niêm yết.
+- **App Store:** Apple thu hoa hồng theo Apple Developer Program. Mặc định đối soát **30%** trên giá niêm yết (có thể 15% theo chương trình Small Business / subscription năm 2+).
+
+Phí cửa hàng **không phải phí sàn**, **không phải thuế**, **không thuộc doanh thu AI Markets**. Sàn khấu trừ snapshot khi tính seller payable / payout vì số tiền thực nhận từ cửa hàng đã bị cắt.
+
+Thanh toán web / ví aimarkets.vn không áp phí CHPlay hay App Store.
+
 ## Điều 3. Order
 
 Mỗi giao dịch tạo Order ID duy nhất.
@@ -38,6 +49,7 @@ Nền tảng sử dụng ledger để ghi nhận:
 - customer payment;
 - seller entitlement;
 - platform fee;
+- store fee (Google Play / App Store IAP);
 - provider cost;
 - tax;
 - refund;
@@ -52,6 +64,8 @@ Payout chỉ thực hiện khi:
 - giao dịch đủ điều kiện payout;
 - không bị dispute/hold;
 - thông tin payout hợp lệ.
+
+Khoản payout = seller net sau phí sàn, phí CHPlay/App Store (nếu IAP), thuế khấu trừ, phí thanh toán và điều chỉnh hoàn/chargeback.
 
 ## Điều 6. Chargeback
 

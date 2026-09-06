@@ -56,7 +56,8 @@ Seller/Platform có thể sử dụng provider hạ tầng. Việc sử dụng p
 ## Điều 7. Phí
 
 Seller đồng ý với:
-- platform fee;
+- platform fee (mặc định 20% đối với third-party);
+- phí Google Play (CHPlay, mặc định 15%) và App Store (mặc định 30%) khi giao dịch In-App Purchase — do cửa hàng thu, khấu trừ khi payout;
 - payment fee nếu có;
 - provider cost nếu mô hình yêu cầu;
 - các khoản khác được công bố.

@@ -6,7 +6,7 @@
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 07/09/2026  
 
 ---
 
@@ -18,12 +18,15 @@ AI Markets thu **platform commission** (mặc định **20%** đối với selle
 
 Khách hàng thanh toán **giá niêm yết**. Seller chịu phí sàn, trừ khi có cấu hình giá khác được công bố.
 
+Phí **Google Play / App Store** trên IAP không phải thuế và không phải phí sàn.
+
 ## Điều 2. Tách khoản trên đối soát
 
 Mỗi giao dịch ghi nhận riêng:
 
 - Doanh thu gộp (GMV)
 - Phí sàn / platform commission
+- Phí Google Play (CHPlay) / App Store nếu IAP
 - Thuế khấu trừ (nếu Tax Engine áp dụng)
 - Phí thanh toán (nếu seller chịu)
 - Hoàn tiền / chargeback
@@ -49,4 +52,4 @@ Không mặc định áp dụng cùng rule với seller Việt Nam. Hồ sơ cư
 
 ## Điều 7. Snapshot
 
-Order lưu snapshot commission và thuế tại thời điểm giao dịch. Thay đổi rule sau này không tính lại lịch sử.
+Order lưu snapshot commission, phí cửa hàng (nếu IAP) và thuế tại thời điểm giao dịch. Thay đổi rule sau này không tính lại lịch sử.

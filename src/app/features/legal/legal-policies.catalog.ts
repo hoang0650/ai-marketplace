@@ -33,7 +33,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-nguoi-ban',
     file: '03-chinh-sach-nguoi-ban.md',
     title: 'Chính sách người bán',
-    summary: 'Điều kiện đăng bán, kiểm duyệt và entitlement.',
+    summary: 'Điều kiện đăng bán, phí sàn 20%, phí CHPlay/App Store và entitlement.',
     group: 'commerce',
   },
   {
@@ -47,7 +47,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Cổng thanh toán, ledger nội bộ, cấm giao dịch ngoài sàn.',
+    summary: 'Cổng thanh toán, phí IAP cửa hàng, ledger nội bộ, cấm giao dịch ngoài sàn.',
     group: 'commerce',
   },
   {

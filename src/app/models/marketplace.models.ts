@@ -224,6 +224,10 @@ export interface Order {
   amount: number;
   sellerNet?: number;
   platformFee?: number;
+  salesChannel?: 'WEB' | 'GOOGLE_PLAY' | 'APP_STORE';
+  storeFeeRate?: number;
+  storeFeeAmount?: number;
+  storeFeeCollector?: 'GOOGLE' | 'APPLE' | '';
   currency: string;
   status: 'pending' | 'paid' | 'refunded';
   paymentStatus?: string;
@@ -338,6 +342,7 @@ export interface DashboardSummary {
   currency: string;
   grossSales?: number;
   platformCommission?: number;
+  storeFees?: number;
   taxWithholding?: number;
   refunds?: number;
   netPayable?: number;
@@ -351,6 +356,7 @@ export interface AdminShopRevenue {
   orders: number;
   grossRevenue: number;
   platformFee: number;
+  storeFeeAmount?: number;
   sellerNet: number;
 }
 
@@ -366,6 +372,7 @@ export interface AdminOverview {
   totalGrossRevenue: number;
   gmv: number;
   platformFee: number;
+  storeFees?: number;
   sellerNet: number;
   buyerDeposits: number;
   buyerDepositCount: number;
