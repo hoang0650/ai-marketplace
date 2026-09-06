@@ -1,6 +1,15 @@
 # QUY TRÌNH XÁC MINH NGƯỜI BÁN
 
-## 1. Trạng thái
+**Nền tảng:** AI Markets  
+**Website:** https://aimarkets.vn  
+**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**MST:** 3703279135  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Email:** support@aimarkets.vn  
+**Ngày hiệu lực:** 06/09/2026  
+
+---
+## Điều 1. Trạng thái
 
 ```text
 PENDING
@@ -14,7 +23,7 @@ Có thể chuyển:
 - SUSPENDED
 - TERMINATED
 
-## 2. Hồ sơ
+## Điều 2. Hồ sơ
 
 Tùy loại seller, hệ thống có thể yêu cầu:
 - thông tin định danh;
@@ -26,7 +35,7 @@ Tùy loại seller, hệ thống có thể yêu cầu:
 
 Chỉ thu thập dữ liệu cần thiết.
 
-## 3. Review
+## Điều 3. Review
 
 Admin kiểm tra:
 - tính nhất quán;
@@ -35,7 +44,7 @@ Admin kiểm tra:
 - sản phẩm dự kiến;
 - rủi ro compliance.
 
-## 4. Kết quả
+## Điều 4. Kết quả
 
 VERIFIED:
 seller được phép tạo/publish product trong phạm vi được duyệt.
@@ -46,7 +55,7 @@ nêu lý do và cho phép bổ sung nếu phù hợp.
 SUSPENDED:
 ngừng quyền bán/deploy mới theo phạm vi quyết định.
 
-## 5. Re-verification
+## Điều 5. Re-verification
 
 Có thể yêu cầu xác minh lại khi:
 - thay đổi thông tin pháp lý;

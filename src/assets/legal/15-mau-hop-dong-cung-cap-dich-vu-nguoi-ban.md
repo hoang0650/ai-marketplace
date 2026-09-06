@@ -2,17 +2,20 @@
 
 > Đây là mẫu khung để luật sư/doanh nghiệp rà soát trước khi sử dụng chính thức.
 
-## 1. Các bên
+## Điều 1. Các bên
 
-**Nền tảng:** [TÊN CÔNG TY], [MST], [ĐỊA CHỈ]
-
+**Nền tảng:** AI Markets (aimarkets.vn)  
+**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**MST:** 3703279135  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Email:** support@aimarkets.vn  
 **Seller:** [TÊN SELLER], [THÔNG TIN ĐỊNH DANH]
 
-## 2. Đối tượng
+## Điều 2. Đối tượng
 
 Nền tảng cung cấp công nghệ marketplace để Seller đăng và cung cấp sản phẩm/dịch vụ AI theo quy chế.
 
-## 3. Quyền của Seller
+## Điều 3. Quyền của Seller
 
 Seller có quyền:
 - đăng sản phẩm đủ điều kiện;
@@ -21,7 +24,7 @@ Seller có quyền:
 - xem usage;
 - nhận payout theo cơ chế áp dụng.
 
-## 4. Nghĩa vụ Seller
+## Điều 4. Nghĩa vụ Seller
 
 Seller chịu trách nhiệm:
 - tính hợp pháp của sản phẩm;
@@ -32,7 +35,7 @@ Seller chịu trách nhiệm:
 - thông tin sản phẩm;
 - nghĩa vụ thuế theo pháp luật áp dụng.
 
-## 5. Vai trò nền tảng
+## Điều 5. Vai trò nền tảng
 
 Platform cung cấp:
 - marketplace;
@@ -46,11 +49,11 @@ Platform cung cấp:
 
 Platform không mặc nhiên trở thành chủ sở hữu hoặc nhà cung cấp của sản phẩm do Seller cung cấp.
 
-## 6. Provider
+## Điều 6. Provider
 
 Seller/Platform có thể sử dụng provider hạ tầng. Việc sử dụng provider không làm thay đổi chủ thể cung cấp sản phẩm nếu product được xác định là `THIRD_PARTY_SELLER`.
 
-## 7. Phí
+## Điều 7. Phí
 
 Seller đồng ý với:
 - platform fee;
@@ -58,31 +61,31 @@ Seller đồng ý với:
 - provider cost nếu mô hình yêu cầu;
 - các khoản khác được công bố.
 
-## 8. Payout
+## Điều 8. Payout
 
 Payout thực hiện qua cơ chế thanh toán được nền tảng công bố và chỉ khi đủ điều kiện.
 
-## 9. IP
+## Điều 9. IP
 
 Seller cam kết có quyền cung cấp product và cấp quyền sử dụng cho buyer theo license công bố.
 
-## 10. Bảo mật
+## Điều 10. Bảo mật
 
 Hai bên phải bảo vệ thông tin bí mật và secret.
 
-## 11. Vi phạm
+## Điều 11. Vi phạm
 
 Platform có quyền suspend/remove product hoặc seller theo quy chế.
 
-## 12. Chấm dứt
+## Điều 12. Chấm dứt
 
 Thỏa thuận có thể chấm dứt theo điều kiện được thỏa thuận hoặc khi có căn cứ pháp luật.
 
-## 13. Luật áp dụng
+## Điều 13. Luật áp dụng
 
 Áp dụng pháp luật Việt Nam, trừ khi có thỏa thuận hợp pháp khác.
 
-## 14. Xác nhận
+## Điều 14. Xác nhận
 
 Seller xác nhận đã đọc:
 - Quy chế hoạt động;

@@ -22,16 +22,16 @@ Bộ tài liệu này là bộ khung để triển khai website/app AI Marketpla
 17. `17-chinh-sach-luu-tru-va-cung-cap-du-lieu.md`
 
 ## Thông tin phải thay trước khi công bố
-- `[TÊN CÔNG TY]`
-- `[TÊN SÀN]`
-- `[DOMAIN]`
-- `[ĐỊA CHỈ]`
-- `[EMAIL HỖ TRỢ]`
-- `[EMAIL PHÁP LÝ]`
-- `[HOTLINE]`
-- `[MST]`
-- `[PAYMENT PROVIDER]`
-- `[NGÀY HIỆU LỰC]`
+- `Công ty TNHH giải pháp công nghệ PHGroup`
+- `AI Markets`
+- `https://aimarkets.vn`
+- `Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam`
+- `support@aimarkets.vn`
+- `support@aimarkets.vn`
+- `support@aimarkets.vn`
+- `3703279135`
+- `Cổng thanh toán được công bố trên aimarkets.vn`
+- `06/09/2026`
 
 ## Lưu ý pháp lý
 Đây là bộ khung vận hành và nội dung chính sách, không phải ý kiến pháp lý. Trước khi công bố chính thức và trước khi nộp hồ sơ đăng ký TMĐT, doanh nghiệp cần rà soát với luật sư/đơn vị tư vấn TMĐT, thuế, thanh toán và dữ liệu cá nhân.

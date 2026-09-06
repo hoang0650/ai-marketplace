@@ -1,8 +1,18 @@
 # CHÍNH SÁCH NGƯỜI MUA
 
-## 1. Quyền của người mua
+**Nền tảng:** AI Markets  
+**Website:** https://aimarkets.vn  
+**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**MST:** 3703279135  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Email:** support@aimarkets.vn  
+**Ngày hiệu lực:** 06/09/2026  
 
-Người mua có quyền:
+---
+
+## Điều 1. Quyền của người mua
+
+**Người mua có quyền:**
 - xem thông tin sản phẩm được công bố;
 - biết giá và điều kiện sử dụng trước giao dịch;
 - nhận thông tin về seller theo phạm vi nền tảng công bố;
@@ -11,7 +21,7 @@ Người mua có quyền:
 - yêu cầu hoàn tiền theo chính sách áp dụng;
 - sử dụng sản phẩm theo license đã mua.
 
-## 2. Nghĩa vụ
+## Điều 2. Nghĩa vụ
 
 Người mua phải:
 - cung cấp thông tin chính xác;
@@ -22,15 +32,15 @@ Người mua phải:
 - không lạm dụng GPU/API;
 - không sử dụng dịch vụ cho hành vi bị cấm.
 
-## 3. Usage billing
+## Điều 3. Usage billing
 
 Đối với sản phẩm usage-based, số liệu usage được hệ thống ghi nhận làm cơ sở tính phí, trừ trường hợp có sai lệch được xác minh.
 
-## 4. API key
+## Điều 4. API key
 
 API key là thông tin bí mật. Nếu bị lộ, người mua phải thu hồi/revoke ngay.
 
-## 5. Khiếu nại
+## Điều 5. Khiếu nại
 
 Người mua nên cung cấp:
 - order ID;

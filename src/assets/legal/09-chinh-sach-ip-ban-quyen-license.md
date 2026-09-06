@@ -1,12 +1,21 @@
 # CHÍNH SÁCH SỞ HỮU TRÍ TUỆ, BẢN QUYỀN VÀ LICENSE
 
-## 1. Trách nhiệm của seller
+**Nền tảng:** AI Markets  
+**Website:** https://aimarkets.vn  
+**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**MST:** 3703279135  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Email:** support@aimarkets.vn  
+**Ngày hiệu lực:** 06/09/2026  
+
+---
+## Điều 1. Trách nhiệm của seller
 
 Seller cam kết có quyền cung cấp sản phẩm/dịch vụ.
 
 Đối với model, dataset, agent, Docker image, software hoặc API, seller phải khai báo license và quyền thương mại phù hợp.
 
-## 2. Không mặc định open-source = được bán
+## Điều 2. Không mặc định open-source = được bán
 
 Open-source không đồng nghĩa với:
 - được bán mọi hình thức;
@@ -16,7 +25,7 @@ Open-source không đồng nghĩa với:
 
 Seller phải kiểm tra license cụ thể.
 
-## 3. Nội dung vi phạm
+## Điều 3. Nội dung vi phạm
 
 Không được đăng:
 - model không có quyền phân phối;
@@ -25,11 +34,11 @@ Không được đăng:
 - Docker image chứa mã độc;
 - nội dung giả mạo quyền sở hữu.
 
-## 4. Thông báo vi phạm
+## Điều 4. Thông báo vi phạm
 
 Chủ thể quyền có thể gửi thông báo tới:
 
-[EMAIL IP/BẢN QUYỀN]
+support@aimarkets.vn
 
 Thông báo nên có:
 - thông tin người yêu cầu;
@@ -39,7 +48,7 @@ Thông báo nên có:
 - bằng chứng;
 - thông tin liên hệ.
 
-## 5. Xử lý
+## Điều 5. Xử lý
 
 Nền tảng có thể:
 - yêu cầu seller giải trình;
@@ -49,7 +58,7 @@ Nền tảng có thể:
 - hạn chế tài khoản;
 - phối hợp với cơ quan có thẩm quyền.
 
-## 6. License của buyer
+## Điều 6. License của buyer
 
 Buyer chỉ nhận quyền theo license/terms của product.
 

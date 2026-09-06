@@ -8,8 +8,16 @@ export function renderLegalMarkdown(source: string): string {
   let codeBuf: string[] = [];
 
   const flushPara = (buf: string[]) => {
-    const text = buf.join(' ').trim();
-    if (text) out.push(`<p>${inline(text)}</p>`);
+    if (!buf.length) return;
+    const soft = buf.map((l) => / {2}$/.test(l));
+    const texts = buf.map((l) => l.replace(/\s+$/, ''));
+    let joined = texts[0];
+    for (let j = 1; j < texts.length; j++) {
+      joined += soft[j - 1] ? '<br />' : ' ';
+      joined += texts[j];
+    }
+    const html = joined.trim();
+    if (html) out.push(`<p>${inline(html)}</p>`);
     buf.length = 0;
   };
 
@@ -47,7 +55,7 @@ export function renderLegalMarkdown(source: string): string {
     const heading = /^(#{1,4})\s+(.+)$/.exec(line);
     if (heading) {
       const level = heading[1].length;
-      out.push(`<h${level}>${inline(heading[2])}</h${level}>`);
+      out.push(`<h${level}>${inline(emphasisHeading(heading[2]))}</h${level}>`);
       i += 1;
       continue;
     }
@@ -132,6 +140,14 @@ function splitTableRow(line: string): string[] {
   if (parts[0] === '') parts.shift();
   if (parts.length && parts[parts.length - 1] === '') parts.pop();
   return parts.map((c) => c.trim());
+}
+
+/** Ensure "Điều N." / numbered article labels render as bold even if MD omitted **. */
+function emphasisHeading(title: string): string {
+  if (/\*\*/.test(title)) return title;
+  return title
+    .replace(/^(Điều\s+\d+[.:]?)/i, '**$1**')
+    .replace(/^(\d+\.\d+\.?)/, '**$1**');
 }
 
 function inline(s: string): string {

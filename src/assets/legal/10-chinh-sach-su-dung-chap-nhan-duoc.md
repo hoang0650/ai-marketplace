@@ -1,8 +1,17 @@
 # ACCEPTABLE USE POLICY — CHÍNH SÁCH SỬ DỤNG CHẤP NHẬN ĐƯỢC
 
-Cấm sử dụng [TÊN SÀN] cho:
+**Nền tảng:** AI Markets  
+**Website:** https://aimarkets.vn  
+**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**MST:** 3703279135  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Email:** support@aimarkets.vn  
+**Ngày hiệu lực:** 06/09/2026  
 
-## 1. Tấn công và xâm nhập
+---
+Cấm sử dụng AI Markets cho:
+
+## Điều 1. Tấn công và xâm nhập
 - malware;
 - ransomware;
 - credential theft;
@@ -12,7 +21,7 @@ Cấm sử dụng [TÊN SÀN] cho:
 - exploit trái phép;
 - persistence trái phép.
 
-## 2. Gian lận
+## Điều 2. Gian lận
 - lừa đảo;
 - giả mạo danh tính;
 - spam;
@@ -20,7 +29,7 @@ Cấm sử dụng [TÊN SÀN] cho:
 - né chargeback;
 - tạo giao dịch giả.
 
-## 3. Lạm dụng hạ tầng
+## Điều 3. Lạm dụng hạ tầng
 - cryptomining trái phép;
 - proxy abuse;
 - botnet;
@@ -28,13 +37,13 @@ Cấm sử dụng [TÊN SÀN] cho:
 - sử dụng tài nguyên vượt quota;
 - gây ảnh hưởng tenant khác.
 
-## 4. IP và dữ liệu
+## Điều 4. IP và dữ liệu
 - phân phối nội dung không có quyền;
 - dataset trái phép;
 - thu thập dữ liệu cá nhân trái phép;
 - xử lý dữ liệu vượt phạm vi được phép.
 
-## 5. AI agent
+## Điều 5. AI agent
 Không được triển khai agent có mục đích chính là:
 - đánh cắp credential;
 - tự động tấn công;
@@ -42,7 +51,7 @@ Không được triển khai agent có mục đích chính là:
 - né kiểm soát bảo mật;
 - phá hoại hệ thống.
 
-## 6. Enforcement
+## Điều 6. Enforcement
 
 Nền tảng có thể:
 - rate limit;
@@ -54,6 +63,6 @@ Nền tảng có thể:
 - bảo toàn log/evidence;
 - phối hợp với cơ quan có thẩm quyền khi cần.
 
-## 7. Emergency action
+## Điều 7. Emergency action
 
 Nếu có nguy cơ an ninh nghiêm trọng, nền tảng có thể tạm thời khóa resource trước khi hoàn thành quy trình thông thường.

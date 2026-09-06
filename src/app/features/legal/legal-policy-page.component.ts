@@ -1,11 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DestroyRef } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
-import { LEGAL_POLICIES, LegalPolicyMeta } from './legal-policies.catalog';
+import {
+  LEGAL_POLICIES,
+  LEGAL_POLICY_GROUPS,
+  LegalPolicyMeta,
+} from './legal-policies.catalog';
 import { renderLegalMarkdown } from './legal-markdown';
 import { LegalPolicyContentService } from './legal-policy-content.service';
 
@@ -24,18 +27,31 @@ export class LegalPolicyPageComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly nav = LEGAL_POLICIES;
+  readonly navGroups = LEGAL_POLICY_GROUPS.map((g) => ({
+    ...g,
+    items: LEGAL_POLICIES.filter((p) => p.group === g.id),
+  }));
+
   meta: LegalPolicyMeta | null = null;
   html: SafeHtml | null = null;
   error = '';
   loading = true;
+  navOpen = false;
+  prev: LegalPolicyMeta | null = null;
+  next: LegalPolicyMeta | null = null;
+
+  get groupLabel(): string {
+    if (!this.meta) return '';
+    return LEGAL_POLICY_GROUPS.find((g) => g.id === this.meta!.group)?.label || '';
+  }
 
   ngOnInit(): void {
     combineLatest([this.route.paramMap, this.route.data])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([params, data]) => {
-      const slug = String(data['policySlug'] || params.get('slug') || params.get('type') || '');
-      this.open(slug);
-    });
+        const slug = String(data['policySlug'] || params.get('slug') || params.get('type') || '');
+        this.open(slug);
+      });
   }
 
   private open(slug: string): void {
@@ -43,6 +59,9 @@ export class LegalPolicyPageComponent implements OnInit {
     this.error = '';
     this.html = null;
     this.meta = null;
+    this.prev = null;
+    this.next = null;
+    this.navOpen = false;
 
     this.content.load(slug).subscribe((doc) => {
       this.loading = false;
@@ -53,10 +72,16 @@ export class LegalPolicyPageComponent implements OnInit {
       }
       this.meta = doc.meta;
       this.html = this.sanitizer.bypassSecurityTrustHtml(renderLegalMarkdown(doc.markdown));
+      const idx = LEGAL_POLICIES.findIndex((p) => p.slug === doc.meta.slug);
+      this.prev = idx > 0 ? LEGAL_POLICIES[idx - 1] : null;
+      this.next = idx >= 0 && idx < LEGAL_POLICIES.length - 1 ? LEGAL_POLICIES[idx + 1] : null;
       this.seo.set({
         title: `${doc.meta.title} | AI Markets`,
         description: doc.meta.summary,
       });
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
   }
 }

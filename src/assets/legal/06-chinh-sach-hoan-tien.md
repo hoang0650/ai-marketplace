@@ -1,6 +1,15 @@
 # CHÍNH SÁCH HOÀN TIỀN
 
-## 1. Nguyên tắc
+**Nền tảng:** AI Markets  
+**Website:** https://aimarkets.vn  
+**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**MST:** 3703279135  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Email:** support@aimarkets.vn  
+**Ngày hiệu lực:** 06/09/2026  
+
+---
+## Điều 1. Nguyên tắc
 
 Việc hoàn tiền phụ thuộc:
 - loại sản phẩm;
@@ -11,7 +20,7 @@ Việc hoàn tiền phụ thuộc:
 - lỗi dịch vụ;
 - quy định pháp luật áp dụng.
 
-## 2. Các trường hợp có thể xem xét
+## Điều 2. Các trường hợp có thể xem xét
 
 Có thể xem xét hoàn tiền khi:
 - giao dịch bị tính tiền sai;
@@ -21,15 +30,15 @@ Có thể xem xét hoàn tiền khi:
 - giao dịch bị lỗi kỹ thuật;
 - pháp luật yêu cầu hoàn tiền.
 
-## 3. Usage-based service
+## Điều 3. Usage-based service
 
 Đối với API/GPU/runtime đã sử dụng, khoản hoàn tiền có thể được tính theo phần usage thực tế và mức độ lỗi.
 
-## 4. Digital products
+## Điều 4. Digital products
 
 Model, dataset, agent hoặc software đã tải xuống/đã cấp quyền sử dụng có thể áp dụng điều kiện hoàn tiền riêng được công bố trên product page, trong phạm vi pháp luật cho phép.
 
-## 5. Quy trình
+## Điều 5. Quy trình
 
 Buyer gửi Refund Request.
 
@@ -42,6 +51,6 @@ Nền tảng:
 6. quyết định;
 7. gửi refund qua payment provider nếu được chấp thuận.
 
-## 6. Không xóa giao dịch
+## Điều 6. Không xóa giao dịch
 
 Refund không xóa Order hoặc Payment. Hệ thống tạo refund/reversal record riêng.

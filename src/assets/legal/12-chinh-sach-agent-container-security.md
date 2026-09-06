@@ -1,10 +1,19 @@
 # CHÍNH SÁCH AGENT / CONTAINER SECURITY
 
-## 1. Mục tiêu
+**Nền tảng:** AI Markets  
+**Website:** https://aimarkets.vn  
+**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**MST:** 3703279135  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Email:** support@aimarkets.vn  
+**Ngày hiệu lực:** 06/09/2026  
+
+---
+## Điều 1. Mục tiêu
 
 Bảo vệ buyer, seller, platform và infrastructure provider khỏi agent/container độc hại.
 
-## 2. Seller declaration
+## Điều 2. Seller declaration
 
 Seller phải khai báo:
 - source repository;
@@ -18,7 +27,7 @@ Seller phải khai báo:
 - environment variables;
 - credential requirements.
 
-## 3. Cấm
+## Điều 3. Cấm
 
 Không được cung cấp image/agent có:
 - credential stealer;
@@ -29,7 +38,7 @@ Không được cung cấp image/agent có:
 - reverse shell trái phép;
 - persistence trái phép.
 
-## 4. Sandbox
+## Điều 4. Sandbox
 
 Agent/container phải được triển khai với quyền tối thiểu.
 
@@ -41,7 +50,7 @@ Không dùng:
 
 trừ khi admin phê duyệt cho use case hợp lệ.
 
-## 5. Secrets
+## Điều 5. Secrets
 
 Secret phải được inject bằng secret manager/runtime secret.
 
@@ -52,7 +61,7 @@ Không ghi secret vào:
 - frontend;
 - log.
 
-## 6. Incident
+## Điều 6. Incident
 
 Khi phát hiện agent độc hại:
 1. stop deployment;

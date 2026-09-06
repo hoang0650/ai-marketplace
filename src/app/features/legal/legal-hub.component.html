@@ -1,32 +1,71 @@
-<div class="legal-hub">
+<div class="legal-hub page route-enter">
   <header class="legal-hub__hero">
     <p class="legal-hub__eyebrow">AI Markets · aimarkets.vn</p>
-    <h1>Trung tâm pháp lý</h1>
+    <h1 class="font-display">Trung tâm pháp lý</h1>
     <p class="legal-hub__lead">
-      Bộ chính sách của sàn thương mại điện tử trung gian: phân biệt
+      Quy chế và chính sách của sàn TMĐT trung gian — phân biệt rõ
       <strong>Platform</strong>, <strong>Seller</strong>, <strong>Buyer</strong> và
-      <strong>Provider</strong> hạ tầng. Hàng
-      <em>Bán bởi sàn</em> khác hàng <em>Bán bởi Seller</em>.
+      <strong>Provider</strong> hạ tầng.
     </p>
+
+    <label class="legal-hub__search">
+      <span class="sr-only">Tìm chính sách</span>
+      <input
+        class="input"
+        type="search"
+        placeholder="Tìm chính sách, quy chế, hoàn tiền…"
+        [value]="query"
+        (input)="onQuery($event)"
+        autocomplete="off"
+      />
+    </label>
+
+    <div class="legal-hub__quick" aria-label="Tài liệu thường xem">
+      @for (q of quickLinks; track q.slug) {
+        <a [routerLink]="['/legal', q.slug]">{{ q.title }}</a>
+      }
+    </div>
   </header>
 
   @for (group of groups; track group.id) {
-    <section class="legal-hub__group">
-      <h2>{{ group.label }}</h2>
-      <ul>
-        @for (doc of docsIn(group.id); track doc.slug) {
-          <li>
-            <a [routerLink]="['/legal', doc.slug]">
-              <span class="legal-hub__title">{{ doc.title }}</span>
-              <span class="legal-hub__summary">{{ doc.summary }}</span>
-            </a>
-          </li>
-        }
-      </ul>
-    </section>
+    @if (docsIn(group.id).length) {
+      <section class="legal-hub__group">
+        <div class="legal-hub__group-head">
+          <h2>{{ group.label }}</h2>
+          <span>{{ docsIn(group.id).length }}</span>
+        </div>
+        <ul>
+          @for (doc of docsIn(group.id); track doc.slug) {
+            <li>
+              <a [routerLink]="['/legal', doc.slug]">
+                <span class="legal-hub__title">{{ doc.title }}</span>
+                <span class="legal-hub__summary">{{ doc.summary }}</span>
+                <span class="legal-hub__go" aria-hidden="true">→</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
   }
 
+  @if (query.trim() && !hasResults) {
+    <p class="legal-hub__empty">Không có chính sách khớp “{{ query.trim() }}”.</p>
+  }
+
+  <aside class="legal-hub__contact">
+    <div>
+      <h2>Liên hệ pháp lý / hỗ trợ</h2>
+      <p>
+        Công ty TNHH giải pháp công nghệ PHGroup · MST 3703279135<br />
+        Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa,
+        Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam
+      </p>
+    </div>
+    <a class="btn btn-outline" href="mailto:support@aimarkets.vn">support@aimarkets.vn</a>
+  </aside>
+
   <p class="legal-hub__note">
-    Nội dung là khung vận hành, không thay thế tư vấn luật sư. Điền thông tin pháp nhân trước khi nộp hồ sơ TMĐT.
+    Nội dung mang tính khung vận hành, không thay thế tư vấn luật sư độc lập.
   </p>
 </div>

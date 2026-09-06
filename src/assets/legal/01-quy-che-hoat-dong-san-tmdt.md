@@ -1,19 +1,19 @@
 # QUY CHẾ HOẠT ĐỘNG AI MARKETPLACE
 
-**Tên nền tảng:** [TÊN SÀN]  
-**Website:** [DOMAIN]  
-**Đơn vị vận hành:** [TÊN CÔNG TY]  
-**MST:** [MST]  
-**Địa chỉ:** [ĐỊA CHỈ]  
-**Email:** [EMAIL PHÁP LÝ]  
-**Ngày hiệu lực:** [NGÀY HIỆU LỰC]  
+**Tên nền tảng:** AI Markets  
+**Website:** https://aimarkets.vn  
+**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**MST:** 3703279135  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Email:** support@aimarkets.vn  
+**Ngày hiệu lực:** 06/09/2026  
 **Phiên bản:** 1.0
 
 ## Điều 1. Phạm vi
 
-Quy chế này áp dụng đối với hoạt động của [TÊN SÀN], bao gồm người mua, người bán/nhà cung cấp, người sử dụng dịch vụ, đối tác hạ tầng và đơn vị vận hành nền tảng.
+Quy chế này áp dụng đối với hoạt động của AI Markets, bao gồm người mua, người bán/nhà cung cấp, người sử dụng dịch vụ, đối tác hạ tầng và đơn vị vận hành nền tảng.
 
-[TÊN SÀN] là nền tảng công nghệ kết nối bên cung cấp với bên có nhu cầu sử dụng sản phẩm/dịch vụ AI và hạ tầng AI.
+AI Markets là nền tảng công nghệ kết nối bên cung cấp với bên có nhu cầu sử dụng sản phẩm/dịch vụ AI và hạ tầng AI.
 
 Nền tảng có thể cung cấp:
 - AI API;
@@ -37,7 +37,7 @@ Bên bán/nhà cung cấp chịu trách nhiệm về quyền cung cấp sản ph
 Nền tảng thực hiện vai trò trung gian, công nghệ, quản lý listing, order, hỗ trợ giao dịch, kiểm duyệt và xử lý phản ánh/khiếu nại theo quy chế.
 
 ### 2.2. Sản phẩm do nền tảng trực tiếp cung cấp
-Khi sản phẩm được đánh dấu `PLATFORM_DIRECT`, [TÊN CÔNG TY] là bên trực tiếp cung cấp sản phẩm/dịch vụ đó.
+Khi sản phẩm được đánh dấu `PLATFORM_DIRECT`, Công ty TNHH giải pháp công nghệ PHGroup là bên trực tiếp cung cấp sản phẩm/dịch vụ đó.
 
 Không được hiểu nhà cung cấp hạ tầng như RunPod, AWS, GCP, OpenRouter hoặc Featherless là bên bán chỉ vì sản phẩm sử dụng hạ tầng/API của họ.
 
@@ -131,6 +131,6 @@ Quy chế có thể được sửa đổi khi cần thiết. Phiên bản mới 
 
 ## Điều 12. Liên hệ
 
-Email: [EMAIL PHÁP LÝ]  
-Hotline: [HOTLINE]  
-Địa chỉ: [ĐỊA CHỈ]
+Email: support@aimarkets.vn  
+Hotline: support@aimarkets.vn  
+Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam
