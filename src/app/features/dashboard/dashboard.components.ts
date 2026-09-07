@@ -110,7 +110,7 @@ export class DashboardHomeComponent implements OnInit {
 @Component({
   selector: 'app-dashboard-orders',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe, DatePipe, RouterLink],
   template: `
     <div class="panel overflow-x-auto">
       <table class="w-full min-w-[640px] text-left text-sm">
@@ -140,9 +140,15 @@ export class DashboardHomeComponent implements OnInit {
                   </span>
                 }
                 @if (o.canDispute) {
-                  <button class="mt-1 text-xs text-accent underline" type="button" (click)="openDispute(o)">
+                  <a
+                    class="mt-1 block text-xs text-accent underline"
+                    [routerLink]="['/complaints/new']"
+                    [queryParams]="{ orderId: o.id, kind: 'buyer_seller' }"
+                  >
                     Khiếu nại
-                  </button>
+                  </a>
+                } @else if (o.disputeStatus === 'open') {
+                  <a class="mt-1 block text-xs text-accent underline" routerLink="/complaints">Đang khiếu nại</a>
                 }
               </td>
               <td>{{ o.createdAt | date: 'short' }}</td>
@@ -158,14 +164,6 @@ export class DashboardOrdersComponent implements OnInit {
   readonly orders = signal<Order[]>([]);
   ngOnInit(): void {
     this.api.orders().subscribe((o) => this.orders.set(o));
-  }
-
-  openDispute(o: Order): void {
-    const reason = typeof window !== 'undefined' ? window.prompt('Lý do khiếu nại (tối thiểu 8 ký tự):', '') : '';
-    if (!reason || reason.trim().length < 8) return;
-    this.api.openDispute(o.id, reason.trim()).subscribe({
-      next: (updated) => this.orders.update((list) => list.map((row) => (row.id === updated.id ? updated : row))),
-    });
   }
 }
 

@@ -1,0 +1,34 @@
+<section class="complaint-page page route-enter">
+  <h1>{{ (as === 'seller' ? 'complaint.list.sellerTitle' : as === 'admin' ? 'complaint.list.adminTitle' : 'complaint.list.title') | t }}</h1>
+  <p class="complaint-lede">{{ 'complaint.list.lede' | t }}</p>
+  <div class="complaint-actions">
+    <a routerLink="/complaints/new" class="btn btn-fill">{{ 'complaint.cta.file' | t }}</a>
+    <a routerLink="/legal/chinh-sach-khieu-nai-tranh-chap" class="btn btn-outline">{{ 'complaint.cta.policy' | t }}</a>
+  </div>
+  @if (loading()) {
+    <p class="complaint-meta">{{ 'complaint.list.loading' | t }}</p>
+  } @else if (error()) {
+    <p class="complaint-error">{{ error() }}</p>
+  } @else if (!items().length) {
+    <p class="complaint-meta">{{ 'complaint.list.empty' | t }}</p>
+  } @else {
+    <ul class="complaint-list">
+      @for (c of items(); track c.id) {
+        <li>
+          <a class="complaint-card" [routerLink]="['/complaints', c.id]">
+            <div class="complaint-card__top">
+              <span class="complaint-ref">{{ c.caseRef }}</span>
+              <span class="complaint-badge">{{ statusKey(c.status) | t }}</span>
+            </div>
+            <p class="complaint-meta">
+              {{ ('complaint.kind.' + c.kind) | t }}
+              @if (c.productName) { · {{ c.productName }} }
+              · {{ c.createdAt | date: 'short' }}
+            </p>
+            <p class="complaint-meta">{{ c.body }}</p>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>

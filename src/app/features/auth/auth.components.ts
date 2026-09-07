@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { SeoService } from '../../services/seo.service';
@@ -25,6 +25,7 @@ function afterAuthRoute(user: User): string {
 export class LoginComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
 
@@ -37,6 +38,10 @@ export class LoginComponent {
 
   constructor() {
     this.seo.set({ title: this.i18n.t('auth.login') });
+    const q = this.route.snapshot.queryParamMap;
+    if (q.get('google') === 'error') {
+      this.error.set(q.get('message') || this.i18n.t('auth.googleFail'));
+    }
   }
 
   submit(): void {

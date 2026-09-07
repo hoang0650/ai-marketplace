@@ -12,8 +12,8 @@
 ## Điều 1. Kênh tiếp nhận
 
 Email: support@aimarkets.vn  
-Hệ thống: https://aimarkets.vn/legal/chinh-sach-khieu-nai-tranh-chap  
-Hotline: support@aimarkets.vn
+Hệ thống: https://aimarkets.vn/complaints  
+Hotline: 1900 6159
 
 ## Điều 2. Nội dung
 

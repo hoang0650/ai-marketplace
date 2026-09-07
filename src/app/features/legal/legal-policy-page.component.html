@@ -48,6 +48,12 @@
     }
     @if (html) {
       <div class="legal-doc__body" [innerHTML]="html"></div>
+      @if (meta?.slug === 'chinh-sach-khieu-nai-tranh-chap') {
+        <div class="legal-doc__cta">
+          <a routerLink="/complaints/new" class="btn btn-fill">{{ 'complaint.cta.file' | t }}</a>
+          <a routerLink="/complaints" class="btn btn-outline">{{ 'complaint.cta.track' | t }}</a>
+        </div>
+      }
     }
 
     @if (meta && (prev || next)) {

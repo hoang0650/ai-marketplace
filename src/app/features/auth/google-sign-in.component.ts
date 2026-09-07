@@ -1,16 +1,8 @@
 import { Component, OnInit, inject, input, output, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { GoogleAuthService } from '../../services/google-auth.service';
-import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/marketplace.models';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
-
-function afterAuthRoute(user: User): string {
-  if (user.role === 'admin') return '/admin';
-  if (user.role === 'creator') return '/dashboard';
-  return '/marketplace';
-}
 
 @Component({
   selector: 'app-google-sign-in',
@@ -139,9 +131,7 @@ function afterAuthRoute(user: User): string {
 })
 export class GoogleSignInComponent implements OnInit {
   private readonly googleAuth = inject(GoogleAuthService);
-  private readonly auth = inject(AuthService);
   private readonly i18n = inject(I18nService);
-  private readonly router = inject(Router);
 
   /** Compact pill for header nav. */
   readonly compact = input(false);
@@ -165,26 +155,6 @@ export class GoogleSignInComponent implements OnInit {
       return;
     }
     this.busy.set(true);
-    this.googleAuth.signIn().subscribe({
-      next: (result) => {
-        this.auth.loginWithGoogle(result).subscribe({
-          next: (user) => {
-            this.busy.set(false);
-            this.signedIn.emit(user);
-            if (this.redirect()) {
-              void this.router.navigateByUrl(afterAuthRoute(user));
-            }
-          },
-          error: (err) => {
-            this.busy.set(false);
-            this.error.set(err?.error?.message || this.i18n.t('auth.googleFail'));
-          },
-        });
-      },
-      error: (err) => {
-        this.busy.set(false);
-        this.error.set(err?.message || this.i18n.t('auth.googleFail'));
-      },
-    });
+    this.googleAuth.startRedirect();
   }
 }

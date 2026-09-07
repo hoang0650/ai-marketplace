@@ -303,6 +303,13 @@
   font-weight: 700;
 }
 
+.legal-doc__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1.5rem 0 0;
+}
+
 .legal-doc__pager {
   display: grid;
   grid-template-columns: 1fr 1fr;

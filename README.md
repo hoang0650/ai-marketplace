@@ -47,3 +47,12 @@ Any password works against the mock auth API. Sellers publish products with a **
 ## Swap to a real API
 
 Set `environment.apiUrl` to your Nest/backend origin and remove or disable `mockApiInterceptor` in `app.config.ts`.
+
+## Google Sign-In
+
+Production uses a **server redirect** (`/v1/auth/google/start` → Google → `/v1/auth/google/callback`) so the GIS popup never checks the frontend origin (fixes `origin_mismatch` on `aimarkets.vn`).
+
+Register this redirect URI on the Web OAuth client in Google Cloud Console:
+
+- `https://api.aimarkets.vn/v1/auth/google/callback`
+- `http://localhost:4100/v1/auth/google/callback` (local API)

@@ -63,9 +63,9 @@ export const routes: Routes = [
       },
       {
         path: 'disputes',
-        data: { page: 'disputes' },
+        data: { inbox: 'mine' },
         loadComponent: () =>
-          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+          import('./features/complaints/complaint-list.component').then((m) => m.ComplaintListComponent),
       },
       {
         path: 'withdraw',
@@ -113,9 +113,9 @@ export const routes: Routes = [
       },
       {
         path: 'complaints',
-        data: { page: 'complaints' },
+        data: { inbox: 'seller' },
         loadComponent: () =>
-          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+          import('./features/complaints/complaint-list.component').then((m) => m.ComplaintListComponent),
       },
       {
         path: 'coupons',
@@ -401,6 +401,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/auth.components').then((m) => m.LoginComponent),
       },
       {
+        path: 'auth/google/callback',
+        loadComponent: () =>
+          import('./features/auth/google-auth-callback.component').then((m) => m.GoogleAuthCallbackComponent),
+      },
+      {
         path: 'auth/register',
         loadComponent: () => import('./features/auth/auth.components').then((m) => m.RegisterComponent),
       },
@@ -511,6 +516,41 @@ export const routes: Routes = [
         path: 'support',
         loadComponent: () =>
           import('./features/support/support.component').then((m) => m.SupportComponent),
+      },
+      {
+        path: 'complaints/new',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/complaints/complaint-form.component').then((m) => m.ComplaintFormComponent),
+      },
+      {
+        path: 'complaints/:id',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/complaints/complaint-detail.component').then(
+            (m) => m.ComplaintDetailComponent,
+          ),
+      },
+      {
+        path: 'complaints',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/complaints/complaint-list.component').then((m) => m.ComplaintListComponent),
+      },
+      {
+        path: 'admin/complaints/:id',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/complaints/complaint-detail.component').then(
+            (m) => m.ComplaintDetailComponent,
+          ),
+      },
+      {
+        path: 'admin/complaints',
+        canActivate: [adminGuard],
+        data: { inbox: 'admin' },
+        loadComponent: () =>
+          import('./features/complaints/complaint-list.component').then((m) => m.ComplaintListComponent),
       },
       {
         path: 'docs',

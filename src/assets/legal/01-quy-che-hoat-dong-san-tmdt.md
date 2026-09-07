@@ -111,9 +111,9 @@ Việc xử lý phải được ghi nhận trong hệ thống audit.
 
 ## Điều 9. Khiếu nại và tranh chấp
 
-Người mua có thể gửi phản ánh/khiếu nại qua hệ thống hỗ trợ.
+Người mua / người bán gửi khiếu nại qua hệ thống https://aimarkets.vn/complaints (hoặc email support@aimarkets.vn).
 
-Nền tảng xử lý theo quy trình khiếu nại, tranh chấp và chính sách hoàn tiền.
+Nền tảng tiếp nhận, xác minh, phân loại, yêu cầu seller phản hồi nếu cần, đánh giá bằng chứng, ra quyết định, thực hiện (kể cả đóng băng/hoàn tiền theo tranh chấp đơn 48 giờ) và đóng hồ sơ.
 
 ## Điều 10. Vi phạm
 

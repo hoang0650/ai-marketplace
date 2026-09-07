@@ -276,6 +276,53 @@ export interface Order {
   canDispute?: boolean;
 }
 
+export type ComplaintKind = 'buyer_seller' | 'buyer_platform' | 'seller_platform';
+export type ComplaintStatus =
+  | 'received'
+  | 'verifying'
+  | 'classified'
+  | 'awaiting_seller'
+  | 'reviewing'
+  | 'decided'
+  | 'closed';
+export type ComplaintDecision = '' | 'upheld' | 'rejected' | 'mediated';
+
+export interface ComplaintEvent {
+  at: string;
+  actorRole: string;
+  action: string;
+  note: string;
+}
+
+export interface Complaint {
+  id: string;
+  caseRef: string;
+  complainantId: string;
+  complainantName: string;
+  complainantEmail: string;
+  kind: ComplaintKind;
+  orderId: string | null;
+  productId: string | null;
+  productName: string;
+  sellerId: string | null;
+  body: string;
+  requestedAction: string;
+  evidenceUrls: string[];
+  status: ComplaintStatus;
+  sellerResponse: string;
+  sellerRespondedAt: string | null;
+  decision: ComplaintDecision;
+  decisionNote: string;
+  decidedAt: string | null;
+  appealReason: string;
+  appealedAt: string | null;
+  openedOrderDispute: boolean;
+  closedAt: string | null;
+  events: ComplaintEvent[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SellerProfile {
   id: string;
   userId: string;
@@ -386,6 +433,8 @@ export interface AdminShopRevenue {
   grossRevenue: number;
   platformFee: number;
   storeFeeAmount?: number;
+  playStoreFeeAmount?: number;
+  appStoreFeeAmount?: number;
   sellerNet: number;
 }
 
@@ -402,6 +451,8 @@ export interface AdminOverview {
   gmv: number;
   platformFee: number;
   storeFees?: number;
+  playStoreFees?: number;
+  appStoreFees?: number;
   sellerNet: number;
   buyerDeposits: number;
   buyerDepositCount: number;

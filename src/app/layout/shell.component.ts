@@ -63,6 +63,7 @@ export class ShellComponent {
     { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.privacy' },
     { path: '/legal/quy-che-hoat-dong-san-tmdt', key: 'footer.marketplaceRules' },
     { path: '/legal/chinh-sach-khieu-nai-tranh-chap', key: 'footer.disputePolicy' },
+    { path: '/complaints/new', key: 'complaint.cta.file' },
     { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms' },
   ];
   readonly appStoreUrl = 'https://apps.apple.com/vn/app/phhotel/id6778220852?l=vi';

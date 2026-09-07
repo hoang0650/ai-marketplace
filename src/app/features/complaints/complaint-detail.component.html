@@ -1,0 +1,123 @@
+<section class="complaint-page page route-enter">
+  <p class="complaint-meta"><a routerLink="/complaints">{{ 'complaint.back' | t }}</a></p>
+  @if (error() && !item()) {
+    <p class="complaint-error">{{ error() }}</p>
+  }
+  @if (item(); as c) {
+    <h1>{{ c.caseRef }}</h1>
+    <p class="complaint-lede">
+      <span class="complaint-badge">{{ statusKey(c.status) | t }}</span>
+      · {{ ('complaint.kind.' + c.kind) | t }}
+      @if (c.openedOrderDispute) { · {{ 'complaint.detail.frozen' | t }} }
+    </p>
+
+    <article class="complaint-block panel">
+      <p class="complaint-meta">{{ c.complainantName }} · {{ c.complainantEmail }} · {{ c.createdAt | date: 'short' }}</p>
+      @if (c.productName) {
+        <p><strong>{{ 'complaint.form.product' | t }}:</strong> {{ c.productName }}</p>
+      }
+      @if (c.orderId) {
+        <p class="complaint-meta">{{ 'complaint.form.order' | t }}: {{ c.orderId }}</p>
+      }
+      <p>{{ c.body }}</p>
+      @if (c.requestedAction) {
+        <p><strong>{{ 'complaint.form.request' | t }}:</strong> {{ c.requestedAction }}</p>
+      }
+      @if (c.evidenceUrls.length) {
+        <div class="complaint-links">
+          @for (url of c.evidenceUrls; track url) {
+            <a [href]="url" target="_blank" rel="noopener noreferrer">{{ url }}</a>
+          }
+        </div>
+      }
+      @if (c.sellerResponse) {
+        <p><strong>{{ 'complaint.detail.sellerReply' | t }}:</strong> {{ c.sellerResponse }}</p>
+      }
+      @if (c.decision) {
+        <p>
+          <strong>{{ 'complaint.detail.decision' | t }}:</strong>
+          {{ ('complaint.decision.' + c.decision) | t }}
+          @if (c.decisionNote) { — {{ c.decisionNote }} }
+        </p>
+      }
+    </article>
+
+    <article class="complaint-block panel">
+      <h2>{{ 'complaint.detail.timeline' | t }}</h2>
+      <ul class="complaint-timeline">
+        @for (e of c.events; track e.at + e.action) {
+          <li>
+            <strong>{{ eventLabel(e.action) }}</strong>
+            <span class="complaint-meta"> · {{ e.at | date: 'short' }}</span>
+            @if (e.note) {
+              <p class="complaint-meta">{{ e.note }}</p>
+            }
+          </li>
+        }
+      </ul>
+    </article>
+
+    @if (isSeller() && c.status === 'awaiting_seller') {
+      <article class="complaint-block panel">
+        <h2>{{ 'complaint.detail.sellerTitle' | t }}</h2>
+        <textarea class="input" [(ngModel)]="sellerBody" name="sellerBody"></textarea>
+        <button class="btn btn-fill" type="button" [disabled]="busy()" (click)="sellerRespond()">
+          {{ 'complaint.detail.sellerCta' | t }}
+        </button>
+      </article>
+    }
+
+    @if ((isComplainant() || isSeller()) && c.status === 'decided' && !c.appealedAt) {
+      <article class="complaint-block panel">
+        <h2>{{ 'complaint.detail.appealTitle' | t }}</h2>
+        <p class="complaint-hint">{{ 'complaint.detail.appealHint' | t }}</p>
+        <textarea class="input" [(ngModel)]="appealReason" name="appealReason"></textarea>
+        <button class="btn btn-outline" type="button" [disabled]="busy()" (click)="appeal()">
+          {{ 'complaint.detail.appealCta' | t }}
+        </button>
+      </article>
+    }
+
+    @if (auth.isAdmin()) {
+      <article class="complaint-block panel">
+        <h2>{{ 'complaint.detail.adminTitle' | t }}</h2>
+        <p class="complaint-hint">{{ 'complaint.detail.adminHint' | t }}</p>
+        <div class="complaint-admin">
+          @if (c.status === 'received' || c.status === 'verifying' || c.status === 'classified' || c.status === 'awaiting_seller') {
+            <button class="btn btn-fill" type="button" [disabled]="busy()" (click)="admin('advance')">
+              {{ 'complaint.admin.advance' | t }}
+            </button>
+          }
+          @if (c.status === 'classified' || c.status === 'awaiting_seller') {
+            <button class="btn btn-outline" type="button" [disabled]="busy()" (click)="admin('skip_seller')">
+              {{ 'complaint.admin.skipSeller' | t }}
+            </button>
+          }
+          @if (c.status === 'reviewing' || c.status === 'awaiting_seller') {
+            <select class="input" [(ngModel)]="decision" name="decision">
+              <option value="upheld">{{ 'complaint.decision.upheld' | t }}</option>
+              <option value="rejected">{{ 'complaint.decision.rejected' | t }}</option>
+              <option value="mediated">{{ 'complaint.decision.mediated' | t }}</option>
+            </select>
+            <textarea class="input" [(ngModel)]="decisionNote" name="decisionNote" [placeholder]="'complaint.admin.notePh' | t"></textarea>
+            <button class="btn btn-fill" type="button" [disabled]="busy()" (click)="adminDecide()">
+              {{ 'complaint.admin.decide' | t }}
+            </button>
+          }
+          @if (c.status === 'decided') {
+            <button class="btn btn-outline" type="button" [disabled]="busy()" (click)="admin('close')">
+              {{ 'complaint.admin.close' | t }}
+            </button>
+          }
+        </div>
+      </article>
+    }
+
+    @if (msg()) {
+      <p class="complaint-ok">{{ msg() }}</p>
+    }
+    @if (error()) {
+      <p class="complaint-error">{{ error() }}</p>
+    }
+  }
+</section>

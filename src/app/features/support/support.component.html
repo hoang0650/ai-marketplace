@@ -5,6 +5,7 @@
       <p>{{ 'support.lede' | t }}</p>
       <div class="support-hero__actions">
         <a routerLink="/sell/products" class="btn btn-fill">{{ 'support.createProduct' | t }}</a>
+        <a routerLink="/complaints/new" class="btn btn-fill">{{ 'complaint.cta.file' | t }}</a>
         <a [href]="'mailto:' + supportEmail" class="btn btn-outline">{{ 'support.private' | t }}</a>
       </div>
     </div>

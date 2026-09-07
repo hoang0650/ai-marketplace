@@ -87,7 +87,7 @@ export class AffiliateComponent implements OnInit {
       </p>
 
       @if (data(); as d) {
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Tổng doanh thu sàn (GMV)</p>
             <p class="mt-2 font-display text-3xl">{{ d.totalGrossRevenue | currency: d.currency }}</p>
@@ -106,7 +106,17 @@ export class AffiliateComponent implements OnInit {
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Phí CHPlay / App Store</p>
             <p class="mt-2 font-display text-3xl">{{ (d.storeFees || 0) | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">Do Google/Apple thu trên IAP — không phải doanh thu sàn</p>
+            <p class="mt-1 text-xs text-muted">Tổng phí IAP Google + Apple — không phải doanh thu sàn</p>
+          </div>
+          <div class="panel">
+            <p class="text-xs uppercase tracking-wider text-muted">Phí CHPlay</p>
+            <p class="mt-2 font-display text-3xl">{{ (d.playStoreFees || 0) | currency: d.currency }}</p>
+            <p class="mt-1 text-xs text-muted">Google Play 15% trên IAP — Google thu</p>
+          </div>
+          <div class="panel">
+            <p class="text-xs uppercase tracking-wider text-muted">Phí App Store</p>
+            <p class="mt-2 font-display text-3xl">{{ (d.appStoreFees || 0) | currency: d.currency }}</p>
+            <p class="mt-1 text-xs text-muted">App Store 30% trên IAP — Apple thu</p>
           </div>
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Buyer nạp tiền</p>
@@ -136,15 +146,17 @@ export class AffiliateComponent implements OnInit {
 
         <div class="panel mt-8">
           <h2 class="font-display text-2xl">Doanh thu từng shop</h2>
-          <p class="mt-1 text-sm text-muted">Gross · phí sàn · phí CHPlay/App Store · seller payable — không đồng nhất với 80%</p>
+          <p class="mt-1 text-sm text-muted">Gross · phí sàn · phí CHPlay · phí App Store · tổng IAP · seller payable — không đồng nhất với 80%</p>
           <div class="mt-4 overflow-x-auto">
-            <table class="w-full min-w-[720px] text-left text-sm">
+            <table class="w-full min-w-[960px] text-left text-sm">
               <thead class="text-xs uppercase tracking-wider text-muted">
                 <tr class="border-b border-line">
                   <th class="py-2 pr-3 font-medium">Shop</th>
                   <th class="py-2 pr-3 font-medium">Orders</th>
                   <th class="py-2 pr-3 font-medium">Gross</th>
                   <th class="py-2 pr-3 font-medium">Phí sàn 20%</th>
+                  <th class="py-2 pr-3 font-medium">Phí CHPlay</th>
+                  <th class="py-2 pr-3 font-medium">Phí App Store</th>
                   <th class="py-2 pr-3 font-medium">CHPlay / App Store</th>
                   <th class="py-2 font-medium">Seller payable</th>
                 </tr>
@@ -166,12 +178,14 @@ export class AffiliateComponent implements OnInit {
                     <td class="py-3 pr-3">{{ shop.orders | number }}</td>
                     <td class="py-3 pr-3">{{ shop.grossRevenue | currency: d.currency }}</td>
                     <td class="py-3 pr-3">{{ shop.platformFee | currency: d.currency }}</td>
+                    <td class="py-3 pr-3">{{ (shop.playStoreFeeAmount || 0) | currency: d.currency }}</td>
+                    <td class="py-3 pr-3">{{ (shop.appStoreFeeAmount || 0) | currency: d.currency }}</td>
                     <td class="py-3 pr-3">{{ (shop.storeFeeAmount || 0) | currency: d.currency }}</td>
                     <td class="py-3">{{ shop.sellerNet | currency: d.currency }}</td>
                   </tr>
                 } @empty {
                   <tr>
-                    <td class="py-6 text-muted" colspan="6">No paid orders yet.</td>
+                    <td class="py-6 text-muted" colspan="8">No paid orders yet.</td>
                   </tr>
                 }
               </tbody>
@@ -206,6 +220,12 @@ export class AffiliateComponent implements OnInit {
               }
             </ul>
           </div>
+        </div>
+
+        <div class="panel mt-8">
+          <h2 class="font-display text-2xl">Complaints</h2>
+          <p class="mt-1 text-sm text-muted">Hồ sơ khiếu nại theo quy trình tiếp nhận → xác minh → quyết định.</p>
+          <p class="mt-2"><a class="text-accent underline" routerLink="/admin/complaints">Mở danh sách khiếu nại</a></p>
         </div>
 
         <div class="panel mt-8">

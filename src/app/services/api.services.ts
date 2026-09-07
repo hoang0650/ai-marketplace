@@ -20,6 +20,8 @@ import {
   SellerProfile,
   LegalDocumentMeta,
   IssuedLicense,
+  Complaint,
+  ComplaintKind,
 } from '../models/marketplace.models';
 import { CategoryMeta } from '../models/marketplace.models';
 import {
@@ -209,6 +211,51 @@ export class DashboardService {
 
   resolveDispute(orderId: string, resolution: 'seller' | 'buyer', note?: string): Observable<Order> {
     return this.http.patch<Order>(`${this.base}/admin/disputes/${orderId}`, { resolution, note });
+  }
+
+  complaints(as?: 'mine' | 'seller' | 'admin'): Observable<Complaint[]> {
+    let params = new HttpParams();
+    if (as) params = params.set('as', as);
+    return this.http.get<Complaint[]>(`${this.base}/complaints`, { params });
+  }
+
+  complaint(id: string): Observable<Complaint> {
+    return this.http.get<Complaint>(`${this.base}/complaints/${id}`);
+  }
+
+  createComplaint(body: {
+    kind: ComplaintKind;
+    body: string;
+    requestedAction?: string;
+    evidenceUrls?: string;
+    orderId?: string;
+    productId?: string;
+    productName?: string;
+    name?: string;
+    email?: string;
+    openOrderDispute?: boolean;
+  }): Observable<Complaint> {
+    return this.http.post<Complaint>(`${this.base}/complaints`, body);
+  }
+
+  sellerRespondComplaint(id: string, body: string): Observable<Complaint> {
+    return this.http.post<Complaint>(`${this.base}/complaints/${id}/seller-response`, { body });
+  }
+
+  appealComplaint(id: string, reason: string): Observable<Complaint> {
+    return this.http.post<Complaint>(`${this.base}/complaints/${id}/appeal`, { reason });
+  }
+
+  adminUpdateComplaint(
+    id: string,
+    body: {
+      action: 'advance' | 'skip_seller' | 'decide' | 'close';
+      note?: string;
+      decision?: 'upheld' | 'rejected' | 'mediated';
+      decisionNote?: string;
+    },
+  ): Observable<Complaint> {
+    return this.http.patch<Complaint>(`${this.base}/complaints/${id}`, body);
   }
 
   deposit(amount: number): Observable<WalletTx> {

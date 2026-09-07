@@ -1,0 +1,65 @@
+<section class="complaint-page page route-enter">
+  <p class="complaint-meta"><a routerLink="/complaints">{{ 'complaint.back' | t }}</a></p>
+  <h1>{{ 'complaint.form.title' | t }}</h1>
+  <p class="complaint-lede">{{ 'complaint.form.lede' | t }}</p>
+
+  <form class="complaint-form panel" (ngSubmit)="submit()">
+    <div class="complaint-field">
+      <label for="c-name">{{ 'complaint.form.name' | t }}</label>
+      <input id="c-name" class="input" [(ngModel)]="name" name="name" required />
+    </div>
+    <div class="complaint-field">
+      <label for="c-email">{{ 'complaint.form.email' | t }}</label>
+      <input id="c-email" class="input" type="email" [(ngModel)]="email" name="email" required />
+    </div>
+    <div class="complaint-field">
+      <p>{{ 'complaint.form.kind' | t }}</p>
+      <div class="complaint-radios">
+        <label><input type="radio" name="kind" [(ngModel)]="kind" value="buyer_seller" /> {{ 'complaint.kind.buyer_seller' | t }}</label>
+        <label><input type="radio" name="kind" [(ngModel)]="kind" value="buyer_platform" /> {{ 'complaint.kind.buyer_platform' | t }}</label>
+        <label><input type="radio" name="kind" [(ngModel)]="kind" value="seller_platform" /> {{ 'complaint.kind.seller_platform' | t }}</label>
+      </div>
+    </div>
+    <div class="complaint-field">
+      <label for="c-order">{{ 'complaint.form.order' | t }}</label>
+      <select id="c-order" class="input" [(ngModel)]="orderId" name="orderId" (ngModelChange)="onOrderChange()">
+        <option value="">{{ 'complaint.form.orderNone' | t }}</option>
+        @for (o of orders(); track o.id) {
+          <option [value]="o.id">{{ o.productName }} · {{ o.id }}</option>
+        }
+      </select>
+    </div>
+    <div class="complaint-field">
+      <label for="c-product">{{ 'complaint.form.product' | t }}</label>
+      <input id="c-product" class="input" [(ngModel)]="productName" name="productName" />
+    </div>
+    <div class="complaint-field">
+      <label for="c-body">{{ 'complaint.form.body' | t }}</label>
+      <textarea id="c-body" class="input" [(ngModel)]="body" name="body" required></textarea>
+    </div>
+    <div class="complaint-field">
+      <label for="c-ask">{{ 'complaint.form.request' | t }}</label>
+      <textarea id="c-ask" class="input" [(ngModel)]="requestedAction" name="requestedAction"></textarea>
+    </div>
+    <div class="complaint-field">
+      <label for="c-ev">{{ 'complaint.form.evidence' | t }}</label>
+      <textarea id="c-ev" class="input" [(ngModel)]="evidenceUrls" name="evidenceUrls" [placeholder]="'complaint.form.evidencePh' | t"></textarea>
+    </div>
+    @if (kind === 'buyer_seller' && selectedOrder()?.canDispute) {
+      <label class="complaint-check">
+        <input type="checkbox" [(ngModel)]="openOrderDispute" name="openOrderDispute" />
+        <span>{{ 'complaint.form.freeze' | t }}</span>
+      </label>
+    }
+    <p class="complaint-warn">{{ 'complaint.form.secrets' | t }}</p>
+    @if (error()) {
+      <p class="complaint-error">{{ error() }}</p>
+    }
+    <div class="complaint-actions">
+      <button class="btn btn-fill" type="submit" [disabled]="busy()">
+        {{ busy() ? ('complaint.form.sending' | t) : ('complaint.cta.file' | t) }}
+      </button>
+      <a routerLink="/legal/chinh-sach-khieu-nai-tranh-chap" class="btn btn-outline">{{ 'complaint.cta.policy' | t }}</a>
+    </div>
+  </form>
+</section>

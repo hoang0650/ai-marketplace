@@ -208,10 +208,10 @@
                   <p class="order-list__id">{{ o.id }} · {{ o.createdAt | date: 'dd/MM/yyyy' }}</p>
                 </div>
                 <strong>{{ o.amount | currency: o.currency: 'symbol-narrow': '1.0-0' }}</strong>
-                @if (o.canDispute) {
-                  <button type="button" class="link-accent" (click)="openDispute(o)">Khiếu nại</button>
+                @if (o.canDispute || o.disputeStatus === 'none') {
+                  <a class="link-accent" [routerLink]="['/complaints/new']" [queryParams]="{ orderId: o.id, kind: 'buyer_seller' }">Khiếu nại</a>
                 } @else if (o.disputeStatus === 'open') {
-                  <span class="warn-text">Đang khiếu nại</span>
+                  <a class="warn-text" routerLink="/complaints">Đang khiếu nại</a>
                 }
               </li>
             }
@@ -244,9 +244,9 @@
         <strong>Bảo mật</strong>
         <span>Mật khẩu & xác thực</span>
       </a>
-      <a routerLink="/marketplace">
-        <strong>Hỗ trợ tận tâm</strong>
-        <span>Trợ giúp mua bán</span>
+      <a routerLink="/complaints">
+        <strong>Khiếu nại</strong>
+        <span>Gửi và theo dõi hồ sơ</span>
       </a>
     </nav>
   } @else {

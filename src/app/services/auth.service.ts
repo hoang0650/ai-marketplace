@@ -98,6 +98,13 @@ export class AuthService {
       .pipe(tap((user) => this.userSignal.set(user)));
   }
 
+  persistToken(token: string): void {
+    this.tokenSignal.set(token);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('phai.token', token);
+    }
+  }
+
   private persist(res: AuthResponse): void {
     this.userSignal.set(res.user);
     this.tokenSignal.set(res.token);
