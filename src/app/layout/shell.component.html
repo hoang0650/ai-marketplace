@@ -295,51 +295,83 @@
     </div>
   </div>
 
-  <div class="site-footer__links">
-    <div>
-      <a routerLink="/" class="footer-brand" [title]="'nav.homeAria' | t">
-        <img src="/ai-markets-logo.png" alt="AI Markets" class="footer-brand__logo" width="280" height="80" />
-      </a>
-      <p class="footer-tagline">{{ 'footer.tagline' | t }}</p>
-      <p class="footer-contact">{{ 'lux.contact' | t }}: support@aimarkets.vn</p>
+  <div class="site-footer__band">
+    <div class="site-footer__links">
+      <div class="footer-company">
+        <p class="footer-col-title">{{ 'footer.company.name' | t }}</p>
+        <p class="footer-company__line">{{ 'footer.company.tax' | t }}</p>
+        <p class="footer-company__line">{{ 'footer.company.address' | t }}</p>
+        <p class="footer-company__line">{{ 'footer.company.phone' | t }}</p>
+        <p class="footer-company__line">
+          {{ 'footer.company.email' | t }}
+        </p>
+        <div class="footer-badges">
+          <a
+            class="footer-bct"
+            href="https://online.gov.vn/"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.title]="'footer.bct' | t"
+            [attr.aria-label]="'footer.bct' | t"
+          >
+            <svg viewBox="0 0 72 72" width="56" height="56" aria-hidden="true">
+              <circle cx="36" cy="36" r="34" fill="#c41e3a" />
+              <circle cx="36" cy="36" r="28" fill="#fff" />
+              <circle cx="36" cy="36" r="24" fill="#c41e3a" />
+              <text x="36" y="28" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">ĐÃ ĐĂNG KÝ</text>
+              <text x="36" y="40" text-anchor="middle" fill="#fff" font-size="6.2" font-weight="700">BỘ CÔNG THƯƠNG</text>
+              <text x="36" y="50" text-anchor="middle" fill="#ffd27a" font-size="5.5" font-weight="700">TMĐT</text>
+            </svg>
+          </a>
+          <a class="footer-store" [href]="appStoreUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'footer.appStore' | t">
+            <svg viewBox="0 0 120 40" width="110" height="36" aria-hidden="true">
+              <rect width="120" height="40" rx="6" fill="#111" stroke="#555" />
+              <path fill="#fff" d="M22.2 12.2c.9-1.1 1.5-2.6 1.3-4.1-1.3.1-2.9.9-3.8 2-1 .9-1.8 2.5-1.5 3.9 1.4.1 2.9-.7 4-1.8zm3.6 1c-2.2-.1-4.1 1.3-5.1 1.3-1.1 0-2.7-1.2-4.4-1.2-2.3 0-4.4 1.3-5.5 3.4-2.4 4.1-.6 10.2 1.7 13.5 1.1 1.6 2.4 3.5 4.2 3.4 1.6-.1 2.3-1.1 4.3-1.1s2.6 1.1 4.4 1.1c1.8 0 3-1.6 4.1-3.3 1.3-1.9 1.8-3.7 1.8-3.8 0 0-3.5-1.3-3.5-5.3 0-3.3 2.7-4.9 2.8-5 0 0-2.2-1.6-4.8-1.7z"/>
+              <text x="42" y="16" fill="#aaa" font-size="6.5">Download on the</text>
+              <text x="42" y="28" fill="#fff" font-size="11" font-weight="600">App Store</text>
+            </svg>
+          </a>
+          <a class="footer-store" [href]="playStoreUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'footer.playStore' | t">
+            <svg viewBox="0 0 128 40" width="118" height="36" aria-hidden="true">
+              <rect width="128" height="40" rx="6" fill="#111" stroke="#555" />
+              <path fill="#34a853" d="M16.2 21.2l8.6 8.6 3.2-1.8-10.3-5.9-1.5-.9z"/>
+              <path fill="#4285f4" d="M14.4 10.4v19.2l11.9-6.8-11.9-12.4z"/>
+              <path fill="#fbbc04" d="M27.4 28.4l3.8-2.2-3.8-2.2-3.2 1.8 3.2 2.6z"/>
+              <path fill="#ea4335" d="M14.4 10.4l13 13.6 3.2-1.8-16.2-11.8z"/>
+              <text x="46" y="16" fill="#aaa" font-size="6.5">GET IT ON</text>
+              <text x="46" y="28" fill="#fff" font-size="11" font-weight="600">Google Play</text>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">{{ 'footer.col.categories' | t }}</p>
+        <ul>
+          @for (item of footerNav; track item.path) {
+            <li><a [routerLink]="item.path" class="footer-link">{{ item.key | t }}</a></li>
+          }
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">{{ 'footer.col.features' | t }}</p>
+        <ul>
+          @for (item of footerFeatures; track item.path) {
+            <li><a [routerLink]="item.path" class="footer-link">{{ item.key | t }}</a></li>
+          }
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">{{ 'footer.col.terms' | t }}</p>
+        <ul>
+          @for (item of footerLegal; track item.path) {
+            <li><a [routerLink]="item.path" class="footer-link">{{ item.key | t }}</a></li>
+          }
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="footer-col-title">{{ 'lux.footer.inspired' | t }}</p>
-      <ul>
-        @for (c of generateCats; track c.id) {
-          <li><a [routerLink]="c.hubPath" class="footer-link">{{ ('cat.' + c.id + '.label') | t }}</a></li>
-        }
-      </ul>
-    </div>
-    <div>
-      <p class="footer-col-title">{{ 'lux.footer.shop' | t }}</p>
-      <ul>
-        <li><a routerLink="/marketplace" class="footer-link">{{ 'nav.marketplace' | t }}</a></li>
-        @for (c of apiCats; track c.id) {
-          <li><a [routerLink]="c.hubPath" class="footer-link">{{ ('cat.' + c.id + '.label') | t }}</a></li>
-        }
-      </ul>
-    </div>
-    <div>
-      <p class="footer-col-title">{{ 'lux.footer.account' | t }}</p>
-      <ul>
-        <li><a routerLink="/wallet" class="footer-link">{{ 'footer.wallet' | t }}</a></li>
-        <li><a routerLink="/billing" class="footer-link">{{ 'footer.billing' | t }}</a></li>
-        <li><a routerLink="/sell" class="footer-link">{{ 'footer.sell' | t }}</a></li>
-        <li><a routerLink="/docs" class="footer-link">{{ 'nav.docs' | t }}</a></li>
-        <li><a routerLink="/legal" class="footer-link">{{ 'footer.legalCenter' | t }}</a></li>
-        <li><a routerLink="/legal/quy-che-hoat-dong-san-tmdt" class="footer-link">{{ 'footer.marketplaceRules' | t }}</a></li>
-        <li><a routerLink="/terms-of-service" class="footer-link">{{ 'footer.terms' | t }}</a></li>
-        <li><a routerLink="/privacy-policy" class="footer-link">{{ 'footer.privacy' | t }}</a></li>
-        <li><a routerLink="/legal/chinh-sach-nguoi-ban" class="footer-link">{{ 'footer.sellerPolicy' | t }}</a></li>
-        <li><a routerLink="/legal/chinh-sach-nguoi-mua" class="footer-link">{{ 'footer.buyerPolicy' | t }}</a></li>
-        <li><a routerLink="/legal/chinh-sach-thanh-toan-doi-soat" class="footer-link">{{ 'footer.paymentPolicy' | t }}</a></li>
-        <li><a routerLink="/legal/chinh-sach-hoan-tien" class="footer-link">{{ 'footer.refundPolicy' | t }}</a></li>
-      </ul>
-    </div>
-  </div>
 
-  <div class="site-footer__bottom">
-    <p>© {{ year }} {{ brand }}. {{ 'lux.partners' | t }}.</p>
+    <div class="site-footer__bottom">
+      <p>© {{ year }} {{ brand }}. {{ 'lux.partners' | t }}.</p>
+    </div>
   </div>
 </footer>

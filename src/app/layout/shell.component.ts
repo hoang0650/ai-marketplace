@@ -38,6 +38,28 @@ export class ShellComponent {
   readonly platformLinks = NAV_PLATFORM_LINKS;
   readonly generateCats = categoriesByNavGroup('generate');
   readonly apiCats = categoriesByNavGroup('apis');
+  readonly footerNav = [
+    { path: '/', key: 'footer.nav.about' },
+    { path: '/marketplace', key: 'nav.marketplace' },
+    { path: '/work', key: 'work.nav.label' },
+    { path: '/docs', key: 'nav.docs' },
+    { path: '/support', key: 'nav.support' },
+  ];
+  readonly footerFeatures = [
+    { path: '/ai-film-series', key: 'cat.ai-film-series.label' },
+    { path: '/voice-clone', key: 'cat.voice-clone.label' },
+    { path: '/skill-pack', key: 'cat.skill-pack.label' },
+    { path: '/dataset', key: 'cat.dataset.label' },
+    { path: '/gpu-compute', key: 'cat.gpu-compute.label' },
+  ];
+  readonly footerLegal = [
+    { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.privacy' },
+    { path: '/legal/quy-che-hoat-dong-san-tmdt', key: 'footer.marketplaceRules' },
+    { path: '/legal/chinh-sach-khieu-nai-tranh-chap', key: 'footer.disputePolicy' },
+    { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms' },
+  ];
+  readonly appStoreUrl = 'https://apps.apple.com/vn/app/phhotel/id6778220852?l=vi';
+  readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=app.rork.phhotel_pms_interface';
   readonly platformCats = categoriesByNavGroup('platform');
   readonly talentCats = categoriesByNavGroup('talent');
   readonly aiCategories = AI_CATEGORIES;
