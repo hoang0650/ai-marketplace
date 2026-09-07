@@ -1,4 +1,4 @@
-@import './sell-api-usage.component.scss';
+@use './sell-api-usage.component.scss' as *;
 
 .integrate-form {
   display: grid;

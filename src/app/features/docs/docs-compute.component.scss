@@ -1,4 +1,4 @@
-@import '../sell/sell-api-usage.component.scss';
+@use '../sell/sell-api-usage.component.scss' as *;
 
 .seller-docs__crumb a {
   color: var(--color-muted);

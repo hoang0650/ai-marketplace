@@ -14,15 +14,15 @@ import { CategoryIconComponent, CategoryIconId } from '../../shared/components/c
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 
-const DEFAULT_TILE = {
+type CategoryTileStyle = { bg: string; accent: string; count: number; isNew?: boolean };
+
+const DEFAULT_TILE: CategoryTileStyle = {
   bg: 'linear-gradient(145deg, #1c1c1e 0%, #3a3a3c 55%, #2c2c2e 100%)',
   accent: 'rgba(255,255,255,0.08)',
   count: 0,
 };
 
-const CATEGORY_TILE_STYLE: Partial<
-  Record<CategoryIconId, { bg: string; accent: string; count: number; isNew?: boolean }>
-> = {
+const CATEGORY_TILE_STYLE: Partial<Record<CategoryIconId, CategoryTileStyle>> = {
   'text-to-text': {
     bg: 'linear-gradient(145deg, #1c1c1e 0%, #3a3a3c 55%, #2c2c2e 100%)',
     accent: 'rgba(255,255,255,0.08)',
