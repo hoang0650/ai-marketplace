@@ -306,7 +306,7 @@
     <div>
       <p class="footer-col-title">{{ 'lux.footer.inspired' | t }}</p>
       <ul>
-        @for (c of generateCats.slice(0, 6); track c.id) {
+        @for (c of generateCats; track c.id) {
           <li><a [routerLink]="c.hubPath" class="footer-link">{{ ('cat.' + c.id + '.label') | t }}</a></li>
         }
       </ul>

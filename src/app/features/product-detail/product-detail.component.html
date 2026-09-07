@@ -99,7 +99,7 @@
         </div>
 
         @if (isLicense(p.category)) {
-          <label class="pd-buy__section">Thời hạn thuê</label>
+          <label class="pd-buy__section">{{ 'pd.accessTerm' | t }}</label>
           <div class="pd-qty" style="display:flex;gap:0.5rem;flex-wrap:wrap">
             @for (t of licenseTerms; track t) {
               <button type="button" class="btn" [class.btn-fill]="licenseTerm === t" (click)="licenseTerm = t">
@@ -141,8 +141,10 @@
             {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
           }           @else if (isSkill(p.category)) {
             Buy / Install
+          } @else if (isFilm(p.category)) {
+            {{ 'pd.ctaWatch' | t }}
           } @else if (isLicense(p.category)) {
-            Thuê · cấp license key
+            {{ 'pd.ctaRead' | t }}
           } @else if (isVoice(p.category)) {
             Thuê giọng / mua credit
           } @else {

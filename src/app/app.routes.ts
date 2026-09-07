@@ -235,7 +235,7 @@ export const routes: Routes = [
         path: 'ai-film-series',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'ai-film-series', title: 'AI film series' },
+        data: { category: 'ai-film-series', title: 'Watch AI films' },
       },
       {
         path: 'story-book',

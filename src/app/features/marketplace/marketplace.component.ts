@@ -6,6 +6,7 @@ import { catchError, of } from 'rxjs';
 import { ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { Product, CategoryMeta } from '../../models/marketplace.models';
+import { CATEGORY_META } from '../../models/categories';
 import { ProductCardComponent } from '../../shared/components/product-card.component';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
@@ -36,7 +37,7 @@ export class MarketplaceComponent implements OnInit {
   readonly currencySvc = inject(CurrencyService);
   private readonly platformId = inject(PLATFORM_ID);
 
-  readonly categories = signal<CategoryMeta[]>([]);
+  readonly categories = signal<CategoryMeta[]>(CATEGORY_META);
   readonly catalog = signal<Product[]>([]);
   readonly loadError = signal(false);
   readonly sort = signal<SortId>('featured');
@@ -127,7 +128,12 @@ export class MarketplaceComponent implements OnInit {
     this.productsApi
       .categories()
       .pipe(catchError(() => of([] as CategoryMeta[])))
-      .subscribe((c) => this.categories.set(c));
+      .subscribe((c) => {
+        if (!c.length) return;
+        const localIds = new Set(CATEGORY_META.map((x) => x.id));
+        const extras = c.filter((x) => x?.id && !localIds.has(x.id));
+        this.categories.set(extras.length ? [...CATEGORY_META, ...extras] : CATEGORY_META);
+      });
 
     this.productsApi
       .list()

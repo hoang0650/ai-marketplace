@@ -3,6 +3,7 @@ import { Component, input } from '@angular/core';
 export type CategoryIconId =
   | 'text-to-text'
   | 'text-to-image'
+  | 'image-to-image'
   | 'text-to-video'
   | 'image-to-video'
   | 'inference'
@@ -117,6 +118,12 @@ export type CategoryIconId =
           />
           <path d="M19 28l6 4 6-4v-8l-6-4-6 4v8z" stroke="currentColor" stroke-width="1.75" />
           <path d="M25 20v8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        }
+        @case ('image-to-image') {
+          <rect x="8" y="14" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+          <rect x="22" y="18" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+          <path d="M14 22l4-4 6 6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M28 26h8M32 22v8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
         }
         @case ('inference') {
           <rect

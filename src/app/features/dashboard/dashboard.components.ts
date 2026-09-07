@@ -379,8 +379,8 @@ export class DashboardAnalyticsComponent implements OnInit {
         }
         @if (isLicenseDraft()) {
           <div class="md:col-span-2 rounded-lg border border-line p-3">
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">License key theo thời hạn thuê</p>
-            <p class="mb-3 text-xs text-muted">Khi buyer thuê, hệ thống cấp key AIM-xxxx chỉ dùng được trong ngày / tháng / năm đã mua. Hoàn tiền sẽ thu hồi key.</p>
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">License key theo thời hạn xem / đọc</p>
+            <p class="mb-3 text-xs text-muted">Khi buyer xem phim hoặc đọc truyện, hệ thống cấp key AIM-xxxx chỉ dùng được trong ngày / tháng / năm đã mua. Hoàn tiền sẽ thu hồi key.</p>
             <div class="grid gap-3 md:grid-cols-3">
               <div>
                 <label class="mb-1 block text-xs uppercase text-muted">Giá / ngày (USD)</label>

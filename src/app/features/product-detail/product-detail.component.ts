@@ -16,7 +16,7 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Product, ProductCategory, Review, IssuedLicense } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory, isComputeStreamCategory, isLicenseCategory, isVoiceCategory } from '../../models/categories';
+import { isHireCategory, isSkillCategory, isComputeStreamCategory, isLicenseCategory, isVoiceCategory, isFilmCategory } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -372,6 +372,10 @@ export class ProductDetailComponent implements OnInit {
 
   isLicense(cat: ProductCategory): boolean {
     return isLicenseCategory(cat);
+  }
+
+  isFilm(cat: ProductCategory): boolean {
+    return isFilmCategory(cat);
   }
 
   isVoice(cat: ProductCategory): boolean {
@@ -1142,7 +1146,10 @@ export class ProductDetailComponent implements OnInit {
         if (res.license?.licenseKey) {
           this.issuedLicense.set(res.license);
           this.checkoutMsg.set(
-            `Đã thuê · license ${res.license.licenseKey} · hết hạn ${res.license.expiresAt || ''}`,
+            this.i18n.t(isFilmCategory(p.category) ? 'pd.watchOk' : 'pd.licenseOk', {
+              key: res.license.licenseKey,
+              expires: res.license.expiresAt || '',
+            }),
           );
         } else {
           this.checkoutMsg.set(`Đã thanh toán bằng ví aimarkets.vn · ${quantity} đơn vị`);

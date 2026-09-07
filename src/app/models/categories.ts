@@ -96,8 +96,8 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   },
   {
     id: 'ai-film-series',
-    label: 'AI film series',
-    description: 'Multi-episode AI films with a day / month / year license key.',
+    label: 'Watch AI films',
+    description: 'Watch multi-episode AI films. Access is unlocked with a day / month / year license key.',
     hubPath: '/ai-film-series',
     group: 'models',
     navGroup: 'generate',
@@ -298,6 +298,7 @@ export function isAiCategory(id: ProductCategory | string): boolean {
 
 const COMPUTE_STREAM_CATEGORIES = new Set<ProductCategory>(['gpu-compute', 'game-server']);
 const LICENSE_CATEGORIES = new Set<ProductCategory>(['ai-film-series', 'story-book']);
+const FILM_CATEGORIES = new Set<ProductCategory>(['ai-film-series']);
 const VOICE_CATEGORIES = new Set<ProductCategory>(['voice-clone']);
 
 export function isComputeStreamCategory(id: ProductCategory | string): boolean {
@@ -306,6 +307,10 @@ export function isComputeStreamCategory(id: ProductCategory | string): boolean {
 
 export function isLicenseCategory(id: ProductCategory | string): boolean {
   return LICENSE_CATEGORIES.has(id as ProductCategory);
+}
+
+export function isFilmCategory(id: ProductCategory | string): boolean {
+  return FILM_CATEGORIES.has(id as ProductCategory);
 }
 
 export function isVoiceCategory(id: ProductCategory | string): boolean {

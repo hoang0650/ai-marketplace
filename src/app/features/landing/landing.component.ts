@@ -9,14 +9,68 @@ import { SeoService } from '../../services/seo.service';
 import { Product } from '../../models/marketplace.models';
 import { ProductCardComponent } from '../../shared/components/product-card.component';
 import { environment } from '../../../environments/environment';
-import { AI_CATEGORIES } from '../../models/categories';
+import { AI_CATEGORIES, categoriesByNavGroup } from '../../models/categories';
 import { CategoryIconComponent, CategoryIconId } from '../../shared/components/category-icon.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 
-const CATEGORY_ICONS: Array<{
+const DEFAULT_TILE = {
+  bg: 'linear-gradient(145deg, #1c1c1e 0%, #3a3a3c 55%, #2c2c2e 100%)',
+  accent: 'rgba(255,255,255,0.08)',
+  count: 0,
+};
+
+const CATEGORY_TILE_STYLE: Partial<
+  Record<CategoryIconId, { bg: string; accent: string; count: number; isNew?: boolean }>
+> = {
+  'text-to-text': {
+    bg: 'linear-gradient(145deg, #1c1c1e 0%, #3a3a3c 55%, #2c2c2e 100%)',
+    accent: 'rgba(255,255,255,0.08)',
+    count: 1200,
+  },
+  'text-to-image': {
+    bg: 'linear-gradient(145deg, #2a2318 0%, #4a3d2e 55%, #352a20 100%)',
+    accent: 'rgba(201,169,97,0.12)',
+    count: 890,
+  },
+  'image-to-image': {
+    bg: 'linear-gradient(145deg, #1c1814 0%, #3a3024 55%, #2a241c 100%)',
+    accent: 'rgba(220,180,120,0.12)',
+    count: 410,
+  },
+  'text-to-video': {
+    bg: 'linear-gradient(145deg, #141c28 0%, #243a52 55%, #1a2838 100%)',
+    accent: 'rgba(120,180,255,0.14)',
+    count: 456,
+    isNew: true,
+  },
+  'image-to-video': {
+    bg: 'linear-gradient(145deg, #221830 0%, #3d2a52 55%, #2a1f3a 100%)',
+    accent: 'rgba(180,140,255,0.12)',
+    count: 320,
+  },
+  'voice-clone': {
+    bg: 'linear-gradient(145deg, #1c1424 0%, #3a2450 55%, #241830 100%)',
+    accent: 'rgba(200,140,255,0.14)',
+    count: 0,
+    isNew: true,
+  },
+  'ai-film-series': {
+    bg: 'linear-gradient(145deg, #1a1410 0%, #4a2a18 55%, #2a1c14 100%)',
+    accent: 'rgba(255,140,80,0.14)',
+    count: 0,
+    isNew: true,
+  },
+  'story-book': {
+    bg: 'linear-gradient(145deg, #14181c 0%, #243848 55%, #182028 100%)',
+    accent: 'rgba(120,200,255,0.12)',
+    count: 0,
+    isNew: true,
+  },
+};
+
+const EXTRA_HOME_TILES: Array<{
   id: CategoryIconId;
-  label: string;
   hubPath: string;
   bg: string;
   accent: string;
@@ -24,68 +78,7 @@ const CATEGORY_ICONS: Array<{
   isNew?: boolean;
 }> = [
   {
-    id: 'text-to-text',
-    label: 'Text→Text',
-    hubPath: '/text-to-text',
-    bg: 'linear-gradient(145deg, #1c1c1e 0%, #3a3a3c 55%, #2c2c2e 100%)',
-    accent: 'rgba(255,255,255,0.08)',
-    count: 1200,
-  },
-  {
-    id: 'text-to-image',
-    label: 'Text→Image',
-    hubPath: '/text-to-image',
-    bg: 'linear-gradient(145deg, #2a2318 0%, #4a3d2e 55%, #352a20 100%)',
-    accent: 'rgba(201,169,97,0.12)',
-    count: 890,
-  },
-  {
-    id: 'text-to-video',
-    label: 'Text→Video',
-    hubPath: '/text-to-video',
-    bg: 'linear-gradient(145deg, #141c28 0%, #243a52 55%, #1a2838 100%)',
-    accent: 'rgba(120,180,255,0.14)',
-    count: 456,
-    isNew: true,
-  },
-  {
-    id: 'image-to-video',
-    label: 'Img→Video',
-    hubPath: '/image-to-video',
-    bg: 'linear-gradient(145deg, #221830 0%, #3d2a52 55%, #2a1f3a 100%)',
-    accent: 'rgba(180,140,255,0.12)',
-    count: 320,
-  },
-  {
-    id: 'voice-clone',
-    label: 'Voice',
-    hubPath: '/voice-clone',
-    bg: 'linear-gradient(145deg, #1c1424 0%, #3a2450 55%, #241830 100%)',
-    accent: 'rgba(200,140,255,0.14)',
-    count: 0,
-    isNew: true,
-  },
-  {
-    id: 'ai-film-series',
-    label: 'AI series',
-    hubPath: '/ai-film-series',
-    bg: 'linear-gradient(145deg, #1a1410 0%, #4a2a18 55%, #2a1c14 100%)',
-    accent: 'rgba(255,140,80,0.14)',
-    count: 0,
-    isNew: true,
-  },
-  {
-    id: 'story-book',
-    label: 'Stories',
-    hubPath: '/story-book',
-    bg: 'linear-gradient(145deg, #14181c 0%, #243848 55%, #182028 100%)',
-    accent: 'rgba(120,200,255,0.12)',
-    count: 0,
-    isNew: true,
-  },
-  {
     id: 'inference',
-    label: 'Inference',
     hubPath: '/inference',
     bg: 'linear-gradient(145deg, #142018 0%, #1f3d2a 55%, #182820 100%)',
     accent: 'rgba(100,220,160,0.12)',
@@ -93,7 +86,6 @@ const CATEGORY_ICONS: Array<{
   },
   {
     id: 'api-endpoint',
-    label: 'Sell API',
     hubPath: '/api-endpoint',
     bg: 'linear-gradient(145deg, #121e28 0%, #1e3a52 55%, #162430 100%)',
     accent: 'rgba(80,180,255,0.12)',
@@ -101,7 +93,6 @@ const CATEGORY_ICONS: Array<{
   },
   {
     id: 'hire-agent',
-    label: 'Agents',
     hubPath: '/hire-agent',
     bg: 'linear-gradient(145deg, #222018 0%, #3d3820 55%, #2a2818 100%)',
     accent: 'rgba(201,169,97,0.14)',
@@ -110,12 +101,26 @@ const CATEGORY_ICONS: Array<{
   },
   {
     id: 'skill-pack',
-    label: 'Skills',
     hubPath: '/skill-pack',
     bg: 'linear-gradient(145deg, #281e14 0%, #4a3520 55%, #352618 100%)',
     accent: 'rgba(255,180,100,0.1)',
     count: 650,
   },
+];
+
+const CATEGORY_ICONS = [
+  ...categoriesByNavGroup('generate').map((c) => {
+    const style = CATEGORY_TILE_STYLE[c.id as CategoryIconId] || DEFAULT_TILE;
+    return {
+      id: c.id as CategoryIconId,
+      hubPath: c.hubPath,
+      bg: style.bg,
+      accent: style.accent,
+      count: style.count,
+      isNew: style.isNew,
+    };
+  }),
+  ...EXTRA_HOME_TILES,
 ];
 
 const HERO_SLIDES = [
