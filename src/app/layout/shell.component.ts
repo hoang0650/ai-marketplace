@@ -38,19 +38,26 @@ export class ShellComponent {
   readonly platformLinks = NAV_PLATFORM_LINKS;
   readonly generateCats = categoriesByNavGroup('generate');
   readonly apiCats = categoriesByNavGroup('apis');
+  readonly headerCategoryExtras = [
+    { path: '/hire-agent/marketplace', key: 'nav.agent' },
+    { path: '/models', key: 'nav.model' },
+  ];
   readonly footerNav = [
     { path: '/', key: 'footer.nav.about' },
     { path: '/marketplace', key: 'nav.marketplace' },
+    { path: '/hire-agent/marketplace', key: 'nav.agent' },
+    { path: '/models', key: 'nav.model' },
     { path: '/work', key: 'work.nav.label' },
     { path: '/docs', key: 'nav.docs' },
     { path: '/support', key: 'nav.support' },
   ];
   readonly footerFeatures = [
-    { path: '/ai-film-series', key: 'cat.ai-film-series.label' },
-    { path: '/voice-clone', key: 'cat.voice-clone.label' },
-    { path: '/skill-pack', key: 'cat.skill-pack.label' },
-    { path: '/dataset', key: 'cat.dataset.label' },
-    { path: '/gpu-compute', key: 'cat.gpu-compute.label' },
+    ...this.headerCategoryExtras,
+    ...this.generateCats.map((c) => ({ path: c.hubPath, key: `cat.${c.id}.label` })),
+    ...this.apiCats.map((c) => ({ path: c.hubPath, key: `cat.${c.id}.label` })),
+    ...this.platformLinks
+      .filter((link) => !this.headerCategoryExtras.some((item) => item.path === link.path))
+      .map((link) => ({ path: link.path, key: link.labelKey })),
   ];
   readonly footerLegal = [
     { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.privacy' },

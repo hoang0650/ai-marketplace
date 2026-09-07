@@ -102,6 +102,13 @@
                 <div>
                   <p class="nav-dd__group">{{ 'group.generate' | t }}</p>
                   <ul>
+                    @for (item of headerCategoryExtras; track item.path) {
+                      <li>
+                        <a [routerLink]="item.path" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
+                          <span class="nav-dd__item-title">{{ item.key | t }}</span>
+                        </a>
+                      </li>
+                    }
                     @for (c of generateCats; track c.id) {
                       <li>
                         <a [routerLink]="c.hubPath" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
@@ -306,25 +313,8 @@
           {{ 'footer.company.email' | t }}
         </p>
         <div class="footer-badges">
-          <a
-            class="footer-bct"
-            href="https://online.gov.vn/"
-            target="_blank"
-            rel="noopener noreferrer"
-            [attr.title]="'footer.bct' | t"
-            [attr.aria-label]="'footer.bct' | t"
-          >
-            <svg viewBox="0 0 72 72" width="56" height="56" aria-hidden="true">
-              <circle cx="36" cy="36" r="34" fill="#c41e3a" />
-              <circle cx="36" cy="36" r="28" fill="#fff" />
-              <circle cx="36" cy="36" r="24" fill="#c41e3a" />
-              <text x="36" y="28" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">ĐÃ ĐĂNG KÝ</text>
-              <text x="36" y="40" text-anchor="middle" fill="#fff" font-size="6.2" font-weight="700">BỘ CÔNG THƯƠNG</text>
-              <text x="36" y="50" text-anchor="middle" fill="#ffd27a" font-size="5.5" font-weight="700">TMĐT</text>
-            </svg>
-          </a>
           <a class="footer-store" [href]="appStoreUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'footer.appStore' | t">
-            <svg viewBox="0 0 120 40" width="110" height="36" aria-hidden="true">
+            <svg viewBox="0 0 120 40" width="140" height="46" aria-hidden="true">
               <rect width="120" height="40" rx="6" fill="#111" stroke="#555" />
               <path fill="#fff" d="M22.2 12.2c.9-1.1 1.5-2.6 1.3-4.1-1.3.1-2.9.9-3.8 2-1 .9-1.8 2.5-1.5 3.9 1.4.1 2.9-.7 4-1.8zm3.6 1c-2.2-.1-4.1 1.3-5.1 1.3-1.1 0-2.7-1.2-4.4-1.2-2.3 0-4.4 1.3-5.5 3.4-2.4 4.1-.6 10.2 1.7 13.5 1.1 1.6 2.4 3.5 4.2 3.4 1.6-.1 2.3-1.1 4.3-1.1s2.6 1.1 4.4 1.1c1.8 0 3-1.6 4.1-3.3 1.3-1.9 1.8-3.7 1.8-3.8 0 0-3.5-1.3-3.5-5.3 0-3.3 2.7-4.9 2.8-5 0 0-2.2-1.6-4.8-1.7z"/>
               <text x="42" y="16" fill="#aaa" font-size="6.5">Download on the</text>
@@ -332,7 +322,7 @@
             </svg>
           </a>
           <a class="footer-store" [href]="playStoreUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'footer.playStore' | t">
-            <svg viewBox="0 0 128 40" width="118" height="36" aria-hidden="true">
+            <svg viewBox="0 0 128 40" width="150" height="48" aria-hidden="true">
               <rect width="128" height="40" rx="6" fill="#111" stroke="#555" />
               <path fill="#34a853" d="M16.2 21.2l8.6 8.6 3.2-1.8-10.3-5.9-1.5-.9z"/>
               <path fill="#4285f4" d="M14.4 10.4v19.2l11.9-6.8-11.9-12.4z"/>
@@ -354,7 +344,7 @@
       </div>
       <div>
         <p class="footer-col-title">{{ 'footer.col.features' | t }}</p>
-        <ul>
+        <ul class="footer-feature-list">
           @for (item of footerFeatures; track item.path) {
             <li><a [routerLink]="item.path" class="footer-link">{{ item.key | t }}</a></li>
           }
