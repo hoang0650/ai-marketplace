@@ -332,14 +332,15 @@ th {
   font-weight: 800;
 }
 
-.pill {
-  display: inline-flex;
-  border-radius: 999px;
-  background: #e8f8ef;
-  color: #15803d;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.2rem 0.55rem;
+.pill[data-status='pending'] {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pill[data-status='failed'],
+.pill[data-status='cancelled'] {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .note-cell {

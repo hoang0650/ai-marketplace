@@ -538,6 +538,12 @@ export const routes: Routes = [
           import('./features/complaints/complaint-list.component').then((m) => m.ComplaintListComponent),
       },
       {
+        path: 'admin/finance',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/admin-finance.component').then((m) => m.AdminFinanceComponent),
+      },
+      {
         path: 'admin/complaints/:id',
         canActivate: [adminGuard],
         loadComponent: () =>

@@ -1,0 +1,124 @@
+.admin-finance {
+  max-width: 72rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.admin-finance__crumb {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+}
+
+.admin-finance__crumb a {
+  color: var(--color-muted);
+}
+
+.admin-finance h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
+  font-weight: 800;
+}
+
+.admin-finance__lede {
+  margin: 0 0 1.25rem;
+  color: var(--color-muted);
+  max-width: 42rem;
+  line-height: 1.55;
+}
+
+.admin-finance__kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-finance__tabs,
+.admin-finance__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.admin-finance__tabs button {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-finance__tabs button.active {
+  background: var(--color-ink);
+  color: #fff;
+  border-color: var(--color-ink);
+}
+
+.admin-finance__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-finance__filters .input {
+  min-width: 16rem;
+}
+
+.admin-finance__note {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.admin-finance__ok {
+  color: #15803d;
+  font-size: 0.9rem;
+}
+
+.admin-finance__err {
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+.admin-finance__pill {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #e8f8ef;
+  color: #15803d;
+}
+
+.admin-finance__pill[data-status='pending'] {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.admin-finance__pill[data-status='failed'],
+.admin-finance__pill[data-status='cancelled'] {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+@media (max-width: 700px) {
+  .admin-finance__kpis {
+    grid-template-columns: 1fr;
+  }
+}

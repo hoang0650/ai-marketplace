@@ -305,7 +305,7 @@ export class SellPaymentComponent {
           <ul>
             @for (t of txs(); track t.id) {
               <li>
-                <span>{{ t.type }} · {{ t.note }}</span>
+                <span>{{ t.type }} · {{ t.status || 'completed' }} · {{ t.note }}</span>
                 <strong>{{ t.amount | currency: t.currency }}</strong>
               </li>
             } @empty {
@@ -349,7 +349,7 @@ export class SellWithdrawComponent implements OnInit {
     this.api.withdraw(this.amount).subscribe({
       next: (tx) => {
         this.txs.update((list) => [tx, ...list]);
-        this.msg.set(`Đã gửi yêu cầu rút ${tx.amount}`);
+        this.msg.set(`Đã gửi yêu cầu rút ${tx.amount}. Chờ admin xác nhận.`);
         this.api.walletSummary().subscribe((s) => this.summary.set(s));
       },
       error: (err) => this.msg.set(err?.error?.message || 'Không rút được'),

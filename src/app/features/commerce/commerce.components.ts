@@ -223,6 +223,12 @@ export class AffiliateComponent implements OnInit {
         </div>
 
         <div class="panel mt-8">
+          <h2 class="font-display text-2xl">Nạp / rút tiền</h2>
+          <p class="mt-1 text-sm text-muted">Duyệt yêu cầu nạp ví và rút tiền seller. Chỉ cộng/trừ số dư sau khi admin xác nhận.</p>
+          <p class="mt-2"><a class="text-accent underline" routerLink="/admin/finance">Mở quản lý nạp rút</a></p>
+        </div>
+
+        <div class="panel mt-8">
           <h2 class="font-display text-2xl">Complaints</h2>
           <p class="mt-1 text-sm text-muted">Hồ sơ khiếu nại theo quy trình tiếp nhận → xác minh → quyết định.</p>
           <p class="mt-2"><a class="text-accent underline" routerLink="/admin/complaints">Mở danh sách khiếu nại</a></p>

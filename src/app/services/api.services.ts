@@ -17,6 +17,7 @@ import {
   UsageStat,
   WalletSummary,
   WalletTx,
+  AdminWalletTxList,
   SellerProfile,
   LegalDocumentMeta,
   IssuedLicense,
@@ -260,6 +261,26 @@ export class DashboardService {
 
   deposit(amount: number): Observable<WalletTx> {
     return this.http.post<WalletTx>(`${this.base}/wallet/deposit`, { amount });
+  }
+
+  adminWalletTxs(params?: {
+    type?: 'deposit' | 'withdraw';
+    status?: 'pending' | 'completed' | 'failed' | 'cancelled' | '';
+    q?: string;
+  }): Observable<AdminWalletTxList> {
+    let httpParams = new HttpParams();
+    if (params?.type) httpParams = httpParams.set('type', params.type);
+    if (params?.status) httpParams = httpParams.set('status', params.status);
+    if (params?.q) httpParams = httpParams.set('q', params.q);
+    return this.http.get<AdminWalletTxList>(`${this.base}/admin/wallet-txs`, { params: httpParams });
+  }
+
+  reviewWalletTx(
+    id: string,
+    status: 'completed' | 'failed' | 'cancelled',
+    note?: string,
+  ): Observable<WalletTx> {
+    return this.http.put<WalletTx>(`${this.base}/admin/wallet-txs/${id}`, { status, note });
   }
 
   affiliate(): Observable<AffiliateStats> {

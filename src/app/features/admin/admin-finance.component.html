@@ -1,0 +1,125 @@
+<section class="admin-finance page route-enter">
+  <p class="admin-finance__crumb">
+    <a routerLink="/admin">{{ 'nav.admin' | t }}</a>
+  </p>
+  <h1>{{ 'admin.finance.title' | t }}</h1>
+  <p class="admin-finance__lede">{{ 'admin.finance.lede' | t }}</p>
+
+  <div class="admin-finance__kpis">
+    <div class="panel">
+      <p class="text-xs uppercase tracking-wider text-muted">{{ 'admin.finance.pendingDeposits' | t }}</p>
+      <p class="mt-2 font-display text-3xl">{{ pendingDeposits() }}</p>
+    </div>
+    <div class="panel">
+      <p class="text-xs uppercase tracking-wider text-muted">{{ 'admin.finance.pendingWithdraws' | t }}</p>
+      <p class="mt-2 font-display text-3xl">{{ pendingWithdraws() }}</p>
+    </div>
+  </div>
+
+  <div class="admin-finance__tabs" role="tablist">
+    <button type="button" role="tab" [class.active]="tab() === 'withdraw'" (click)="setTab('withdraw')">
+      {{ 'admin.finance.tab.withdraw' | t }}
+    </button>
+    <button type="button" role="tab" [class.active]="tab() === 'deposit'" (click)="setTab('deposit')">
+      {{ 'admin.finance.tab.deposit' | t }}
+    </button>
+  </div>
+
+  <form class="admin-finance__filters" (ngSubmit)="search()">
+    <label>
+      <span class="sr-only">{{ 'admin.finance.search' | t }}</span>
+      <input
+        class="input"
+        name="q"
+        [(ngModel)]="q"
+        [placeholder]="'admin.finance.searchPh' | t"
+      />
+    </label>
+    <button class="btn btn-outline" type="submit">{{ 'admin.finance.search' | t }}</button>
+  </form>
+
+  <div class="admin-finance__status">
+    @for (s of statusFilters; track s) {
+      <button type="button" class="btn text-xs" [class.btn-fill]="status() === s" [class.btn-outline]="status() !== s" (click)="setStatus(s)">
+        {{ filterKey(s) | t }}
+      </button>
+    }
+  </div>
+
+  @if (msg()) {
+    <p class="admin-finance__ok">{{ msg() }}</p>
+  }
+  @if (error()) {
+    <p class="admin-finance__err">{{ error() }}</p>
+  }
+
+  @if (tab() === 'withdraw' || tab() === 'deposit') {
+    <label class="admin-finance__note">
+      <span>{{ 'admin.finance.reason' | t }}</span>
+      <input class="input" name="note" [(ngModel)]="note" [placeholder]="'admin.finance.reasonPh' | t" />
+    </label>
+  }
+
+  @if (loading()) {
+    <p class="text-muted">{{ 'admin.finance.loading' | t }}</p>
+  } @else {
+    <div class="panel mt-4 overflow-x-auto">
+      <table class="w-full min-w-[860px] text-left text-sm">
+        <thead class="text-xs uppercase tracking-wider text-muted">
+          <tr class="border-b border-line">
+            <th class="py-2 pr-3 font-medium">{{ 'admin.finance.col.user' | t }}</th>
+            <th class="py-2 pr-3 font-medium">{{ 'admin.finance.col.amount' | t }}</th>
+            <th class="py-2 pr-3 font-medium">{{ 'admin.finance.col.status' | t }}</th>
+            <th class="py-2 pr-3 font-medium">{{ 'admin.finance.col.note' | t }}</th>
+            <th class="py-2 pr-3 font-medium">{{ 'admin.finance.col.time' | t }}</th>
+            <th class="py-2 font-medium">{{ 'admin.finance.col.actions' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of items(); track row.id) {
+            <tr class="border-b border-line">
+              <td class="py-3 pr-3">
+                <p class="font-medium">{{ row.user?.name || '—' }}</p>
+                <p class="text-xs text-muted">{{ row.user?.email }} · {{ row.user?.role }}</p>
+              </td>
+              <td class="py-3 pr-3 font-medium">{{ row.amount | currency: row.currency }}</td>
+              <td class="py-3 pr-3">
+                <span class="admin-finance__pill" [attr.data-status]="row.status || 'completed'">
+                  {{ statusKey(row.status) | t }}
+                </span>
+              </td>
+              <td class="py-3 pr-3 text-muted">{{ row.reviewNote || row.note }}</td>
+              <td class="py-3 pr-3 text-muted">{{ row.createdAt | date: 'short' }}</td>
+              <td class="py-3">
+                @if ((row.status || 'completed') === 'pending') {
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      class="btn btn-fill text-xs"
+                      type="button"
+                      [disabled]="busyId() === row.id"
+                      (click)="review(row, 'completed')"
+                    >
+                      {{ 'admin.finance.confirm' | t }}
+                    </button>
+                    <button
+                      class="btn btn-outline text-xs"
+                      type="button"
+                      [disabled]="busyId() === row.id"
+                      (click)="review(row, 'cancelled')"
+                    >
+                      {{ 'admin.finance.reject' | t }}
+                    </button>
+                  </div>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="py-6 text-muted" colspan="6">{{ 'admin.finance.empty' | t }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

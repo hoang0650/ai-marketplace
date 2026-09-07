@@ -62,10 +62,10 @@ export class WalletComponent implements OnInit {
       return d.getFullYear() === y && d.getMonth() + 1 === m;
     });
     const deposit = list
-      .filter((t) => t.type === 'deposit' || t.type === 'credit')
+      .filter((t) => (t.type === 'deposit' || t.type === 'credit') && (t.status || 'completed') === 'completed')
       .reduce((s, t) => s + t.amount, 0);
     const spend = list
-      .filter((t) => t.type === 'debit' || t.type === 'withdraw')
+      .filter((t) => (t.type === 'debit' || t.type === 'withdraw') && (t.status || 'completed') !== 'failed' && (t.status || 'completed') !== 'cancelled')
       .reduce((s, t) => s + t.amount, 0);
     return { deposit, spend, count: list.length };
   });
@@ -87,10 +87,7 @@ export class WalletComponent implements OnInit {
   reload(): void {
     this.api.wallet().subscribe((list) => {
       this.txs.set(list);
-      const bal = list.reduce(
-        (s, t) => s + (t.type === 'debit' || t.type === 'withdraw' ? -t.amount : t.amount),
-        0,
-      );
+      const bal = list.reduce((s, t) => s + this.txDelta(t), 0);
       this.balance.set(bal);
       this.currency.set(list[0]?.currency || 'VND');
     });
@@ -126,6 +123,20 @@ export class WalletComponent implements OnInit {
 
   isCredit(type: WalletTx['type']): boolean {
     return type === 'deposit' || type === 'credit';
+  }
+
+  statusLabel(t: WalletTx): string {
+    return this.i18n.t(`wallet.status.${t.status || 'completed'}`);
+  }
+
+  private txDelta(t: WalletTx): number {
+    const st = t.status || 'completed';
+    if (st === 'failed' || st === 'cancelled') return 0;
+    if (t.type === 'deposit' || t.type === 'credit') {
+      return st === 'completed' ? t.amount : 0;
+    }
+    if (st === 'pending' || st === 'completed') return -t.amount;
+    return 0;
   }
 
   private currentMonthKey(): string {

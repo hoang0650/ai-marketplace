@@ -723,7 +723,7 @@ export class DashboardProductsComponent implements OnInit {
         <ul class="mt-4 space-y-3 text-sm">
           @for (t of txs(); track t.id) {
             <li class="flex justify-between border-b border-line pb-2">
-              <span>{{ t.type }} · {{ t.note }}</span>
+              <span>{{ t.type }} · {{ t.status || 'completed' }} · {{ t.note }}</span>
               <span>{{ t.amount | currency: t.currency }} · {{ t.createdAt | date:'shortDate' }}</span>
             </li>
           }
@@ -752,7 +752,7 @@ export class DashboardWithdrawComponent implements OnInit {
     this.api.withdraw(this.amount).subscribe({
       next: (tx) => {
         this.txs.update((list) => [tx, ...list]);
-        this.msg.set(`Withdraw ${tx.amount} queued`);
+        this.msg.set(`Withdraw ${tx.amount} pending admin confirmation`);
         this.api.walletSummary().subscribe((s) => this.summary.set(s));
       },
       error: (err) => this.msg.set(err?.error?.message || 'Withdraw failed'),

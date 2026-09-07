@@ -102,7 +102,7 @@
                     {{ t.amount | currency: t.currency: 'symbol-narrow': '1.0-0' }}
                   </td>
                   <td>{{ methodLabel(t.type) }}</td>
-                  <td><span class="pill">{{ 'wallet.history.success' | t }}</span></td>
+                  <td><span class="pill" [attr.data-status]="t.status || 'completed'">{{ statusLabel(t) }}</span></td>
                   <td class="note-cell">{{ t.note || ('#' + t.id) }}</td>
                 </tr>
               } @empty {

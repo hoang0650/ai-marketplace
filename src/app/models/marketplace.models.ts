@@ -381,7 +381,18 @@ export interface WalletTx {
   amount: number;
   currency: string;
   note: string;
+  status?: 'pending' | 'completed' | 'failed' | 'cancelled';
+  payoutId?: string;
+  reviewNote?: string;
+  reviewedAt?: string | null;
   createdAt: string;
+  user?: { id: string; name: string; email: string; role: string };
+}
+
+export interface AdminWalletTxList {
+  items: WalletTx[];
+  pendingDeposits: number;
+  pendingWithdraws: number;
 }
 
 export interface UsageStat {
