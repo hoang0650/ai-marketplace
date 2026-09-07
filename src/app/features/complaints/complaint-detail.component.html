@@ -7,7 +7,7 @@
     <h1>{{ c.caseRef }}</h1>
     <p class="complaint-lede">
       <span class="complaint-badge">{{ statusKey(c.status) | t }}</span>
-      · {{ ('complaint.kind.' + c.kind) | t }}
+      · {{ kindKey(c.kind) | t }}
       @if (c.openedOrderDispute) { · {{ 'complaint.detail.frozen' | t }} }
     </p>
 
@@ -36,7 +36,7 @@
       @if (c.decision) {
         <p>
           <strong>{{ 'complaint.detail.decision' | t }}:</strong>
-          {{ ('complaint.decision.' + c.decision) | t }}
+          {{ decisionKey(c.decision) | t }}
           @if (c.decisionNote) { — {{ c.decisionNote }} }
         </p>
       }

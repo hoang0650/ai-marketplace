@@ -58,6 +58,14 @@ export class ComplaintDetailComponent implements OnInit {
     return `complaint.status.${status}`;
   }
 
+  kindKey(kind: string): string {
+    return `complaint.kind.${kind}`;
+  }
+
+  decisionKey(decision: string): string {
+    return `complaint.decision.${decision}`;
+  }
+
   eventLabel(action: string): string {
     const known = [
       'received',

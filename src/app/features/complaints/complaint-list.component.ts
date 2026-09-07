@@ -30,7 +30,7 @@ export class ComplaintListComponent implements OnInit {
   ngOnInit(): void {
     const inbox = String(this.route.snapshot.data['inbox'] || '');
     this.inbox.set(inbox === 'seller' || inbox === 'admin' || inbox === 'mine' ? inbox : '');
-    this.seo.set({ title: this.i18n.t('complaint.list.title') });
+    this.seo.set({ title: this.i18n.t(this.titleKey()) });
     this.api.complaints(this.inbox() || undefined).subscribe({
       next: (list) => {
         this.items.set(list);
@@ -41,6 +41,17 @@ export class ComplaintListComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  titleKey(): string {
+    const inbox = this.inbox();
+    if (inbox === 'seller') return 'complaint.list.sellerTitle';
+    if (inbox === 'admin') return 'complaint.list.adminTitle';
+    return 'complaint.list.title';
+  }
+
+  kindKey(kind: string): string {
+    return `complaint.kind.${kind}`;
   }
 
   statusKey(status: string): string {

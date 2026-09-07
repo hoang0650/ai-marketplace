@@ -1,5 +1,5 @@
 <section class="complaint-page page route-enter">
-  <h1>{{ (as === 'seller' ? 'complaint.list.sellerTitle' : as === 'admin' ? 'complaint.list.adminTitle' : 'complaint.list.title') | t }}</h1>
+  <h1>{{ titleKey() | t }}</h1>
   <p class="complaint-lede">{{ 'complaint.list.lede' | t }}</p>
   <div class="complaint-actions">
     <a routerLink="/complaints/new" class="btn btn-fill">{{ 'complaint.cta.file' | t }}</a>
@@ -21,7 +21,7 @@
               <span class="complaint-badge">{{ statusKey(c.status) | t }}</span>
             </div>
             <p class="complaint-meta">
-              {{ ('complaint.kind.' + c.kind) | t }}
+              {{ kindKey(c.kind) | t }}
               @if (c.productName) { · {{ c.productName }} }
               · {{ c.createdAt | date: 'short' }}
             </p>
