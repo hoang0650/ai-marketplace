@@ -379,8 +379,8 @@ export class DashboardAnalyticsComponent implements OnInit {
         }
         @if (isLicenseDraft()) {
           <div class="md:col-span-2 rounded-lg border border-line p-3">
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">License key theo thời hạn xem / đọc</p>
-            <p class="mb-3 text-xs text-muted">Khi buyer xem phim hoặc đọc truyện, hệ thống cấp key AIM-xxxx chỉ dùng được trong ngày / tháng / năm đã mua. Hoàn tiền sẽ thu hồi key.</p>
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">License key theo thời hạn</p>
+            <p class="mb-3 text-xs text-muted">Khi buyer xem phim, đọc truyện, tải skill hoặc dataset, hệ thống cấp key AIM-xxxx chỉ dùng được trong ngày / tháng / năm đã mua. Key gửi qua email. Hoàn tiền sẽ thu hồi key.</p>
             <div class="grid gap-3 md:grid-cols-3">
               <div>
                 <label class="mb-1 block text-xs uppercase text-muted">Giá / ngày (USD)</label>
@@ -395,8 +395,10 @@ export class DashboardAnalyticsComponent implements OnInit {
                 <input class="input" type="number" min="0" step="0.01" [(ngModel)]="draft.priceYear" name="priceYear" />
               </div>
             </div>
+            @if (draft.category === 'ai-film-series' || draft.category === 'story-book') {
             <label class="mt-3 mb-1 block text-xs uppercase text-muted">Số tập (phim) / chương</label>
             <input class="input" type="number" min="0" [(ngModel)]="draft.episodeCount" name="episodeCount" />
+            }
           </div>
         }
         <div class="md:col-span-2">
@@ -623,7 +625,13 @@ export class DashboardProductsComponent implements OnInit {
         }
       : this.isLicenseDraft()
         ? {
-            kind: (this.draft.category === 'story-book' ? 'story' : 'series') as 'story' | 'series',
+            kind: (this.draft.category === 'story-book'
+              ? 'story'
+              : this.draft.category === 'skill-pack'
+                ? 'skill'
+                : this.draft.category === 'dataset'
+                  ? 'dataset'
+                  : 'series') as 'story' | 'series' | 'skill' | 'dataset',
             episodeCount: Number(this.draft.episodeCount) || 0,
             licenseTerm: this.draft.interval,
             licensePrices: {

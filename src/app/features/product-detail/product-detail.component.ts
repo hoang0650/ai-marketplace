@@ -16,7 +16,7 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Product, ProductCategory, Review, IssuedLicense } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory, isComputeStreamCategory, isLicenseCategory, isVoiceCategory, isFilmCategory } from '../../models/categories';
+import { isHireCategory, isSkillCategory, isComputeStreamCategory, isLicenseCategory, isVoiceCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -376,6 +376,14 @@ export class ProductDetailComponent implements OnInit {
 
   isFilm(cat: ProductCategory): boolean {
     return isFilmCategory(cat);
+  }
+
+  isDataset(cat: ProductCategory): boolean {
+    return isDatasetCategory(cat);
+  }
+
+  isDownloadLicense(cat: ProductCategory): boolean {
+    return isDownloadLicenseCategory(cat);
   }
 
   isVoice(cat: ProductCategory): boolean {

@@ -10,6 +10,7 @@ export type CategoryIconId =
   | 'api-endpoint'
   | 'hire-agent'
   | 'skill-pack'
+  | 'dataset'
   | 'voice-clone'
   | 'ai-film-series'
   | 'story-book';
@@ -209,6 +210,11 @@ export type CategoryIconId =
             stroke-width="2"
             stroke-linejoin="round"
           />
+        }
+        @case ('dataset') {
+          <ellipse cx="24" cy="14" rx="12" ry="5" stroke="currentColor" stroke-width="2" />
+          <path d="M12 14v20c0 3 5 5 12 5s12-2 12-5V14" stroke="currentColor" stroke-width="2" />
+          <path d="M12 24c0 3 5 5 12 5s12-2 12-5" stroke="currentColor" stroke-width="2" />
         }
         @case ('voice-clone') {
           <circle cx="18" cy="22" r="6" stroke="currentColor" stroke-width="2" />

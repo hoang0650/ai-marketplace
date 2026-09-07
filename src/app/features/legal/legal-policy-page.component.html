@@ -1,15 +1,15 @@
 <div class="legal-doc page route-enter">
   <aside class="legal-doc__nav" [class.is-open]="navOpen">
-    <a routerLink="/legal" class="legal-doc__index">← Trung tâm pháp lý</a>
+    <a routerLink="/legal" class="legal-doc__index">{{ 'legal.doc.back' | t }}</a>
 
     <button type="button" class="legal-doc__nav-toggle" (click)="navOpen = !navOpen" [attr.aria-expanded]="navOpen">
-      <span>{{ meta?.title || 'Chọn chính sách' }}</span>
+      <span>{{ meta ? policyTitle(meta) : ('legal.doc.choose' | t) }}</span>
       <span class="legal-doc__nav-chevron" aria-hidden="true">{{ navOpen ? '▴' : '▾' }}</span>
     </button>
 
     <div class="legal-doc__nav-panel">
       @for (group of navGroups; track group.id) {
-        <p class="legal-doc__nav-title">{{ group.label }}</p>
+        <p class="legal-doc__nav-title">{{ groupLabel(group.id) }}</p>
         <nav>
           @for (item of group.items; track item.slug) {
             <a
@@ -17,7 +17,7 @@
               routerLinkActive="is-active"
               [class.is-active]="meta?.slug === item.slug"
               (click)="navOpen = false">
-              {{ item.title }}
+              {{ policyTitle(item) }}
             </a>
           }
         </nav>
@@ -29,21 +29,21 @@
     @if (meta) {
       <header class="legal-doc__header">
         <p class="legal-doc__crumb">
-          <a routerLink="/legal">Pháp lý</a>
+          <a routerLink="/legal">{{ 'legal.doc.crumb' | t }}</a>
           <span aria-hidden="true">/</span>
-          <span>{{ groupLabel }}</span>
+          <span>{{ groupLabel(meta.group) }}</span>
         </p>
-        <p class="legal-doc__summary">{{ meta.summary }}</p>
+        <p class="legal-doc__summary">{{ policySummary(meta) }}</p>
       </header>
     }
 
     @if (loading) {
-      <p class="legal-doc__status">Đang tải tài liệu…</p>
+      <p class="legal-doc__status">{{ 'legal.doc.loading' | t }}</p>
     }
-    @if (error) {
+    @if (errorKey) {
       <div class="legal-doc__error-box">
-        <p class="legal-doc__error">{{ error }}</p>
-        <a routerLink="/legal" class="btn btn-outline">Quay lại trung tâm pháp lý</a>
+        <p class="legal-doc__error">{{ errorKey | t }}</p>
+        <a routerLink="/legal" class="btn btn-outline">{{ 'legal.doc.backCta' | t }}</a>
       </div>
     }
     @if (html) {
@@ -51,19 +51,19 @@
     }
 
     @if (meta && (prev || next)) {
-      <nav class="legal-doc__pager" aria-label="Tài liệu liền kề">
+      <nav class="legal-doc__pager" [attr.aria-label]="'legal.doc.pagerAria' | t">
         @if (prev) {
           <a [routerLink]="['/legal', prev.slug]" class="legal-doc__pager-link is-prev">
-            <span class="legal-doc__pager-label">Trước</span>
-            <span class="legal-doc__pager-title">{{ prev.title }}</span>
+            <span class="legal-doc__pager-label">{{ 'legal.doc.prev' | t }}</span>
+            <span class="legal-doc__pager-title">{{ policyTitle(prev) }}</span>
           </a>
         } @else {
           <span></span>
         }
         @if (next) {
           <a [routerLink]="['/legal', next.slug]" class="legal-doc__pager-link is-next">
-            <span class="legal-doc__pager-label">Tiếp</span>
-            <span class="legal-doc__pager-title">{{ next.title }}</span>
+            <span class="legal-doc__pager-label">{{ 'legal.doc.next' | t }}</span>
+            <span class="legal-doc__pager-title">{{ policyTitle(next) }}</span>
           </a>
         }
       </nav>

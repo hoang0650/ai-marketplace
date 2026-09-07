@@ -107,7 +107,7 @@
               </button>
             }
           </div>
-          @if (p.contentMeta?.episodeCount) {
+          @if (p.contentMeta?.episodeCount && !isDownloadLicense(p.category)) {
             <p class="text-xs text-muted">{{ p.contentMeta?.episodeCount }} tập / chương</p>
           }
         }
@@ -139,10 +139,12 @@
             {{ 'compute.cta.play' | t }}
           } @else if (isHire(p.category)) {
             {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
-          }           @else if (isSkill(p.category)) {
-            Buy / Install
           } @else if (isFilm(p.category)) {
             {{ 'pd.ctaWatch' | t }}
+          } @else if (isSkill(p.category)) {
+            {{ 'pd.ctaDownloadSkill' | t }}
+          } @else if (isDataset(p.category)) {
+            {{ 'pd.ctaDownloadDataset' | t }}
           } @else if (isLicense(p.category)) {
             {{ 'pd.ctaRead' | t }}
           } @else if (isVoice(p.category)) {

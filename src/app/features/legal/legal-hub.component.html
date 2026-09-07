@@ -1,28 +1,24 @@
 <div class="legal-hub page route-enter">
   <header class="legal-hub__hero">
-    <p class="legal-hub__eyebrow">AI Markets · aimarkets.vn</p>
-    <h1 class="font-display">Trung tâm pháp lý</h1>
-    <p class="legal-hub__lead">
-      Quy chế và chính sách của sàn TMĐT trung gian — phân biệt rõ
-      <strong>Platform</strong>, <strong>Seller</strong>, <strong>Buyer</strong> và
-      <strong>Provider</strong> hạ tầng.
-    </p>
+    <p class="legal-hub__eyebrow">{{ 'legal.hub.eyebrow' | t }}</p>
+    <h1 class="font-display">{{ 'legal.hub.title' | t }}</h1>
+    <p class="legal-hub__lead">{{ 'legal.hub.lead' | t }}</p>
 
     <label class="legal-hub__search">
-      <span class="sr-only">Tìm chính sách</span>
+      <span class="sr-only">{{ 'legal.hub.searchAria' | t }}</span>
       <input
         class="input"
         type="search"
-        placeholder="Tìm chính sách, quy chế, hoàn tiền…"
+        [placeholder]="'legal.hub.searchPh' | t"
         [value]="query"
         (input)="onQuery($event)"
         autocomplete="off"
       />
     </label>
 
-    <div class="legal-hub__quick" aria-label="Tài liệu thường xem">
+    <div class="legal-hub__quick" [attr.aria-label]="'legal.hub.quickAria' | t">
       @for (q of quickLinks; track q.slug) {
-        <a [routerLink]="['/legal', q.slug]">{{ q.title }}</a>
+        <a [routerLink]="['/legal', q.slug]">{{ policyTitle(q) }}</a>
       }
     </div>
   </header>
@@ -31,15 +27,15 @@
     @if (docsIn(group.id).length) {
       <section class="legal-hub__group">
         <div class="legal-hub__group-head">
-          <h2>{{ group.label }}</h2>
+          <h2>{{ groupLabel(group.id) }}</h2>
           <span>{{ docsIn(group.id).length }}</span>
         </div>
         <ul>
           @for (doc of docsIn(group.id); track doc.slug) {
             <li>
               <a [routerLink]="['/legal', doc.slug]">
-                <span class="legal-hub__title">{{ doc.title }}</span>
-                <span class="legal-hub__summary">{{ doc.summary }}</span>
+                <span class="legal-hub__title">{{ policyTitle(doc) }}</span>
+                <span class="legal-hub__summary">{{ policySummary(doc) }}</span>
                 <span class="legal-hub__go" aria-hidden="true">→</span>
               </a>
             </li>
@@ -50,12 +46,12 @@
   }
 
   @if (query.trim() && !hasResults) {
-    <p class="legal-hub__empty">Không có chính sách khớp “{{ query.trim() }}”.</p>
+    <p class="legal-hub__empty">{{ 'legal.hub.empty' | t: { q: query.trim() } }}</p>
   }
 
   <aside class="legal-hub__contact">
     <div>
-      <h2>Liên hệ pháp lý / hỗ trợ</h2>
+      <h2>{{ 'legal.hub.contactTitle' | t }}</h2>
       <p>
         Công ty TNHH giải pháp công nghệ PHGroup · MST 3703279135<br />
         Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa,
@@ -66,6 +62,6 @@
   </aside>
 
   <p class="legal-hub__note">
-    Nội dung mang tính khung vận hành, không thay thế tư vấn luật sư độc lập.
+    {{ 'legal.hub.note' | t }}
   </p>
 </div>

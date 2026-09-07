@@ -113,6 +113,24 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     lane: 'ai',
   },
   {
+    id: 'skill-pack',
+    label: 'Skill packs',
+    description: 'Download OpenClaw / agent skill bundles. Unlocked with a day / month / year license key.',
+    hubPath: '/skill-pack',
+    group: 'skills',
+    navGroup: 'generate',
+    lane: 'ai',
+  },
+  {
+    id: 'dataset',
+    label: 'Dataset',
+    description: 'Download training and evaluation datasets. Unlocked with a day / month / year license key.',
+    hubPath: '/dataset',
+    group: 'models',
+    navGroup: 'generate',
+    lane: 'ai',
+  },
+  {
     id: 'api-endpoint',
     label: 'Sell API',
     description: 'Metered OpenAI-compatible APIs for buyers.',
@@ -172,24 +190,6 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     description: 'Fine-tune LLMs and vision models on your data.',
     hubPath: '/fine-tune',
     group: 'models',
-    navGroup: 'platform',
-    lane: 'ai',
-  },
-  {
-    id: 'dataset',
-    label: 'Dataset',
-    description: 'Curated datasets for training and evaluation.',
-    hubPath: '/dataset',
-    group: 'models',
-    navGroup: 'platform',
-    lane: 'ai',
-  },
-  {
-    id: 'skill-pack',
-    label: 'Skill packs',
-    description: 'Buy & sell OpenClaw / agent skill bundles.',
-    hubPath: '/skill-pack',
-    group: 'skills',
     navGroup: 'platform',
     lane: 'ai',
   },
@@ -297,8 +297,14 @@ export function isAiCategory(id: ProductCategory | string): boolean {
 }
 
 const COMPUTE_STREAM_CATEGORIES = new Set<ProductCategory>(['gpu-compute', 'game-server']);
-const LICENSE_CATEGORIES = new Set<ProductCategory>(['ai-film-series', 'story-book']);
+const LICENSE_CATEGORIES = new Set<ProductCategory>([
+  'ai-film-series',
+  'story-book',
+  'skill-pack',
+  'dataset',
+]);
 const FILM_CATEGORIES = new Set<ProductCategory>(['ai-film-series']);
+const DOWNLOAD_LICENSE_CATEGORIES = new Set<ProductCategory>(['skill-pack', 'dataset']);
 const VOICE_CATEGORIES = new Set<ProductCategory>(['voice-clone']);
 
 export function isComputeStreamCategory(id: ProductCategory | string): boolean {
@@ -311,6 +317,14 @@ export function isLicenseCategory(id: ProductCategory | string): boolean {
 
 export function isFilmCategory(id: ProductCategory | string): boolean {
   return FILM_CATEGORIES.has(id as ProductCategory);
+}
+
+export function isDownloadLicenseCategory(id: ProductCategory | string): boolean {
+  return DOWNLOAD_LICENSE_CATEGORIES.has(id as ProductCategory);
+}
+
+export function isDatasetCategory(id: ProductCategory | string): boolean {
+  return id === 'dataset';
 }
 
 export function isVoiceCategory(id: ProductCategory | string): boolean {

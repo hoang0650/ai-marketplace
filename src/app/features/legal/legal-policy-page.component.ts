@@ -1,9 +1,11 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 import {
   LEGAL_POLICIES,
   LEGAL_POLICY_GROUPS,
@@ -15,7 +17,7 @@ import { LegalPolicyContentService } from './legal-policy-content.service';
 @Component({
   selector: 'app-legal-policy-page',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, TPipe],
   templateUrl: './legal-policy-page.component.html',
   styleUrl: './legal-policy-page.component.scss',
 })
@@ -25,6 +27,7 @@ export class LegalPolicyPageComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly i18n = inject(I18nService);
 
   readonly nav = LEGAL_POLICIES;
   readonly navGroups = LEGAL_POLICY_GROUPS.map((g) => ({
@@ -34,15 +37,29 @@ export class LegalPolicyPageComponent implements OnInit {
 
   meta: LegalPolicyMeta | null = null;
   html: SafeHtml | null = null;
-  error = '';
+  errorKey = '';
   loading = true;
   navOpen = false;
   prev: LegalPolicyMeta | null = null;
   next: LegalPolicyMeta | null = null;
 
-  get groupLabel(): string {
-    if (!this.meta) return '';
-    return LEGAL_POLICY_GROUPS.find((g) => g.id === this.meta!.group)?.label || '';
+  constructor() {
+    effect(() => {
+      this.i18n.lang();
+      this.syncSeo();
+    });
+  }
+
+  groupLabel(id: string): string {
+    return this.i18n.t(`legal.group.${id}`);
+  }
+
+  policyTitle(p: LegalPolicyMeta): string {
+    return this.i18n.t(`legal.policy.${p.slug}.title`);
+  }
+
+  policySummary(p: LegalPolicyMeta): string {
+    return this.i18n.t(`legal.policy.${p.slug}.summary`);
   }
 
   ngOnInit(): void {
@@ -54,9 +71,21 @@ export class LegalPolicyPageComponent implements OnInit {
       });
   }
 
+  private syncSeo(): void {
+    if (this.errorKey && !this.meta) {
+      this.seo.set({ title: this.i18n.t('legal.doc.notFoundTitle') });
+      return;
+    }
+    if (!this.meta) return;
+    this.seo.set({
+      title: `${this.policyTitle(this.meta)} | AI Markets`,
+      description: this.policySummary(this.meta),
+    });
+  }
+
   private open(slug: string): void {
     this.loading = true;
-    this.error = '';
+    this.errorKey = '';
     this.html = null;
     this.meta = null;
     this.prev = null;
@@ -66,8 +95,8 @@ export class LegalPolicyPageComponent implements OnInit {
     this.content.load(slug).subscribe((doc) => {
       this.loading = false;
       if (!doc) {
-        this.error = 'Không tìm thấy tài liệu pháp lý này.';
-        this.seo.set({ title: 'Không tìm thấy chính sách' });
+        this.errorKey = 'legal.doc.notFound';
+        this.syncSeo();
         return;
       }
       this.meta = doc.meta;
@@ -75,10 +104,7 @@ export class LegalPolicyPageComponent implements OnInit {
       const idx = LEGAL_POLICIES.findIndex((p) => p.slug === doc.meta.slug);
       this.prev = idx > 0 ? LEGAL_POLICIES[idx - 1] : null;
       this.next = idx >= 0 && idx < LEGAL_POLICIES.length - 1 ? LEGAL_POLICIES[idx + 1] : null;
-      this.seo.set({
-        title: `${doc.meta.title} | AI Markets`,
-        description: doc.meta.summary,
-      });
+      this.syncSeo();
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }

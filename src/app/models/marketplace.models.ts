@@ -133,7 +133,7 @@ export interface ProductPricing {
 }
 
 export interface ProductContentMeta {
-  kind?: 'voice' | 'series' | 'story' | '';
+  kind?: 'voice' | 'series' | 'story' | 'skill' | 'dataset' | '';
   voiceModes?: Array<'tts' | 'stt'>;
   voiceSampleUrl?: string;
   creditUnit?: 'character' | 'word' | '';

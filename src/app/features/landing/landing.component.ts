@@ -67,6 +67,18 @@ const CATEGORY_TILE_STYLE: Partial<Record<CategoryIconId, CategoryTileStyle>> = 
     count: 0,
     isNew: true,
   },
+  'skill-pack': {
+    bg: 'linear-gradient(145deg, #281e14 0%, #4a3520 55%, #352618 100%)',
+    accent: 'rgba(255,180,100,0.1)',
+    count: 650,
+    isNew: true,
+  },
+  dataset: {
+    bg: 'linear-gradient(145deg, #14201c 0%, #1e3a32 55%, #182824 100%)',
+    accent: 'rgba(80,200,160,0.12)',
+    count: 0,
+    isNew: true,
+  },
 };
 
 const EXTRA_HOME_TILES: Array<{
@@ -98,13 +110,6 @@ const EXTRA_HOME_TILES: Array<{
     accent: 'rgba(201,169,97,0.14)',
     count: 540,
     isNew: true,
-  },
-  {
-    id: 'skill-pack',
-    hubPath: '/skill-pack',
-    bg: 'linear-gradient(145deg, #281e14 0%, #4a3520 55%, #352618 100%)',
-    accent: 'rgba(255,180,100,0.1)',
-    count: 650,
   },
 ];
 
