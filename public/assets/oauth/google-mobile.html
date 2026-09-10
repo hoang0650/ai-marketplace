@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Markets · Google Sign-In</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #0b1220;
+      color: #e2e8f0;
+      text-align: center;
+      padding: 24px;
+    }
+    a { color: #93c5fd; font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div>
+    <p><strong>AI Markets</strong></p>
+    <p id="status">Đang hoàn tất đăng nhập Google…</p>
+    <p id="fallback" hidden style="margin-top: 16px;">
+      <a id="open-app" href="#">Quay lại ứng dụng AI Markets</a>
+    </p>
+  </div>
+  <script>
+    (function () {
+      var search = window.location.search || '';
+      var hash = window.location.hash || '';
+      if (!search && !hash) {
+        document.getElementById('status').textContent =
+          'Không có dữ liệu đăng nhập. Vui lòng thử lại từ ứng dụng.';
+        return;
+      }
+      var target = 'aimarkets://oauthredirect' + search + hash;
+      var fallback = document.getElementById('fallback');
+      var openApp = document.getElementById('open-app');
+      openApp.href = target;
+      document.getElementById('status').textContent = 'Đang quay lại ứng dụng AI Markets…';
+      try { window.location.replace(target); } catch (e) {}
+      setTimeout(function () {
+        fallback.hidden = false;
+        document.getElementById('status').textContent =
+          'Nếu ứng dụng chưa mở, nhấn liên kết bên dưới.';
+      }, 1200);
+    })();
+  </script>
+</body>
+</html>

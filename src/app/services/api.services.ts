@@ -732,6 +732,12 @@ export class UploadService {
     form.append('image', file, file.name);
     return this.http.post<UploadImageResult>(`${this.base}/uploads/image`, form);
   }
+
+  uploadAudio(file: File): Observable<UploadImageResult> {
+    const form = new FormData();
+    form.append('audio', file, file.name);
+    return this.http.post<UploadImageResult>(`${this.base}/uploads/audio`, form);
+  }
 }
 
 @Injectable({ providedIn: 'root' })

@@ -136,6 +136,11 @@ export interface ProductContentMeta {
   kind?: 'voice' | 'series' | 'story' | 'skill' | 'dataset' | '';
   voiceModes?: Array<'tts' | 'stt'>;
   voiceSampleUrl?: string;
+  cloneStatus?: 'pending' | 'ready' | 'failed' | '';
+  cloneProvider?: string;
+  cloneEndpoint?: string;
+  cloneError?: string;
+  cloneReadyAt?: string;
   creditUnit?: 'character' | 'word' | '';
   charactersPerCredit?: number;
   episodeCount?: number;

@@ -390,6 +390,12 @@ export class ProductDetailComponent implements OnInit {
     return isVoiceCategory(cat);
   }
 
+  voiceSampleSrc(p: Product): string {
+    const sample = String(p.contentMeta?.voiceSampleUrl || '').trim();
+    if (sample) return sample;
+    return `${environment.apiUrl}/playground/voice/${p.slug}.mp3`;
+  }
+
   licensePrice(p: Product, term: 'day' | 'month' | 'year' = this.licenseTerm): number {
     const map = p.contentMeta?.licensePrices || {};
     const n = Number(map[term]);
@@ -953,6 +959,13 @@ export class ProductDetailComponent implements OnInit {
     if (!p) return {};
 
     if (!schema) {
+      if (isVoiceCategory(p.category)) {
+        return {
+          prompt: this.prompt,
+          audio_url: p.contentMeta?.voiceSampleUrl,
+          format: 'wav',
+        };
+      }
       if (p.category === 'fine-tune') {
         return {
           base_model: this.ftBaseModel,
@@ -989,6 +1002,7 @@ export class ProductDetailComponent implements OnInit {
 
   /** Which of image/video/audio/text the result is; the API reports it per RunPod model. */
   private resolveResultKind(p: Product, output: Record<string, unknown> | undefined): 'image' | 'video' | 'audio' | 'text' {
+    if (isVoiceCategory(p.category)) return 'audio';
     const reported = String(output?.['kind'] || '');
     if (reported === 'image' || reported === 'video' || reported === 'audio' || reported === 'text') {
       return reported;
@@ -1021,7 +1035,14 @@ export class ProductDetailComponent implements OnInit {
     if (kind === 'video') {
       this.resultMediaUrl = String(output?.['video_url'] || p.coverUrl);
     } else if (kind === 'audio') {
-      this.resultMediaUrl = String(output?.['audio_url'] || '');
+      this.resultMediaUrl = String(output?.['audio_url'] || this.voiceSampleSrc(p) || '');
+      const spoken = String(output?.['text'] || this.prompt || '').trim();
+      this.previewText = spoken
+        ? `${spoken}${this.lastCost ? ` · $${this.lastCost}` : ''}`
+        : this.lastCost
+          ? `Cost $${this.lastCost}`
+          : 'MP3 ready.';
+      return;
     } else {
       this.resultMediaUrl = String(output?.['image_url'] || output?.['url'] || this.imageUrl || p.coverUrl);
     }
@@ -1043,7 +1064,7 @@ export class ProductDetailComponent implements OnInit {
       this.resultMediaKind === 'video'
         ? 'output.mp4'
         : this.resultMediaKind === 'audio'
-          ? 'output.wav'
+          ? 'voice.mp3'
           : 'output.png';
     a.click();
   }

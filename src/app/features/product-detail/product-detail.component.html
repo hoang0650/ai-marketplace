@@ -117,10 +117,23 @@
             @if (p.contentMeta?.voiceModes?.length) {
               · {{ p.contentMeta?.voiceModes?.join(', ') }}
             }
+            @if (p.contentMeta?.cloneStatus === 'ready') {
+              · clone sẵn sàng
+            } @else if (p.contentMeta?.cloneStatus === 'pending') {
+              · chờ upload MP3
+            }
             @if (p.pricing.model === 'usage') {
               · credit theo {{ p.pricing.usageUnit || '1K characters' }}
             }
           </p>
+          @if (voiceSampleSrc(p)) {
+            <div class="voice-sample">
+              <p class="voice-sample__label">Sample giọng đọc (.mp3)</p>
+              <audio [src]="voiceSampleSrc(p)" controls preload="metadata" controlslist="nodownload">
+                Trình duyệt không phát được MP3.
+              </audio>
+            </div>
+          }
         }
 
         <label class="pd-buy__section">{{ 'pd.pay' | t }}</label>
@@ -505,12 +518,12 @@
           @if (!isChatModel() && !fields().length) {
             <div class="field">
               <div class="field-label-row">
-                <label class="field-label" for="prompt">{{ p.category === 'fine-tune' ? 'Notes' : 'Prompt' }}</label>
+                <label class="field-label" for="prompt">{{ isVoice(p.category) ? 'Văn bản cần đọc (TTS)' : (p.category === 'fine-tune' ? 'Notes' : 'Prompt') }}</label>
                 @if (p.category !== 'fine-tune') {
                   <span class="req">Required</span>
                 }
               </div>
-              <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" name="prompt" [placeholder]="p.category === 'fine-tune' ? 'Optional training notes' : 'Enter a prompt'"></textarea>
+              <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" name="prompt" [placeholder]="isVoice(p.category) ? 'Nhập câu để giọng clone đọc — kết quả là file .mp3' : (p.category === 'fine-tune' ? 'Optional training notes' : 'Enter a prompt')"></textarea>
             </div>
           }
 
@@ -583,7 +596,14 @@
 
           <div class="result-body">
             @if (runStatus() === 'idle') {
-              <p class="result-empty">Generate to see results here</p>
+              @if (isVoice(p.category) && voiceSampleSrc(p)) {
+                <div class="result-media">
+                  <p class="result-caption">Sample giọng clone — Run để tạo file .mp3 từ văn bản</p>
+                  <audio [src]="voiceSampleSrc(p)" controls preload="metadata"></audio>
+                </div>
+              } @else {
+                <p class="result-empty">Generate to see results here</p>
+              }
             } @else if (runStatus() === 'running') {
               <p class="result-empty pulse">Generating…</p>
             } @else if (resultView() === 'json') {
@@ -595,8 +615,9 @@
               </div>
             } @else if (resultMediaKind === 'audio' && resultMediaUrl) {
               <div class="result-media">
-                <audio [src]="resultMediaUrl" controls></audio>
+                <audio [src]="resultMediaUrl" controls preload="auto"></audio>
                 <p class="result-caption">{{ previewText }}</p>
+                <a class="result-mp3" [href]="resultMediaUrl" download="voice.mp3" target="_blank" rel="noopener">Tải .mp3</a>
               </div>
             } @else if (resultMediaKind === 'image' && resultMediaUrl) {
               <div class="result-media">

@@ -2,12 +2,13 @@ import { Injectable, PLATFORM_ID, inject, signal, computed } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, map, of, catchError } from 'rxjs';
+import { Observable, tap, map, of, catchError, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../models/marketplace.models';
 
 interface AuthResponse {
   token: string;
+  refreshToken?: string;
   user: User;
 }
 
@@ -18,6 +19,8 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly userSignal = signal<User | null>(null);
   private readonly tokenSignal = signal<string | null>(null);
+
+  private refreshInFlight$: Observable<boolean> | null = null;
 
   readonly user = this.userSignal.asReadonly();
   readonly token = this.tokenSignal.asReadonly();
@@ -39,7 +42,7 @@ export class AuthService {
 
   login(email: string, password: string): Observable<User> {
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
+      .post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password }, { withCredentials: true })
       .pipe(tap((res) => this.persist(res)), map((res) => res.user));
   }
 
@@ -49,7 +52,7 @@ export class AuthService {
         idToken: payload.idToken,
         code: payload.code,
         redirectUri: 'postmessage',
-      })
+      }, { withCredentials: true })
       .pipe(tap((res) => this.persist(res)), map((res) => res.user));
   }
 
@@ -60,28 +63,50 @@ export class AuthService {
     asCreator?: boolean;
   }): Observable<User> {
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, payload)
+      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, payload, { withCredentials: true })
       .pipe(tap((res) => this.persist(res)), map((res) => res.user));
   }
 
-  logout(): void {
+  refreshAccessToken(): Observable<boolean> {
+    if (!this.refreshInFlight$) {
+      this.refreshInFlight$ = this.http
+        .post<AuthResponse>(`${environment.apiUrl}/auth/refresh-token`, {}, { withCredentials: true })
+        .pipe(
+          tap((res) => this.persist(res)),
+          map(() => true),
+          catchError(() => of(false)),
+          shareReplay(1),
+        );
+      this.refreshInFlight$.subscribe({
+        complete: () => {
+          this.refreshInFlight$ = null;
+        },
+      });
+    }
+    return this.refreshInFlight$;
+  }
+
+  clearSession(): void {
     this.userSignal.set(null);
     this.tokenSignal.set(null);
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('phai.token');
     }
+  }
+
+  logout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({ error: () => undefined });
+    }
+    this.clearSession();
     void this.router.navigateByUrl('/');
   }
 
   refreshMe(): Observable<User | null> {
-    return this.http.get<User>(`${environment.apiUrl}/auth/me`).pipe(
+    return this.http.get<User>(`${environment.apiUrl}/auth/me`, { withCredentials: true }).pipe(
       tap((user) => this.userSignal.set(user)),
       catchError(() => {
-        this.userSignal.set(null);
-        this.tokenSignal.set(null);
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.removeItem('phai.token');
-        }
+        this.clearSession();
         return of(null);
       }),
     );

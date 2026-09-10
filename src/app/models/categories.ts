@@ -88,7 +88,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'voice-clone',
     label: 'Voice clone',
-    description: 'Rent cloned/uploaded voices for TTS and STT (credits or monthly).',
+    description: 'Seller uploads an MP3 of their voice. The platform clones it automatically for TTS/STT.',
     hubPath: '/voice-clone',
     group: 'models',
     navGroup: 'generate',

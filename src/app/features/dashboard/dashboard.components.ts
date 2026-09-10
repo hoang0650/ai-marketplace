@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DashboardService, ProductService } from '../../services/api.services';
+import { DashboardService, ProductService, UploadService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import {
@@ -363,16 +363,27 @@ export class DashboardAnalyticsComponent implements OnInit {
         }
         @if (isVoiceDraft()) {
           <div class="md:col-span-2 rounded-lg border border-line p-3">
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Giọng clone — TTS / STT</p>
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Giọng clone — chỉ cần upload MP3</p>
+            <p class="mb-3 text-xs text-muted">Seller upload file giọng nói (MP3/WAV, 10–60 giây nói rõ). Hệ thống tự gắn model clone; buyer nhập văn bản thì TTS đọc bằng giọng này. Không cần tự train.</p>
             <div class="flex flex-wrap gap-4 text-sm">
               <label class="flex items-center gap-2"><input type="checkbox" [(ngModel)]="draft.voiceTts" name="voiceTts" /> TTS (đọc văn bản)</label>
               <label class="flex items-center gap-2"><input type="checkbox" [(ngModel)]="draft.voiceStt" name="voiceStt" /> STT (nhận giọng)</label>
             </div>
-            <label class="mt-3 mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">URL mẫu giọng / file clone</label>
-            <input class="input" [(ngModel)]="draft.voiceSampleUrl" name="voiceSampleUrl" placeholder="https://… (audio sample)" />
+            <label class="mt-3 mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">File giọng mẫu (.mp3)</label>
+            <input class="input" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/x-wav,.mp3,.wav,.m4a" name="voiceFile" (change)="onVoiceFile($event)" />
+            @if (voiceUploading) {
+              <p class="mt-2 text-xs text-muted">Đang tải MP3 lên… hệ thống sẽ tạo giọng clone.</p>
+            }
+            @if (voiceUploadError) {
+              <p class="mt-2 text-xs text-red-600">{{ voiceUploadError }}</p>
+            }
+            @if (draft.voiceSampleUrl) {
+              <audio class="mt-3 w-full" [src]="draft.voiceSampleUrl" controls preload="metadata"></audio>
+              <p class="mt-1 break-all font-mono text-[11px] text-muted">{{ draft.voiceSampleUrl }}</p>
+            }
             <label class="mt-3 mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Ký tự / 1 credit</label>
             <input class="input" type="number" min="1" [(ngModel)]="draft.charactersPerCredit" name="charactersPerCredit" />
-            <p class="mt-2 text-xs text-muted">Usage = credit theo khối văn bản. Subscription = thuê giọng theo tháng.</p>
+            <p class="mt-2 text-xs text-muted">Usage = credit theo khối văn bản buyer TTS. File gốc chỉ dùng làm mẫu clone, không phát nguyên cho buyer như sản phẩm cuối.</p>
           </div>
         }
         @if (isLicenseDraft()) {
@@ -457,6 +468,9 @@ export class DashboardAnalyticsComponent implements OnInit {
             <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ categoryLabel(p.category) }}</p>
             <a [routerLink]="['/product', p.slug]" class="font-display text-xl no-underline">{{ p.name }}</a>
             <p class="text-sm text-muted">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number:'1.1-1' }}</p>
+            @if (p.category === 'voice-clone' && p.contentMeta?.cloneStatus) {
+              <p class="mt-1 text-[11px] uppercase tracking-wider text-muted">Clone: {{ p.contentMeta?.cloneStatus }}</p>
+            }
             @if (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint) {
               <p class="mt-1 max-w-xl truncate font-mono text-[11px] text-muted">
                 {{ p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint }}
@@ -477,6 +491,7 @@ export class DashboardAnalyticsComponent implements OnInit {
 })
 export class DashboardProductsComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
+  private readonly uploads = inject(UploadService);
   private readonly auth = inject(AuthService);
   readonly products = signal<Product[]>([]);
   readonly categories = CATEGORY_META;
@@ -485,6 +500,8 @@ export class DashboardProductsComponent implements OnInit {
   readonly runpodCatalog: RunpodPublicEndpoint[] = RUNPOD_PUBLIC_ENDPOINTS;
   catalogSlug = '';
   showForm = false;
+  voiceUploading = false;
+  voiceUploadError = '';
   draft = this.emptyDraft();
 
   ngOnInit(): void {
@@ -560,6 +577,24 @@ export class DashboardProductsComponent implements OnInit {
     return isLicenseCategory(this.draft.category);
   }
 
+  onVoiceFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.voiceUploadError = '';
+    this.voiceUploading = true;
+    this.uploads.uploadAudio(file).subscribe({
+      next: (res) => {
+        this.draft.voiceSampleUrl = res.url;
+        this.voiceUploading = false;
+      },
+      error: (err) => {
+        this.voiceUploading = false;
+        this.voiceUploadError = err?.error?.message || 'Upload MP3 failed. Check MinIO or paste a public audio URL.';
+      },
+    });
+  }
+
   onCategoryChange(): void {
     if (this.isVoiceDraft()) {
       this.draft.pricingModel = 'usage';
@@ -578,6 +613,10 @@ export class DashboardProductsComponent implements OnInit {
   }
 
   create(): void {
+    if (this.isVoiceDraft() && !String(this.draft.voiceSampleUrl || '').trim()) {
+      this.voiceUploadError = 'Upload MP3 giọng của bạn trước — hệ thống sẽ tự clone.';
+      return;
+    }
     const user = this.auth.user();
     const tags = this.draft.tags
       .split(',')
