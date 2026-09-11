@@ -162,6 +162,31 @@ export interface IssuedLicense {
   valid: boolean;
 }
 
+export interface ContentEpisode {
+  id: string;
+  productId: string;
+  index: number;
+  title: string;
+  kind: 'video' | 'image' | 'audio' | 'text';
+  mime: string;
+  durationSec: number;
+  size: number;
+  previewUrl: string;
+  published: boolean;
+}
+
+export interface ContentUnlock {
+  ok: boolean;
+  playUrl: string;
+  downloadUrl: string;
+  kind: string;
+  mime: string;
+  title: string;
+  expiresIn: number;
+  licenseExpiresAt: string | null;
+  drm: string;
+}
+
 /** Seller RunPod / gateway runtime attached to a catalog product. */
 export interface ProductRuntime {
   serverlessEndpoint: string;

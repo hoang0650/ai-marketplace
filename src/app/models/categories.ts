@@ -330,3 +330,11 @@ export function isDatasetCategory(id: ProductCategory | string): boolean {
 export function isVoiceCategory(id: ProductCategory | string): boolean {
   return VOICE_CATEGORIES.has(id as ProductCategory);
 }
+
+export function isStoryCategory(id: ProductCategory | string): boolean {
+  return id === 'story-book';
+}
+
+export function isWatchContentCategory(id: ProductCategory | string): boolean {
+  return isFilmCategory(id) || isStoryCategory(id);
+}

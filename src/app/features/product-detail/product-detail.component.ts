@@ -11,12 +11,13 @@ import {
   AgentChatService,
   DashboardService,
   UploadService,
+  ContentService,
 } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
-import { Product, ProductCategory, Review, IssuedLicense } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory, isComputeStreamCategory, isLicenseCategory, isVoiceCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory } from '../../models/categories';
+import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode } from '../../models/marketplace.models';
+import { isHireCategory, isSkillCategory, isComputeStreamCategory, isLicenseCategory, isVoiceCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -32,7 +33,7 @@ import {
   schemaFields,
 } from '../../models/runpod-schema';
 
-type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews' | 'stream';
+type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews' | 'stream' | 'watch';
 type ResultView = 'preview' | 'json';
 type InputMode = 'messages' | 'prompt';
 type RunStatus = 'idle' | 'running' | 'done' | 'error';
@@ -76,6 +77,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly openclaw = inject(OpenClawGatewayService);
   private readonly walletApi = inject(DashboardService);
   private readonly uploadApi = inject(UploadService);
+  private readonly contentApi = inject(ContentService);
   private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
@@ -89,7 +91,28 @@ export class ProductDetailComponent implements OnInit {
   readonly runStatus = signal<RunStatus>('idle');
   readonly checkoutMsg = signal('');
   readonly issuedLicense = signal<IssuedLicense | null>(null);
+  readonly episodes = signal<ContentEpisode[]>([]);
+  readonly selectedEpisode = signal<ContentEpisode | null>(null);
+  readonly playUrl = signal('');
+  readonly playKind = signal('');
+  readonly unlockError = signal('');
+  readonly unlocking = signal(false);
   readonly walletBalance = signal(0);
+  readonly hasActiveLicense = computed(() => {
+    const lic = this.issuedLicense();
+    if (!lic) return false;
+    if (lic.status === 'revoked' || lic.status === 'expired' || lic.valid === false) return false;
+    if (lic.expiresAt && new Date(lic.expiresAt).getTime() <= Date.now()) return false;
+    return true;
+  });
+  readonly isContentOwner = computed(() => {
+    const p = this.product();
+    const u = this.auth.user();
+    if (!p || !u) return false;
+    if (u.role === 'admin') return true;
+    return (!!p.creatorId && p.creatorId === u.id) || (!!p.creatorSlug && p.creatorSlug === u.creatorSlug);
+  });
+  readonly canPlayContent = computed(() => this.hasActiveLicense() || this.isContentOwner());
   qty = 1;
   licenseTerm: 'day' | 'month' | 'year' = 'month';
   readonly licenseTerms = ['day', 'month', 'year'] as const;
@@ -280,6 +303,11 @@ export class ProductDetailComponent implements OnInit {
       this.productsApi.bySlug(slug).subscribe((p) => {
         this.product.set(p);
         this.issuedLicense.set(null);
+        this.episodes.set([]);
+        this.selectedEpisode.set(null);
+        this.playUrl.set('');
+        this.playKind.set('');
+        this.unlockError.set('');
         const term = p.contentMeta?.licenseTerm;
         if (term === 'day' || term === 'month' || term === 'year') this.licenseTerm = term;
         this.mediaIndex.set(0);
@@ -291,14 +319,20 @@ export class ProductDetailComponent implements OnInit {
         });
         this.resetPlayground(p);
         this.workspaceTab.set(
-          isComputeStreamCategory(p.category)
-            ? 'stream'
-            : isHireCategory(p.category)
-              ? 'hire'
-              : isSkillCategory(p.category)
-                ? 'install'
-                : 'playground',
+          isWatchContentCategory(p.category)
+            ? 'watch'
+            : isComputeStreamCategory(p.category)
+              ? 'stream'
+              : isHireCategory(p.category)
+                ? 'hire'
+                : isSkillCategory(p.category)
+                  ? 'install'
+                  : 'playground',
         );
+        if (isWatchContentCategory(p.category)) {
+          this.loadEpisodes(p.slug);
+          this.loadMyLicense(p.id);
+        }
         this.hireSent.set(false);
         this.skillInstalled.set(false);
         this.sessionLogs.set([]);
@@ -388,6 +422,89 @@ export class ProductDetailComponent implements OnInit {
 
   isVoice(cat: ProductCategory): boolean {
     return isVoiceCategory(cat);
+  }
+
+  isStory(cat: ProductCategory): boolean {
+    return isStoryCategory(cat);
+  }
+
+  isWatchContent(cat: ProductCategory): boolean {
+    return isWatchContentCategory(cat);
+  }
+
+  loadEpisodes(slug: string): void {
+    this.contentApi.episodes(slug).subscribe({
+      next: (rows) => this.episodes.set(rows),
+      error: () => this.episodes.set([]),
+    });
+  }
+
+  loadMyLicense(productId: string): void {
+    if (!this.auth.user()) return;
+    this.walletApi.licenses().subscribe({
+      next: (list) => {
+        const hit = list.find(
+          (l) => l.productId === productId && l.status !== 'revoked' && l.status !== 'expired' && l.valid !== false,
+        );
+        if (hit) this.issuedLicense.set(hit);
+      },
+      error: () => undefined,
+    });
+  }
+
+  playEpisode(ep: ContentEpisode): void {
+    const p = this.product();
+    if (!p) return;
+    if (!this.auth.user()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { redirect: `/product/${p.slug}` } });
+      return;
+    }
+    if (!this.canPlayContent()) {
+      this.unlockError.set(this.i18n.t('pd.licenseRequired'));
+      return;
+    }
+    this.unlocking.set(true);
+    this.unlockError.set('');
+    this.contentApi.unlock(ep.id, this.issuedLicense()?.licenseKey).subscribe({
+      next: (res) => {
+        this.unlocking.set(false);
+        this.selectedEpisode.set(ep);
+        this.playUrl.set(res.playUrl);
+        this.playKind.set(res.kind || ep.kind);
+      },
+      error: (err) => {
+        this.unlocking.set(false);
+        this.playUrl.set('');
+        const code = err?.error?.code;
+        this.unlockError.set(
+          code === 'LICENSE_REQUIRED' || code === 'LICENSE_EXPIRED' || err?.status === 402
+            ? this.i18n.t('pd.licenseRequired')
+            : err?.error?.message || this.i18n.t('pd.playFailed'),
+        );
+      },
+    });
+  }
+
+  downloadEpisode(ep: ContentEpisode): void {
+    if (!this.canPlayContent()) {
+      this.unlockError.set(this.i18n.t('pd.licenseRequired'));
+      return;
+    }
+    this.contentApi.download(ep.id, this.issuedLicense()?.licenseKey).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `episode-${ep.index}.aimc`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        this.unlockError.set(
+          err?.status === 402 ? this.i18n.t('pd.licenseRequired') : err?.error?.message || this.i18n.t('pd.playFailed'),
+        );
+      },
+    });
   }
 
   voiceSampleSrc(p: Product): string {
@@ -511,6 +628,11 @@ export class ProductDetailComponent implements OnInit {
     }
     if (isSkillCategory(p.category)) {
       this.setWorkspace('install');
+      return;
+    }
+    if (isWatchContentCategory(p.category)) {
+      this.setWorkspace('watch');
+      if (!this.canPlayContent()) this.checkout();
       return;
     }
     this.checkout();
@@ -1180,6 +1302,11 @@ export class ProductDetailComponent implements OnInit {
               expires: res.license.expiresAt || '',
             }),
           );
+          if (isWatchContentCategory(p.category)) {
+            this.setWorkspace('watch');
+            const first = this.episodes()[0];
+            if (first) this.playEpisode(first);
+          }
         } else {
           this.checkoutMsg.set(`Đã thanh toán bằng ví aimarkets.vn · ${quantity} đơn vị`);
         }

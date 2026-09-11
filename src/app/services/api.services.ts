@@ -23,6 +23,8 @@ import {
   IssuedLicense,
   Complaint,
   ComplaintKind,
+  ContentEpisode,
+  ContentUnlock,
 } from '../models/marketplace.models';
 import { CategoryMeta } from '../models/marketplace.models';
 import {
@@ -120,6 +122,42 @@ export class ProductService {
 
   categories(): Observable<CategoryMeta[]> {
     return this.http.get<CategoryMeta[]>(`${this.base}/categories`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class ContentService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  episodes(slug: string): Observable<ContentEpisode[]> {
+    return this.http.get<ContentEpisode[]>(`${this.base}/content/products/${slug}/episodes`);
+  }
+
+  createEpisode(productId: string, input: { title: string; file?: File; sourceUrl?: string }): Observable<ContentEpisode> {
+    const form = new FormData();
+    form.append('title', input.title);
+    if (input.file) form.append('file', input.file, input.file.name);
+    if (input.sourceUrl) form.append('sourceUrl', input.sourceUrl);
+    return this.http.post<ContentEpisode>(`${this.base}/content/products/${productId}/episodes`, form);
+  }
+
+  removeEpisode(id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/content/episodes/${id}`);
+  }
+
+  unlock(episodeId: string, licenseKey?: string): Observable<ContentUnlock> {
+    return this.http.post<ContentUnlock>(`${this.base}/content/unlock`, {
+      episodeId,
+      licenseKey: licenseKey || undefined,
+    });
+  }
+
+  download(episodeId: string, licenseKey?: string): Observable<Blob> {
+    return this.http.get(`${this.base}/content/episodes/${episodeId}/download`, {
+      responseType: 'blob',
+      headers: licenseKey ? { 'x-license-key': licenseKey } : undefined,
+    });
   }
 }
 

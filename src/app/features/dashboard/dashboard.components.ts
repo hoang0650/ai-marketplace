@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DashboardService, ProductService, UploadService } from '../../services/api.services';
+import { DashboardService, ProductService, UploadService, ContentService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import {
@@ -15,8 +15,9 @@ import {
   WalletSummary,
   WalletTx,
   IssuedLicense,
+  ContentEpisode,
 } from '../../models/marketplace.models';
-import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isLicenseCategory, isVoiceCategory } from '../../models/categories';
+import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isLicenseCategory, isVoiceCategory, isWatchContentCategory } from '../../models/categories';
 import {
   RUNPOD_PUBLIC_ENDPOINTS,
   RunpodPublicEndpoint,
@@ -405,8 +406,7 @@ export class DashboardAnalyticsComponent implements OnInit {
               </div>
             </div>
             @if (draft.category === 'ai-film-series' || draft.category === 'story-book') {
-            <label class="mt-3 mb-1 block text-xs uppercase text-muted">Số tập (phim) / chương</label>
-            <input class="input" type="number" min="0" [(ngModel)]="draft.episodeCount" name="episodeCount" />
+            <p class="mt-3 text-xs text-muted">Sau khi Publish, tải từng tập/chương (ảnh hoặc video, tối đa 80MB) ở danh sách sản phẩm bên dưới. Buyer trả phí thì hệ thống tự cấp license AIM-xxxx; hết hạn thì file .aimc trên máy họ không mở được.</p>
             }
           </div>
         }
@@ -463,13 +463,17 @@ export class DashboardAnalyticsComponent implements OnInit {
     }
     <div class="grid gap-3">
       @for (p of products(); track p.id) {
-        <div class="panel flex flex-wrap items-center justify-between gap-3">
+        <div class="panel grid gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ categoryLabel(p.category) }}</p>
             <a [routerLink]="['/product', p.slug]" class="font-display text-xl no-underline">{{ p.name }}</a>
             <p class="text-sm text-muted">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number:'1.1-1' }}</p>
             @if (p.category === 'voice-clone' && p.contentMeta?.cloneStatus) {
               <p class="mt-1 text-[11px] uppercase tracking-wider text-muted">Clone: {{ p.contentMeta?.cloneStatus }}</p>
+            }
+            @if (isWatchProduct(p) && p.contentMeta?.episodeCount) {
+              <p class="mt-1 text-xs text-muted">{{ p.contentMeta?.episodeCount }} tập / chương đã đăng</p>
             }
             @if (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint) {
               <p class="mt-1 max-w-xl truncate font-mono text-[11px] text-muted">
@@ -478,9 +482,44 @@ export class DashboardAnalyticsComponent implements OnInit {
             }
           </div>
           <div class="flex gap-2">
-            <a class="btn btn-outline" [routerLink]="['/deploy', p.slug]">Deploy</a>
+            @if (isWatchProduct(p)) {
+              <button type="button" class="btn btn-outline" (click)="toggleChapters(p)">Tập / chương</button>
+            } @else {
+              <a class="btn btn-outline" [routerLink]="['/deploy', p.slug]">Deploy</a>
+            }
             <button type="button" class="btn btn-outline" (click)="remove(p.id)">Delete</button>
           </div>
+          </div>
+          @if (managingId === p.id) {
+            <div class="rounded-lg border border-line p-3">
+              <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Upload tập / chương (ảnh hoặc video)</p>
+              <p class="mb-3 text-xs text-muted">File lưu riêng, không public. Buyer chỉ stream/tải khi license còn hạn. Tải xuống là file .aimc mã hóa.</p>
+              <div class="mb-3 flex flex-wrap items-end gap-2">
+                <div class="min-w-[12rem] flex-1">
+                  <label class="mb-1 block text-xs uppercase text-muted">Tiêu đề</label>
+                  <input class="input" [(ngModel)]="chapterTitle" name="chapterTitle" placeholder="Tập 1 / Chương 1" />
+                </div>
+                <label class="btn btn-fill cursor-pointer">
+                  {{ chapterBusy ? 'Đang tải…' : 'Chọn file' }}
+                  <input type="file" class="hidden" accept="video/*,image/*,audio/*,.mp4,.webm,.jpg,.jpeg,.png,.webp,.gif,.mp3,.wav,.txt" (change)="onChapterFile($event, p)" [disabled]="chapterBusy" />
+                </label>
+              </div>
+              @if (chapterError) {
+                <p class="mb-2 text-xs" style="color:#c62828">{{ chapterError }}</p>
+              }
+              <ul class="grid gap-2">
+                @for (ep of chapters(); track ep.id) {
+                  <li class="flex items-center justify-between gap-2 text-sm">
+                    <span>{{ ep.index }}. {{ ep.title }} · {{ ep.kind }}</span>
+                    <button type="button" class="btn btn-outline text-xs" (click)="removeChapter(ep, p)">Xóa</button>
+                  </li>
+                }
+              </ul>
+              @if (!chapters().length) {
+                <p class="text-xs text-muted">Chưa có tập nào.</p>
+              }
+            </div>
+          }
         </div>
       }
       @if (!products().length) {
@@ -492,8 +531,10 @@ export class DashboardAnalyticsComponent implements OnInit {
 export class DashboardProductsComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly uploads = inject(UploadService);
+  private readonly contentApi = inject(ContentService);
   private readonly auth = inject(AuthService);
   readonly products = signal<Product[]>([]);
+  readonly chapters = signal<ContentEpisode[]>([]);
   readonly categories = CATEGORY_META;
   readonly aiCategories = AI_CATEGORIES;
   readonly categoryLabel = categoryLabel;
@@ -502,6 +543,10 @@ export class DashboardProductsComponent implements OnInit {
   showForm = false;
   voiceUploading = false;
   voiceUploadError = '';
+  managingId = '';
+  chapterTitle = '';
+  chapterBusy = false;
+  chapterError = '';
   draft = this.emptyDraft();
 
   ngOnInit(): void {
@@ -575,6 +620,59 @@ export class DashboardProductsComponent implements OnInit {
 
   isLicenseDraft(): boolean {
     return isLicenseCategory(this.draft.category);
+  }
+
+  isWatchProduct(p: Product): boolean {
+    return isWatchContentCategory(p.category);
+  }
+
+  toggleChapters(p: Product): void {
+    if (this.managingId === p.id) {
+      this.managingId = '';
+      this.chapters.set([]);
+      return;
+    }
+    this.managingId = p.id;
+    this.chapterError = '';
+    this.chapterTitle = '';
+    this.contentApi.episodes(p.slug).subscribe({
+      next: (rows) => this.chapters.set(rows),
+      error: () => this.chapters.set([]),
+    });
+  }
+
+  onChapterFile(event: Event, p: Product): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    this.chapterBusy = true;
+    this.chapterError = '';
+    const title = this.chapterTitle.trim() || file.name.replace(/\.[^.]+$/, '');
+    this.contentApi.createEpisode(p.id, { title, file }).subscribe({
+      next: (ep) => {
+        this.chapterBusy = false;
+        this.chapterTitle = '';
+        this.chapters.update((list) => [...list, ep].sort((a, b) => a.index - b.index));
+        this.reload();
+      },
+      error: (err) => {
+        this.chapterBusy = false;
+        this.chapterError = err?.error?.message || 'Upload tập thất bại. Kiểm tra MinIO (tối đa 80MB).';
+      },
+    });
+  }
+
+  removeChapter(ep: ContentEpisode, p: Product): void {
+    this.contentApi.removeEpisode(ep.id).subscribe({
+      next: () => {
+        this.chapters.update((list) => list.filter((x) => x.id !== ep.id));
+        this.reload();
+      },
+      error: (err) => {
+        this.chapterError = err?.error?.message || 'Xóa tập thất bại';
+      },
+    });
   }
 
   onVoiceFile(event: Event): void {
