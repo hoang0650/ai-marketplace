@@ -10,10 +10,18 @@ import { environment } from '../../../environments/environment';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 
-declare const paypal: { Buttons: (opts: Record<string, unknown>) => { render: (sel: string) => Promise<unknown> } };
+declare const paypal: {
+  FUNDING?: { PAYPAL?: string; APPLEPAY?: string; GOOGLEPAY?: string };
+  Buttons: (opts: Record<string, unknown>) => { render: (sel: string) => Promise<unknown> };
+  isFundingEligible?: (source: string) => boolean;
+};
 
 type WalletTab = 'deposit' | 'withdraw' | 'history';
-type DepositMethod = 'sepay' | 'paypal';
+type DepositMethod = 'sepay' | 'paypal' | 'apple' | 'gpay';
+type PaypalFunding = 'apple' | 'gpay' | 'paypal';
+
+const SEPAY_QUICK = [50000, 100000, 200000, 500000, 1000000];
+const PAYPAL_QUICK = [5, 10, 20, 50, 100];
 
 @Component({
   selector: 'app-wallet',
@@ -37,12 +45,22 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly depositMethod = signal<DepositMethod>('sepay');
   readonly paypalEnabled = signal(false);
   readonly paypalBusy = signal(false);
+  readonly fundingUnavailable = signal<PaypalFunding | ''>('');
 
   depositAmount = 500000;
   withdrawAmount = 100;
-  readonly quickAmounts = [50000, 100000, 200000, 500000, 1000000];
   private paypalClientId = '';
   private paypalScript?: HTMLScriptElement;
+  private paypalButtonsGen = 0;
+
+  readonly isPaypalRail = computed(() => {
+    const m = this.depositMethod();
+    return m === 'paypal' || m === 'apple' || m === 'gpay';
+  });
+
+  readonly depositCurrency = computed(() => (this.isPaypalRail() ? 'USD' : 'VND'));
+
+  readonly quickAmounts = computed(() => (this.isPaypalRail() ? PAYPAL_QUICK : SEPAY_QUICK));
 
   readonly monthOptions = computed(() => {
     const now = new Date();
@@ -92,7 +110,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if (this.depositMethod() === 'paypal') this.ensurePayPalButtons();
+    if (this.isPaypalRail()) this.ensurePayPalButtons();
   }
 
   ngOnDestroy(): void {
@@ -100,9 +118,18 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setDepositMethod(method: DepositMethod): void {
+    const wasPaypal = this.isPaypalRail();
     this.depositMethod.set(method);
     this.msg.set('');
-    if (method === 'paypal') {
+    this.fundingUnavailable.set('');
+    const nowPaypal = method === 'paypal' || method === 'apple' || method === 'gpay';
+    if (nowPaypal && !wasPaypal) this.depositAmount = 10;
+    if (!nowPaypal && wasPaypal) this.depositAmount = 500000;
+    if (nowPaypal) {
+      if (!this.paypalEnabled()) {
+        this.msg.set(this.i18n.t('wallet.deposit.paypalOffline'));
+        return;
+      }
       setTimeout(() => this.ensurePayPalButtons(), 50);
     }
   }
@@ -148,6 +175,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   methodLabel(t: WalletTx): string {
+    const note = (t.note || '').toLowerCase();
+    if (note.includes('apple')) return this.i18n.t('wallet.method.apple');
+    if (note.includes('google')) return this.i18n.t('wallet.method.gpay');
     if (t.paymentMethod === 'paypal') return this.i18n.t('wallet.method.paypal');
     if (t.type === 'deposit') return this.i18n.t('wallet.method.transfer');
     if (t.type === 'withdraw') return this.i18n.t('wallet.method.withdraw');
@@ -160,6 +190,14 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   statusLabel(t: WalletTx): string {
     return this.i18n.t(`wallet.status.${t.status || 'completed'}`);
+  }
+
+  railHint(): string {
+    const method = this.depositMethod();
+    if (method === 'apple') return this.i18n.t('wallet.deposit.appleHint');
+    if (method === 'gpay') return this.i18n.t('wallet.deposit.gpayHint');
+    if (method === 'paypal') return this.i18n.t('wallet.deposit.paypalHint');
+    return this.i18n.t('wallet.deposit.hint');
   }
 
   private txDelta(t: WalletTx): number {
@@ -177,6 +215,12 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   }
 
+  private sdkSrc(full: boolean): string {
+    const id = encodeURIComponent(this.paypalClientId);
+    const components = full ? 'buttons,applepay,googlepay' : 'buttons';
+    return `https://www.paypal.com/sdk/js?client-id=${id}&currency=USD&intent=capture&components=${components}&enable-funding=applepay,googlepay`;
+  }
+
   private ensurePayPalButtons(): void {
     if (!this.paypalEnabled() || !this.paypalClientId || typeof document === 'undefined') return;
     const mount = () => this.renderPayPalButtons();
@@ -189,52 +233,127 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       existing.addEventListener('load', mount, { once: true });
       return;
     }
+    this.injectPayPalSdk(this.sdkSrc(true), true);
+  }
+
+  private injectPayPalSdk(src: string, allowFallback: boolean): void {
+    document.getElementById('paypal-sdk')?.remove();
     const script = document.createElement('script');
     script.id = 'paypal-sdk';
-    const intent = 'capture';
-    script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(this.paypalClientId)}&currency=USD&intent=${intent}&components=buttons`;
+    script.src = src;
     script.async = true;
-    script.onload = () => mount();
-    script.onerror = () => this.msg.set(this.i18n.t('wallet.msg.paypalFail'));
+    script.onload = () => this.renderPayPalButtons();
+    script.onerror = () => {
+      script.remove();
+      if (allowFallback) {
+        this.injectPayPalSdk(this.sdkSrc(false), false);
+        return;
+      }
+      this.msg.set(this.i18n.t('wallet.msg.paypalFail'));
+    };
     this.paypalScript = script;
     document.body.appendChild(script);
   }
 
   private renderPayPalButtons(): void {
-    const el = document.getElementById('paypal-button-container');
-    if (!el || typeof paypal === 'undefined') return;
-    el.innerHTML = '';
-    paypal
-      .Buttons({
-        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
-        createOrder: async () => {
-          const res = await firstValueFrom(this.api.paypalCreateOrder(this.depositAmount, 'VND'));
-          return res.orderId;
-        },
-        onApprove: async (data: { orderID?: string }) => {
-          const orderId = String(data?.orderID || '');
-          if (!orderId) return;
-          this.paypalBusy.set(true);
-          try {
-            const captured = await firstValueFrom(this.api.paypalCaptureOrder(orderId));
-            if (captured.success) {
-              this.msg.set(this.i18n.t('wallet.msg.paypalOk'));
-              this.reload();
-              this.tab.set('history');
-            } else {
-              this.msg.set(this.i18n.t('wallet.msg.paypalFail'));
-            }
-          } catch (err: unknown) {
-            const message = (err as { error?: { message?: string } })?.error?.message;
-            this.msg.set(message || this.i18n.t('wallet.msg.paypalFail'));
-          } finally {
-            this.paypalBusy.set(false);
-          }
-        },
-        onCancel: () => this.msg.set(this.i18n.t('wallet.msg.paypalCancel')),
-        onError: () => this.msg.set(this.i18n.t('wallet.msg.paypalFail')),
-      })
-      .render('#paypal-button-container')
-      .catch(() => this.msg.set(this.i18n.t('wallet.msg.paypalFail')));
+    if (typeof paypal === 'undefined') return;
+    const gen = ++this.paypalButtonsGen;
+    const funding = paypal.FUNDING || {};
+    const selected = this.depositMethod();
+    const order: PaypalFunding[] =
+      selected === 'apple' ? ['apple', 'gpay', 'paypal'] : selected === 'gpay' ? ['gpay', 'apple', 'paypal'] : ['paypal', 'apple', 'gpay'];
+
+    const specs: Record<PaypalFunding, { el: string; source?: string; style: Record<string, unknown> }> = {
+      apple: {
+        el: 'paypal-btn-apple',
+        source: funding.APPLEPAY,
+        style: { layout: 'vertical', color: 'black', shape: 'rect', label: 'pay', height: 48 },
+      },
+      gpay: {
+        el: 'paypal-btn-gpay',
+        source: funding.GOOGLEPAY,
+        style: { layout: 'vertical', color: 'black', shape: 'rect', label: 'pay', height: 48 },
+      },
+      paypal: {
+        el: 'paypal-btn-paypal',
+        source: funding.PAYPAL,
+        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal', height: 48 },
+      },
+    };
+
+    let rendered = 0;
+    for (const key of order) {
+      const spec = specs[key];
+      const el = document.getElementById(spec.el);
+      if (!el) continue;
+      el.innerHTML = '';
+      el.hidden = false;
+      if (!spec.source) {
+        el.hidden = true;
+        if (key === selected) this.markFundingUnavailable(key);
+        continue;
+      }
+      if (typeof paypal.isFundingEligible === 'function' && !paypal.isFundingEligible(spec.source) && key !== 'paypal') {
+        el.hidden = true;
+        if (key === selected) this.markFundingUnavailable(key);
+        continue;
+      }
+      paypal
+        .Buttons({
+          fundingSource: spec.source,
+          style: spec.style,
+          createOrder: async () => this.createPaypalOrder(key),
+          onApprove: async (data: { orderID?: string }) => this.capturePaypal(String(data?.orderID || '')),
+          onCancel: () => this.msg.set(this.i18n.t('wallet.msg.paypalCancel')),
+          onError: () => this.msg.set(this.i18n.t('wallet.msg.paypalFail')),
+        })
+        .render(`#${spec.el}`)
+        .then(() => {
+          if (gen !== this.paypalButtonsGen) return;
+          rendered += 1;
+        })
+        .catch(() => {
+          if (gen !== this.paypalButtonsGen) return;
+          el.hidden = true;
+          if (key === selected) this.markFundingUnavailable(key);
+          if (!rendered && key === 'paypal') this.msg.set(this.i18n.t('wallet.msg.paypalFail'));
+        });
+    }
+  }
+
+  private markFundingUnavailable(key: PaypalFunding): void {
+    this.fundingUnavailable.set(key);
+    if (key === 'apple') this.msg.set(this.i18n.t('wallet.deposit.appleUnavailable'));
+    if (key === 'gpay') this.msg.set(this.i18n.t('wallet.deposit.gpayUnavailable'));
+  }
+
+  private async createPaypalOrder(funding: PaypalFunding): Promise<string> {
+    if (!this.depositAmount || this.depositAmount < 1) {
+      this.msg.set(this.i18n.t('wallet.err.amount'));
+      throw new Error('invalid_amount');
+    }
+    const source = funding === 'apple' ? 'applepay' : funding === 'gpay' ? 'googlepay' : 'paypal';
+    const res = await firstValueFrom(this.api.paypalCreateOrder(this.depositAmount, 'USD', source));
+    return res.orderId;
+  }
+
+  private async capturePaypal(orderId: string): Promise<void> {
+    if (!orderId) return;
+    this.paypalBusy.set(true);
+    try {
+      const captured = await firstValueFrom(this.api.paypalCaptureOrder(orderId));
+      if (captured.success) {
+        this.msg.set(this.i18n.t('wallet.msg.paypalOk'));
+        this.reload();
+        this.tab.set('history');
+      } else {
+        this.msg.set(this.i18n.t('wallet.msg.paypalFail'));
+      }
+    } catch (err: unknown) {
+      const message = (err as { error?: { message?: string } })?.error?.message;
+      this.msg.set(message || this.i18n.t('wallet.msg.paypalFail'));
+    } finally {
+      this.paypalBusy.set(false);
+    }
   }
 }

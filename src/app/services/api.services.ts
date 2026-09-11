@@ -305,7 +305,7 @@ export class DashboardService {
     return this.http.get<{ enabled: boolean; clientId: string; sandbox: boolean }>(`${this.base}/paypal/config`);
   }
 
-  paypalCreateOrder(amount: number, currency: string): Observable<{
+  paypalCreateOrder(amount: number, currency: string, fundingSource?: string): Observable<{
     success: boolean;
     orderId: string;
     amountUsd: string;
@@ -316,7 +316,7 @@ export class DashboardService {
       orderId: string;
       amountUsd: string;
       paymentHistoryId: string;
-    }>(`${this.base}/paypal/create-order`, { amount, currency });
+    }>(`${this.base}/paypal/create-order`, { amount, currency, fundingSource });
   }
 
   paypalCaptureOrder(orderId: string): Observable<{ success: boolean; status: string; wallet?: WalletTx }> {
