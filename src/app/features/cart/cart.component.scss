@@ -39,6 +39,7 @@
   color: #171717;
 }
 
+.steps li.done span,
 .steps li.active span {
   background: #e53935;
   color: #fff;
@@ -510,4 +511,49 @@
     margin-left: 0;
     width: 100%;
   }
+}
+
+.paid-banner {
+  max-width: 1120px;
+  margin: 0 auto 1.25rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 16px;
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  color: #1b5e20;
+}
+
+.paid-banner h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+}
+
+.paid-banner p {
+  margin: 0.25rem 0;
+}
+
+.paid-list {
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.paid-key {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+.paid-mail {
+  font-size: 0.92rem;
+}
+
+.paid-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
 }

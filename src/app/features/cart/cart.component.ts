@@ -6,6 +6,7 @@ import { BillingService, DashboardService, ProductService } from '../../services
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/marketplace.models';
+import { isLicenseCategory } from '../../models/categories';
 import { forkJoin } from 'rxjs';
 import { CartService } from './cart.service';
 import { I18nService } from '../../i18n/i18n.service';
@@ -33,6 +34,17 @@ export class CartComponent implements OnInit {
   readonly couponApplied = signal(0);
   readonly msg = signal('');
   readonly paying = signal(false);
+  readonly paid = signal(false);
+  readonly receipts = signal<
+    Array<{
+      name: string;
+      amount?: number;
+      currency?: string;
+      licenseKey?: string;
+      emailSent?: boolean;
+      emailTo?: string | null;
+    }>
+  >([]);
   readonly suggested = signal<Product[]>([]);
 
   catLabel(id: string): string {
@@ -100,6 +112,12 @@ export class CartComponent implements OnInit {
       this.billing.checkout({
         productId: line.product.id,
         quantity: line.qty,
+        licenseTerm: isLicenseCategory(line.product.category)
+          ? line.product.contentMeta?.licenseTerm === 'day' ||
+            line.product.contentMeta?.licenseTerm === 'year'
+            ? line.product.contentMeta.licenseTerm
+            : 'month'
+          : undefined,
       }),
     );
     forkJoin(requests).subscribe({
@@ -108,9 +126,25 @@ export class CartComponent implements OnInit {
         const units = selected.reduce((s, l) => s + l.qty, 0);
         const last = rows[rows.length - 1];
         if (typeof last?.balance === 'number') this.balance.set(last.balance);
-        this.msg.set(
-          this.i18n.t('cart.msg.paid', { orders: rows.length, units }),
+        this.receipts.set(
+          rows.map((row, i) => ({
+            name: selected[i]?.product.name || 'Sản phẩm',
+            amount: row.amount,
+            currency: row.currency,
+            licenseKey: row.license?.licenseKey,
+            emailSent: row.emailSent,
+            emailTo: row.emailTo,
+          })),
         );
+        this.paid.set(true);
+        const emailed = rows.some((r) => r.emailSent);
+        const to = rows.find((r) => r.emailTo)?.emailTo;
+        this.msg.set(
+          emailed
+            ? this.i18n.t('cart.msg.paidEmail', { orders: rows.length, units, email: to || '' })
+            : this.i18n.t('cart.msg.paid', { orders: rows.length, units }),
+        );
+        this.cart.removeSelected();
       },
       error: (err) => {
         this.paying.set(false);

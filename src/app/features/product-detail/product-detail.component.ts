@@ -97,6 +97,7 @@ export class ProductDetailComponent implements OnInit {
   readonly playKind = signal('');
   readonly unlockError = signal('');
   readonly unlocking = signal(false);
+  private playSeq = 0;
   readonly walletBalance = signal(0);
   readonly hasActiveLicense = computed(() => {
     const lic = this.issuedLicense();
@@ -443,13 +444,38 @@ export class ProductDetailComponent implements OnInit {
     if (!this.auth.user()) return;
     this.walletApi.licenses().subscribe({
       next: (list) => {
-        const hit = list.find(
-          (l) => l.productId === productId && l.status !== 'revoked' && l.status !== 'expired' && l.valid !== false,
-        );
+        const pid = String(productId);
+        const hit = list.find((l) => {
+          if (String(l.productId || '') !== pid) return false;
+          if (l.status === 'revoked' || l.status === 'expired' || l.valid === false) return false;
+          if (l.expiresAt && new Date(l.expiresAt).getTime() <= Date.now()) return false;
+          return true;
+        });
         if (hit) this.issuedLicense.set(hit);
       },
       error: () => undefined,
     });
+  }
+
+  private playSrc(res: { playToken?: string; playUrl?: string }): string {
+    const token = String(res.playToken || '').trim();
+    if (token) return `${environment.apiUrl}/content/play?token=${encodeURIComponent(token)}`;
+    const raw = String(res.playUrl || '').trim();
+    if (!raw) return '';
+    try {
+      const u = new URL(raw, environment.apiUrl);
+      const fromQuery = u.searchParams.get('token') || u.searchParams.get('t');
+      if (fromQuery) return `${environment.apiUrl}/content/play?token=${encodeURIComponent(fromQuery)}`;
+      const marker = '/content/play/';
+      const i = u.pathname.indexOf(marker);
+      if (i >= 0) {
+        const t = decodeURIComponent(u.pathname.slice(i + marker.length));
+        if (t) return `${environment.apiUrl}/content/play?token=${encodeURIComponent(t)}`;
+      }
+    } catch {
+      /* use raw */
+    }
+    return raw;
   }
 
   playEpisode(ep: ContentEpisode): void {
@@ -463,16 +489,20 @@ export class ProductDetailComponent implements OnInit {
       this.unlockError.set(this.i18n.t('pd.licenseRequired'));
       return;
     }
+    const seq = ++this.playSeq;
     this.unlocking.set(true);
     this.unlockError.set('');
     this.contentApi.unlock(ep.id, this.issuedLicense()?.licenseKey).subscribe({
       next: (res) => {
+        if (seq !== this.playSeq) return;
         this.unlocking.set(false);
         this.selectedEpisode.set(ep);
-        this.playUrl.set(res.playUrl);
+        this.playUrl.set(this.playSrc(res));
         this.playKind.set(res.kind || ep.kind);
+        this.unlockError.set('');
       },
       error: (err) => {
+        if (seq !== this.playSeq) return;
         this.unlocking.set(false);
         this.playUrl.set('');
         const code = err?.error?.code;
@@ -483,6 +513,10 @@ export class ProductDetailComponent implements OnInit {
         );
       },
     });
+  }
+
+  onMediaError(): void {
+    this.unlockError.set(this.i18n.t('pd.playFailed'));
   }
 
   downloadEpisode(ep: ContentEpisode): void {
@@ -1300,7 +1334,10 @@ export class ProductDetailComponent implements OnInit {
             this.i18n.t(isFilmCategory(p.category) ? 'pd.watchOk' : 'pd.licenseOk', {
               key: res.license.licenseKey,
               expires: res.license.expiresAt || '',
-            }),
+            }) +
+              (res.emailSent
+                ? ` ${this.i18n.t('cart.successEmail', { email: res.emailTo || '' })}`
+                : ` ${this.i18n.t('cart.successTitle')}.`),
           );
           if (isWatchContentCategory(p.category)) {
             this.setWorkspace('watch');
@@ -1308,7 +1345,15 @@ export class ProductDetailComponent implements OnInit {
             if (first) this.playEpisode(first);
           }
         } else {
-          this.checkoutMsg.set(`Đã thanh toán bằng ví aimarkets.vn · ${quantity} đơn vị`);
+          this.checkoutMsg.set(
+            res.emailSent
+              ? this.i18n.t('cart.msg.paidEmail', {
+                  orders: 1,
+                  units: quantity,
+                  email: res.emailTo || '',
+                })
+              : this.i18n.t('cart.successTitle'),
+          );
         }
         if (typeof res.balance === 'number') this.walletBalance.set(res.balance);
         else this.loadWallet();

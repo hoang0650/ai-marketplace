@@ -501,13 +501,13 @@
           </div>
           @if (playUrl(); as src) {
             @if (playKind() === 'video') {
-              <video class="watch-media" [src]="src" controls playsinline controlslist="nodownload"></video>
+              <video class="watch-media" [src]="src" controls playsinline preload="auto" controlslist="nodownload" (error)="onMediaError()"></video>
             } @else if (playKind() === 'audio') {
-              <audio class="w-full" [src]="src" controls controlslist="nodownload"></audio>
+              <audio class="w-full" [src]="src" controls preload="auto" controlslist="nodownload" (error)="onMediaError()"></audio>
             } @else if (playKind() === 'text') {
               <iframe class="watch-text" [src]="src" title="chapter"></iframe>
             } @else {
-              <img class="watch-media" [src]="src" [alt]="selectedEpisode()?.title || ''" />
+              <img class="watch-media" [src]="src" [alt]="selectedEpisode()?.title || ''" (error)="onMediaError()" />
             }
           } @else {
             <p class="pg-empty">{{ 'pd.playerIdle' | t }}</p>

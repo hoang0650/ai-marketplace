@@ -449,6 +449,9 @@ export class BillingService {
     currency?: string;
     balance?: number;
     license?: IssuedLicense | null;
+    emailSent?: boolean;
+    emailTo?: string | null;
+    emailReason?: string;
   }> {
     return this.http.post<{
       checkoutId: string;
@@ -459,6 +462,9 @@ export class BillingService {
       currency?: string;
       balance?: number;
       license?: IssuedLicense | null;
+      emailSent?: boolean;
+      emailTo?: string | null;
+      emailReason?: string;
     }>(`${this.base}/billing/checkout`, {
       productId: input.productId,
       quantity: input.quantity,

@@ -1,9 +1,35 @@
 <section class="cart page route-enter">
   <ol class="steps" [attr.aria-label]="'cart.stepPay' | t">
-    <li class="active"><span>1</span> {{ 'cart.stepCart' | t }}</li>
-    <li><span>2</span> {{ 'cart.stepPay' | t }}</li>
-    <li><span>3</span> {{ 'cart.stepDone' | t }}</li>
+    <li [class.active]="!paid() && !paying()"><span>1</span> {{ 'cart.stepCart' | t }}</li>
+    <li [class.active]="paying() && !paid()"><span>2</span> {{ 'cart.stepPay' | t }}</li>
+    <li [class.active]="paid()"><span>3</span> {{ 'cart.stepDone' | t }}</li>
   </ol>
+
+  @if (paid()) {
+    <div class="paid-banner" role="status">
+      <h2>{{ 'cart.successTitle' | t }}</h2>
+      <p>{{ msg() }}</p>
+      <ul class="paid-list">
+        @for (r of receipts(); track $index) {
+          <li>
+            <strong>{{ r.name }}</strong>
+            @if (r.licenseKey) {
+              <span class="paid-key">{{ r.licenseKey }}</span>
+            }
+          </li>
+        }
+      </ul>
+      @if (receipts()[0]?.emailSent) {
+        <p class="paid-mail">{{ 'cart.successEmail' | t: { email: receipts()[0].emailTo || '' } }}</p>
+      } @else {
+        <p class="paid-mail">{{ 'cart.successEmailPending' | t }}</p>
+      }
+      <div class="paid-actions">
+        <a routerLink="/dashboard/licenses" class="btn-primary">{{ 'dash.licenses' | t }}</a>
+        <a routerLink="/marketplace" class="btn-outline">{{ 'cart.continue' | t }}</a>
+      </div>
+    </div>
+  }
 
   <div class="cart-layout">
     <div class="cart-main">
@@ -128,11 +154,11 @@
           <strong>{{ total() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</strong>
         </div>
 
-        <button type="button" class="btn-pay" [disabled]="paying() || !cart.selectedLines().length" (click)="pay()">
-          {{ paying() ? ('cart.paying' | t) : ('cart.payBtn' | t) }}
+        <button type="button" class="btn-pay" [disabled]="paying() || paid() || !cart.selectedLines().length" (click)="pay()">
+          {{ paying() ? ('cart.paying' | t) : paid() ? ('cart.successTitle' | t) : ('cart.payBtn' | t) }}
         </button>
 
-        @if (msg()) {
+        @if (msg() && !paid()) {
           <p class="msg">{{ msg() }}</p>
         }
       </div>

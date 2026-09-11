@@ -178,6 +178,7 @@ export interface ContentEpisode {
 export interface ContentUnlock {
   ok: boolean;
   playUrl: string;
+  playToken?: string;
   downloadUrl: string;
   kind: string;
   mime: string;
