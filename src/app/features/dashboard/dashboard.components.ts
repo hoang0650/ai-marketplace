@@ -406,7 +406,7 @@ export class DashboardAnalyticsComponent implements OnInit {
               </div>
             </div>
             @if (draft.category === 'ai-film-series' || draft.category === 'story-book') {
-            <p class="mt-3 text-xs text-muted">Sau khi Publish, tải từng tập/chương (ảnh hoặc video, tối đa 80MB) ở danh sách sản phẩm bên dưới. Buyer trả phí thì hệ thống tự cấp license AIM-xxxx; hết hạn thì file .aimc trên máy họ không mở được.</p>
+            <p class="mt-3 text-xs text-muted">Sau khi Publish, tải từng tập/chương (ảnh hoặc video, tối đa 80MB) ở danh sách sản phẩm bên dưới. Mỗi listing cấp một license AIM-xxxx riêng — cùng shop không dùng chung key. Hết hạn thì file .aimc trên máy họ không mở được.</p>
             }
           </div>
         }
@@ -905,13 +905,14 @@ export class DashboardWithdrawComponent implements OnInit {
     <div class="panel overflow-x-auto">
       <h2 class="font-display text-2xl">License keys</h2>
       <p class="mt-1 text-sm text-muted">
-        Phim AI và đọc truyện/sách: key chỉ dùng được đến hạn. Hết hạn hoặc hoàn tiền thì key vô hiệu.
+        Mỗi sản phẩm một key, kể cả cùng shop. Key chỉ dùng được đến hạn. Hết hạn hoặc hoàn tiền thì key vô hiệu.
       </p>
       <table class="mt-4 w-full min-w-[640px] text-left text-sm">
         <thead class="text-xs uppercase text-muted">
           <tr>
             <th class="pb-3">Key</th>
             <th>Sản phẩm</th>
+            <th>Shop</th>
             <th>Hạn</th>
             <th>Hết hạn</th>
             <th>Trạng thái</th>
@@ -922,13 +923,14 @@ export class DashboardWithdrawComponent implements OnInit {
             <tr class="border-t border-line">
               <td class="py-3 font-mono text-xs">{{ k.licenseKey }}</td>
               <td>{{ k.productName }}</td>
+              <td>{{ k.sellerName || '—' }}</td>
               <td>{{ k.term }}</td>
               <td>{{ k.expiresAt | date: 'short' }}</td>
               <td>{{ k.valid ? 'active' : k.status }}</td>
             </tr>
           } @empty {
             <tr>
-              <td class="py-6 text-muted" colspan="5">Chưa có license key.</td>
+              <td class="py-6 text-muted" colspan="6">Chưa có license key.</td>
             </tr>
           }
         </tbody>

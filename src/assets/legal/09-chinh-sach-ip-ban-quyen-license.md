@@ -60,6 +60,8 @@ Nền tảng có thể:
 
 ## Điều 6. License của buyer
 
-Buyer chỉ nhận quyền theo license/terms của product.
+Buyer chỉ nhận quyền theo license/terms của **từng sản phẩm (listing)**.
+
+Mỗi sản phẩm cấp **một license key riêng** (`AIM-xxxx`). Mua hai phim/truyện của cùng một shop vẫn là hai key — key của sản phẩm A không mở sản phẩm B.
 
 Việc thanh toán không tự động chuyển quyền sở hữu trí tuệ.

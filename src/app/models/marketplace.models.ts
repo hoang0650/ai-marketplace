@@ -35,7 +35,7 @@ export type NavGroup = 'generate' | 'apis' | 'platform' | 'talent';
 
 export type PricingModel = 'free' | 'one-time' | 'subscription' | 'usage';
 
-export type PaymentProvider = 'wallet' | 'stripe' | 'paypal' | 'paddle' | 'payos';
+export type PaymentProvider = 'wallet' | 'paypal' | 'paddle' | 'payos';
 
 export type UserRole = 'buyer' | 'creator' | 'admin';
 
@@ -153,7 +153,9 @@ export interface IssuedLicense {
   licenseKey: string;
   orderId?: string;
   productId?: string;
-  productName?: string;
+    productName?: string;
+    sellerId?: string;
+    sellerName?: string;
   category?: string;
   term: 'day' | 'month' | 'year';
   startsAt: string | null;
@@ -414,6 +416,8 @@ export interface WalletTx {
   note: string;
   status?: 'pending' | 'completed' | 'failed' | 'cancelled';
   payoutId?: string;
+  paymentMethod?: string;
+  paypalOrderId?: string;
   reviewNote?: string;
   reviewedAt?: string | null;
   createdAt: string;
