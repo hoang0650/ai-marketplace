@@ -301,6 +301,31 @@ export class DashboardService {
     return this.http.post<WalletTx>(`${this.base}/wallet/deposit`, { amount });
   }
 
+  paypalConfig(): Observable<{ enabled: boolean; clientId: string; sandbox: boolean }> {
+    return this.http.get<{ enabled: boolean; clientId: string; sandbox: boolean }>(`${this.base}/paypal/config`);
+  }
+
+  paypalCreateOrder(amount: number, currency: string): Observable<{
+    success: boolean;
+    orderId: string;
+    amountUsd: string;
+    paymentHistoryId: string;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      orderId: string;
+      amountUsd: string;
+      paymentHistoryId: string;
+    }>(`${this.base}/paypal/create-order`, { amount, currency });
+  }
+
+  paypalCaptureOrder(orderId: string): Observable<{ success: boolean; status: string; wallet?: WalletTx }> {
+    return this.http.post<{ success: boolean; status: string; wallet?: WalletTx }>(
+      `${this.base}/paypal/capture-order`,
+      { orderId },
+    );
+  }
+
   adminWalletTxs(params?: {
     type?: 'deposit' | 'withdraw';
     status?: 'pending' | 'completed' | 'failed' | 'cancelled' | '';

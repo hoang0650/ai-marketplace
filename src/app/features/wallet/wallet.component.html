@@ -21,14 +21,25 @@
     @if (tab() === 'deposit') {
       <div class="tab-body">
         <h2>{{ 'wallet.deposit.title' | t }}</h2>
-        <div class="method selected">
-          <span class="method__icon" aria-hidden="true">🏦</span>
-          <div>
-            <strong>{{ 'wallet.deposit.methodName' | t }}</strong>
-            <p>{{ 'wallet.deposit.methodDesc' | t }}</p>
-          </div>
+        <div class="methods">
+          <button type="button" class="method" [class.selected]="depositMethod() === 'sepay'" (click)="setDepositMethod('sepay')">
+            <span class="method__icon" aria-hidden="true">🏦</span>
+            <div>
+              <strong>{{ 'wallet.deposit.methodName' | t }}</strong>
+              <p>{{ 'wallet.deposit.methodDesc' | t }}</p>
+            </div>
+          </button>
+          @if (paypalEnabled()) {
+            <button type="button" class="method" [class.selected]="depositMethod() === 'paypal'" (click)="setDepositMethod('paypal')">
+              <span class="method__icon" aria-hidden="true">🅿️</span>
+              <div>
+                <strong>{{ 'wallet.deposit.paypalName' | t }}</strong>
+                <p>{{ 'wallet.deposit.paypalDesc' | t }}</p>
+              </div>
+            </button>
+          }
         </div>
-        <p class="hint">{{ 'wallet.deposit.hint' | t }}</p>
+        <p class="hint">{{ depositMethod() === 'paypal' ? ('wallet.deposit.paypalHint' | t) : ('wallet.deposit.hint' | t) }}</p>
 
         <div class="amount-row">
           <label>
@@ -48,8 +59,13 @@
         </div>
 
         <div class="actions">
-          <button type="button" class="btn-dark" (click)="deposit()">{{ 'wallet.deposit.submit' | t }}</button>
-          <p class="note">♥ {{ 'wallet.deposit.note' | t }}</p>
+          @if (depositMethod() === 'sepay') {
+            <button type="button" class="btn-dark" (click)="deposit()">{{ 'wallet.deposit.submit' | t }}</button>
+            <p class="note">♥ {{ 'wallet.deposit.note' | t }}</p>
+          } @else {
+            <div id="paypal-button-container" class="paypal-buttons" [class.busy]="paypalBusy()"></div>
+            <p class="note">♥ {{ 'wallet.deposit.paypalNote' | t }}</p>
+          }
         </div>
         @if (msg()) {
           <p class="msg">{{ msg() }}</p>
@@ -101,7 +117,7 @@
                     {{ isCredit(t.type) ? '+' : '-' }}
                     {{ t.amount | currency: t.currency: 'symbol-narrow': '1.0-0' }}
                   </td>
-                  <td>{{ methodLabel(t.type) }}</td>
+                  <td>{{ methodLabel(t) }}</td>
                   <td><span class="pill" [attr.data-status]="t.status || 'completed'">{{ statusLabel(t) }}</span></td>
                   <td class="note-cell">{{ t.note || ('#' + t.id) }}</td>
                 </tr>

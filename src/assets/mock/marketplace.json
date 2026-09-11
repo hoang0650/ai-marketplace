@@ -1603,7 +1603,7 @@
       "amount": 49,
       "currency": "USD",
       "status": "paid",
-      "provider": "stripe",
+      "provider": "wallet",
       "createdAt": "2026-07-18T10:00:00.000Z"
     },
     {

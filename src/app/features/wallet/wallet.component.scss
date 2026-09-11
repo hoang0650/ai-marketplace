@@ -106,6 +106,27 @@
   border-radius: 12px;
   padding: 0.9rem 1rem;
   max-width: 420px;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.methods {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 420px;
+}
+
+.paypal-buttons {
+  min-height: 48px;
+  max-width: 420px;
+}
+
+.paypal-buttons.busy {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .method.selected {

@@ -22,7 +22,7 @@ import {
         Mọi đơn hàng trên AI Markets được thanh toán bằng ví aimarkets.vn. Nạp tiền vào ví rồi mua trên trang sản phẩm hoặc giỏ hàng.
       </p>
       <div class="panel mt-8 grid gap-3">
-        <p class="text-sm">Phương thức: ví aimarkets.vn (không Stripe / PayPal / Paddle / PayOS).</p>
+        <p class="text-sm">Phương thức: ví aimarkets.vn — nạp SePay hoặc PayPal (Apple Pay / Google Pay hiện trong nút PayPal khi tài khoản đủ điều kiện).</p>
         <a class="btn btn-fill w-fit" routerLink="/wallet">Mở ví & nạp tiền</a>
       </div>
     </section>
