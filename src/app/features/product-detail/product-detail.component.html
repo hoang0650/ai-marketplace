@@ -474,14 +474,15 @@
           }
           @if (!canPlayContent()) {
             <p class="mt-3 text-sm">{{ 'pd.payToUnlock' | t }}</p>
-            <button type="button" class="btn btn-fill mt-2" (click)="checkout()">
-              {{ isStory(p.category) ? ('pd.ctaRead' | t) : ('pd.ctaWatch' | t) }}
+            <button type="button" class="btn btn-fill mt-2" (click)="checkout()" [disabled]="checkingOut()">
+              {{ checkingOut() ? ('cart.paying' | t) : (isStory(p.category) ? ('pd.ctaRead' | t) : ('pd.ctaWatch' | t)) }}
+              · {{ licensePrice(p) | currency: displayCurrency:'symbol-narrow':'1.0-2' }}
             </button>
           }
           <ul class="episode-list">
             @for (ep of episodes(); track ep.id) {
               <li class="episode-row" [class.active]="selectedEpisode()?.id === ep.id">
-                <button type="button" class="episode-row__play" (click)="playEpisode(ep)" [disabled]="unlocking()">
+                <button type="button" class="episode-row__play" (click)="playEpisode(ep)" [disabled]="unlocking() || !canPlayContent()">
                   <span class="episode-row__idx">{{ ep.index }}</span>
                   <span>{{ ep.title }}</span>
                 </button>

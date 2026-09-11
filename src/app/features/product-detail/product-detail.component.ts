@@ -97,6 +97,7 @@ export class ProductDetailComponent implements OnInit {
   readonly playKind = signal('');
   readonly unlockError = signal('');
   readonly unlocking = signal(false);
+  readonly checkingOut = signal(false);
   private playSeq = 0;
   readonly walletBalance = signal(0);
   readonly hasActiveLicense = computed(() => {
@@ -111,7 +112,9 @@ export class ProductDetailComponent implements OnInit {
     const u = this.auth.user();
     if (!p || !u) return false;
     if (u.role === 'admin') return true;
-    return (!!p.creatorId && p.creatorId === u.id) || (!!p.creatorSlug && p.creatorSlug === u.creatorSlug);
+    const uid = String(u.id || '');
+    if (!uid) return false;
+    return (!!p.creatorId && String(p.creatorId) === uid) || (!!p.creatorSlug && p.creatorSlug === u.creatorSlug);
   });
   readonly canPlayContent = computed(() => this.hasActiveLicense() || this.isContentOwner());
   qty = 1;
@@ -666,7 +669,6 @@ export class ProductDetailComponent implements OnInit {
     }
     if (isWatchContentCategory(p.category)) {
       this.setWorkspace('watch');
-      if (!this.canPlayContent()) this.checkout();
       return;
     }
     this.checkout();
@@ -1324,10 +1326,19 @@ export class ProductDetailComponent implements OnInit {
       void this.router.navigate(['/auth/login'], { queryParams: { redirect: `/product/${p.slug}` } });
       return;
     }
+    if (this.checkingOut()) return;
+    if (this.hasActiveLicense()) {
+      this.setWorkspace('watch');
+      const first = this.episodes()[0];
+      if (first) this.playEpisode(first);
+      return;
+    }
     const quantity = Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
     const licenseTerm = isLicenseCategory(p.category) ? this.licenseTerm : undefined;
+    this.checkingOut.set(true);
     this.billing.checkout({ productId: p.id, quantity, licenseTerm }).subscribe({
       next: (res) => {
+        this.checkingOut.set(false);
         if (res.license?.licenseKey) {
           this.issuedLicense.set(res.license);
           this.checkoutMsg.set(
@@ -1363,7 +1374,10 @@ export class ProductDetailComponent implements OnInit {
           return { ...cur, salesCount: sold, installCount: sold };
         });
       },
-      error: (err) => this.checkoutMsg.set(err?.error?.message || 'Thanh toán ví thất bại'),
+      error: (err) => {
+        this.checkingOut.set(false);
+        this.checkoutMsg.set(err?.error?.message || 'Thanh toán ví thất bại');
+      },
     });
   }
 
