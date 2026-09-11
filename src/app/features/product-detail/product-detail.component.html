@@ -484,7 +484,12 @@
               <li class="episode-row" [class.active]="selectedEpisode()?.id === ep.id">
                 <button type="button" class="episode-row__play" (click)="playEpisode(ep)" [disabled]="unlocking() || !canPlayContent()">
                   <span class="episode-row__idx">{{ ep.index }}</span>
-                  <span>{{ ep.title }}</span>
+                  <span>
+                    {{ ep.title }}
+                    @if ((ep.pageCount || 0) > 1) {
+                      <em class="episode-row__pages">{{ 'pd.storyPages' | t: { n: ep.pageCount } }}</em>
+                    }
+                  </span>
                 </button>
                 <button type="button" class="btn btn-outline text-xs" (click)="downloadEpisode(ep)" [disabled]="!canPlayContent()">
                   {{ 'pd.downloadAimc' | t }}
@@ -508,7 +513,35 @@
             } @else if (playKind() === 'text') {
               <iframe class="watch-text" [src]="src" title="chapter"></iframe>
             } @else {
-              <img class="watch-media" [src]="src" [alt]="selectedEpisode()?.title || ''" (error)="onMediaError()" />
+              <div class="story-reader">
+                <button type="button" class="story-reader__frame" (click)="nextPage()" [attr.aria-label]="'pd.storyNext' | t">
+                  <img class="watch-media" [src]="src" [alt]="selectedEpisode()?.title || ''" (error)="onMediaError()" />
+                </button>
+                @if (playPages().length > 1) {
+                  <div class="story-reader__nav">
+                    <button type="button" class="btn btn-outline" (click)="prevPage()" [disabled]="pageIndex() <= 0">
+                      {{ 'pd.storyPrev' | t }}
+                    </button>
+                    <span>{{ 'pd.storyPage' | t: { n: pageIndex() + 1, total: playPages().length } }}</span>
+                    <button type="button" class="btn btn-outline" (click)="nextPage()" [disabled]="pageIndex() >= playPages().length - 1">
+                      {{ 'pd.storyNext' | t }}
+                    </button>
+                  </div>
+                  <div class="story-reader__thumbs" role="list">
+                    @for (thumb of playPages(); track $index) {
+                      <button
+                        type="button"
+                        class="story-reader__thumb"
+                        [class.active]="pageIndex() === $index"
+                        (click)="goPage($index)"
+                        [attr.aria-label]="'pd.storyPage' | t: { n: $index + 1, total: playPages().length }"
+                      >
+                        <img [src]="thumb" alt="" />
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
             }
           } @else {
             <p class="pg-empty">{{ 'pd.playerIdle' | t }}</p>

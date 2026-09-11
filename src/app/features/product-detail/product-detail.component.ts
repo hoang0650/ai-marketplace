@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, HostListener, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -95,6 +95,8 @@ export class ProductDetailComponent implements OnInit {
   readonly selectedEpisode = signal<ContentEpisode | null>(null);
   readonly playUrl = signal('');
   readonly playKind = signal('');
+  readonly playPages = signal<string[]>([]);
+  readonly pageIndex = signal(0);
   readonly unlockError = signal('');
   readonly unlocking = signal(false);
   readonly checkingOut = signal(false);
@@ -311,6 +313,8 @@ export class ProductDetailComponent implements OnInit {
         this.selectedEpisode.set(null);
         this.playUrl.set('');
         this.playKind.set('');
+        this.playPages.set([]);
+        this.pageIndex.set(0);
         this.unlockError.set('');
         const term = p.contentMeta?.licenseTerm;
         if (term === 'day' || term === 'month' || term === 'year') this.licenseTerm = term;
@@ -460,15 +464,34 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  private playSrc(res: { playToken?: string; playUrl?: string }): string {
+  private playSrc(res: { playToken?: string; playUrl?: string }, page?: number): string {
     const token = String(res.playToken || '').trim();
-    if (token) return `${environment.apiUrl}/content/play?token=${encodeURIComponent(token)}`;
+    let pageQ = page;
     const raw = String(res.playUrl || '').trim();
+    if (pageQ == null && raw) {
+      try {
+        const u = new URL(raw, environment.apiUrl);
+        const fromQuery = Number(u.searchParams.get('page') || 0);
+        if (fromQuery >= 1) pageQ = fromQuery;
+      } catch {
+        /* ignore */
+      }
+    }
+    if (token) {
+      const q = new URLSearchParams({ token });
+      if (pageQ && pageQ >= 1) q.set('page', String(pageQ));
+      return `${environment.apiUrl}/content/play?${q.toString()}`;
+    }
     if (!raw) return '';
     try {
       const u = new URL(raw, environment.apiUrl);
       const fromQuery = u.searchParams.get('token') || u.searchParams.get('t');
-      if (fromQuery) return `${environment.apiUrl}/content/play?token=${encodeURIComponent(fromQuery)}`;
+      if (fromQuery) {
+        const q = new URLSearchParams({ token: fromQuery });
+        const p = pageQ || Number(u.searchParams.get('page') || 0);
+        if (p >= 1) q.set('page', String(p));
+        return `${environment.apiUrl}/content/play?${q.toString()}`;
+      }
       const marker = '/content/play/';
       const i = u.pathname.indexOf(marker);
       if (i >= 0) {
@@ -500,14 +523,21 @@ export class ProductDetailComponent implements OnInit {
         if (seq !== this.playSeq) return;
         this.unlocking.set(false);
         this.selectedEpisode.set(ep);
-        this.playUrl.set(this.playSrc(res));
         this.playKind.set(res.kind || ep.kind);
+        const token = { playToken: res.playToken, playUrl: res.playUrl };
+        const pages = (res.pages?.length ? res.pages : [{ index: 1, playUrl: res.playUrl }]).map((pg) =>
+          this.playSrc({ playToken: res.playToken, playUrl: pg.playUrl }, pg.index),
+        );
+        this.playPages.set(pages.filter(Boolean));
+        this.pageIndex.set(0);
+        this.playUrl.set(pages[0] || this.playSrc(token));
         this.unlockError.set('');
       },
       error: (err) => {
         if (seq !== this.playSeq) return;
         this.unlocking.set(false);
         this.playUrl.set('');
+        this.playPages.set([]);
         const code = err?.error?.code;
         this.unlockError.set(
           code === 'LICENSE_REQUIRED' || code === 'LICENSE_EXPIRED' || err?.status === 402
@@ -516,6 +546,36 @@ export class ProductDetailComponent implements OnInit {
         );
       },
     });
+  }
+
+  goPage(i: number): void {
+    const pages = this.playPages();
+    if (!pages.length) return;
+    const next = Math.min(pages.length - 1, Math.max(0, i));
+    this.pageIndex.set(next);
+    this.playUrl.set(pages[next] || '');
+  }
+
+  prevPage(): void {
+    this.goPage(this.pageIndex() - 1);
+  }
+
+  nextPage(): void {
+    this.goPage(this.pageIndex() + 1);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onStoryKey(ev: KeyboardEvent): void {
+    if (this.playKind() !== 'image' || this.playPages().length < 2) return;
+    const t = ev.target as HTMLElement | null;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (ev.key === 'ArrowRight') {
+      ev.preventDefault();
+      this.nextPage();
+    } else if (ev.key === 'ArrowLeft') {
+      ev.preventDefault();
+      this.prevPage();
+    }
   }
 
   onMediaError(): void {

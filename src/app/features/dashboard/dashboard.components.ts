@@ -492,16 +492,22 @@ export class DashboardAnalyticsComponent implements OnInit {
           </div>
           @if (managingId === p.id) {
             <div class="rounded-lg border border-line p-3">
-              <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Upload tập / chương (ảnh hoặc video)</p>
-              <p class="mb-3 text-xs text-muted">File lưu riêng, không public. Buyer chỉ stream/tải khi license còn hạn. Tải xuống là file .aimc mã hóa.</p>
+              <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
+                {{ p.category === 'story-book' ? 'Upload chương (nhiều trang ảnh)' : 'Upload tập / chương (ảnh hoặc video)' }}
+              </p>
+              <p class="mb-3 text-xs text-muted">
+                {{ p.category === 'story-book'
+                  ? 'Chọn nhiều ảnh trong một lần — mỗi ảnh là một trang/frame của chương. File lưu riêng, buyer chỉ đọc khi license còn hạn.'
+                  : 'File lưu riêng, không public. Buyer chỉ stream/tải khi license còn hạn. Tải xuống là file .aimc mã hóa.' }}
+              </p>
               <div class="mb-3 flex flex-wrap items-end gap-2">
                 <div class="min-w-[12rem] flex-1">
                   <label class="mb-1 block text-xs uppercase text-muted">Tiêu đề</label>
-                  <input class="input" [(ngModel)]="chapterTitle" name="chapterTitle" placeholder="Tập 1 / Chương 1" />
+                  <input class="input" [(ngModel)]="chapterTitle" name="chapterTitle" [placeholder]="p.category === 'story-book' ? 'Chương 1 — Phố cổ' : 'Tập 1 / Chương 1'" />
                 </div>
                 <label class="btn btn-fill cursor-pointer">
-                  {{ chapterBusy ? 'Đang tải…' : 'Chọn file' }}
-                  <input type="file" class="hidden" accept="video/*,image/*,audio/*,.mp4,.webm,.jpg,.jpeg,.png,.webp,.gif,.mp3,.wav,.txt" (change)="onChapterFile($event, p)" [disabled]="chapterBusy" />
+                  {{ chapterBusy ? 'Đang tải…' : (p.category === 'story-book' ? 'Chọn nhiều trang' : 'Chọn file') }}
+                  <input type="file" class="hidden" [attr.multiple]="p.category === 'story-book' ? '' : null" accept="video/*,image/*,audio/*,.mp4,.webm,.jpg,.jpeg,.png,.webp,.gif,.mp3,.wav,.txt" (change)="onChapterFile($event, p)" [disabled]="chapterBusy" />
                 </label>
               </div>
               @if (chapterError) {
@@ -510,7 +516,7 @@ export class DashboardAnalyticsComponent implements OnInit {
               <ul class="grid gap-2">
                 @for (ep of chapters(); track ep.id) {
                   <li class="flex items-center justify-between gap-2 text-sm">
-                    <span>{{ ep.index }}. {{ ep.title }} · {{ ep.kind }}</span>
+                    <span>{{ ep.index }}. {{ ep.title }} · {{ ep.kind }}@if ((ep.pageCount || 0) > 1) { · {{ ep.pageCount }} trang }</span>
                     <button type="button" class="btn btn-outline text-xs" (click)="removeChapter(ep, p)">Xóa</button>
                   </li>
                 }
@@ -643,13 +649,14 @@ export class DashboardProductsComponent implements OnInit {
 
   onChapterFile(event: Event, p: Product): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const files = Array.from(input.files || []);
     input.value = '';
-    if (!file) return;
+    if (!files.length) return;
     this.chapterBusy = true;
     this.chapterError = '';
-    const title = this.chapterTitle.trim() || file.name.replace(/\.[^.]+$/, '');
-    this.contentApi.createEpisode(p.id, { title, file }).subscribe({
+    const title = this.chapterTitle.trim() || files[0].name.replace(/\.[^.]+$/, '');
+    const payload = files.length > 1 ? { title, files } : { title, file: files[0] };
+    this.contentApi.createEpisode(p.id, payload).subscribe({
       next: (ep) => {
         this.chapterBusy = false;
         this.chapterTitle = '';

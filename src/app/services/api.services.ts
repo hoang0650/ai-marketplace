@@ -134,10 +134,15 @@ export class ContentService {
     return this.http.get<ContentEpisode[]>(`${this.base}/content/products/${slug}/episodes`);
   }
 
-  createEpisode(productId: string, input: { title: string; file?: File; sourceUrl?: string }): Observable<ContentEpisode> {
+  createEpisode(productId: string, input: { title: string; file?: File; files?: File[]; sourceUrl?: string }): Observable<ContentEpisode> {
     const form = new FormData();
     form.append('title', input.title);
-    if (input.file) form.append('file', input.file, input.file.name);
+    const many = input.files?.filter(Boolean) || [];
+    if (many.length) {
+      for (const file of many) form.append('files', file, file.name);
+    } else if (input.file) {
+      form.append('file', input.file, input.file.name);
+    }
     if (input.sourceUrl) form.append('sourceUrl', input.sourceUrl);
     return this.http.post<ContentEpisode>(`${this.base}/content/products/${productId}/episodes`, form);
   }

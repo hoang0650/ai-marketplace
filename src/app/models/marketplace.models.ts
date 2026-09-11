@@ -175,6 +175,7 @@ export interface ContentEpisode {
   size: number;
   previewUrl: string;
   published: boolean;
+  pageCount?: number;
 }
 
 export interface ContentUnlock {
@@ -185,6 +186,8 @@ export interface ContentUnlock {
   kind: string;
   mime: string;
   title: string;
+  pageCount?: number;
+  pages?: Array<{ index: number; playUrl: string }>;
   expiresIn: number;
   licenseExpiresAt: string | null;
   drm: string;
