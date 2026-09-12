@@ -21,7 +21,15 @@
             <img [src]="activeMedia()" [alt]="p.name" class="pd-gallery__img" />
             <button type="button" class="pd-gallery__nav pd-gallery__nav--next" (click)="nextMedia()" aria-label="Next">›</button>
             <div class="pd-gallery__tools">
-              <button type="button" class="pd-gallery__tool" (click)="toggleWishlist()" aria-label="Wishlist">♡</button>
+              <button
+                type="button"
+                class="pd-gallery__tool"
+                [class.saved]="wishlisted()"
+                (click)="toggleWishlist()"
+                aria-label="Wishlist"
+              >
+                {{ wishlisted() ? '♥' : '♡' }}
+              </button>
             </div>
             <div class="pd-gallery__badges">
               <span>🛡 {{ 'pd.protected' | t }}</span>
@@ -166,7 +174,7 @@
             Buy now
           }
         </button>
-        <button type="button" class="pd-buy__cart" (click)="toggleWishlist()">
+        <button type="button" class="pd-buy__cart" (click)="addToCart()">
           🛒 {{ 'lux.addToCart' | t }}
         </button>
 
@@ -507,15 +515,34 @@
           </div>
           @if (playUrl(); as src) {
             @if (playKind() === 'video') {
-              <video class="watch-media" [src]="src" controls playsinline preload="auto" controlslist="nodownload" (error)="onMediaError()"></video>
+              <video
+                class="watch-media"
+                [src]="src"
+                controls
+                playsinline
+                preload="auto"
+                controlslist="nodownload noremoteplayback"
+                disablepictureinpicture
+                (loadedmetadata)="lockPlayback($event)"
+                (contextmenu)="blockCapture($event)"
+                (error)="onMediaError()"
+              ></video>
             } @else if (playKind() === 'audio') {
               <audio class="w-full" [src]="src" controls preload="auto" controlslist="nodownload" (error)="onMediaError()"></audio>
             } @else if (playKind() === 'text') {
-              <iframe class="watch-text" [src]="src" title="chapter"></iframe>
+              <iframe class="watch-text" [src]="src" title="chapter" (contextmenu)="blockCapture($event)"></iframe>
             } @else {
               <div class="story-reader">
                 <button type="button" class="story-reader__frame" (click)="nextPage()" [attr.aria-label]="'pd.storyNext' | t">
-                  <img class="watch-media" [src]="src" [alt]="selectedEpisode()?.title || ''" (error)="onMediaError()" />
+                  <img
+                    class="watch-media"
+                    [src]="src"
+                    [alt]="selectedEpisode()?.title || ''"
+                    draggable="false"
+                    (contextmenu)="blockCapture($event)"
+                    (dragstart)="blockCapture($event)"
+                    (error)="onMediaError()"
+                  />
                 </button>
                 @if (playPages().length > 1) {
                   <div class="story-reader__nav">
@@ -536,13 +563,14 @@
                         (click)="goPage($index)"
                         [attr.aria-label]="'pd.storyPage' | t: { n: $index + 1, total: playPages().length }"
                       >
-                        <img [src]="thumb" alt="" />
+                        <img [src]="thumb" alt="" draggable="false" (contextmenu)="blockCapture($event)" (dragstart)="blockCapture($event)" />
                       </button>
                     }
                   </div>
                 }
               </div>
             }
+            <p class="mt-2 text-sm text-muted">{{ 'pd.captureHint' | t }}</p>
           } @else {
             <p class="pg-empty">{{ 'pd.playerIdle' | t }}</p>
           }

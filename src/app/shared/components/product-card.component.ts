@@ -1,10 +1,12 @@
 import { Component, Input, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Product } from '../../models/marketplace.models';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
+import { AuthService } from '../../services/auth.service';
+import { WishlistService } from '../../services/api.services';
 
 @Component({
   selector: 'app-product-card',
@@ -69,10 +71,18 @@ import { TPipe } from '../../i18n/t.pipe';
             <span class="lux-card__sale">Sale</span>
           }
           <div class="lux-card__actions">
-            <button type="button" class="lux-card__btn" [attr.aria-label]="'card.addCart' | t" (click)="onHeart($event)">
+            <button type="button" class="lux-card__btn" [attr.aria-label]="'card.addCart' | t" (click)="onCart($event)">
               {{ 'card.addCart' | t }}
             </button>
-            <button type="button" class="lux-card__wish" [attr.aria-label]="'card.wishlist' | t" (click)="onHeart($event)">♡</button>
+            <button
+              type="button"
+              class="lux-card__wish"
+              [class.saved]="saved"
+              [attr.aria-label]="'card.wishlist' | t"
+              (click)="onHeart($event)"
+            >
+              {{ saved ? '♥' : '♡' }}
+            </button>
           </div>
         </div>
         <div class="lux-card__body">
@@ -109,7 +119,7 @@ import { TPipe } from '../../i18n/t.pipe';
             <span class="shop-card__stars">★ {{ product.rating | number: '1.1-1' }}</span>
             <span>{{ 'card.stock' | t: { n: stockLabel } }}</span>
             <span>{{ 'card.sold' | t: { n: (product.salesCount || 0) } }}</span>
-            <button type="button" class="shop-card__cart" [attr.aria-label]="'card.add' | t" (click)="onHeart($event)">🛒</button>
+            <button type="button" class="shop-card__cart" [class.saved]="saved" [attr.aria-label]="'card.add' | t" (click)="onCart($event)">🛒</button>
           </div>
         </div>
       </a>
@@ -124,7 +134,15 @@ import { TPipe } from '../../i18n/t.pipe';
             width="480"
             height="480"
           />
-          <button type="button" class="ct-card__heart" [attr.aria-label]="'card.save' | t" (click)="onHeart($event)">♡</button>
+          <button
+            type="button"
+            class="ct-card__heart"
+            [class.saved]="saved"
+            [attr.aria-label]="'card.save' | t"
+            (click)="onHeart($event)"
+          >
+            {{ saved ? '♥' : '♡' }}
+          </button>
           @if (isRunpod) {
             <span class="ct-card__badge">RunPod</span>
           }
@@ -232,6 +250,10 @@ import { TPipe } from '../../i18n/t.pipe';
       .lux-card__wish:hover {
         background: var(--color-lux-gold, #c9a961);
         color: #111;
+      }
+      .lux-card__wish.saved,
+      .ct-card__heart.saved {
+        color: #c9a961;
       }
       .lux-card__body {
         padding: 0.85rem 0.25rem 0.5rem;
@@ -674,6 +696,9 @@ import { TPipe } from '../../i18n/t.pipe';
 export class ProductCardComponent {
   private readonly i18n = inject(I18nService);
   private readonly currencySvc = inject(CurrencyService);
+  private readonly wishlist = inject(WishlistService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
   @Input({ required: true }) product!: Product;
   @Input() variant: 'default' | 'shop' | 'luxury' = 'default';
   @Input() layout: 'grid' | 'list' = 'grid';
@@ -759,8 +784,33 @@ export class ProductCardComponent {
     return this.i18n.t('card.agoM', { n: Math.floor(days / 30) });
   }
 
+  get saved(): boolean {
+    return this.wishlist.saved(this.product.id);
+  }
+
+  private requireAuth(): boolean {
+    if (this.auth.isAuthenticated()) return true;
+    void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+    return false;
+  }
+
   onHeart(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
+    if (!this.requireAuth()) return;
+    this.wishlist.toggle(this.product.id).subscribe();
+  }
+
+  onCart(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.requireAuth()) return;
+    if (this.saved) {
+      void this.router.navigate(['/cart']);
+      return;
+    }
+    this.wishlist.toggle(this.product.id).subscribe({
+      next: () => void this.router.navigate(['/cart']),
+    });
   }
 }

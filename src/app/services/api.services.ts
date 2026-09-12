@@ -1,7 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 import {
   AffiliateStats,
   AdminOverview,
@@ -199,16 +201,39 @@ export class ReviewService {
 @Injectable({ providedIn: 'root' })
 export class WishlistService {
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
   private readonly base = environment.apiUrl;
+  private readonly itemsSignal = signal<Product[]>([]);
+
+  readonly items = this.itemsSignal.asReadonly();
+  readonly ids = computed(() => new Set(this.itemsSignal().map((p) => p.id)));
+  readonly count = computed(() => this.itemsSignal().length);
+
+  saved(productId?: string | null): boolean {
+    if (!productId) return false;
+    return this.ids().has(productId);
+  }
 
   list(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.base}/wishlist`);
   }
 
-  toggle(productId: string): Observable<{ wishlist: Product[]; added: boolean }> {
-    return this.http.post<{ wishlist: Product[]; added: boolean }>(`${this.base}/wishlist/toggle`, {
-      productId,
-    });
+  load(): void {
+    if (!this.auth.isAuthenticated()) {
+      this.itemsSignal.set([]);
+      return;
+    }
+    this.list()
+      .pipe(catchError(() => of([] as Product[])))
+      .subscribe((items) => this.itemsSignal.set(items));
+  }
+
+  toggle(productId: string): Observable<{ wishlist: Product[]; added: boolean; productId?: string }> {
+    return this.http
+      .post<{ wishlist: Product[]; added: boolean; productId?: string }>(`${this.base}/wishlist/toggle`, {
+        productId,
+      })
+      .pipe(tap((res) => this.itemsSignal.set(res.wishlist || [])));
   }
 }
 

@@ -1,9 +1,8 @@
-import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { concatMap, from } from 'rxjs';
 import { WishlistService } from '../../services/api.services';
 import { Product } from '../../models/marketplace.models';
-import { AuthService } from '../../services/auth.service';
-import { catchError, of, tap } from 'rxjs';
 
 export interface CartLine {
   product: Product;
@@ -14,7 +13,6 @@ export interface CartLine {
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly wishlist = inject(WishlistService);
-  private readonly auth = inject(AuthService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly linesSignal = signal<CartLine[]>([]);
   private readonly qtyMap = signal<Record<string, number>>({});
@@ -27,29 +25,32 @@ export class CartService {
   );
   readonly currency = computed(() => this.linesSignal()[0]?.product.pricing.currency || 'USD');
 
+  constructor() {
+    effect(() => {
+      const products = this.wishlist.items();
+      untracked(() => this.syncFromProducts(products));
+    });
+  }
+
   private qtyKey(): string {
     return 'phai.cartQty';
   }
 
   load(): void {
     this.readQty();
-    if (!this.auth.isAuthenticated()) {
-      this.linesSignal.set([]);
-      return;
-    }
-    this.wishlist
-      .list()
-      .pipe(catchError(() => of([] as Product[])))
-      .subscribe((products) => {
-        const qty = this.qtyMap();
-        this.linesSignal.set(
-          products.map((product) => ({
-            product,
-            qty: qty[product.id] || 1,
-            selected: true,
-          })),
-        );
-      });
+    this.wishlist.load();
+  }
+
+  private syncFromProducts(products: Product[]): void {
+    const qty = this.qtyMap();
+    const prev = new Map(this.linesSignal().map((l) => [l.product.id, l]));
+    this.linesSignal.set(
+      products.map((product) => ({
+        product,
+        qty: qty[product.id] || prev.get(product.id)?.qty || 1,
+        selected: prev.get(product.id)?.selected ?? true,
+      })),
+    );
   }
 
   unitPrice(p: Product): number {
@@ -77,19 +78,15 @@ export class CartService {
   }
 
   remove(productId: string): void {
-    this.wishlist.toggle(productId).pipe(tap(() => this.load())).subscribe();
+    this.wishlist.toggle(productId).subscribe();
   }
 
   removeSelected(): void {
     const ids = this.selectedLines().map((l) => l.product.id);
     if (!ids.length) return;
-    let left = ids.length;
-    ids.forEach((id) => {
-      this.wishlist.toggle(id).subscribe(() => {
-        left -= 1;
-        if (left <= 0) this.load();
-      });
-    });
+    from(ids)
+      .pipe(concatMap((id) => this.wishlist.toggle(id)))
+      .subscribe();
   }
 
   private readQty(): void {

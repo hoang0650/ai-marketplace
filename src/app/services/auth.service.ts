@@ -1,15 +1,37 @@
 import { Injectable, PLATFORM_ID, inject, signal, computed } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, map, of, catchError, shareReplay } from 'rxjs';
+import { Observable, ReplaySubject, tap, map, of, catchError, shareReplay, switchMap, filter, take } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { User } from '../models/marketplace.models';
+import { User, UserRole } from '../models/marketplace.models';
 
 interface AuthResponse {
   token: string;
   refreshToken?: string;
   user: User;
+}
+
+const TOKEN_KEY = 'phai.token';
+const USER_KEY = 'phai.user';
+
+function decodeJwt(token: string): { exp?: number; role?: string; email?: string; userId?: string; sub?: string } | null {
+  const parts = String(token || '').split('.');
+  if (parts.length < 2) return null;
+  try {
+    const padded = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(padded.padEnd(padded.length + ((4 - (padded.length % 4)) % 4), '='));
+    return JSON.parse(json) as { exp?: number; role?: string; email?: string; userId?: string; sub?: string };
+  } catch {
+    return null;
+  }
+}
+
+function tokenUnexpired(token: string | null): boolean {
+  if (!token) return false;
+  const payload = decodeJwt(token);
+  if (!payload?.exp) return true;
+  return payload.exp * 1000 > Date.now() + 5000;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -19,25 +41,45 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly userSignal = signal<User | null>(null);
   private readonly tokenSignal = signal<string | null>(null);
+  private readonly readySignal = signal(false);
+  private readonly ready$ = new ReplaySubject<boolean>(1);
 
   private refreshInFlight$: Observable<boolean> | null = null;
+  private hydrateGen = 0;
 
   readonly user = this.userSignal.asReadonly();
   readonly token = this.tokenSignal.asReadonly();
-  readonly isAuthenticated = computed(() => !!this.userSignal());
-  readonly isCreator = computed(
-    () => this.userSignal()?.role === 'creator' || this.userSignal()?.role === 'admin',
-  );
-  readonly isAdmin = computed(() => this.userSignal()?.role === 'admin');
+  readonly authReady = this.readySignal.asReadonly();
+  readonly isAuthenticated = computed(() => !!this.userSignal() || tokenUnexpired(this.tokenSignal()));
+  readonly isCreator = computed(() => {
+    const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
+    return role === 'creator' || role === 'admin';
+  });
+  readonly isAdmin = computed(() => {
+    const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
+    return role === 'admin';
+  });
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('phai.token');
-      if (token) {
-        this.tokenSignal.set(token);
-        this.refreshMe().subscribe();
-      }
+      this.restoreFromStorage();
     }
+    this.markReady();
+    if (this.tokenSignal()) {
+      this.refreshMe().subscribe();
+    }
+  }
+
+  ensureReady(): Observable<boolean> {
+    if (this.readySignal()) return of(true);
+    return this.ready$.pipe(
+      filter(Boolean),
+      take(1),
+    );
+  }
+
+  hasValidAccessToken(): boolean {
+    return tokenUnexpired(this.tokenSignal());
   }
 
   login(email: string, password: string): Observable<User> {
@@ -87,11 +129,14 @@ export class AuthService {
   }
 
   clearSession(): void {
+    this.hydrateGen += 1;
     this.userSignal.set(null);
     this.tokenSignal.set(null);
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('phai.token');
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
     }
+    this.markReady();
   }
 
   logout(): void {
@@ -103,11 +148,36 @@ export class AuthService {
   }
 
   refreshMe(): Observable<User | null> {
+    const gen = this.hydrateGen;
     return this.http.get<User>(`${environment.apiUrl}/auth/me`, { withCredentials: true }).pipe(
-      tap((user) => this.userSignal.set(user)),
-      catchError(() => {
-        this.clearSession();
-        return of(null);
+      tap((user) => {
+        if (gen !== this.hydrateGen) return;
+        this.setUser(user);
+        this.markReady();
+      }),
+      catchError((err: HttpErrorResponse) => {
+        if (gen !== this.hydrateGen) return of(this.userSignal());
+        if (err.status === 401 || err.status === 403) {
+          return this.refreshAccessToken().pipe(
+            switchMap((ok) => {
+              if (gen !== this.hydrateGen) return of(this.userSignal());
+              if (!ok) {
+                if (!tokenUnexpired(this.tokenSignal())) this.clearSession();
+                this.markReady();
+                return of(this.userSignal());
+              }
+              return this.http.get<User>(`${environment.apiUrl}/auth/me`, { withCredentials: true }).pipe(
+                tap((user) => {
+                  if (gen !== this.hydrateGen) return;
+                  this.setUser(user);
+                }),
+                catchError(() => of(this.userSignal())),
+              );
+            }),
+          );
+        }
+        this.markReady();
+        return of(this.userSignal());
       }),
     );
   }
@@ -120,21 +190,69 @@ export class AuthService {
   }): Observable<User> {
     return this.http
       .patch<User>(`${environment.apiUrl}/auth/me`, patch)
-      .pipe(tap((user) => this.userSignal.set(user)));
+      .pipe(tap((user) => this.setUser(user)));
   }
 
   persistToken(token: string): void {
     this.tokenSignal.set(token);
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('phai.token', token);
+      localStorage.setItem(TOKEN_KEY, token);
     }
   }
 
   private persist(res: AuthResponse): void {
-    this.userSignal.set(res.user);
+    this.hydrateGen += 1;
     this.tokenSignal.set(res.token);
+    this.setUser(res.user);
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('phai.token', res.token);
+      localStorage.setItem(TOKEN_KEY, res.token);
     }
+    this.markReady();
+  }
+
+  private setUser(user: User): void {
+    this.userSignal.set(user);
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+      } catch {
+        /* quota */
+      }
+    }
+  }
+
+  private restoreFromStorage(): void {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token || !tokenUnexpired(token)) {
+      if (token) localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      return;
+    }
+    this.tokenSignal.set(token);
+    const raw = localStorage.getItem(USER_KEY);
+    if (!raw) {
+      const payload = decodeJwt(token);
+      if (payload?.email || payload?.userId || payload?.sub) {
+        this.userSignal.set({
+          id: String(payload.userId || payload.sub || ''),
+          email: String(payload.email || ''),
+          name: String(payload.email || 'Member').split('@')[0],
+          role: (payload.role as UserRole) || 'buyer',
+          createdAt: '',
+        });
+      }
+      return;
+    }
+    try {
+      const user = JSON.parse(raw) as User;
+      if (user?.id || user?.email) this.userSignal.set(user);
+    } catch {
+      localStorage.removeItem(USER_KEY);
+    }
+  }
+
+  private markReady(): void {
+    this.readySignal.set(true);
+    this.ready$.next(true);
   }
 }

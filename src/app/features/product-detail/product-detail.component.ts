@@ -82,6 +82,7 @@ export class ProductDetailComponent implements OnInit {
   readonly auth = inject(AuthService);
 
   readonly product = signal<Product | null>(null);
+  readonly wishlisted = computed(() => this.wishlistApi.saved(this.product()?.id));
   readonly reviews = signal<Review[]>([]);
   readonly related = signal<Product[]>([]);
   readonly mediaIndex = signal(0);
@@ -580,6 +581,26 @@ export class ProductDetailComponent implements OnInit {
 
   onMediaError(): void {
     this.unlockError.set(this.i18n.t('pd.playFailed'));
+  }
+
+  blockCapture(ev: Event): void {
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
+
+  lockPlayback(ev: Event): void {
+    const el = ev.target as HTMLVideoElement;
+    el.disableRemotePlayback = true;
+    el.disablePictureInPicture = true;
+  }
+
+  @HostListener('document:contextmenu', ['$event'])
+  onWatchContextMenu(ev: MouseEvent): void {
+    if (!this.playUrl()) return;
+    const node = ev.target as HTMLElement | null;
+    if (node?.closest('.watch-layout, .watch-media, .story-reader')) {
+      ev.preventDefault();
+    }
   }
 
   downloadEpisode(ep: ContentEpisode): void {
@@ -1444,7 +1465,27 @@ export class ProductDetailComponent implements OnInit {
   toggleWishlist(): void {
     const p = this.product();
     if (!p) return;
+    if (!this.auth.isAuthenticated()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
     this.wishlistApi.toggle(p.id).subscribe();
+  }
+
+  addToCart(): void {
+    const p = this.product();
+    if (!p) return;
+    if (!this.auth.isAuthenticated()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+    if (this.wishlistApi.saved(p.id)) {
+      void this.router.navigate(['/cart']);
+      return;
+    }
+    this.wishlistApi.toggle(p.id).subscribe({
+      next: () => void this.router.navigate(['/cart']),
+    });
   }
 
   submitReview(): void {

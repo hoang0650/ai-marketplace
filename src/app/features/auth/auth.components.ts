@@ -9,7 +9,8 @@ import { I18nService } from '../../i18n/i18n.service';
 import { GoogleSignInComponent } from './google-sign-in.component';
 import { environment } from '../../../environments/environment';
 
-function afterAuthRoute(user: User): string {
+function afterAuthRoute(user: User, returnUrl?: string | null): string {
+  if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) return returnUrl;
   if (user.role === 'admin') return '/admin';
   if (user.role === 'creator') return '/dashboard';
   return '/marketplace';
@@ -38,6 +39,12 @@ export class LoginComponent {
 
   constructor() {
     this.seo.set({ title: this.i18n.t('auth.login') });
+    const authed = this.auth.user();
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (this.auth.isAuthenticated() && authed) {
+      void this.router.navigateByUrl(afterAuthRoute(authed, returnUrl));
+      return;
+    }
     const q = this.route.snapshot.queryParamMap;
     if (q.get('google') === 'error') {
       this.error.set(q.get('message') || this.i18n.t('auth.googleFail'));
@@ -49,7 +56,8 @@ export class LoginComponent {
     this.error.set('');
     this.loading.set(true);
     this.auth.login(this.email, this.password).subscribe({
-      next: (user) => void this.router.navigateByUrl(afterAuthRoute(user)),
+      next: (user) =>
+        void this.router.navigateByUrl(afterAuthRoute(user, this.route.snapshot.queryParamMap.get('returnUrl'))),
       error: (err) => {
         this.loading.set(false);
         this.error.set(err?.error?.message || this.i18n.t('auth.invalid'));
@@ -58,7 +66,7 @@ export class LoginComponent {
   }
 
   onGoogleSignedIn(user: User): void {
-    void this.router.navigateByUrl(afterAuthRoute(user));
+    void this.router.navigateByUrl(afterAuthRoute(user, this.route.snapshot.queryParamMap.get('returnUrl')));
   }
 }
 
@@ -87,6 +95,10 @@ export class RegisterComponent {
 
   constructor() {
     this.seo.set({ title: this.i18n.t('auth.register') });
+    const authed = this.auth.user();
+    if (this.auth.isAuthenticated() && authed) {
+      void this.router.navigateByUrl(afterAuthRoute(authed));
+    }
   }
 
   submit(): void {

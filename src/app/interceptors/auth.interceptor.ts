@@ -18,7 +18,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   });
 
   const skipRefresh =
-    req.url.includes('/auth/refresh-token') || req.url.includes('/auth/logout') || req.url.includes('/auth/login');
+    req.url.includes('/auth/refresh-token') ||
+    req.url.includes('/auth/logout') ||
+    req.url.includes('/auth/login') ||
+    req.url.includes('/auth/register') ||
+    req.url.includes('/auth/google') ||
+    (req.method === 'GET' && req.url.includes('/auth/me'));
 
   if (skipRefresh) {
     return next(authed);
@@ -32,13 +37,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       return auth.refreshAccessToken().pipe(
         switchMap((ok) => {
           if (!ok) {
-            auth.clearSession();
+            if (!auth.hasValidAccessToken()) auth.clearSession();
             return throwError(() => err);
           }
+          const nextToken = auth.token();
           return next(
             req.clone({
               withCredentials: true,
-              setHeaders: { Authorization: `Bearer ${auth.token()}` },
+              setHeaders: nextToken ? { Authorization: `Bearer ${nextToken}` } : {},
             }),
           );
         }),

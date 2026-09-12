@@ -1,7 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { WishlistService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
-import { Product } from '../../models/marketplace.models';
 import { ProductCardComponent } from '../../shared/components/product-card.component';
 
 @Component({
@@ -24,10 +23,10 @@ import { ProductCardComponent } from '../../shared/components/product-card.compo
 export class WishlistComponent implements OnInit {
   private readonly api = inject(WishlistService);
   private readonly seo = inject(SeoService);
-  readonly items = signal<Product[]>([]);
+  readonly items = this.api.items;
 
   ngOnInit(): void {
     this.seo.set({ title: 'Wishlist' });
-    this.api.list().subscribe((items) => this.items.set(items));
+    this.api.load();
   }
 }
