@@ -40,7 +40,7 @@ Cùng merchant **PHGROUP TECHNOLOGY · BCR2DN5TXG63RMVJ** — không tạo merch
 
 ## 4. Web
 
-`/wallet?method=apple|gpay|paypal` — SDK PayPal `enable-funding=applepay,googlepay`.
+`/wallet?method=apple|gpay|paypal` — SDK `components=buttons,applepay,googlepay` (không dùng `enable-funding=applepay,googlepay`: PayPal trả 400 với merchant VN).
 
 ## 5. App
 

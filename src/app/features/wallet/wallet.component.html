@@ -76,21 +76,19 @@
             <p class="offline">{{ 'wallet.deposit.paypalOffline' | t }}</p>
           } @else {
             <div class="wallet-pay-stack" [class.busy]="paypalBusy()">
-              @if (depositMethod() === 'apple') {
-                <div id="paypal-btn-apple" class="paypal-slot paypal-slot--apple"></div>
-              }
-              @if (depositMethod() === 'gpay') {
-                <div id="paypal-btn-gpay" class="paypal-slot paypal-slot--gpay"></div>
-              }
-              @if (depositMethod() === 'paypal') {
-                <div id="paypal-btn-paypal" class="paypal-slot"></div>
-              }
+              <div id="paypal-btn-apple" class="paypal-slot paypal-slot--apple" [hidden]="depositMethod() !== 'apple'"></div>
+              <div id="paypal-btn-gpay" class="paypal-slot paypal-slot--gpay" [hidden]="depositMethod() !== 'gpay'"></div>
+              <div
+                id="paypal-btn-paypal"
+                class="paypal-slot"
+                [hidden]="depositMethod() !== 'paypal' && !fundingUnavailable()"
+              ></div>
             </div>
             <p class="note">♥ {{ 'wallet.deposit.paypalNote' | t }}</p>
           }
         </div>
         @if (msg()) {
-          <p class="msg">{{ msg() }}</p>
+          <p class="msg" [class.msg--err]="msgIsError()">{{ msg() }}</p>
         }
       </div>
     }
