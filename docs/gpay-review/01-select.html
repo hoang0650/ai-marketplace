@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Markets — chọn sản phẩm</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Segoe UI, Arial, sans-serif; background: #f7f5f2; color: #1a1a1a; }
+    .phone { width: 390px; min-height: 844px; margin: 0; background: #fff; padding: 18px 16px 28px; }
+    .brand { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #c9a961; font-weight: 800; }
+    h1 { font-size: 22px; margin: 8px 0 4px; }
+    .price { font-size: 28px; font-weight: 800; margin: 12px 0; }
+    .pay { border: 1px solid #e5e0d8; border-radius: 10px; padding: 10px 12px; background: #f7f5f2; }
+    .pay strong { display: block; font-size: 14px; }
+    .muted { color: #7a756d; font-size: 13px; margin: 4px 0 0; }
+    .gpay { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; font-size: 12px; color: #7a756d; }
+    .cta { width: 100%; border: 0; background: #c0392b; color: #fff; border-radius: 10px; height: 48px; font-weight: 800; margin-top: 10px; }
+    .gpay-btn { display: block; margin: 8px 0; }
+    .gpay-btn img { width: 100%; height: 48px; object-fit: contain; object-position: left; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="brand">AI Markets</div>
+    <h1>PHAI Inference API</h1>
+    <p class="muted">Sell API · gói tháng</p>
+    <p class="price">$9.00</p>
+    <div class="pay">
+      <strong>Ví AI Markets</strong>
+      <p class="muted">Số dư $2.00 · cần nạp thêm</p>
+    </div>
+    <div class="gpay">
+      <span>Chấp nhận Google Pay khi nạp ví</span>
+      <img src="../../src/assets/brand/google-pay/mark-light.svg" alt="Google Pay" height="18" />
+    </div>
+    <a class="gpay-btn" href="02-pay.html">
+      <img src="../../src/assets/brand/google-pay/buy-dark.png" alt="Buy with G Pay" />
+    </a>
+    <button class="cta" type="button">Buy now</button>
+  </div>
+</body>
+</html>

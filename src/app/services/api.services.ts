@@ -331,8 +331,15 @@ export class DashboardService {
     return this.http.post<WalletTx>(`${this.base}/wallet/deposit`, { amount });
   }
 
-  paypalConfig(): Observable<{ enabled: boolean; clientId: string; sandbox: boolean }> {
-    return this.http.get<{ enabled: boolean; clientId: string; sandbox: boolean }>(`${this.base}/paypal/config`);
+  paypalConfig(): Observable<{
+    enabled: boolean;
+    clientId: string;
+    sandbox: boolean;
+    applePay?: boolean;
+    googlePay?: boolean;
+    merchantName?: string;
+  }> {
+    return this.http.get(`${this.base}/paypal/config`);
   }
 
   paypalCreateOrder(amount: number, currency: string, fundingSource?: string): Observable<{

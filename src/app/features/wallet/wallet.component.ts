@@ -1,7 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { DashboardService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
@@ -17,10 +17,9 @@ declare const paypal: {
 };
 
 type WalletTab = 'deposit' | 'withdraw' | 'history';
-type DepositMethod = 'sepay' | 'paypal' | 'apple' | 'gpay';
+type DepositMethod = 'paypal' | 'apple' | 'gpay';
 type PaypalFunding = 'apple' | 'gpay' | 'paypal';
 
-const SEPAY_QUICK = [50000, 100000, 200000, 500000, 1000000];
 const PAYPAL_QUICK = [5, 10, 20, 50, 100];
 
 @Component({
@@ -34,33 +33,29 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
+  private readonly route = inject(ActivatedRoute);
 
   readonly brand = environment.brandName;
   readonly txs = signal<WalletTx[]>([]);
   readonly balance = signal(0);
-  readonly currency = signal('VND');
+  readonly currency = signal('USD');
   readonly tab = signal<WalletTab>('deposit');
   readonly msg = signal('');
   readonly monthKey = signal(this.currentMonthKey());
-  readonly depositMethod = signal<DepositMethod>('sepay');
+  readonly depositMethod = signal<DepositMethod>('paypal');
   readonly paypalEnabled = signal(false);
   readonly paypalBusy = signal(false);
+  readonly applePayOn = signal(true);
+  readonly googlePayOn = signal(true);
   readonly fundingUnavailable = signal<PaypalFunding | ''>('');
 
-  depositAmount = 500000;
-  withdrawAmount = 100;
+  depositAmount = 10;
   private paypalClientId = '';
   private paypalScript?: HTMLScriptElement;
   private paypalButtonsGen = 0;
 
-  readonly isPaypalRail = computed(() => {
-    const m = this.depositMethod();
-    return m === 'paypal' || m === 'apple' || m === 'gpay';
-  });
-
-  readonly depositCurrency = computed(() => (this.isPaypalRail() ? 'USD' : 'VND'));
-
-  readonly quickAmounts = computed(() => (this.isPaypalRail() ? PAYPAL_QUICK : SEPAY_QUICK));
+  readonly depositCurrency = computed(() => 'USD');
+  readonly quickAmounts = computed(() => PAYPAL_QUICK);
 
   readonly monthOptions = computed(() => {
     const now = new Date();
@@ -100,17 +95,27 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('wallet.title') });
     this.reload();
+    const method = this.route.snapshot.queryParamMap.get('method');
+    const payStatus = this.route.snapshot.queryParamMap.get('paymentStatus');
+    if (method === 'gpay' || method === 'apple' || method === 'paypal') {
+      this.depositMethod.set(method);
+      this.depositAmount = 10;
+    }
+    if (payStatus === 'success') this.msg.set(this.i18n.t('wallet.msg.paypalOk'));
+    if (payStatus === 'cancel') this.msg.set(this.i18n.t('wallet.msg.paypalCancel'));
     this.api.paypalConfig().subscribe({
       next: (cfg) => {
         this.paypalEnabled.set(!!cfg.enabled && !!cfg.clientId);
         this.paypalClientId = cfg.clientId || '';
+        this.applePayOn.set(cfg.applePay !== false);
+        this.googlePayOn.set(cfg.googlePay !== false);
       },
       error: () => this.paypalEnabled.set(false),
     });
   }
 
   ngAfterViewInit(): void {
-    if (this.isPaypalRail()) this.ensurePayPalButtons();
+    this.ensurePayPalButtons();
   }
 
   ngOnDestroy(): void {
@@ -118,20 +123,14 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setDepositMethod(method: DepositMethod): void {
-    const wasPaypal = this.isPaypalRail();
     this.depositMethod.set(method);
     this.msg.set('');
     this.fundingUnavailable.set('');
-    const nowPaypal = method === 'paypal' || method === 'apple' || method === 'gpay';
-    if (nowPaypal && !wasPaypal) this.depositAmount = 10;
-    if (!nowPaypal && wasPaypal) this.depositAmount = 500000;
-    if (nowPaypal) {
-      if (!this.paypalEnabled()) {
-        this.msg.set(this.i18n.t('wallet.deposit.paypalOffline'));
-        return;
-      }
-      setTimeout(() => this.ensurePayPalButtons(), 50);
+    if (!this.paypalEnabled()) {
+      this.msg.set(this.i18n.t('wallet.deposit.paypalOffline'));
+      return;
     }
+    setTimeout(() => this.ensurePayPalButtons(), 50);
   }
 
   setTab(tab: WalletTab): void {
@@ -148,22 +147,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       this.txs.set(list);
       const bal = list.reduce((s, t) => s + this.txDelta(t), 0);
       this.balance.set(bal);
-      this.currency.set(list[0]?.currency || 'VND');
-    });
-  }
-
-  deposit(): void {
-    if (!this.depositAmount || this.depositAmount < 1) {
-      this.msg.set(this.i18n.t('wallet.err.amount'));
-      return;
-    }
-    this.api.deposit(this.depositAmount).subscribe({
-      next: () => {
-        this.msg.set(this.i18n.t('wallet.msg.depositOk'));
-        this.reload();
-        this.tab.set('history');
-      },
-      error: (err) => this.msg.set(err?.error?.message || this.i18n.t('wallet.msg.depositFail')),
+      this.currency.set(list[0]?.currency || 'USD');
     });
   }
 
@@ -176,6 +160,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   methodLabel(t: WalletTx): string {
     const note = (t.note || '').toLowerCase();
+    if (t.paymentMethod === 'iap' || note.includes('app store') || note.includes('google play') || note.includes(' iap')) {
+      return this.i18n.t('wallet.method.iap');
+    }
     if (note.includes('apple')) return this.i18n.t('wallet.method.apple');
     if (note.includes('google')) return this.i18n.t('wallet.method.gpay');
     if (t.paymentMethod === 'paypal') return this.i18n.t('wallet.method.paypal');
@@ -196,8 +183,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     const method = this.depositMethod();
     if (method === 'apple') return this.i18n.t('wallet.deposit.appleHint');
     if (method === 'gpay') return this.i18n.t('wallet.deposit.gpayHint');
-    if (method === 'paypal') return this.i18n.t('wallet.deposit.paypalHint');
-    return this.i18n.t('wallet.deposit.hint');
+    return this.i18n.t('wallet.deposit.paypalHint');
   }
 
   private txDelta(t: WalletTx): number {
@@ -258,21 +244,19 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   private renderPayPalButtons(): void {
     if (typeof paypal === 'undefined') return;
     const gen = ++this.paypalButtonsGen;
-    const funding = paypal.FUNDING || {};
     const selected = this.depositMethod();
-    const order: PaypalFunding[] =
-      selected === 'apple' ? ['apple', 'gpay', 'paypal'] : selected === 'gpay' ? ['gpay', 'apple', 'paypal'] : ['paypal', 'apple', 'gpay'];
-
+    if (selected !== 'apple' && selected !== 'gpay' && selected !== 'paypal') return;
+    const funding = paypal.FUNDING || {};
     const specs: Record<PaypalFunding, { el: string; source?: string; style: Record<string, unknown> }> = {
       apple: {
         el: 'paypal-btn-apple',
         source: funding.APPLEPAY,
-        style: { layout: 'vertical', color: 'black', shape: 'rect', label: 'pay', height: 48 },
+        style: { layout: 'vertical', color: 'black', shape: 'pill', label: 'pay', height: 48 },
       },
       gpay: {
         el: 'paypal-btn-gpay',
         source: funding.GOOGLEPAY,
-        style: { layout: 'vertical', color: 'black', shape: 'rect', label: 'pay', height: 48 },
+        style: { layout: 'vertical', color: 'black', shape: 'pill', label: 'pay', height: 48 },
       },
       paypal: {
         el: 'paypal-btn-paypal',
@@ -280,45 +264,40 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal', height: 48 },
       },
     };
-
-    let rendered = 0;
-    for (const key of order) {
-      const spec = specs[key];
-      const el = document.getElementById(spec.el);
-      if (!el) continue;
-      el.innerHTML = '';
-      el.hidden = false;
-      if (!spec.source) {
-        el.hidden = true;
-        if (key === selected) this.markFundingUnavailable(key);
-        continue;
-      }
-      if (typeof paypal.isFundingEligible === 'function' && !paypal.isFundingEligible(spec.source) && key !== 'paypal') {
-        el.hidden = true;
-        if (key === selected) this.markFundingUnavailable(key);
-        continue;
-      }
-      paypal
-        .Buttons({
-          fundingSource: spec.source,
-          style: spec.style,
-          createOrder: async () => this.createPaypalOrder(key),
-          onApprove: async (data: { orderID?: string }) => this.capturePaypal(String(data?.orderID || '')),
-          onCancel: () => this.msg.set(this.i18n.t('wallet.msg.paypalCancel')),
-          onError: () => this.msg.set(this.i18n.t('wallet.msg.paypalFail')),
-        })
-        .render(`#${spec.el}`)
-        .then(() => {
-          if (gen !== this.paypalButtonsGen) return;
-          rendered += 1;
-        })
-        .catch(() => {
-          if (gen !== this.paypalButtonsGen) return;
-          el.hidden = true;
-          if (key === selected) this.markFundingUnavailable(key);
-          if (!rendered && key === 'paypal') this.msg.set(this.i18n.t('wallet.msg.paypalFail'));
-        });
+    const spec = specs[selected];
+    const el = document.getElementById(spec.el);
+    if (!el) return;
+    el.innerHTML = '';
+    el.hidden = false;
+    if (!spec.source) {
+      el.hidden = true;
+      this.markFundingUnavailable(selected);
+      return;
     }
+    if (typeof paypal.isFundingEligible === 'function' && !paypal.isFundingEligible(spec.source) && selected !== 'paypal') {
+      el.hidden = true;
+      this.markFundingUnavailable(selected);
+      return;
+    }
+    paypal
+      .Buttons({
+        fundingSource: spec.source,
+        style: spec.style,
+        createOrder: async () => this.createPaypalOrder(selected),
+        onApprove: async (data: { orderID?: string }) => this.capturePaypal(String(data?.orderID || '')),
+        onCancel: () => this.msg.set(this.i18n.t('wallet.msg.paypalCancel')),
+        onError: () => this.msg.set(this.i18n.t('wallet.msg.paypalFail')),
+      })
+      .render(`#${spec.el}`)
+      .then(() => {
+        if (gen !== this.paypalButtonsGen) return;
+      })
+      .catch(() => {
+        if (gen !== this.paypalButtonsGen) return;
+        el.hidden = true;
+        this.markFundingUnavailable(selected);
+        if (selected === 'paypal') this.msg.set(this.i18n.t('wallet.msg.paypalFail'));
+      });
   }
 
   private markFundingUnavailable(key: PaypalFunding): void {

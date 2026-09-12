@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Google Pay — choose a way to pay</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Roboto, Arial, sans-serif; }
+    .phone { width: 390px; min-height: 844px; margin: 0; background: #202124; position: relative; }
+    .dim { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
+    .widget {
+      position: absolute; left: 16px; right: 16px; top: 72px;
+      background: #fff; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 24px 48px rgba(0,0,0,.4);
+    }
+    .bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
+    .bar img { height: 28px; width: auto; }
+    .x { width: 24px; height: 24px; color: #5f6368; font-size: 22px; line-height: 24px; text-align: center; }
+    .who { padding: 0 16px 12px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #e8eaed; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: #1a73e8; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .who strong { display: block; font-size: 13px; font-weight: 500; }
+    .who span { font-size: 12px; color: #5f6368; }
+    .payto { padding: 16px 16px 8px; }
+    .payto .m { color: #5f6368; font-size: 13px; }
+    .payto .amt { font-size: 28px; font-weight: 400; margin: 4px 0 0; color: #202124; }
+    h2 { font-size: 16px; font-weight: 500; margin: 12px 16px 8px; color: #202124; }
+    .opt { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+    .opt.selected { background: #e8f0fe; }
+    .radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #5f6368; flex-shrink: 0; }
+    .opt.selected .radio { border: 6px solid #1a73e8; box-sizing: border-box; }
+    .chip { width: 44px; height: 28px; border-radius: 4px; color: #fff; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; letter-spacing: .04em; }
+    .visa { background: #1a1f71; }
+    .mc { background: linear-gradient(90deg, #eb001b 50%, #f79e1b 50%); }
+    .add { background: #f1f3f4; color: #3c4043; font-size: 18px; font-weight: 400; }
+    .opt strong { display: block; font-size: 14px; font-weight: 500; }
+    .opt p { margin: 2px 0 0; font-size: 12px; color: #5f6368; }
+    .grow { flex: 1; }
+    .gpay-btn {
+      display: flex; align-items: center; justify-content: center;
+      margin: 16px; height: 48px; border-radius: 24px; background: #000;
+    }
+    .gpay-btn img { height: 18px; width: auto; }
+    .legal { padding: 0 16px 16px; font-size: 11px; color: #80868b; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="dim"></div>
+    <div class="widget" role="dialog" aria-label="Google Pay">
+      <div class="bar">
+        <img src="acceptance-mark.png" alt="Google Pay" />
+        <span class="x" aria-hidden="true">×</span>
+      </div>
+      <div class="who">
+        <span class="avatar">H</span>
+        <div>
+          <strong>Hoàng</strong>
+          <span>buyer@aimarkets.vn</span>
+        </div>
+      </div>
+      <div class="payto">
+        <div class="m">Pay to AI Markets</div>
+        <div class="amt">$10.00</div>
+      </div>
+      <h2>Choose a way to pay</h2>
+      <div class="opt selected">
+        <span class="radio" aria-hidden="true"></span>
+        <span class="chip visa">VISA</span>
+        <div class="grow">
+          <strong>Visa</strong>
+          <p>•••• 4242 with Google Pay</p>
+        </div>
+      </div>
+      <div class="opt">
+        <span class="radio" aria-hidden="true"></span>
+        <span class="chip mc">MC</span>
+        <div class="grow">
+          <strong>Mastercard</strong>
+          <p>•••• 1111 with Google Pay</p>
+        </div>
+      </div>
+      <div class="opt">
+        <span class="radio" aria-hidden="true"></span>
+        <span class="chip add">+</span>
+        <div class="grow">
+          <strong>Add credit or debit card</strong>
+          <p>New payment method</p>
+        </div>
+      </div>
+      <a class="gpay-btn" href="04-confirm.html">
+        <img src="gpay-pay-dark.svg" alt="Pay with G Pay" />
+      </a>
+      <p class="legal">Payment info is saved to Google Pay. Select a card to continue.</p>
+    </div>
+  </div>
+</body>
+</html>

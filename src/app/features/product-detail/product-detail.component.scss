@@ -411,6 +411,65 @@
   text-decoration: none;
 }
 
+.pd-gpay {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.55rem 0 0.15rem;
+}
+
+.pd-gpay__label {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.pd-gpay__mark {
+  display: block;
+  height: 18px;
+  width: auto;
+}
+
+.pd-gpay__mark--gpay {
+  height: 32px;
+}
+
+.pd-gpay-btn,
+.pd-apple-btn {
+  display: block;
+  margin: 8px 0 0;
+  min-width: 152px;
+}
+
+.pd-gpay-btn {
+  background: #000;
+  border-radius: 24px;
+  padding: 12px 20px;
+  min-height: 48px;
+}
+
+.pd-wallet-btns {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.pd-gpay-btn img {
+  display: block;
+  height: 18px;
+  width: auto;
+  margin: 0 auto;
+}
+
+.pd-apple-btn img {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: 48px;
+  object-fit: contain;
+  object-position: left center;
+}
+
 .pd-buy__cta {
   border: 0;
   border-radius: 10px;
