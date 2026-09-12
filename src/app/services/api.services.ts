@@ -339,7 +339,14 @@ export class DashboardService {
     googlePay?: boolean;
     merchantName?: string;
   }> {
-    return this.http.get(`${this.base}/paypal/config`);
+    return this.http.get<{
+      enabled: boolean;
+      clientId: string;
+      sandbox: boolean;
+      applePay?: boolean;
+      googlePay?: boolean;
+      merchantName?: string;
+    }>(`${this.base}/paypal/config`);
   }
 
   paypalCreateOrder(amount: number, currency: string, fundingSource?: string): Observable<{

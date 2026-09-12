@@ -508,7 +508,7 @@
                   <span>
                     {{ ep.title }}
                     @if ((ep.pageCount || 0) > 1) {
-                      <em class="episode-row__pages">{{ 'pd.storyPages' | t: { n: ep.pageCount } }}</em>
+                      <em class="episode-row__pages">{{ 'pd.storyPages' | t: { n: ep.pageCount || 0 } }}</em>
                     }
                   </span>
                 </button>
