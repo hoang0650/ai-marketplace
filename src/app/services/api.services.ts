@@ -335,16 +335,12 @@ export class DashboardService {
     enabled: boolean;
     clientId: string;
     sandbox: boolean;
-    applePay?: boolean;
-    googlePay?: boolean;
     merchantName?: string;
   }> {
     return this.http.get<{
       enabled: boolean;
       clientId: string;
       sandbox: boolean;
-      applePay?: boolean;
-      googlePay?: boolean;
       merchantName?: string;
     }>(`${this.base}/paypal/config`);
   }

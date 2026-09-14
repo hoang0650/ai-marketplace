@@ -154,19 +154,6 @@
             <a routerLink="/auth/login" class="pd-pay__topup">{{ 'pd.loginToPay' | t }}</a>
           }
         </div>
-        <div class="pd-gpay">
-          <p class="pd-gpay__label">{{ 'pd.walletsAccepted' | t }}</p>
-          <img class="pd-gpay__mark" src="assets/brand/apple-pay/mark.svg" alt="Apple Pay" width="52" height="22" />
-          <img class="pd-gpay__mark pd-gpay__mark--gpay" src="assets/brand/google-pay/acceptance-mark.svg" alt="Google Pay" width="72" height="48" />
-        </div>
-        <div class="pd-wallet-btns">
-          <a class="pd-apple-btn" routerLink="/wallet" [queryParams]="{ method: 'apple' }">
-            <img src="assets/brand/apple-pay/pay-black.svg" alt="Pay with Apple Pay" />
-          </a>
-          <a class="pd-gpay-btn" routerLink="/wallet" [queryParams]="{ method: 'gpay' }">
-            <img src="assets/brand/google-pay/pay-dark.svg" alt="Buy with G Pay" />
-          </a>
-        </div>
 
         <button type="button" class="pd-buy__cta" (click)="primaryCta()">
           @if (isComputeStream(p.category)) {

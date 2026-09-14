@@ -22,29 +22,7 @@
       <div class="tab-body">
         <h2>{{ 'wallet.deposit.title' | t }}</h2>
         <div class="methods">
-          @if (applePayOn()) {
-          <button type="button" class="method method--apple" [class.selected]="depositMethod() === 'apple'" (click)="setDepositMethod('apple')">
-            <span class="method__icon method__icon--apple" aria-hidden="true">
-              <img src="assets/brand/apple-pay/mark.svg" alt="" width="52" height="22" />
-            </span>
-            <div>
-              <strong>{{ 'wallet.deposit.appleName' | t }}</strong>
-              <p>{{ 'wallet.deposit.appleDesc' | t }}</p>
-            </div>
-          </button>
-          }
-          @if (googlePayOn()) {
-          <button type="button" class="method method--gpay" [class.selected]="depositMethod() === 'gpay'" (click)="setDepositMethod('gpay')">
-            <span class="method__icon method__icon--gpay" aria-hidden="true">
-              <img src="assets/brand/google-pay/acceptance-mark.svg" alt="Google Pay" width="72" height="48" />
-            </span>
-            <div>
-              <strong>{{ 'wallet.deposit.gpayName' | t }}</strong>
-              <p>{{ 'wallet.deposit.gpayDesc' | t }}</p>
-            </div>
-          </button>
-          }
-          <button type="button" class="method method--paypal" [class.selected]="depositMethod() === 'paypal'" (click)="setDepositMethod('paypal')">
+          <button type="button" class="method method--paypal selected">
             <span class="method__icon method__icon--paypal" aria-hidden="true">P</span>
             <div>
               <strong>{{ 'wallet.deposit.paypalOnlyName' | t }}</strong>
@@ -76,13 +54,7 @@
             <p class="offline">{{ 'wallet.deposit.paypalOffline' | t }}</p>
           } @else {
             <div class="wallet-pay-stack" [class.busy]="paypalBusy()">
-              <div id="paypal-btn-apple" class="paypal-slot paypal-slot--apple" [hidden]="depositMethod() !== 'apple'"></div>
-              <div id="paypal-btn-gpay" class="paypal-slot paypal-slot--gpay" [hidden]="depositMethod() !== 'gpay'"></div>
-              <div
-                id="paypal-btn-paypal"
-                class="paypal-slot"
-                [hidden]="depositMethod() !== 'paypal' && !fundingUnavailable()"
-              ></div>
+              <div id="paypal-btn-paypal" class="paypal-slot"></div>
             </div>
             <p class="note">♥ {{ 'wallet.deposit.paypalNote' | t }}</p>
           }

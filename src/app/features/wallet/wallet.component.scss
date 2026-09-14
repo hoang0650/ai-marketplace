@@ -115,9 +115,9 @@
 
 .methods {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 0.6rem;
-  max-width: 640px;
+  max-width: 420px;
 }
 
 .wallet-pay-stack {
@@ -130,10 +130,6 @@
 .wallet-pay-stack.busy {
   opacity: 0.6;
   pointer-events: none;
-}
-
-.paypal-slot:not([hidden]) {
-  min-height: 48px;
 }
 
 .paypal-slot--gpay,
