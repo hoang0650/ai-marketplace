@@ -23,7 +23,7 @@ export class SellApiUsageDocsComponent implements OnInit {
   readonly flowDiagram = `Buyer (JWT hoặc mk_live_ key)
   → POST /v1/chat/completions
   → AI Markets API (meter + ví)
-  → denglish-api /v1/infer
+  → AI Markets AI /v1/infer
   → Provider (Featherless, OpenRouter, RunPod…)
   ← usage { input_tokens, output_tokens }
   → UsageEvent + UsageStat + WalletTx`;

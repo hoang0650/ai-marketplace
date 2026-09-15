@@ -2,7 +2,7 @@
  * Turns a RunPod Public Endpoint `input` schema into playground form fields.
  *
  * The schema itself comes from `GET /v1/runpod/public-endpoints/:slug/schema`,
- * which proxies the catalog in denglish-api (the mirror of docs.runpod.io).
+ * which proxies the catalog in the AI Markets AI API (the mirror of docs.runpod.io).
  * Every model accepts a different subset of parameters, so the form is built
  * from that schema rather than from the marketplace category — a Seedance run
  * exposes camera_fixed and generate_audio, Hailuo exposes an end frame and
@@ -362,7 +362,7 @@ function durationOf(input: Record<string, unknown>): number {
   return Number(input['duration']) || 5;
 }
 
-/** Mirrors `estimate_base_cost` in denglish-api; returns the documented RunPod price. */
+/** Mirrors `estimate_base_cost` in the AI Markets AI API; returns the documented RunPod price. */
 function baseCost(pricing: RunpodPricing, input: Record<string, unknown>): number | null {
   const rates = (pricing.rates ?? {}) as Record<string, number | Record<string, number>>;
 

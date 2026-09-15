@@ -789,7 +789,7 @@ export class ProductDetailComponent implements OnInit {
   /**
    * Render the form from the endpoint's published schema, falling back to a
    * generic per-modality shape while the catalog request is in flight (or when
-   * denglish-api is unreachable).
+   * AI Markets AI (ai.aimarkets.vn) is unreachable).
    */
   private loadSchema(product: Product): void {
     const ep = this.runpodEndpoint();
@@ -1289,7 +1289,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   apiEndpoint(_p: Product): string {
-    // Customer-facing calls go through marketplace (which routes via denglish-api).
+    // Customer-facing calls go through marketplace (which routes via AI Markets AI).
     return `${environment.apiUrl}/playground/run`;
   }
 

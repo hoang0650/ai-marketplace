@@ -36,7 +36,8 @@ import { TPipe } from '../../i18n/t.pipe';
           class="mt-4 h-[min(70vh,560px)] w-full rounded-xl border border-line bg-black"
           [src]="playerUrl()"
           title="GPU stream"
-          allow="fullscreen; autoplay"
+          referrerpolicy="no-referrer"
+          allow="fullscreen; autoplay; encrypted-media"
         ></iframe>
       }
     </section>

@@ -21,7 +21,7 @@ export class DocsComputeComponent implements OnInit {
 
   readonly flowDiagram = `Buyer → POST /v1/game-sessions { productSlug }
   → (1) External: webhook session.start → streamHost/port
-  → (2) Hosted: RunPod Pod via denglish-api (ai.aimarkets.vn)
+  → (2) Hosted: RunPod Pod via AI Markets AI (ai.aimarkets.vn)
   → Proxied player /v1/game-sessions/:id/player
 Stop → bill usage (wallet)`;
 

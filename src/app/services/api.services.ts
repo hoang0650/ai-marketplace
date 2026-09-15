@@ -577,7 +577,7 @@ export class PlaygroundService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiUrl;
 
-  /** Platform-mediated run → ai-marketplace-api → denglish-api → providers */
+  /** Platform-mediated run → ai-marketplace-api → AI Markets AI (ai.aimarkets.vn) → providers */
   run(input: {
     productSlug: string;
     productId?: string;
@@ -624,7 +624,7 @@ export class AgentChatService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiUrl;
 
-  /** Hire-agent chat with persistent memory (Postgres/Redis/Qdrant/Neo4j via denglish-api). */
+  /** Hire-agent chat with persistent memory (Postgres/Redis/Qdrant/Neo4j via AI Markets AI). */
   chat(input: {
     productSlug: string;
     productId?: string;

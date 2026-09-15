@@ -51,7 +51,7 @@ export class SellComputeIntegrateComponent implements OnInit {
 
   readonly flowDiagram = `Buyer → POST /v1/game-sessions { productSlug }
   → (1) External seller webhook OR
-  → (2) AI Markets RunPod Pod via denglish-api (ai.aimarkets.vn)
+  → (2) AI Markets RunPod Pod via AI API (ai.aimarkets.vn)
   → Proxied player on aimarkets.vn
 Stop → bill usage (wallet)`;
 
