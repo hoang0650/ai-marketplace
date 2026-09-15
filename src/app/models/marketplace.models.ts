@@ -24,6 +24,7 @@ export type ProductCategory =
   | 'hire-build-web'
   | 'skill-pack'
   | 'voice-clone'
+  | 'voice-preset'
   | 'ai-film-series'
   | 'story-book';
 
@@ -96,6 +97,8 @@ export interface CategoryMeta {
   group: CategoryGroup;
   navGroup: NavGroup;
   lane: CatalogLane;
+  /** Live catalog size from GET /categories (published + moderation-visible). */
+  productCount?: number;
 }
 
 export interface User {
@@ -121,6 +124,7 @@ export interface Creator {
   productCount: number;
   rating: number;
   totalSales: number;
+  revenue?: number;
 }
 
 export interface ProductPricing {
@@ -134,8 +138,11 @@ export interface ProductPricing {
 
 export interface ProductContentMeta {
   kind?: 'voice' | 'series' | 'story' | 'skill' | 'dataset' | '';
+  voiceSource?: 'clone' | 'preset' | '';
   voiceModes?: Array<'tts' | 'stt'>;
   voiceSampleUrl?: string;
+  presetVoiceId?: string;
+  presetVoiceName?: string;
   cloneStatus?: 'pending' | 'ready' | 'failed' | '';
   cloneProvider?: string;
   cloneEndpoint?: string;
@@ -258,6 +265,13 @@ export interface Product {
   changelog: ChangelogEntry[];
   featured?: boolean;
   publishedAt: string;
+}
+
+export interface HomeFeed {
+  shops: Creator[];
+  newArrivals: Product[];
+  promoted: Product[];
+  bestsellers: Product[];
 }
 
 export interface ChangelogEntry {

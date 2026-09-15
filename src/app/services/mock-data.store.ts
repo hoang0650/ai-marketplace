@@ -85,6 +85,28 @@ export class MockDataStore {
     return this.ensure().products.find((p) => p.slug === slug);
   }
 
+  homeFeed() {
+    const products = [...this.ensure().products];
+    const bySales = [...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
+    const byNew = [...products].sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    );
+    const promoted = products.filter((p) => p.featured).slice(0, 8);
+    const shops = [...this.ensure().creators]
+      .map((c) => ({
+        ...c,
+        revenue: (c.totalSales || 0) * 12,
+      }))
+      .sort((a, b) => (b.revenue || 0) - (a.revenue || 0) || (b.totalSales || 0) - (a.totalSales || 0))
+      .slice(0, 8);
+    return {
+      shops,
+      newArrivals: byNew.slice(0, 8),
+      promoted,
+      bestsellers: bySales.slice(0, 8),
+    };
+  }
+
   creators(): Creator[] {
     return this.ensure().creators;
   }

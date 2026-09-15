@@ -154,6 +154,10 @@ export class MarketplaceComponent implements OnInit {
       const query = q.get('q') || '';
       this.filterQuery = query;
       this.appliedQuery.set(query);
+      const sort = q.get('sort');
+      if (sort === 'bestsellers' || sort === 'newest' || sort === 'featured' || sort === 'price-asc' || sort === 'price-desc') {
+        this.sort.set(sort);
+      }
     });
   }
 

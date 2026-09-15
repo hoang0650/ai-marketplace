@@ -17,7 +17,7 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory } from '../../models/categories';
+import { isHireCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -120,6 +120,8 @@ export class ProductDetailComponent implements OnInit {
     return (!!p.creatorId && String(p.creatorId) === uid) || (!!p.creatorSlug && p.creatorSlug === u.creatorSlug);
   });
   readonly canPlayContent = computed(() => this.hasActiveLicense() || this.isContentOwner());
+  /** Skill / dataset downloads unlock with the same AIM-xxxx license as film/story. */
+  readonly canUnlockDownload = computed(() => this.canPlayContent());
   qty = 1;
   licenseTerm: 'day' | 'month' | 'year' = 'month';
   readonly licenseTerms = ['day', 'month', 'year'] as const;
@@ -249,6 +251,9 @@ export class ProductDetailComponent implements OnInit {
   resultMediaKind: 'image' | 'video' | 'audio' | 'text' | '' = '';
   lastLatencyMs = 0;
   lastCost = 0;
+  voicePlayMode: 'tts' | 'stt' = 'tts';
+  sttAudioBase64 = '';
+  sttAudioName = '';
 
   reviewTitle = '';
   reviewBody = '';
@@ -334,12 +339,14 @@ export class ProductDetailComponent implements OnInit {
               ? 'stream'
               : isHireCategory(p.category)
                 ? 'hire'
-                : isSkillCategory(p.category)
+                : isSkillCategory(p.category) || isDatasetCategory(p.category)
                   ? 'install'
                   : 'playground',
         );
         if (isWatchContentCategory(p.category)) {
           this.loadEpisodes(p.slug);
+        }
+        if (isLicenseCategory(p.category)) {
           this.loadMyLicense(p.id);
         }
         this.hireSent.set(false);
@@ -421,6 +428,10 @@ export class ProductDetailComponent implements OnInit {
     return isLicenseCategory(cat);
   }
 
+  needsEndpointDeploy(cat: ProductCategory): boolean {
+    return categoryNeedsEndpointDeploy(cat);
+  }
+
   isFilm(cat: ProductCategory): boolean {
     return isFilmCategory(cat);
   }
@@ -435,6 +446,14 @@ export class ProductDetailComponent implements OnInit {
 
   isVoice(cat: ProductCategory): boolean {
     return isVoiceCategory(cat);
+  }
+
+  isVoiceClone(cat: ProductCategory): boolean {
+    return isVoiceCloneCategory(cat);
+  }
+
+  isVoicePreset(cat: ProductCategory): boolean {
+    return isVoicePresetCategory(cat);
   }
 
   isStory(cat: ProductCategory): boolean {
@@ -653,8 +672,26 @@ export class ProductDetailComponent implements OnInit {
   }
 
   installSkill(): void {
+    if (!this.canUnlockDownload()) {
+      this.checkout();
+      return;
+    }
     this.skillInstalled.set(true);
-    this.checkoutMsg.set('Skill pack marked installed (mock). Copy install steps from the Install tab.');
+    const p = this.product();
+    const key = this.issuedLicense()?.licenseKey || '';
+    if (p && isDatasetCategory(p.category)) {
+      this.checkoutMsg.set(
+        key
+          ? `Dataset unlocked with ${key}. Follow the download guide on the right.`
+          : 'Dataset unlocked. Follow the download guide on the right.',
+      );
+      return;
+    }
+    this.checkoutMsg.set(
+      key
+        ? `Skill unlocked with ${key}. Copy install steps into your OpenClaw workspace.`
+        : 'Skill unlocked. Copy install steps into your OpenClaw workspace.',
+    );
   }
 
   submitHireRequest(): void {
@@ -748,12 +785,20 @@ export class ProductDetailComponent implements OnInit {
       this.setWorkspace('hire');
       return;
     }
-    if (isSkillCategory(p.category)) {
-      this.setWorkspace('install');
+    if (isSkillCategory(p.category) || isDatasetCategory(p.category)) {
+      if (this.canUnlockDownload()) {
+        this.setWorkspace('install');
+        return;
+      }
+      this.checkout();
       return;
     }
     if (isWatchContentCategory(p.category)) {
-      this.setWorkspace('watch');
+      if (this.canPlayContent()) {
+        this.setWorkspace('watch');
+        return;
+      }
+      this.checkout();
       return;
     }
     this.checkout();
@@ -783,6 +828,9 @@ export class ProductDetailComponent implements OnInit {
     this.enableSyncMode = true;
     this.previewRows = 20;
     this.apiAction = 'runsync';
+    this.voicePlayMode = 'tts';
+    this.sttAudioBase64 = '';
+    this.sttAudioName = '';
 
     if (!product) return;
     this.ftBaseModel = product.runtime?.baseModel || product.name;
@@ -971,9 +1019,29 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  onSttFile(ev: Event): void {
+    const file = (ev.target as HTMLInputElement)?.files?.[0];
+    if (!file) {
+      this.sttAudioBase64 = '';
+      this.sttAudioName = '';
+      return;
+    }
+    this.sttAudioName = file.name;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const raw = String(reader.result || '');
+      const comma = raw.indexOf(',');
+      this.sttAudioBase64 = comma >= 0 ? raw.slice(comma + 1) : raw;
+    };
+    reader.readAsDataURL(file);
+  }
+
   canRun(): boolean {
     const p = this.product();
     if (!p || this.runStatus() === 'running') return false;
+    if (isVoiceCategory(p.category) && this.voicePlayMode === 'stt') {
+      return !!this.sttAudioBase64;
+    }
     if (this.isChatModel() || !this.fields().length) {
       return p.category === 'fine-tune' || !!this.prompt.trim();
     }
@@ -994,7 +1062,9 @@ export class ProductDetailComponent implements OnInit {
       );
       return;
     }
-    if (p.category !== 'fine-tune' && !this.isChatModel() && !this.fields().length && !this.prompt.trim()) {
+    if (isVoiceCategory(p.category) && this.voicePlayMode === 'stt') {
+      if (!this.sttAudioBase64) return;
+    } else if (p.category !== 'fine-tune' && !this.isChatModel() && !this.fields().length && !this.prompt.trim()) {
       return;
     }
     if (!this.auth.user()) {
@@ -1203,10 +1273,28 @@ export class ProductDetailComponent implements OnInit {
 
     if (!schema) {
       if (isVoiceCategory(p.category)) {
+        if (this.voicePlayMode === 'stt') {
+          return {
+            action: 'stt',
+            audio_base64: this.sttAudioBase64,
+            language: 'vi',
+            voice_mode: 'stt',
+          };
+        }
+        const preset = String(p.contentMeta?.presetVoiceName || '').trim();
+        if (isVoicePresetCategory(p.category) || p.contentMeta?.voiceSource === 'preset') {
+          return {
+            prompt: this.prompt,
+            voice: preset || 'Adam',
+            format: 'wav',
+            action: 'tts',
+          };
+        }
         return {
           prompt: this.prompt,
           audio_url: p.contentMeta?.voiceSampleUrl,
           format: 'wav',
+          action: 'voice_clone',
         };
       }
       if (p.category === 'fine-tune') {
@@ -1245,6 +1333,9 @@ export class ProductDetailComponent implements OnInit {
 
   /** Which of image/video/audio/text the result is; the API reports it per RunPod model. */
   private resolveResultKind(p: Product, output: Record<string, unknown> | undefined): 'image' | 'video' | 'audio' | 'text' {
+    if (isVoiceCategory(p.category) && (this.voicePlayMode === 'stt' || String(output?.['kind'] || '') === 'text')) {
+      return 'text';
+    }
     if (isVoiceCategory(p.category)) return 'audio';
     const reported = String(output?.['kind'] || '');
     if (reported === 'image' || reported === 'video' || reported === 'audio' || reported === 'text') {
@@ -1413,12 +1504,20 @@ export class ProductDetailComponent implements OnInit {
     }
     if (this.checkingOut()) return;
     if (this.hasActiveLicense()) {
-      this.setWorkspace('watch');
-      const first = this.episodes()[0];
-      if (first) this.playEpisode(first);
+      if (isSkillCategory(p.category) || isDatasetCategory(p.category)) {
+        this.setWorkspace('install');
+        return;
+      }
+      if (isWatchContentCategory(p.category)) {
+        this.setWorkspace('watch');
+        const first = this.episodes()[0];
+        if (first) this.playEpisode(first);
+      }
       return;
     }
-    const quantity = Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
+    const quantity = isLicenseCategory(p.category)
+      ? 1
+      : Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
     const licenseTerm = isLicenseCategory(p.category) ? this.licenseTerm : undefined;
     this.checkingOut.set(true);
     this.billing.checkout({ productId: p.id, quantity, licenseTerm }).subscribe({
@@ -1439,6 +1538,8 @@ export class ProductDetailComponent implements OnInit {
             this.setWorkspace('watch');
             const first = this.episodes()[0];
             if (first) this.playEpisode(first);
+          } else if (isSkillCategory(p.category) || isDatasetCategory(p.category)) {
+            this.setWorkspace('install');
           }
         } else {
           this.checkoutMsg.set(

@@ -39,7 +39,7 @@
 <!-- Category grid -->
 <section class="lux-cats page" [attr.aria-label]="'home.browseCats' | t">
   <div class="lux-cats__grid">
-    @for (c of categoryIcons; track c.id; let i = $index) {
+    @for (c of categoryIcons(); track c.id; let i = $index) {
       <a [routerLink]="c.hubPath" class="lux-cat" [class.lux-cat--wide]="i === 0">
         @if (c.isNew) {
           <span class="lux-cat__badge">{{ 'lux.footer.new' | t }}</span>
@@ -90,17 +90,9 @@
   }
 </section>
 
-<!-- Featured products -->
-<section class="page lux-section">
-  <div class="lux-section__head">
-    <div>
-      <h2 class="section-title font-display">{{ 'lux.featuredTitle' | t }}</h2>
-      <p class="lux-section__sub">{{ 'lux.featuredDesc' | t }}</p>
-    </div>
-    <a routerLink="/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
-  </div>
-
-  @if (loadState() === 'loading') {
+<!-- Merchandising rails -->
+@if (loadState() === 'loading') {
+  <section class="page lux-section">
     <div class="lux-grid" aria-busy="true">
       @for (slot of skeletonSlots; track slot) {
         <div class="lux-skel">
@@ -109,38 +101,105 @@
         </div>
       }
     </div>
-  } @else if (loadState() === 'error') {
+  </section>
+} @else if (loadState() === 'error') {
+  <section class="page lux-section">
     <div class="lux-empty">
       <p>{{ 'home.loadFail' | t }}</p>
       <button type="button" class="btn btn-fill" (click)="loadCatalog()">{{ 'home.retry' | t }}</button>
     </div>
-  } @else if (!featured().length) {
+  </section>
+} @else if (!hasRails) {
+  <section class="page lux-section">
     <div class="lux-empty">
       <p>{{ 'home.empty' | t }}</p>
       <a routerLink="/marketplace" class="btn btn-outline">{{ 'footer.browse' | t }}</a>
     </div>
-  } @else {
-    <div class="lux-grid">
-      @for (p of featured(); track p.id; let i = $index) {
-        <app-product-card [product]="p" variant="luxury" [priority]="i < 4" />
-      }
-    </div>
-  }
-</section>
-
-@if (loadState() === 'ready' && hireProducts().length) {
-  <section class="page lux-section">
-    <div class="lux-section__head">
-      <div>
-        <h2 class="section-title font-display">{{ 'home.hire' | t }}</h2>
-        <p class="lux-section__sub">{{ 'home.hireSub' | t }}</p>
-      </div>
-      <a routerLink="/hire-agent/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
-    </div>
-    <div class="lux-grid">
-      @for (p of hireProducts(); track p.id) {
-        <app-product-card [product]="p" variant="luxury" />
-      }
-    </div>
   </section>
+} @else {
+  @if (shops().length) {
+    <section class="page lux-section" [attr.aria-label]="'home.shopsTitle' | t">
+      <div class="lux-section__head">
+        <div>
+          <h2 class="section-title font-display">{{ 'home.shopsTitle' | t }}</h2>
+          <p class="lux-section__sub">{{ 'home.shopsDesc' | t }}</p>
+        </div>
+        <a routerLink="/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
+      </div>
+      <div class="lux-shops">
+        @for (shop of shops(); track shop.id) {
+          <a [routerLink]="['/store', shop.slug]" class="lux-shop">
+            <div class="lux-shop__cover" [style.background-image]="shop.coverUrl ? 'url(' + shop.coverUrl + ')' : null">
+              @if (shop.avatarUrl) {
+                <img class="lux-shop__avatar" [src]="shop.avatarUrl" [alt]="shop.name" width="56" height="56" />
+              } @else {
+                <span class="lux-shop__avatar lux-shop__avatar--letter">{{ shopInitial(shop) }}</span>
+              }
+            </div>
+            <div class="lux-shop__body">
+              <h3 class="lux-shop__name">
+                {{ shop.name }}
+                @if (shop.verified) {
+                  <span class="lux-shop__verified" [attr.title]="'home.shopVerified' | t">✓</span>
+                }
+              </h3>
+              <p class="lux-shop__meta">{{ 'home.shopListings' | t: { n: shop.productCount } }}</p>
+              <p class="lux-shop__rev">{{ 'home.shopRevenue' | t: { amount: shopRevenue(shop) } }}</p>
+            </div>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (newArrivals().length) {
+    <section class="page lux-section" [attr.aria-label]="'home.newTitle' | t">
+      <div class="lux-section__head">
+        <div>
+          <h2 class="section-title font-display">{{ 'home.newTitle' | t }}</h2>
+          <p class="lux-section__sub">{{ 'home.newDesc' | t }}</p>
+        </div>
+        <a routerLink="/marketplace" [queryParams]="{ sort: 'newest' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+      </div>
+      <div class="lux-grid">
+        @for (p of newArrivals(); track p.id; let i = $index) {
+          <app-product-card [product]="p" variant="luxury" [priority]="i < 4" />
+        }
+      </div>
+    </section>
+  }
+
+  @if (promoted().length) {
+    <section class="page lux-section" [attr.aria-label]="'home.promotedTitle' | t">
+      <div class="lux-section__head">
+        <div>
+          <h2 class="section-title font-display">{{ 'home.promotedTitle' | t }}</h2>
+          <p class="lux-section__sub">{{ 'home.promotedDesc' | t }}</p>
+        </div>
+        <a routerLink="/marketplace" [queryParams]="{ sort: 'featured' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+      </div>
+      <div class="lux-grid">
+        @for (p of promoted(); track p.id) {
+          <app-product-card [product]="p" variant="luxury" />
+        }
+      </div>
+    </section>
+  }
+
+  @if (bestsellers().length) {
+    <section class="page lux-section" [attr.aria-label]="'home.bestTitle' | t">
+      <div class="lux-section__head">
+        <div>
+          <h2 class="section-title font-display">{{ 'home.bestTitle' | t }}</h2>
+          <p class="lux-section__sub">{{ 'home.bestDesc' | t }}</p>
+        </div>
+        <a routerLink="/marketplace" [queryParams]="{ sort: 'bestsellers' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+      </div>
+      <div class="lux-grid">
+        @for (p of bestsellers(); track p.id) {
+          <app-product-card [product]="p" variant="luxury" />
+        }
+      </div>
+    </section>
+  }
 }

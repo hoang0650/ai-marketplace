@@ -12,6 +12,7 @@ import {
   ModerationStatus,
   Creator,
   DashboardSummary,
+  HomeFeed,
   NotificationItem,
   Order,
   Product,
@@ -124,6 +125,10 @@ export class ProductService {
 
   categories(): Observable<CategoryMeta[]> {
     return this.http.get<CategoryMeta[]>(`${this.base}/categories`);
+  }
+
+  home(): Observable<HomeFeed> {
+    return this.http.get<HomeFeed>(`${this.base}/home`);
   }
 }
 

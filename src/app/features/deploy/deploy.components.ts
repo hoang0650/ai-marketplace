@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DeploymentService, ProductService, RunpodService } from '../../services/api.services';
+import { DeploymentService, ProductService, RunpodService, UploadService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { Product } from '../../models/marketplace.models';
 import { Deployment, InvokeResult } from '../../models/deployment.models';
@@ -13,6 +13,14 @@ import {
   RunpodPublicEndpoint,
   runtimeFromRunpodPublicEndpoint,
 } from '../../models/runpod-public-endpoints';
+import {
+  categoryLabel,
+  isVoiceCloneCategory,
+  isVoicePresetCategory,
+  needsEndpointDeploy,
+  sellerWorkspaceKind,
+  SellerWorkspaceKind,
+} from '../../models/categories';
 
 const MODEL_CATEGORIES = [
   'text-to-text',
@@ -295,7 +303,7 @@ export class ModelsHubComponent implements OnInit {
 }
 
 /* ------------------------------------------------------------------ */
-/*  DEPLOY WIZARD — seller configures RunPod runtime                   */
+/*  DEPLOY WIZARD — category-aware seller workspace                    */
 /* ------------------------------------------------------------------ */
 @Component({
   selector: 'app-deploy-wizard',
@@ -304,10 +312,21 @@ export class ModelsHubComponent implements OnInit {
   template: `
     <section class="page route-enter mx-auto max-w-3xl">
       <p class="text-xs text-muted">
-        <a routerLink="/models" class="hover:text-accent">AI Models</a> / Seller deploy
+        <a routerLink="/dashboard/products" class="hover:text-accent">Products</a>
+        /
+        {{ kindLabel() }}
       </p>
 
-      @if (created(); as dep) {
+      @if (saved(); as p) {
+        <div class="mt-6 rounded-xl border border-accent/40 bg-accent/5 p-6">
+          <h1 class="text-xl font-semibold text-ink">Đã lưu {{ p.name }}</h1>
+          <p class="mt-1 text-sm text-muted">{{ kindHint() }}</p>
+          <div class="mt-5 flex gap-3">
+            <a routerLink="/dashboard/products" class="btn-primary">Về products</a>
+            <a [routerLink]="['/product', p.slug]" class="btn-ghost">Xem listing</a>
+          </div>
+        </div>
+      } @else if (created(); as dep) {
         <div class="mt-6 rounded-xl border border-accent/40 bg-accent/5 p-6">
           <h1 class="text-xl font-semibold text-ink">{{ dep.name }} is live</h1>
           <p class="mt-1 text-sm text-muted">Status: {{ dep.status }} · Visibility: {{ dep.visibility }}</p>
@@ -340,12 +359,99 @@ export class ModelsHubComponent implements OnInit {
             }
           </div>
         </div>
-      } @else {
-        <h1 class="section-title mt-2">Deploy {{ product()?.name || '…' }}</h1>
-        @if (product(); as p) {
+      } @else if (product(); as p) {
+        <h1 class="section-title mt-2">{{ pageTitle() }}</h1>
+        <p class="mt-2 text-sm text-muted">{{ kindHint() }}</p>
+
+        @if (workspace() === 'voice') {
+          <form class="mt-8 space-y-5" (ngSubmit)="saveVoice()">
+            @if (isPreset()) {
+              <div class="rounded-xl border border-line p-4 text-sm text-muted">
+                Giọng sàn <strong class="text-ink">{{ p.contentMeta?.presetVoiceName || p.name }}</strong> do AI Markets vận hành
+                (VieNeu-TTS-v3-Turbo + vinai/PhoWhisper-large). Seller không gắn Chatterbox / RunPod public model.
+              </div>
+            } @else {
+              <fieldset class="space-y-3 rounded-xl border border-line p-4">
+                <legend class="px-1 text-sm font-semibold text-ink">Sample giọng (MP3)</legend>
+                <p class="text-xs text-muted">Upload 10–60 giây. VieNeu nhân bản giọng này cho TTS. STT dùng PhoWhisper-large — không dùng file này làm audio nhận dạng.</p>
+                <input class="input w-full" type="file" accept="audio/mpeg,audio/mp3,audio/wav,.mp3,.wav,.m4a" (change)="onVoiceFile($event)" />
+                @if (voiceUploading()) {
+                  <p class="text-xs text-muted">Đang tải MP3…</p>
+                }
+                @if (voiceError()) {
+                  <p class="text-sm text-red-500">{{ voiceError() }}</p>
+                }
+                @if (voiceForm.voiceSampleUrl) {
+                  <audio class="mt-2 w-full" [src]="voiceForm.voiceSampleUrl" controls preload="metadata"></audio>
+                  <p class="break-all font-mono text-[11px] text-muted">{{ voiceForm.voiceSampleUrl }}</p>
+                }
+                <p class="text-xs text-muted">Trạng thái clone: <strong class="text-ink">{{ p.contentMeta?.cloneStatus || 'pending' }}</strong></p>
+              </fieldset>
+              <div class="flex flex-wrap gap-4 text-sm">
+                <label class="flex items-center gap-2"><input type="checkbox" name="voiceTts" [(ngModel)]="voiceForm.voiceTts" /> TTS (VieNeu đọc)</label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="voiceStt" [(ngModel)]="voiceForm.voiceStt" /> STT (PhoWhisper nhận giọng)</label>
+              </div>
+              <div>
+                <label class="mb-1 block text-xs uppercase text-muted" for="chars">Ký tự / 1 credit</label>
+                <input id="chars" name="charactersPerCredit" class="input w-full" type="number" min="1" [(ngModel)]="voiceForm.charactersPerCredit" />
+              </div>
+              <div class="grid gap-3 md:grid-cols-3">
+                <div>
+                  <label class="mb-1 block text-xs uppercase text-muted">Giá / ngày</label>
+                  <input class="input w-full" type="number" min="0" step="0.01" name="priceDay" [(ngModel)]="voiceForm.priceDay" />
+                </div>
+                <div>
+                  <label class="mb-1 block text-xs uppercase text-muted">Giá / tháng</label>
+                  <input class="input w-full" type="number" min="0" step="0.01" name="priceMonth" [(ngModel)]="voiceForm.priceMonth" />
+                </div>
+                <div>
+                  <label class="mb-1 block text-xs uppercase text-muted">Giá / năm</label>
+                  <input class="input w-full" type="number" min="0" step="0.01" name="priceYear" [(ngModel)]="voiceForm.priceYear" />
+                </div>
+              </div>
+            }
+            @if (error()) {
+              <p class="rounded-lg border border-red-400/40 bg-red-400/10 px-3 py-2 text-sm text-red-400">{{ error() }}</p>
+            }
+            @if (!isPreset()) {
+              <button type="submit" class="btn-primary w-full py-3" [disabled]="busy() || voiceUploading()">
+                {{ busy() ? 'Đang lưu…' : 'Lưu giọng' }}
+              </button>
+            }
+          </form>
+        } @else if (workspace() === 'watch') {
+          <div class="mt-8 rounded-xl border border-line p-5 text-sm text-muted">
+            Phim / truyện bán license AIM-xxxx. Tải tập hoặc chương (ảnh, video) trên trang products — không gắn Chatterbox hay tokenize endpoint.
+            <div class="mt-4 flex gap-3">
+              <a class="btn-primary" routerLink="/dashboard/products">Quản lý tập / chương</a>
+              <a class="btn-ghost" [routerLink]="['/product', p.slug]">Xem listing</a>
+            </div>
+          </div>
+        } @else if (workspace() === 'download') {
+          <div class="mt-8 rounded-xl border border-line p-5 text-sm text-muted">
+            Skill pack / dataset mở bằng license ngày · tháng · năm. Buyer nhận AIM-xxxx; không deploy API model.
+            <div class="mt-4 flex gap-3">
+              <a class="btn-primary" routerLink="/dashboard/licenses">License keys</a>
+              <a class="btn-ghost" [routerLink]="['/product', p.slug]">Xem listing</a>
+            </div>
+          </div>
+        } @else if (workspace() === 'hire') {
+          <div class="mt-8 rounded-xl border border-line p-5 text-sm text-muted">
+            Listing thuê ({{ categoryLabel(p.category) }}). Buyer gửi brief / hire — không cấu hình RunPod public endpoint.
+            <div class="mt-4">
+              <a class="btn-primary" [routerLink]="['/product', p.slug]">Mở listing</a>
+            </div>
+          </div>
+        } @else if (workspace() === 'compute') {
+          <div class="mt-8 rounded-xl border border-line p-5 text-sm text-muted">
+            GPU compute / game server quản lý phiên stream, không phải TTS hay LLM endpoint.
+            <div class="mt-4">
+              <a class="btn-primary" routerLink="/dashboard/gpu">Mở GPU</a>
+            </div>
+          </div>
+        } @else {
           <p class="mt-2 text-sm text-muted">
-            Attach AI Markets endpoints (api.aimarkets.vn / ai.aimarkets.vn), .env and skills.
-            Only the product seller can deploy.
+            Gắn AI Markets endpoints (api.aimarkets.vn). Chỉ seller của product mới deploy.
             @if (p.pricing.model === 'usage') {
               — billed at <strong class="text-ink">\${{ p.pricing.usageRate | number: '1.2-4' }} / 1K tokens</strong>
             }
@@ -374,8 +480,7 @@ export class ModelsHubComponent implements OnInit {
                   }
                 </select>
                 <p class="mt-1 text-[11px] text-muted">
-                  Fills public URLs on <code>api.aimarkets.vn</code> / <code>ai.aimarkets.vn</code>.
-                  Buyers never see upstream provider hosts. Auth: marketplace JWT.
+                  Chỉ hiện model đúng modality của listing. Voice / phim / thuê không dùng catalog này.
                 </p>
               </div>
               <div>
@@ -460,21 +565,28 @@ export class DeployWizardComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly deployments = inject(DeploymentService);
   private readonly runpodApi = inject(RunpodService);
+  private readonly uploads = inject(UploadService);
   private readonly seo = inject(SeoService);
 
   readonly product = signal<Product | null>(null);
   readonly created = signal<Deployment | null>(null);
+  readonly saved = signal<Product | null>(null);
   readonly busy = signal(false);
   readonly error = signal('');
+  readonly voiceUploading = signal(false);
+  readonly voiceError = signal('');
   readonly catalog = signal<RunpodPublicEndpoint[]>(RUNPOD_PUBLIC_ENDPOINTS);
   catalogSlug = '';
+  readonly categoryLabel = categoryLabel;
+
+  readonly workspace = computed<SellerWorkspaceKind>(() => sellerWorkspaceKind(this.product()?.category));
+  readonly isPreset = computed(() => isVoicePresetCategory(this.product()?.category || ''));
 
   readonly catalogOptions = computed(() => {
     const modality = this.product()?.category;
     const all = this.catalog();
-    if (!modality) return all;
-    const matched = all.filter((e) => e.modality === modality);
-    return matched.length ? matched : all;
+    if (!modality || !needsEndpointDeploy(modality)) return [];
+    return all.filter((e) => e.modality === modality);
   });
 
   form = {
@@ -484,8 +596,52 @@ export class DeployWizardComponent implements OnInit {
     ...emptyRuntimeForm(),
   };
 
+  voiceForm = {
+    voiceTts: true,
+    voiceStt: true,
+    voiceSampleUrl: '',
+    charactersPerCredit: 1000,
+    priceDay: 1.49,
+    priceMonth: 9.99,
+    priceYear: 79,
+  };
+
+  kindLabel(): string {
+    const k = this.workspace();
+    if (k === 'voice') return 'Giọng';
+    if (k === 'watch') return 'Phim / truyện';
+    if (k === 'download') return 'License';
+    if (k === 'hire') return 'Listing thuê';
+    if (k === 'compute') return 'GPU';
+    return 'Deploy API';
+  }
+
+  pageTitle(): string {
+    const p = this.product();
+    const name = p?.name || '…';
+    const k = this.workspace();
+    if (k === 'voice') return `Giọng · ${name}`;
+    if (k === 'watch') return `Nội dung · ${name}`;
+    if (k === 'download') return `License · ${name}`;
+    if (k === 'hire') return `Listing · ${name}`;
+    if (k === 'compute') return `GPU · ${name}`;
+    return `Deploy ${name}`;
+  }
+
+  kindHint(): string {
+    const k = this.workspace();
+    if (k === 'voice') {
+      return 'Giọng preset bán theo ký tự và/hoặc license ngày/tháng/năm. TTS: VieNeu-TTS-v3-Turbo. STT: vinai/PhoWhisper-large. Không gắn Chatterbox hay tokenize.';
+    }
+    if (k === 'watch') return 'Buyer xem khi có AIM-xxxx còn hạn. Upload tập/chương trên dashboard products.';
+    if (k === 'download') return 'Skill / dataset mở bằng AIM-xxxx — không phải public endpoint.';
+    if (k === 'hire') return 'Listing thuê chuyên gia / workflow. Không deploy model.';
+    if (k === 'compute') return 'Phiên GPU / game server.';
+    return 'Attach AI Markets endpoints. Only the product seller can deploy.';
+  }
+
   ngOnInit(): void {
-    this.seo.set({ title: 'Seller deploy' });
+    this.seo.set({ title: 'Seller workspace' });
     this.runpodApi.publicEndpoints().subscribe({
       next: (items) => this.catalog.set(items),
       error: () => this.catalog.set(RUNPOD_PUBLIC_ENDPOINTS),
@@ -497,8 +653,97 @@ export class DeployWizardComponent implements OnInit {
       fillRuntimeFromProduct(this.form, p);
       const hit = this.catalog().find((e) => e.runsyncUrl === this.form.publicEndpoint);
       this.catalogSlug = hit?.slug || '';
-      this.seo.set({ title: `Deploy ${p.name}` });
+      this.fillVoice(p);
+      this.seo.set({ title: this.pageTitle() });
+      if (isVoiceCloneCategory(p.category)) {
+        const ep = `${p.runtime?.baseModel || ''} ${p.runtime?.publicEndpoint || ''}`;
+        if (!/vieneu|phowhisper/i.test(ep)) {
+          this.productsApi.update(p.id, { contentMeta: p.contentMeta || {} }).subscribe({
+            next: (fresh) => this.product.set(fresh),
+          });
+        }
+      }
     });
+  }
+
+  fillVoice(p: Product): void {
+    const meta = p.contentMeta || {};
+    const modes = meta.voiceModes || ['tts', 'stt'];
+    this.voiceForm = {
+      voiceTts: modes.includes('tts'),
+      voiceStt: modes.includes('stt'),
+      voiceSampleUrl: String(meta.voiceSampleUrl || ''),
+      charactersPerCredit: Number(meta.charactersPerCredit) || 1000,
+      priceDay: Number(meta.licensePrices?.day) || 1.49,
+      priceMonth: Number(meta.licensePrices?.month) || Number(p.pricing?.price) || 9.99,
+      priceYear: Number(meta.licensePrices?.year) || 79,
+    };
+  }
+
+  onVoiceFile(ev: Event): void {
+    const file = (ev.target as HTMLInputElement)?.files?.[0];
+    if (!file) return;
+    this.voiceError.set('');
+    this.voiceUploading.set(true);
+    this.uploads.uploadAudio(file).subscribe({
+      next: (res) => {
+        this.voiceForm.voiceSampleUrl = res.url;
+        this.voiceUploading.set(false);
+      },
+      error: (err) => {
+        this.voiceUploading.set(false);
+        this.voiceError.set(err?.error?.message || 'Upload MP3 thất bại.');
+      },
+    });
+  }
+
+  saveVoice(): void {
+    const p = this.product();
+    if (!p || this.busy() || this.isPreset()) return;
+    if (!this.voiceForm.voiceSampleUrl.trim()) {
+      this.error.set('Upload MP3 giọng trước khi lưu.');
+      return;
+    }
+    this.busy.set(true);
+    this.error.set('');
+    const modes = [
+      ...(this.voiceForm.voiceTts ? (['tts'] as const) : []),
+      ...(this.voiceForm.voiceStt ? (['stt'] as const) : []),
+    ];
+    this.productsApi
+      .update(p.id, {
+        contentMeta: {
+          ...p.contentMeta,
+          voiceSource: 'clone',
+          voiceModes: modes.length ? [...modes] : ['tts', 'stt'],
+          voiceSampleUrl: this.voiceForm.voiceSampleUrl,
+          charactersPerCredit: this.voiceForm.charactersPerCredit,
+          licenseTerm: 'month',
+          licensePrices: {
+            day: this.voiceForm.priceDay,
+            month: this.voiceForm.priceMonth,
+            year: this.voiceForm.priceYear,
+          },
+        },
+        pricing: {
+          ...p.pricing,
+          model: 'usage',
+          usageUnit: '1K characters',
+          interval: 'month',
+          price: this.voiceForm.priceMonth,
+        },
+      })
+      .subscribe({
+        next: (fresh) => {
+          this.busy.set(false);
+          this.product.set(fresh);
+          this.saved.set(fresh);
+        },
+        error: (err) => {
+          this.busy.set(false);
+          this.error.set(err?.error?.message || 'Không lưu được giọng.');
+        },
+      });
   }
 
   applyCatalog(slug: string): void {
@@ -526,6 +771,10 @@ export class DeployWizardComponent implements OnInit {
   submit(): void {
     const p = this.product();
     if (!p || this.busy()) return;
+    if (!needsEndpointDeploy(p.category)) {
+      this.error.set('Listing này không deploy API endpoint.');
+      return;
+    }
     if (!this.form.serverlessEndpoint.trim() && !this.form.publicEndpoint.trim()) {
       this.error.set('Cần ít nhất serverless hoặc public endpoint (api.aimarkets.vn).');
       return;
@@ -556,6 +805,7 @@ export class DeployWizardComponent implements OnInit {
 /* ------------------------------------------------------------------ */
 /*  AGENT BROWSER                                                       */
 /* ------------------------------------------------------------------ */
+
 @Component({
   selector: 'app-agent-browser',
   standalone: true,

@@ -101,9 +101,9 @@
 
         <label class="pd-buy__section" for="pd-qty">{{ 'pd.qty' | t }}</label>
         <div class="pd-qty">
-          <button type="button" (click)="bumpQty(-1)" aria-label="Decrease">−</button>
-          <input id="pd-qty" type="number" min="1" max="99" [(ngModel)]="qty" name="qty" />
-          <button type="button" (click)="bumpQty(1)" aria-label="Increase">+</button>
+          <button type="button" (click)="bumpQty(-1)" aria-label="Decrease" [disabled]="isLicense(p.category)">−</button>
+          <input id="pd-qty" type="number" min="1" max="99" [(ngModel)]="qty" name="qty" [disabled]="isLicense(p.category)" />
+          <button type="button" (click)="bumpQty(1)" aria-label="Increase" [disabled]="isLicense(p.category)">+</button>
         </div>
 
         @if (isLicense(p.category)) {
@@ -111,36 +111,49 @@
           <div class="pd-qty" style="display:flex;gap:0.5rem;flex-wrap:wrap">
             @for (t of licenseTerms; track t) {
               <button type="button" class="btn" [class.btn-fill]="licenseTerm === t" (click)="licenseTerm = t">
-                {{ t === 'day' ? 'Ngày' : t === 'month' ? 'Tháng' : 'Năm' }}
+                {{ t === 'day' ? ('pd.termDay' | t) : t === 'month' ? ('pd.termMonth' | t) : ('pd.termYear' | t) }}
               </button>
             }
           </div>
           @if (p.contentMeta?.episodeCount && !isDownloadLicense(p.category)) {
             <p class="text-xs text-muted">{{ p.contentMeta?.episodeCount }} tập / chương</p>
           }
+          @if (isDownloadLicense(p.category)) {
+            <p class="text-xs text-muted">{{ (isDataset(p.category) ? 'pd.datasetLicenseHint' : 'pd.skillLicenseHint') | t }}</p>
+          }
         }
         @if (isVoice(p.category)) {
-          <p class="text-xs text-muted">
-            TTS/STT
-            @if (p.contentMeta?.voiceModes?.length) {
-              · {{ p.contentMeta?.voiceModes?.join(', ') }}
+          @if (isVoiceClone(p.category)) {
+            <p class="text-xs text-muted">
+              Giọng seller — upload MP3, VieNeu nhân bản. Bán theo ký tự và/hoặc license ngày/tháng/năm (AIM-xxxx). STT: vinai/PhoWhisper-large
+              @if (p.contentMeta?.voiceModes?.length) {
+                · {{ p.contentMeta?.voiceModes?.join(', ') }}
+              }
+              @if (p.contentMeta?.cloneStatus === 'ready') {
+                · clone sẵn sàng
+              } @else if (p.contentMeta?.cloneStatus === 'pending') {
+                · chờ upload MP3
+              }
+              @if (p.pricing.model === 'usage') {
+                · credit theo {{ p.pricing.usageUnit || '1K characters' }}
+              }
+            </p>
+            @if (voiceSampleSrc(p)) {
+              <div class="voice-sample">
+                <p class="voice-sample__label">Sample giọng đọc (.mp3)</p>
+                <audio [src]="voiceSampleSrc(p)" controls preload="metadata" controlslist="nodownload">
+                  Trình duyệt không phát được MP3.
+                </audio>
+              </div>
             }
-            @if (p.contentMeta?.cloneStatus === 'ready') {
-              · clone sẵn sàng
-            } @else if (p.contentMeta?.cloneStatus === 'pending') {
-              · chờ upload MP3
-            }
-            @if (p.pricing.model === 'usage') {
-              · credit theo {{ p.pricing.usageUnit || '1K characters' }}
-            }
-          </p>
-          @if (voiceSampleSrc(p)) {
-            <div class="voice-sample">
-              <p class="voice-sample__label">Sample giọng đọc (.mp3)</p>
-              <audio [src]="voiceSampleSrc(p)" controls preload="metadata" controlslist="nodownload">
-                Trình duyệt không phát được MP3.
-              </audio>
-            </div>
+          } @else if (isVoicePreset(p.category)) {
+            <p class="text-xs text-muted">
+              Giọng sàn AI Markets — VieNeu preset
+              @if (p.contentMeta?.presetVoiceName) {
+                · {{ p.contentMeta?.presetVoiceName }}
+              }
+              · cùng bảng giá: ký tự và/hoặc license ngày/tháng/năm · STT: vinai/PhoWhisper-large
+            </p>
           }
         }
 
@@ -170,8 +183,12 @@
             {{ 'pd.ctaDownloadDataset' | t }}
           } @else if (isLicense(p.category)) {
             {{ 'pd.ctaRead' | t }}
+          } @else if (isVoiceClone(p.category)) {
+            {{ 'pd.ctaVoiceClone' | t }}
+          } @else if (isVoicePreset(p.category)) {
+            {{ hasActiveLicense() ? ('pd.ctaVoicePresetRun' | t) : ('pd.ctaVoicePreset' | t) }}
           } @else if (isVoice(p.category)) {
-            Thuê giọng / mua credit
+            {{ 'pd.ctaVoiceClone' | t }}
           } @else {
             Buy now
           }
@@ -224,7 +241,7 @@
             Key: {{ lic.licenseKey }} · {{ lic.term }} · đến {{ lic.expiresAt }}
           </p>
         }
-        @if (isHire(p.category) === false && isSkill(p.category) === false && isLicense(p.category) === false) {
+        @if (isHire(p.category) === false && isSkill(p.category) === false && isLicense(p.category) === false && needsEndpointDeploy(p.category)) {
           <a [routerLink]="['/deploy', p.slug]" class="pd-buy__deploy">{{ 'pd.deploy' | t }}</a>
         }
       </aside>
@@ -302,9 +319,9 @@
         <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'hire'" (click)="setWorkspace('hire')">
           Hire
         </button>
-      } @else if (isSkill(p.category)) {
+      } @else if (isSkill(p.category) || isDataset(p.category)) {
         <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'install'" (click)="setWorkspace('install')">
-          Install
+          {{ isDataset(p.category) ? ('pd.tabDataset' | t) : ('pd.tabSkill' | t) }}
         </button>
       } @else if (isComputeStream(p.category)) {
         <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'stream'" (click)="setWorkspace('stream')">
@@ -334,29 +351,45 @@
       <div class="hire-layout">
         <section class="pg-pane">
           <div class="pg-pane__head">
-            <h2>Buy & install skill</h2>
+            <h2>{{ isDataset(p.category) ? ('pd.tabDataset' | t) : ('pd.tabSkill' | t) }}</h2>
           </div>
-          <p class="text-sm text-muted">
-            Skill packs ship as OpenClaw / agent folders (<code>SKILL.md</code>, prompts, tool playbooks). Purchase unlocks download + install instructions.
-          </p>
-          <div class="field">
-            <label class="field-label">Thanh toán</label>
-            <p class="text-sm">{{ 'pd.walletMethod' | t }} · {{ 'pd.walletBalance' | t }} {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
-            <a routerLink="/wallet" class="text-sm">Nạp tiền →</a>
-          </div>
-          <div class="pg-actions">
-            <button type="button" class="btn btn-outline" (click)="checkout()">Purchase</button>
-            <button type="button" class="btn btn-run" (click)="installSkill()">
-              {{ skillInstalled() ? 'Installed' : 'Mark installed' }}
+          <p class="text-sm text-muted">{{ (isDataset(p.category) ? 'pd.datasetDrmHint' : 'pd.skillDrmHint') | t }}</p>
+          @if (issuedLicense(); as lic) {
+            <p class="mt-2 font-mono text-xs text-muted">
+              {{ lic.licenseKey }} · {{ 'pd.licenseUntil' | t }} {{ lic.expiresAt | date: 'short' }}
+            </p>
+          }
+          @if (!canUnlockDownload()) {
+            <p class="mt-3 text-sm">{{ (isDataset(p.category) ? 'pd.payToUnlockDataset' : 'pd.payToUnlockSkill') | t }}</p>
+            <button type="button" class="btn btn-fill mt-2" (click)="checkout()" [disabled]="checkingOut()">
+              {{ checkingOut() ? ('cart.paying' | t) : ((isDataset(p.category) ? 'pd.ctaDownloadDataset' : 'pd.ctaDownloadSkill') | t) }}
+              · {{ licensePrice(p) | currency: displayCurrency:'symbol-narrow':'1.0-2' }}
             </button>
-          </div>
-          @if (skillInstalled()) {
-            <p class="cost-hint">Marked installed for this demo session. Use the steps on the right in your OpenClaw workspace.</p>
+          } @else {
+            <div class="pg-actions mt-3">
+              <button type="button" class="btn btn-run" (click)="installSkill()">
+                @if (isDataset(p.category)) {
+                  {{ skillInstalled() ? ('pd.datasetMarked' | t) : ('pd.datasetMarkDownloaded' | t) }}
+                } @else {
+                  {{ skillInstalled() ? ('pd.skillInstalled' | t) : ('pd.skillMarkInstalled' | t) }}
+                }
+              </button>
+              <a routerLink="/dashboard/licenses" class="btn btn-outline">{{ 'dash.licenses' | t }}</a>
+            </div>
+            @if (skillInstalled()) {
+              <p class="cost-hint">{{ (isDataset(p.category) ? 'pd.datasetInstalledHint' : 'pd.skillInstalledHint') | t }}</p>
+            }
           }
         </section>
         <aside class="pg-pane">
-          <div class="pg-pane__head"><h2>Install guide</h2></div>
-          <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
+          <div class="pg-pane__head">
+            <h2>{{ (isDataset(p.category) ? 'pd.datasetGuide' : 'pd.installGuide') | t }}</h2>
+          </div>
+          @if (canUnlockDownload()) {
+            <pre class="result-text">{{ p.apiDocsMarkdown || ((isDataset(p.category) ? 'pd.datasetGuideFallback' : 'pd.skillGuideFallback') | t) }}</pre>
+          } @else {
+            <p class="text-sm text-muted">{{ (isDataset(p.category) ? 'pd.datasetGuideLocked' : 'pd.skillGuideLocked') | t }}</p>
+          }
         </aside>
       </div>
     }
@@ -642,7 +675,18 @@
             </div>
           }
 
-          @if (!isChatModel() && !fields().length) {
+          @if (isVoice(p.category)) {
+            <div class="field">
+              <span class="field-label">Chế độ</span>
+              <div class="segmented" role="group" aria-label="TTS or STT">
+                <button type="button" [class.active]="voicePlayMode === 'tts'" (click)="voicePlayMode = 'tts'">TTS · đọc</button>
+                <button type="button" [class.active]="voicePlayMode === 'stt'" (click)="voicePlayMode = 'stt'">STT · nhận giọng</button>
+              </div>
+              <p class="text-xs text-muted" style="margin-top:0.5rem">TTS dùng VieNeu. STT dùng vinai/PhoWhisper-large. Không license thì trừ theo ký tự; AIM-xxxx còn hạn thì không trừ usage.</p>
+            </div>
+          }
+
+          @if (!isChatModel() && !fields().length && !(isVoice(p.category) && voicePlayMode === 'stt')) {
             <div class="field">
               <div class="field-label-row">
                 <label class="field-label" for="prompt">{{ isVoice(p.category) ? 'Văn bản cần đọc (TTS)' : (p.category === 'fine-tune' ? 'Notes' : 'Prompt') }}</label>
@@ -650,7 +694,20 @@
                   <span class="req">Required</span>
                 }
               </div>
-              <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" name="prompt" [placeholder]="isVoice(p.category) ? 'Nhập câu để giọng clone đọc — kết quả là file .mp3' : (p.category === 'fine-tune' ? 'Optional training notes' : 'Enter a prompt')"></textarea>
+              <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" name="prompt" [placeholder]="isVoicePreset(p.category) ? ('Nhập câu — TTS bằng giọng sàn ' + (p.contentMeta?.presetVoiceName || '')) : isVoice(p.category) ? 'Nhập câu để giọng clone đọc — kết quả là file audio' : (p.category === 'fine-tune' ? 'Optional training notes' : 'Enter a prompt')"></textarea>
+            </div>
+          }
+
+          @if (isVoice(p.category) && voicePlayMode === 'stt') {
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="sttFile">File giọng cần nhận dạng (PhoWhisper)</label>
+                <span class="req">Required</span>
+              </div>
+              <input id="sttFile" class="input" type="file" accept="audio/*,.wav,.mp3,.m4a,.ogg" (change)="onSttFile($event)" />
+              @if (sttAudioName) {
+                <p class="text-xs text-muted" style="margin-top:0.35rem">{{ sttAudioName }}</p>
+              }
             </div>
           }
 
@@ -921,7 +978,28 @@
             <span class="tag-chip">{{ tag }}</span>
           }
         </div>
-        @if (p.runtime && (p.runtime.publicEndpoint || p.runtime.serverlessEndpoint || p.runtime.skills.length)) {
+        @if (isVoice(p.category)) {
+          <h3 class="mt-8 font-display text-2xl">Giọng</h3>
+          <dl class="mt-3 space-y-2 text-sm">
+            <div>
+              <dt class="text-xs uppercase tracking-wider text-muted">TTS</dt>
+              <dd class="mt-0.5 text-ink">VieNeu-TTS-v3-Turbo{{ p.contentMeta?.presetVoiceName ? ' · ' + p.contentMeta?.presetVoiceName : (p.contentMeta?.voiceSource === 'clone' ? ' · clone từ MP3 seller' : '') }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-wider text-muted">STT</dt>
+              <dd class="mt-0.5 text-ink">vinai/PhoWhisper-large</dd>
+            </div>
+            @if (p.contentMeta?.voiceModes?.length) {
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-muted">Modes</dt>
+                <dd class="mt-0.5">{{ p.contentMeta?.voiceModes?.join(', ') }}</dd>
+              </div>
+            }
+          </dl>
+          @if (isContentOwner()) {
+            <a [routerLink]="['/deploy', p.slug]" class="btn btn-outline mt-4 inline-flex text-sm">Seller: quản lý giọng</a>
+          }
+        } @else if (needsEndpointDeploy(p.category) && p.runtime && (p.runtime.publicEndpoint || p.runtime.serverlessEndpoint || p.runtime.skills.length)) {
           <h3 class="mt-8 font-display text-2xl">Runtime</h3>
           <dl class="mt-3 space-y-2 text-sm">
             @if (p.runtime.publicEndpoint) {

@@ -20,6 +20,9 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
 
   return from(store.ready()).pipe(
     switchMap(() => {
+      if (req.method === 'GET' && path === '/home') {
+        return jsonOk(store.homeFeed());
+      }
       if (req.method === 'GET' && path === '/products') {
         return jsonOk(store.listProducts({
           category: params.get('category') || undefined,

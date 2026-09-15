@@ -6,7 +6,7 @@ import { DashboardService, ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { Order, Product, WalletSummary, WalletTx } from '../../models/marketplace.models';
-import { categoryLabel } from '../../models/categories';
+import { categoryLabel, sellerWorkspaceKind } from '../../models/categories';
 import { ShopProfileService } from './shop-profile.service';
 
 @Component({
@@ -378,7 +378,7 @@ export class SellWithdrawComponent implements OnInit {
               <a [routerLink]="['/product', p.slug]">{{ p.name }}</a>
               <p class="meta">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number: '1.1-1' }}</p>
             </div>
-            <a class="ghost" [routerLink]="['/deploy', p.slug]">Deploy</a>
+            <a class="ghost" [routerLink]="actionLink(p)">{{ actionLabel(p) }}</a>
           </article>
         } @empty {
           <div class="card empty">
@@ -409,6 +409,25 @@ export class SellProductsComponent implements OnInit {
   private readonly seo = inject(SeoService);
   readonly products = signal<Product[]>([]);
   readonly label = categoryLabel;
+
+  actionLabel(p: Product): string {
+    const k = sellerWorkspaceKind(p.category);
+    if (k === 'voice') return 'Giọng';
+    if (k === 'watch') return 'Tập / chương';
+    if (k === 'download') return 'License';
+    if (k === 'hire') return 'Listing';
+    if (k === 'compute') return 'GPU';
+    return 'Deploy';
+  }
+
+  actionLink(p: Product): string | string[] {
+    const k = sellerWorkspaceKind(p.category);
+    if (k === 'watch') return '/dashboard/products';
+    if (k === 'download') return '/dashboard/licenses';
+    if (k === 'hire') return ['/product', p.slug];
+    if (k === 'compute') return '/dashboard/gpu';
+    return ['/deploy', p.slug];
+  }
 
   ngOnInit(): void {
     this.seo.set({ title: 'Sản phẩm' });

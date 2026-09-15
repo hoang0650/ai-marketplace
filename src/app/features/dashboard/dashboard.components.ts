@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +17,7 @@ import {
   IssuedLicense,
   ContentEpisode,
 } from '../../models/marketplace.models';
-import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isLicenseCategory, isVoiceCategory, isWatchContentCategory } from '../../models/categories';
+import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy } from '../../models/categories';
 import {
   RUNPOD_PUBLIC_ENDPOINTS,
   RunpodPublicEndpoint,
@@ -61,15 +61,44 @@ export class DashboardShellComponent {
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CurrencyPipe, DecimalPipe, TPipe],
+  imports: [CurrencyPipe, DecimalPipe, TPipe, RouterLink],
   template: `
     @if (summary(); as s) {
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div class="panel"><p class="text-xs uppercase text-muted">{{ 'dash.revenue' | t }}</p><p class="mt-2 font-display text-3xl">{{ s.revenue | currency: s.currency }}</p></div>
         <div class="panel"><p class="text-xs uppercase text-muted">{{ 'dash.orders' | t }}</p><p class="mt-2 font-display text-3xl">{{ s.orders | number }}</p></div>
-        <div class="panel"><p class="text-xs uppercase text-muted">Token usage</p><p class="mt-2 font-display text-3xl">{{ s.tokenUsage | number }}</p></div>
-        <div class="panel"><p class="text-xs uppercase text-muted">GPU hours</p><p class="mt-2 font-display text-3xl">{{ s.gpuHours | number:'1.1-1' }}</p></div>
+        <div class="panel">
+          <p class="text-xs uppercase text-muted">Listings</p>
+          <p class="mt-2 font-display text-3xl">{{ products().length | number }}</p>
+          <p class="mt-1 text-xs text-muted">{{ catalogHint() }}</p>
+        </div>
+        @if (hasEndpointListings()) {
+          <div class="panel"><p class="text-xs uppercase text-muted">Token usage</p><p class="mt-2 font-display text-3xl">{{ s.tokenUsage | number }}</p></div>
+        } @else if (hasComputeListings()) {
+          <div class="panel"><p class="text-xs uppercase text-muted">GPU hours</p><p class="mt-2 font-display text-3xl">{{ s.gpuHours | number:'1.1-1' }}</p></div>
+        } @else if (hasVoiceListings()) {
+          <div class="panel">
+            <p class="text-xs uppercase text-muted">Giọng TTS / STT</p>
+            <p class="mt-2 font-display text-3xl">{{ voiceCount() | number }}</p>
+            <p class="mt-1 text-xs text-muted">VieNeu đọc · PhoWhisper nhận giọng · tính ký tự hoặc AIM-xxxx</p>
+          </div>
+        } @else if (hasWatchListings()) {
+          <div class="panel">
+            <p class="text-xs uppercase text-muted">Phim / truyện</p>
+            <p class="mt-2 font-display text-3xl">{{ watchCount() | number }}</p>
+            <p class="mt-1 text-xs text-muted">License ngày / tháng / năm</p>
+          </div>
+        } @else {
+          <div class="panel"><p class="text-xs uppercase text-muted">Thực nhận</p><p class="mt-2 font-display text-3xl">{{ (s.netPayable || 0) | currency: s.currency }}</p></div>
+        }
       </div>
+      @if (mix().length) {
+        <div class="mt-4 flex flex-wrap gap-2">
+          @for (row of mix(); track row.id) {
+            <a class="rounded-full border border-line px-3 py-1 text-xs text-muted no-underline hover:border-accent hover:text-ink" [routerLink]="row.href">{{ row.label }} · {{ row.n }}</a>
+          }
+        </div>
+      }
       <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <div class="panel">
           <p class="text-xs uppercase text-muted">Phí sàn (commission)</p>
@@ -99,12 +128,48 @@ export class DashboardShellComponent {
 })
 export class DashboardHomeComponent implements OnInit {
   private readonly api = inject(DashboardService);
+  private readonly productsApi = inject(ProductService);
+  private readonly auth = inject(AuthService);
   private readonly seo = inject(SeoService);
   readonly summary = signal<DashboardSummary | null>(null);
+  readonly products = signal<Product[]>([]);
+  readonly mix = computed(() => {
+    const counts = new Map<string, number>();
+    for (const p of this.products()) {
+      counts.set(p.category, (counts.get(p.category) || 0) + 1);
+    }
+    return [...counts.entries()].map(([id, n]) => ({
+      id,
+      n,
+      label: categoryLabel(id),
+      href: this.workspaceHref(id),
+    }));
+  });
+  readonly hasEndpointListings = computed(() => this.products().some((p) => needsEndpointDeploy(p.category)));
+  readonly hasComputeListings = computed(() => this.products().some((p) => isComputeStreamCategory(p.category)));
+  readonly hasVoiceListings = computed(() => this.products().some((p) => isVoiceCategory(p.category)));
+  readonly hasWatchListings = computed(() => this.products().some((p) => isWatchContentCategory(p.category)));
+  readonly voiceCount = computed(() => this.products().filter((p) => isVoiceCategory(p.category)).length);
+  readonly watchCount = computed(() => this.products().filter((p) => isWatchContentCategory(p.category)).length);
+
+  catalogHint(): string {
+    const rows = this.mix();
+    if (!rows.length) return 'Chưa có listing';
+    return rows.map((r) => `${r.n} ${r.label}`).join(' · ');
+  }
+
+  workspaceHref(category: string): string {
+    const kind = sellerWorkspaceKind(category);
+    if (kind === 'compute') return '/dashboard/gpu';
+    if (kind === 'download') return '/dashboard/licenses';
+    return '/dashboard/products';
+  }
 
   ngOnInit(): void {
     this.seo.set({ title: 'Dashboard' });
     this.api.summary().subscribe((s) => this.summary.set(s));
+    const slug = this.auth.user()?.creatorSlug || '';
+    this.productsApi.list(slug ? { creatorSlug: slug } : {}).subscribe((items) => this.products.set(items));
   }
 }
 
@@ -364,8 +429,8 @@ export class DashboardAnalyticsComponent implements OnInit {
         }
         @if (isVoiceDraft()) {
           <div class="md:col-span-2 rounded-lg border border-line p-3">
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Giọng clone — chỉ cần upload MP3</p>
-            <p class="mb-3 text-xs text-muted">Seller upload file giọng nói (MP3/WAV, 10–60 giây nói rõ). Hệ thống tự gắn model clone; buyer nhập văn bản thì TTS đọc bằng giọng này. Không cần tự train.</p>
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Seller — nhân bản giọng (MP3)</p>
+            <p class="mb-3 text-xs text-muted">Upload file giọng (.mp3/.wav, 10–60 giây). VieNeu nhân bản giọng đó. Buyer mua theo ký tự và/hoặc license ngày/tháng/năm (AIM-xxxx). STT dùng PhoWhisper-large.</p>
             <div class="flex flex-wrap gap-4 text-sm">
               <label class="flex items-center gap-2"><input type="checkbox" [(ngModel)]="draft.voiceTts" name="voiceTts" /> TTS (đọc văn bản)</label>
               <label class="flex items-center gap-2"><input type="checkbox" [(ngModel)]="draft.voiceStt" name="voiceStt" /> STT (nhận giọng)</label>
@@ -390,7 +455,7 @@ export class DashboardAnalyticsComponent implements OnInit {
         @if (isLicenseDraft()) {
           <div class="md:col-span-2 rounded-lg border border-line p-3">
             <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">License key theo thời hạn</p>
-            <p class="mb-3 text-xs text-muted">Khi buyer xem phim, đọc truyện, tải skill hoặc dataset, hệ thống cấp key AIM-xxxx chỉ dùng được trong ngày / tháng / năm đã mua. Key gửi qua email. Hoàn tiền sẽ thu hồi key.</p>
+            <p class="mb-3 text-xs text-muted">Phim / truyện / skill / dataset / giọng đọc: buyer nhận AIM-xxxx theo ngày / tháng / năm. Key gửi email. Hoàn tiền thu hồi key. Giọng sàn (VieNeu preset) do AI Markets đăng; seller đăng giọng clone từ MP3 — cùng bảng giá ký tự + thời hạn.</p>
             <div class="grid gap-3 md:grid-cols-3">
               <div>
                 <label class="mb-1 block text-xs uppercase text-muted">Giá / ngày (USD)</label>
@@ -407,6 +472,12 @@ export class DashboardAnalyticsComponent implements OnInit {
             </div>
             @if (draft.category === 'ai-film-series' || draft.category === 'story-book') {
             <p class="mt-3 text-xs text-muted">Sau khi Publish, tải từng tập/chương (ảnh hoặc video, tối đa 80MB) ở danh sách sản phẩm bên dưới. Mỗi listing cấp một license AIM-xxxx riêng — cùng shop không dùng chung key. Hết hạn thì file .aimc trên máy họ không mở được.</p>
+            }
+            @if (draft.category === 'skill-pack' || draft.category === 'dataset') {
+            <p class="mt-3 text-xs text-muted">Buyer thanh toán theo ngày/tháng/năm sẽ nhận license key AIM-xxxx (email + dashboard). Key chỉ mở khóa đúng listing này — hết hạn thì không còn quyền tải/cài.</p>
+            }
+            @if (draft.category === 'voice-clone') {
+            <p class="mt-3 text-xs text-muted">Giọng clone của bạn bán giống giọng sàn: không có license thì trừ phí theo ký tự; có AIM-xxxx còn hạn thì TTS/STT không trừ usage.</p>
             }
           </div>
         }
@@ -469,23 +540,48 @@ export class DashboardAnalyticsComponent implements OnInit {
             <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ categoryLabel(p.category) }}</p>
             <a [routerLink]="['/product', p.slug]" class="font-display text-xl no-underline">{{ p.name }}</a>
             <p class="text-sm text-muted">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number:'1.1-1' }}</p>
-            @if (p.category === 'voice-clone' && p.contentMeta?.cloneStatus) {
-              <p class="mt-1 text-[11px] uppercase tracking-wider text-muted">Clone: {{ p.contentMeta?.cloneStatus }}</p>
-            }
-            @if (isWatchProduct(p) && p.contentMeta?.episodeCount) {
+            @if (workspaceKind(p.category) === 'voice') {
+              <p class="mt-1 text-xs text-muted">
+                {{ p.category === 'voice-preset' ? 'Giọng sàn VieNeu' : 'Giọng clone VieNeu' }}
+                @if (p.contentMeta?.cloneStatus) { · {{ p.contentMeta?.cloneStatus }} }
+                @if (p.contentMeta?.voiceModes?.length) { · {{ p.contentMeta?.voiceModes?.join(', ') }} }
+                · {{ p.contentMeta?.charactersPerCredit || 1000 }} ký tự / credit
+                · STT PhoWhisper-large
+              </p>
+            } @else if (isWatchProduct(p) && p.contentMeta?.episodeCount) {
               <p class="mt-1 text-xs text-muted">{{ p.contentMeta?.episodeCount }} tập / chương đã đăng</p>
-            }
-            @if (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint) {
+            } @else if (workspaceKind(p.category) === 'download') {
+              <p class="mt-1 text-xs text-muted">License AIM-xxxx ngày / tháng / năm — không gắn API endpoint</p>
+            } @else if (workspaceKind(p.category) === 'hire') {
+              <p class="mt-1 text-xs text-muted">Listing thuê — buyer gửi brief, không deploy RunPod</p>
+            } @else if (workspaceKind(p.category) === 'compute') {
+              <p class="mt-1 text-xs text-muted">GPU / stream — quản lý ở tab GPU</p>
+            } @else if (needsEndpointDeploy(p.category) && (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint)) {
               <p class="mt-1 max-w-xl truncate font-mono text-[11px] text-muted">
                 {{ p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint }}
               </p>
             }
           </div>
           <div class="flex gap-2">
-            @if (isWatchProduct(p)) {
-              <button type="button" class="btn btn-outline" (click)="toggleChapters(p)">Tập / chương</button>
-            } @else {
-              <a class="btn btn-outline" [routerLink]="['/deploy', p.slug]">Deploy</a>
+            @switch (workspaceKind(p.category)) {
+              @case ('watch') {
+                <button type="button" class="btn btn-outline" (click)="toggleChapters(p)">Tập / chương</button>
+              }
+              @case ('voice') {
+                <a class="btn btn-outline" [routerLink]="['/deploy', p.slug]">Giọng</a>
+              }
+              @case ('download') {
+                <a class="btn btn-outline" [routerLink]="['/product', p.slug]">License</a>
+              }
+              @case ('hire') {
+                <a class="btn btn-outline" [routerLink]="['/product', p.slug]">Listing</a>
+              }
+              @case ('compute') {
+                <a class="btn btn-outline" routerLink="/dashboard/gpu">GPU</a>
+              }
+              @default {
+                <a class="btn btn-outline" [routerLink]="['/deploy', p.slug]">Deploy</a>
+              }
             }
             <button type="button" class="btn btn-outline" (click)="remove(p.id)">Delete</button>
           </div>
@@ -542,8 +638,11 @@ export class DashboardProductsComponent implements OnInit {
   readonly products = signal<Product[]>([]);
   readonly chapters = signal<ContentEpisode[]>([]);
   readonly categories = CATEGORY_META;
-  readonly aiCategories = AI_CATEGORIES;
+  /** Seller đăng giọng clone (MP3). Giọng sàn VieNeu do AI Markets seed, không hiện ở form này. */
+  readonly aiCategories = AI_CATEGORIES.filter((c) => c.id !== 'voice-preset');
   readonly categoryLabel = categoryLabel;
+  readonly workspaceKind = sellerWorkspaceKind;
+  readonly needsEndpointDeploy = needsEndpointDeploy;
   readonly runpodCatalog: RunpodPublicEndpoint[] = RUNPOD_PUBLIC_ENDPOINTS;
   catalogSlug = '';
   showForm = false;
@@ -610,7 +709,7 @@ export class DashboardProductsComponent implements OnInit {
       envText: '',
       skillsText: '',
       voiceTts: true,
-      voiceStt: false,
+      voiceStt: true,
       voiceSampleUrl: '',
       charactersPerCredit: 1000,
       episodeCount: 0,
@@ -620,8 +719,9 @@ export class DashboardProductsComponent implements OnInit {
     };
   }
 
+  /** Seller đăng giọng clone (MP3). Giọng sàn VieNeu do AI Markets seed, không hiện ở form này. */
   isVoiceDraft(): boolean {
-    return isVoiceCategory(this.draft.category);
+    return isVoiceCloneCategory(this.draft.category);
   }
 
   isLicenseDraft(): boolean {
@@ -705,6 +805,10 @@ export class DashboardProductsComponent implements OnInit {
       this.draft.pricingModel = 'usage';
       this.draft.usageUnit = '1K characters';
       this.draft.usageRate = 0.02;
+      this.draft.interval = 'month';
+      this.draft.priceDay = this.draft.priceDay || 1.49;
+      this.draft.priceMonth = this.draft.priceMonth || 9.99;
+      this.draft.priceYear = this.draft.priceYear || 79;
     } else if (this.isLicenseDraft()) {
       this.draft.pricingModel = 'subscription';
       this.draft.interval = 'month';
@@ -731,7 +835,16 @@ export class DashboardProductsComponent implements OnInit {
       tags.push(this.draft.category);
     }
     const pricing =
-      this.draft.pricingModel === 'usage'
+      this.isVoiceDraft()
+        ? {
+            model: 'usage' as const,
+            price: Number(this.draft.priceMonth) || Number(this.draft.price) || 0,
+            currency: 'USD',
+            interval: this.draft.interval || 'month',
+            usageUnit: this.draft.usageUnit || '1K characters',
+            usageRate: Number(this.draft.usageRate) || 0,
+          }
+        : this.draft.pricingModel === 'usage'
         ? {
             model: 'usage' as const,
             price: 0,
@@ -757,6 +870,7 @@ export class DashboardProductsComponent implements OnInit {
     const contentMeta = this.isVoiceDraft()
       ? {
           kind: 'voice' as const,
+          voiceSource: 'clone' as const,
           voiceModes: [
             ...(this.draft.voiceTts ? (['tts'] as const) : []),
             ...(this.draft.voiceStt ? (['stt'] as const) : []),
@@ -764,6 +878,12 @@ export class DashboardProductsComponent implements OnInit {
           voiceSampleUrl: this.draft.voiceSampleUrl,
           creditUnit: 'character' as const,
           charactersPerCredit: Number(this.draft.charactersPerCredit) || 1000,
+          licenseTerm: this.draft.interval || 'month',
+          licensePrices: {
+            day: Number(this.draft.priceDay) || 0,
+            month: Number(this.draft.priceMonth) || Number(this.draft.price) || 0,
+            year: Number(this.draft.priceYear) || 0,
+          },
         }
       : this.isLicenseDraft()
         ? {

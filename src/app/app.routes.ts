@@ -232,6 +232,12 @@ export const routes: Routes = [
         data: { category: 'voice-clone', title: 'Voice clone' },
       },
       {
+        path: 'voice-preset',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'voice-preset', title: 'Voice presets' },
+      },
+      {
         path: 'ai-film-series',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),

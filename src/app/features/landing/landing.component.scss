@@ -418,6 +418,108 @@
   color: var(--color-surface);
 }
 
+.lux-shops {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .lux-shops {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .lux-shops {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.lux-shop {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lux-shop:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(17, 17, 17, 0.08);
+}
+
+.lux-shop__cover {
+  position: relative;
+  height: 88px;
+  background: linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%);
+  background-size: cover;
+  background-position: center;
+}
+
+.lux-shop__avatar {
+  position: absolute;
+  left: 1rem;
+  bottom: -22px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--color-surface);
+  object-fit: cover;
+  background: #111;
+}
+
+.lux-shop__avatar--letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+}
+
+.lux-shop__body {
+  padding: 1.75rem 1rem 1rem;
+}
+
+.lux-shop__name {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.lux-shop__verified {
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-lux-gold, #c9a961);
+  color: #111;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.lux-shop__meta,
+.lux-shop__rev {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.lux-shop__rev {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
 .lux-grid {
   display: grid;
   gap: 1rem;

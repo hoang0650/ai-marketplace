@@ -12,6 +12,7 @@ export type CategoryIconId =
   | 'skill-pack'
   | 'dataset'
   | 'voice-clone'
+  | 'voice-preset'
   | 'ai-film-series'
   | 'story-book';
 
@@ -225,6 +226,15 @@ export type CategoryIconId =
             stroke-width="2"
             stroke-linecap="round"
           />
+        }
+        @case ('voice-preset') {
+          <path
+            d="M16 20v8M20 16v16M24 14v20M28 16v16M32 20v8"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <circle cx="24" cy="10" r="3" stroke="currentColor" stroke-width="2" />
         }
         @case ('ai-film-series') {
           <rect x="8" y="14" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2" />

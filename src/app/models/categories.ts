@@ -88,8 +88,17 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'voice-clone',
     label: 'Voice clone',
-    description: 'Seller uploads an MP3 of their voice. The platform clones it automatically for TTS/STT.',
+    description: 'Seller uploads an .mp3; VieNeu clones that voice. Buyers pay per character and/or day / month / year license. STT uses PhoWhisper-large.',
     hubPath: '/voice-clone',
+    group: 'models',
+    navGroup: 'generate',
+    lane: 'ai',
+  },
+  {
+    id: 'voice-preset',
+    label: 'Voice presets',
+    description: 'AI Markets sells VieNeu preset voices directly. Same billing: per character and/or day / month / year license. STT uses PhoWhisper-large.',
+    hubPath: '/voice-preset',
     group: 'models',
     navGroup: 'generate',
     lane: 'ai',
@@ -302,10 +311,14 @@ const LICENSE_CATEGORIES = new Set<ProductCategory>([
   'story-book',
   'skill-pack',
   'dataset',
+  'voice-preset',
+  'voice-clone',
 ]);
 const FILM_CATEGORIES = new Set<ProductCategory>(['ai-film-series']);
 const DOWNLOAD_LICENSE_CATEGORIES = new Set<ProductCategory>(['skill-pack', 'dataset']);
-const VOICE_CATEGORIES = new Set<ProductCategory>(['voice-clone']);
+const VOICE_CATEGORIES = new Set<ProductCategory>(['voice-clone', 'voice-preset']);
+const VOICE_CLONE_CATEGORIES = new Set<ProductCategory>(['voice-clone']);
+const VOICE_PRESET_CATEGORIES = new Set<ProductCategory>(['voice-preset']);
 
 export function isComputeStreamCategory(id: ProductCategory | string): boolean {
   return COMPUTE_STREAM_CATEGORIES.has(id as ProductCategory);
@@ -339,10 +352,48 @@ export function isVoiceCategory(id: ProductCategory | string): boolean {
   return VOICE_CATEGORIES.has(id as ProductCategory);
 }
 
+export function isVoiceCloneCategory(id: ProductCategory | string): boolean {
+  return VOICE_CLONE_CATEGORIES.has(id as ProductCategory);
+}
+
+export function isVoicePresetCategory(id: ProductCategory | string): boolean {
+  return VOICE_PRESET_CATEGORIES.has(id as ProductCategory);
+}
+
 export function isStoryCategory(id: ProductCategory | string): boolean {
   return id === 'story-book';
 }
 
 export function isWatchContentCategory(id: ProductCategory | string): boolean {
   return isFilmCategory(id) || isStoryCategory(id);
+}
+
+/** Seller workspaces — not every listing is a RunPod public endpoint. */
+export type SellerWorkspaceKind = 'endpoint' | 'voice' | 'watch' | 'download' | 'hire' | 'compute';
+
+const ENDPOINT_DEPLOY_CATEGORIES = new Set<ProductCategory>([
+  'text-to-text',
+  'text-to-image',
+  'image-to-image',
+  'text-to-video',
+  'image-to-video',
+  'inference',
+  'api-endpoint',
+  'fine-tune',
+  'training-service',
+  'agent-runtime',
+]);
+
+export function sellerWorkspaceKind(id?: ProductCategory | string): SellerWorkspaceKind {
+  const cat = String(id || '') as ProductCategory;
+  if (isVoiceCategory(cat)) return 'voice';
+  if (isWatchContentCategory(cat)) return 'watch';
+  if (isDownloadLicenseCategory(cat)) return 'download';
+  if (isComputeStreamCategory(cat)) return 'compute';
+  if (isHireCategory(cat)) return 'hire';
+  return 'endpoint';
+}
+
+export function needsEndpointDeploy(id?: ProductCategory | string): boolean {
+  return ENDPOINT_DEPLOY_CATEGORIES.has(String(id || '') as ProductCategory);
 }
