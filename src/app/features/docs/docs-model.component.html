@@ -1,0 +1,141 @@
+<section class="seller-docs docs-model page route-enter">
+  <p class="seller-docs__crumb">
+    <a routerLink="/docs">{{ 'docs.crumb' | t }}</a> /
+    <a routerLink="/docs/models">{{ 'docsModels.short' | t }}</a>
+    @if (model) {
+      / {{ model.slug }}
+    }
+  </p>
+
+  @if (notFound) {
+    <h1>{{ 'docsModels.notFound' | t }}</h1>
+    <p class="seller-docs__lede">{{ 'docsModels.notFoundBody' | t }}</p>
+    <a routerLink="/docs/models" class="btn btn-outline">{{ 'docsModels.backList' | t }}</a>
+  } @else if (!model) {
+    <p class="seller-docs__lede">{{ 'docsModels.loading' | t }}</p>
+  } @else {
+    <p class="docs-model__kind" [attr.data-kind]="model.kind">{{ model.kind }} · {{ model.modality }}</p>
+    <h1>{{ model.name }}</h1>
+    <p class="seller-docs__lede">{{ model.description }}</p>
+
+    <nav class="seller-docs__toc" aria-label="TOC">
+      <a href="#endpoints">{{ 'docsModels.toc.endpoints' | t }}</a>
+      <a href="#auth">{{ 'docsModels.toc.auth' | t }}</a>
+      <a href="#runsync">runsync</a>
+      <a href="#run">run</a>
+      <a href="#status">status</a>
+      @if (model.openaiBaseUrl) {
+        <a href="#openai">OpenAI</a>
+      }
+      <a href="#schema">{{ 'docsModels.toc.schema' | t }}</a>
+    </nav>
+
+    <article id="endpoints" class="seller-docs__section">
+      <h2>{{ 'docsModels.endpoints.title' | t }}</h2>
+      <p>{{ 'docsModels.endpoints.p1' | t }}</p>
+      <table class="docs-model__table">
+        <tbody>
+          <tr>
+            <th>POST runsync</th>
+            <td><code>{{ model.runsyncUrl }}</code></td>
+          </tr>
+          <tr>
+            <th>POST run</th>
+            <td><code>{{ model.runUrl }}</code></td>
+          </tr>
+          <tr>
+            <th>GET status</th>
+            <td><code>{{ model.statusUrlTemplate }}</code></td>
+          </tr>
+          @if (model.openaiBaseUrl) {
+            <tr>
+              <th>OpenAI</th>
+              <td><code>{{ model.openaiBaseUrl }}</code> · model <code>{{ model.openaiModel }}</code></td>
+            </tr>
+          }
+          <tr>
+            <th>{{ 'docsModels.pricing' | t }}</th>
+            <td>{{ model.pricing }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="seller-docs__actions">
+        <a [routerLink]="['/product', 'runpod-' + model.slug]" class="btn btn-fill">{{ 'docsModels.playground' | t }}</a>
+      </div>
+    </article>
+
+    <article id="auth" class="seller-docs__section">
+      <h2>{{ 'docsModels.auth.title' | t }}</h2>
+      <p>{{ 'docsModels.auth.p1' | t }}</p>
+      <pre class="seller-docs__code">Authorization: Bearer $MARKETPLACE_JWT
+# or
+Authorization: Bearer mk_live_…</pre>
+    </article>
+
+    <article id="runsync" class="seller-docs__section">
+      <h2>POST /runsync</h2>
+      <p>{{ 'docsModels.runsync.p1' | t }}</p>
+      <button type="button" class="docs-model__copy" (click)="copy(curlRunsync(), 'runsync')">
+        {{ copied === 'runsync' ? ('docsModels.copied' | t) : ('docsModels.copy' | t) }}
+      </button>
+      <pre class="seller-docs__code">{{ curlRunsync() }}</pre>
+    </article>
+
+    <article id="run" class="seller-docs__section">
+      <h2>POST /run</h2>
+      <p>{{ 'docsModels.run.p1' | t }}</p>
+      <button type="button" class="docs-model__copy" (click)="copy(curlRun(), 'run')">
+        {{ copied === 'run' ? ('docsModels.copied' | t) : ('docsModels.copy' | t) }}
+      </button>
+      <pre class="seller-docs__code">{{ curlRun() }}</pre>
+    </article>
+
+    <article id="status" class="seller-docs__section">
+      <h2>GET /status/:jobId</h2>
+      <p>{{ 'docsModels.status.p1' | t }}</p>
+      <button type="button" class="docs-model__copy" (click)="copy(curlStatus(), 'status')">
+        {{ copied === 'status' ? ('docsModels.copied' | t) : ('docsModels.copy' | t) }}
+      </button>
+      <pre class="seller-docs__code">{{ curlStatus() }}</pre>
+    </article>
+
+    @if (model.openaiBaseUrl) {
+      <article id="openai" class="seller-docs__section">
+        <h2>{{ 'docsModels.openai.title' | t }}</h2>
+        <p>{{ 'docsModels.openai.p1' | t }}</p>
+        <button type="button" class="docs-model__copy" (click)="copy(curlOpenai(), 'openai')">
+          {{ copied === 'openai' ? ('docsModels.copied' | t) : ('docsModels.copy' | t) }}
+        </button>
+        <pre class="seller-docs__code">{{ curlOpenai() }}</pre>
+      </article>
+    }
+
+    <article id="schema" class="seller-docs__section">
+      <h2>{{ 'docsModels.schema.title' | t }}</h2>
+      @if (paramRows().length) {
+        <table class="docs-model__table">
+          <thead>
+            <tr>
+              <th>input</th>
+              <th>type</th>
+              <th>required</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of paramRows(); track row.name) {
+              <tr>
+                <th><code>{{ row.name }}</code></th>
+                <td>{{ row.type }}</td>
+                <td>{{ row.required }}</td>
+                <td>{{ row.doc }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p>{{ 'docsModels.schema.empty' | t }}</p>
+      }
+    </article>
+  }
+</section>

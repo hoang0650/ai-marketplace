@@ -34,6 +34,13 @@ export class DocsHubComponent implements OnInit {
       tagKey: 'docs.guide.compute.tag',
       icon: 'gpu',
     },
+    {
+      path: '/docs/models',
+      titleKey: 'docs.guide.models.title',
+      descKey: 'docs.guide.models.desc',
+      tagKey: 'docs.guide.models.tag',
+      icon: 'models',
+    },
   ];
 
   readonly steps = [

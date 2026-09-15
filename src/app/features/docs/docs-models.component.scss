@@ -1,0 +1,115 @@
+@use '../sell/sell-api-usage.component.scss' as *;
+
+.docs-models__hosts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1.25rem;
+  font-size: 0.88rem;
+  color: var(--color-muted);
+
+  code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.82rem;
+    padding: 0.12rem 0.4rem;
+    border-radius: 6px;
+    background: var(--color-mist);
+    border: 1px solid var(--color-line);
+    color: var(--color-ink);
+  }
+}
+
+.docs-models__chip {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  background: var(--color-surface);
+
+  &.is-on {
+    background: var(--color-ink);
+    color: var(--color-surface);
+  }
+}
+
+.docs-models__list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.docs-models__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    border-color: var(--color-lux-gold, #c9a961);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  @media (max-width: 720px) {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'kind meta'
+      'slug price';
+  }
+}
+
+.docs-models__kind {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-mist);
+  color: var(--color-muted);
+
+  &[data-kind='image'] { color: #7a4e12; background: #f4e6c8; }
+  &[data-kind='video'] { color: #1e4d6b; background: #d7ebf5; }
+  &[data-kind='text'] { color: #1f4a2e; background: #d8efe0; }
+  &[data-kind='audio'] { color: #5a2a6b; background: #edd8f4; }
+}
+
+.docs-models__meta {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+
+  strong {
+    font-size: 0.98rem;
+  }
+
+  span {
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.docs-models__slug {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.docs-models__price {
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

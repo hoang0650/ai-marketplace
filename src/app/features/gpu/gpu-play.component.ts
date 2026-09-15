@@ -15,9 +15,9 @@ import { TPipe } from '../../i18n/t.pipe';
     <section class="panel">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p class="text-xs uppercase text-muted">{{ 'compute.play.kicker' | t }}</p>
+          <p class="text-xs uppercase text-muted">{{ (isTerminal() ? 'compute.play.kickerGpu' : 'compute.play.kicker') | t }}</p>
           <h2 class="font-display text-2xl">{{ title() }}</h2>
-          <p class="mt-1 text-sm text-muted">{{ 'compute.play.sub' | t }}</p>
+          <p class="mt-1 text-sm text-muted">{{ (isTerminal() ? 'compute.play.subGpu' : 'compute.play.sub') | t }}</p>
         </div>
         <div class="flex gap-2">
           <span class="text-xs uppercase">{{ status() }}</span>
@@ -36,9 +36,9 @@ import { TPipe } from '../../i18n/t.pipe';
         <iframe
           class="mt-4 h-[min(70vh,560px)] w-full rounded-xl border border-line bg-black"
           [src]="playerUrl()"
-          title="GPU stream"
+          title="GPU session"
           referrerpolicy="no-referrer"
-          allow="fullscreen; autoplay; encrypted-media"
+          allow="fullscreen; autoplay; encrypted-media; clipboard-read; clipboard-write"
         ></iframe>
       }
     </section>
@@ -56,6 +56,7 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
   readonly playerUrl = signal<SafeResourceUrl | null>(null);
   readonly productSlug = signal('');
   readonly title = signal('');
+  readonly isTerminal = signal(false);
   private sessionId = '';
 
   ngOnInit(): void {
@@ -72,6 +73,7 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
     this.error.set('');
     this.playerUrl.set(null);
     this.status.set('starting');
+    this.isTerminal.set(false);
 
     const req = productSlug
       ? this.gpu.createGameSession({ productSlug })
@@ -90,6 +92,9 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
         this.sessionId = sess.sessionId;
         this.status.set(sess.status);
         if (sess.productSlug) this.productSlug.set(sess.productSlug);
+        const terminal = sess.playerMode === 'terminal' || sess.streamKind === 'terminal';
+        this.isTerminal.set(terminal);
+        if (terminal) this.seo.set({ title: this.i18n.t('compute.play.seoGpu') });
         const token = this.auth.token() || '';
         const url = `${sess.playerUrl}?access_token=${encodeURIComponent(token)}`;
         this.playerUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));

@@ -1,6 +1,6 @@
 import catalog from '../../assets/runpod-public-endpoints.json';
 import { ProductCategory } from './marketplace.models';
-import { publicGatewayUrls } from './gateway-urls';
+import { publicGatewayUrls, upstreamRunpodUrls } from './gateway-urls';
 
 /** Official RunPod Public Endpoint kinds from docs.runpod.io/public-endpoints */
 export type RunpodEndpointKind = 'image' | 'video' | 'text' | 'audio';
@@ -68,12 +68,15 @@ export function runtimeFromRunpodPublicEndpoint(ep: RunpodPublicEndpoint) {
     gatewayUrl: g.gatewayUrl,
     tokenizeEndpoint: g.tokenizeEndpoint,
     baseModel: ep.openaiModel || ep.name,
-    /** Internal upstream (seller .env) — not shown as public endpoint fields. */
-    _upstream: {
-      runsync: ep.runsyncUrl,
-      run: ep.runUrl,
-      gateway: ep.openaiBaseUrl || '',
-      endpointId: ep.endpointId,
-    },
+    /** Internal upstream (seller .env) — reconstructed from endpointId, not public URLs. */
+    _upstream: (() => {
+      const up = upstreamRunpodUrls(ep.endpointId, !!ep.openaiModel);
+      return {
+        runsync: up.runsync,
+        run: up.run,
+        gateway: up.gateway,
+        endpointId: ep.endpointId,
+      };
+    })(),
   };
 }

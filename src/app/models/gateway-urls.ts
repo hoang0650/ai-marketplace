@@ -15,17 +15,34 @@ export function isProviderUrl(url?: string | null): boolean {
 
 export function publicGatewayUrls(modelId: string) {
   const id = encodeURIComponent(String(modelId || 'model').replace(/^runpod-/, '') || 'model');
+  const slug = decodeURIComponent(id);
   const v1 = trimSlash(environment.apiUrl);
   const v2 = trimSlash(environment.apiV2Url);
   const aiV1 = trimSlash(environment.aiV1Url);
+  const web = environment.production ? 'https://aimarkets.vn' : '';
   return {
-    /** Sync inference — gateway v1 */
+    /** Sync inference — marketplace gateway */
     publicEndpoint: `${v1}/models/${id}/runsync`,
-    /** Async serverless — gateway v2 (RunPod-style) */
-    serverlessEndpoint: `${v2}/${id}/run`,
+    /** Async job submit — same gateway (v2 alias also works) */
+    serverlessEndpoint: `${v1}/models/${id}/run`,
     tokenizeEndpoint: `${v1}/models/${id}/tokenize`,
     gatewayUrl: aiV1,
-    statusUrl: `${v2}/${id}/status/JOB_ID`,
+    statusUrl: `${v1}/models/${id}/status/JOB_ID`,
+    statusUrlTemplate: `${v1}/models/${id}/status/{JOB_ID}`,
+    docsUrl: web ? `${web}/docs/models/${slug}` : `/docs/models/${slug}`,
+    v2RunUrl: `${v2}/${id}/run`,
+    v2StatusUrl: `${v2}/${id}/status/JOB_ID`,
+  };
+}
+
+/** Internal RunPod hosts — seller .env only, never shown as public catalog URLs. */
+export function upstreamRunpodUrls(endpointId: string, openai = false) {
+  const id = String(endpointId || '').trim();
+  if (!id) return { runsync: '', run: '', gateway: '' };
+  return {
+    runsync: `https://api.runpod.ai/v2/${id}/runsync`,
+    run: `https://api.runpod.ai/v2/${id}/run`,
+    gateway: openai ? `https://api.runpod.ai/v2/${id}/openai/v1` : '',
   };
 }
 

@@ -665,6 +665,7 @@ export interface GameSessionInfo {
   publicUrl?: string;
   productSlug?: string;
   hosting?: 'external' | 'aimarkets';
+  playerMode?: 'terminal' | 'game';
 }
 
 export interface ComputeNode {

@@ -574,6 +574,16 @@ export const routes: Routes = [
           import('./features/docs/docs-compute.component').then((m) => m.DocsComputeComponent),
       },
       {
+        path: 'docs/models',
+        loadComponent: () =>
+          import('./features/docs/docs-models.component').then((m) => m.DocsModelsComponent),
+      },
+      {
+        path: 'docs/models/:slug',
+        loadComponent: () =>
+          import('./features/docs/docs-model.component').then((m) => m.DocsModelComponent),
+      },
+      {
         path: 'work',
         loadComponent: () =>
           import('./features/work/public/work-public.components').then((m) => m.WorkOverviewComponent),

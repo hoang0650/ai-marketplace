@@ -17,7 +17,7 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory, isComputeStreamCategory, isLicenseCategory, isVoiceCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory } from '../../models/categories';
+import { isHireCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -411,6 +411,10 @@ export class ProductDetailComponent implements OnInit {
 
   isComputeStream(cat: ProductCategory): boolean {
     return isComputeStreamCategory(cat);
+  }
+
+  isGpuCompute(cat: ProductCategory): boolean {
+    return isGpuComputeCategory(cat);
   }
 
   isLicense(cat: ProductCategory): boolean {

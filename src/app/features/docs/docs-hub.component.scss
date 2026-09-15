@@ -52,6 +52,10 @@
   @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  @media (min-width: 960px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .docs-card {
@@ -123,6 +127,10 @@
 
   &[data-icon='gpu']::after {
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='4' y='4' width='16' height='16' rx='2'/%3E%3Cpath d='M9 9h6v6H9zM2 12h2M20 12h2M12 2v2M12 20v2'/%3E%3C/svg%3E");
+  }
+
+  &[data-icon='models']::after {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3Cpath d='M8 7h8M8 11h8'/%3E%3C/svg%3E");
   }
 }
 

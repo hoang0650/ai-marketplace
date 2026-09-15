@@ -311,6 +311,14 @@ export function isComputeStreamCategory(id: ProductCategory | string): boolean {
   return COMPUTE_STREAM_CATEGORIES.has(id as ProductCategory);
 }
 
+export function isGpuComputeCategory(id: ProductCategory | string): boolean {
+  return id === 'gpu-compute';
+}
+
+export function isGameServerCategory(id: ProductCategory | string): boolean {
+  return id === 'game-server';
+}
+
 export function isLicenseCategory(id: ProductCategory | string): boolean {
   return LICENSE_CATEGORIES.has(id as ProductCategory);
 }

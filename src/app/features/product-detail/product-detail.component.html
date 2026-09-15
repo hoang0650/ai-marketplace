@@ -156,7 +156,9 @@
         </div>
 
         <button type="button" class="pd-buy__cta" (click)="primaryCta()">
-          @if (isComputeStream(p.category)) {
+          @if (isGpuCompute(p.category)) {
+            {{ 'compute.cta.terminal' | t }}
+          } @else if (isComputeStream(p.category)) {
             {{ 'compute.cta.play' | t }}
           } @else if (isHire(p.category)) {
             {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
@@ -306,7 +308,7 @@
         </button>
       } @else if (isComputeStream(p.category)) {
         <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'stream'" (click)="setWorkspace('stream')">
-          {{ 'compute.tab.stream' | t }}
+          {{ (isGpuCompute(p.category) ? 'compute.tab.terminal' : 'compute.tab.stream') | t }}
         </button>
       } @else if (isWatchContent(p.category)) {
         <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'watch'" (click)="setWorkspace('watch')">
@@ -450,15 +452,15 @@
 
     @if (workspaceTab() === 'stream') {
       <div class="panel stream-launch">
-        <h2 class="font-display text-2xl">{{ 'compute.stream.title' | t }}</h2>
-        <p class="text-muted">{{ 'compute.stream.desc' | t }}</p>
+        <h2 class="font-display text-2xl">{{ (isGpuCompute(p.category) ? 'compute.stream.titleGpu' : 'compute.stream.title') | t }}</h2>
+        <p class="text-muted">{{ (isGpuCompute(p.category) ? 'compute.stream.descGpu' : 'compute.stream.desc') | t }}</p>
         <p class="cost-hint">{{ priceHint() }}</p>
         @if (auth.user()) {
           <p class="text-sm">{{ 'pd.walletBalance' | t }} {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
         }
         <div class="pg-actions mt-4">
           <button type="button" class="btn btn-run" (click)="launchComputeStream()">
-            {{ 'compute.cta.launch' | t }}
+            {{ (isGpuCompute(p.category) ? 'compute.cta.launchGpu' : 'compute.cta.launch') | t }}
           </button>
           <a routerLink="/wallet" class="btn btn-outline">{{ 'cart.topUp' | t }}</a>
         </div>

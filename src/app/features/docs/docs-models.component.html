@@ -1,0 +1,34 @@
+<section class="seller-docs docs-models page route-enter">
+  <p class="seller-docs__crumb">
+    <a routerLink="/docs">{{ 'docs.crumb' | t }}</a> / {{ 'docsModels.short' | t }}
+  </p>
+  <h1>{{ 'docsModels.title' | t }}</h1>
+  <p class="seller-docs__lede">{{ 'docsModels.lede' | t }}</p>
+
+  <p class="docs-models__hosts">
+    <span>{{ 'docs.baseUrl' | t }}: <code>{{ apiBase }}</code></span>
+    <span>OpenAI: <code>{{ aiBase }}</code></span>
+  </p>
+
+  <nav class="seller-docs__toc" aria-label="Kinds">
+    @for (k of kinds; track k) {
+      <button type="button" class="docs-models__chip" [class.is-on]="kind === k" (click)="setKind(k)">
+        {{ k === 'all' ? ('docsModels.filter.all' | t) : k }}
+      </button>
+    }
+  </nav>
+
+  <div class="docs-models__list">
+    @for (m of filtered(); track m.slug) {
+      <a class="docs-models__row" [routerLink]="['/docs/models', m.slug]">
+        <span class="docs-models__kind" [attr.data-kind]="m.kind">{{ m.kind }}</span>
+        <span class="docs-models__meta">
+          <strong>{{ m.name }}</strong>
+          <span>{{ m.description }}</span>
+        </span>
+        <code class="docs-models__slug">{{ m.slug }}</code>
+        <span class="docs-models__price">{{ m.pricing }}</span>
+      </a>
+    }
+  </div>
+</section>
