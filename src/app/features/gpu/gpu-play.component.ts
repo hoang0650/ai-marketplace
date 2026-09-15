@@ -30,6 +30,7 @@ import { TPipe } from '../../i18n/t.pipe';
       </div>
       @if (error()) {
         <p class="mt-3 text-sm text-red-400">{{ error() }}</p>
+        <button type="button" class="btn btn-outline text-xs mt-2" (click)="start()">{{ 'compute.play.retry' | t }}</button>
       }
       @if (playerUrl()) {
         <iframe
@@ -59,12 +60,18 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const productSlug = this.route.snapshot.paramMap.get('productSlug') || '';
-    const serverId = this.route.snapshot.paramMap.get('serverId') || '';
     this.productSlug.set(productSlug);
-    this.title.set(
-      productSlug ? productSlug : this.i18n.t('compute.play.gameServer'),
-    );
+    this.title.set(productSlug ? productSlug : this.i18n.t('compute.play.gameServer'));
     this.seo.set({ title: this.i18n.t('compute.play.seo') });
+    this.start();
+  }
+
+  start(): void {
+    const productSlug = this.route.snapshot.paramMap.get('productSlug') || '';
+    const serverId = this.route.snapshot.paramMap.get('serverId') || '';
+    this.error.set('');
+    this.playerUrl.set(null);
+    this.status.set('starting');
 
     const req = productSlug
       ? this.gpu.createGameSession({ productSlug })
