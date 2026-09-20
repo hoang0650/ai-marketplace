@@ -43,8 +43,10 @@ import { OpenClawGatewayService } from './openclaw-gateway.service';
               </div>
             </div>
             <div class="agent-row__actions">
-              <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', a.agentId, 'setup']">Setup</a>
-              <button type="button" class="agents-btn agents-btn--ghost" (click)="launch(a)">Launch</button>
+              @if (isOpenClawHired(a)) {
+                <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', a.agentId, 'setup']">Setup</a>
+                <button type="button" class="agents-btn agents-btn--ghost" (click)="launch(a)">Launch</button>
+              }
               <a class="agents-btn" [routerLink]="['/hire-agent', a.agentId]">Manage</a>
             </div>
           </article>
@@ -79,13 +81,21 @@ export class MyAgentsComponent implements OnInit {
     this.hired.set(this.gateway.listHired());
   }
 
+  isOpenClawHired(row: HiredAgent): boolean {
+    return this.gateway.isOpenClawAgent(this.gateway.getAgent(row.agentId) || { id: row.agentId, slug: row.slug });
+  }
+
   launch(row: HiredAgent): void {
     const agent = this.gateway.getAgent(row.agentId);
     if (!agent) {
       this.status.set('Agent definition not found.');
       return;
     }
-    this.status.set('Opening OpenClaw gateway…');
+    if (!this.gateway.isOpenClawAgent(agent)) {
+      this.status.set(this.gateway.comingSoonMessage(agent));
+      return;
+    }
+    this.status.set(`Opening OpenClaw at ${this.gateway.aimarketsHost()}…`);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.status.set(res.success ? 'Gateway opened — auto-approving device pairing…' : res.message || 'Launch failed');
       this.reload();
@@ -131,12 +141,18 @@ export class MyAgentsComponent implements OnInit {
                 type="button"
                 class="agents-btn agents-btn--launch"
                 (click)="launch(agent)"
-                [disabled]="busyId() === agent.id"
+                [disabled]="busyId() === agent.id || !agent.openclawGateway"
+                [attr.title]="agent.openclawGateway ? 'Open Control UI' : gateway.comingSoonMessage(agent)"
               >
-                🚀 Launch
+                {{ agent.openclawGateway ? '🚀 Launch' : 'Soon' }}
               </button>
               <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', agent.id]">Details</a>
             </div>
+            @if (agent.openclawGateway) {
+              <p class="agent-card__hint">Opens {{ gateway.aimarketsHost() || '{userId}.openclaw.aimarkets.vn' }}</p>
+            } @else {
+              <p class="agent-card__hint">Setup later — OpenClaw is live now</p>
+            }
           </article>
         } @empty {
           <p class="text-muted">No agents in this tab.</p>
@@ -150,7 +166,7 @@ export class MyAgentsComponent implements OnInit {
   `,
 })
 export class AgentMarketplaceComponent implements OnInit {
-  private readonly gateway = inject(OpenClawGatewayService);
+  readonly gateway = inject(OpenClawGatewayService);
   private readonly seo = inject(SeoService);
   readonly tab = signal<'public' | 'internal'>('public');
   readonly agents = signal<MarketplaceAgent[]>([]);
@@ -176,13 +192,17 @@ export class AgentMarketplaceComponent implements OnInit {
   }
 
   launch(agent: MarketplaceAgent): void {
+    if (!this.gateway.isOpenClawAgent(agent)) {
+      this.status.set(this.gateway.comingSoonMessage(agent));
+      return;
+    }
     this.busyId.set(agent.id);
-    this.status.set(`Launching ${agent.name} gateway…`);
+    this.status.set(`Opening OpenClaw at ${this.gateway.aimarketsHost()}…`);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.busyId.set('');
       this.status.set(
         res.success
-          ? `${agent.name} Control UI opened — auto-approving pairing…`
+          ? 'OpenClaw Control UI opened — auto-approving pairing…'
           : res.message || 'Launch failed',
       );
     });
@@ -204,9 +224,11 @@ export class AgentMarketplaceComponent implements OnInit {
             <h1 class="agents-title">{{ hired()?.name || a.name }}</h1>
           </div>
           <div class="agents-header__actions">
-            <button type="button" class="agents-btn agents-btn--primary" (click)="launch()" [disabled]="busy()">
-              {{ busy() ? 'Opening…' : 'Launch OpenClaw' }}
-            </button>
+            @if (isOpenClaw()) {
+              <button type="button" class="agents-btn agents-btn--primary" (click)="launch()" [disabled]="busy()">
+                {{ busy() ? 'Opening…' : 'Launch OpenClaw' }}
+              </button>
+            }
           </div>
         </div>
 
@@ -234,11 +256,16 @@ export class AgentMarketplaceComponent implements OnInit {
               <h2 class="font-display text-xl">Web Endpoints</h2>
               <p class="text-sm text-muted">Access your agent's web interfaces.</p>
               <div class="mt-4 flex flex-wrap gap-2">
-                <a class="agents-btn agents-btn--outline" [routerLink]="['/hire-agent', a.id, 'setup']">Setup Wizard</a>
-                <button type="button" class="agents-btn agents-btn--outline" (click)="launch()">OpenClaw UI</button>
+                @if (isOpenClaw()) {
+                  <a class="agents-btn agents-btn--outline" [routerLink]="['/hire-agent', a.id, 'setup']">Setup Wizard</a>
+                  <button type="button" class="agents-btn agents-btn--outline" (click)="launch()">OpenClaw UI</button>
+                } @else {
+                  <p class="text-sm text-muted">{{ gateway.comingSoonMessage(a) }}</p>
+                }
               </div>
             </div>
 
+            @if (isOpenClaw()) {
             <div class="panel agents-panel mt-4">
               <h2 class="font-display text-xl">SSH Access</h2>
               <p class="text-sm text-muted">
@@ -250,7 +277,7 @@ export class AgentMarketplaceComponent implements OnInit {
                   class="input"
                   [(ngModel)]="sshHost"
                   name="sshHost"
-                  placeholder="e.g. sandbox.phhotel.vn or your-vps.example.com"
+                  [placeholder]="sshPlaceholder"
                 />
                 <div class="flex flex-wrap gap-2">
                   <button
@@ -298,7 +325,7 @@ export class AgentMarketplaceComponent implements OnInit {
               </p>
               <form class="mt-4 grid gap-3" (ngSubmit)="manualConnect()">
                 <label class="text-xs uppercase tracking-wider text-muted">WebSocket URL</label>
-                <input class="input" [(ngModel)]="wsUrl" name="wsUrl" placeholder="wss://…" />
+                <input class="input" [(ngModel)]="wsUrl" name="wsUrl" [placeholder]="'wss://' + sshPlaceholder" />
                 <label class="text-xs uppercase tracking-wider text-muted">Gateway Token</label>
                 <input class="input" [(ngModel)]="token" name="token" type="password" />
                 <label class="text-xs uppercase tracking-wider text-muted">Password (optional)</label>
@@ -314,6 +341,8 @@ export class AgentMarketplaceComponent implements OnInit {
                 </ol>
               </div>
             </div>
+            }
+
           </div>
 
           <aside class="panel agents-panel detail-guide">
@@ -331,11 +360,15 @@ export class AgentMarketplaceComponent implements OnInit {
               </div>
               <div>
                 <p class="font-semibold text-ink">Channels</p>
-                <p>Slack, Discord, Telegram, WhatsApp, and hotel chatbox.</p>
+                <p>Slack, Discord, Telegram, WhatsApp — connect in Setup Wizard.</p>
+              </div>
+              <div>
+                <p class="font-semibold text-ink">Host</p>
+                <p>Control UI: {userId}.openclaw.aimarkets.vn (session market-{userId}).</p>
               </div>
               <div>
                 <p class="font-semibold text-ink">Pricing</p>
-                <p>Hire via OpenClaw Ops Agent product or launch a sandbox seat.</p>
+                <p>Hire via OpenClaw Ops Agent product or launch a marketplace seat.</p>
               </div>
             </div>
           </aside>
@@ -353,7 +386,7 @@ export class AgentMarketplaceComponent implements OnInit {
 export class AgentDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly gateway = inject(OpenClawGatewayService);
+  readonly gateway = inject(OpenClawGatewayService);
   private readonly seo = inject(SeoService);
 
   readonly agent = signal<MarketplaceAgent | null>(null);
@@ -364,10 +397,15 @@ export class AgentDetailComponent implements OnInit {
   readonly ssh = signal<OpenClawSshAccess | null>(null);
   readonly sshBusy = signal(false);
   sshHost = '';
+  sshPlaceholder = '{userId}.openclaw.aimarkets.vn';
 
   wsUrl = '';
   token = '';
   password = '';
+
+  isOpenClaw(): boolean {
+    return this.gateway.isOpenClawAgent(this.agent());
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -376,24 +414,35 @@ export class AgentDetailComponent implements OnInit {
       this.agent.set(agent);
       this.hired.set(this.gateway.getHired(id) || null);
       this.ssh.set(null);
+      this.sshPlaceholder = this.gateway.sshHostHint();
+      this.sshHost = this.gateway.sshHostHint().includes('{userId}') ? '' : this.gateway.sshHostHint();
+      const host = this.gateway.aimarketsHost();
+      this.wsUrl = host.includes('{userId}') ? '' : `wss://${host}`;
       if (agent) {
         this.seo.set({ title: agent.name, description: agent.description });
-        if (!this.hired()) this.gateway.upsertHired(agent, 'running');
+        if (this.gateway.isOpenClawAgent(agent) && !this.hired()) {
+          this.gateway.upsertHired(agent, 'running');
+        }
         this.hired.set(this.gateway.getHired(agent.id) || null);
-        this.gateway.getActiveSsh(agent.id).subscribe((res) => {
-          if (res.active && res.session) {
-            this.ssh.set({ ...res.session, success: true });
-          }
-        });
+        if (this.gateway.isOpenClawAgent(agent)) {
+          this.gateway.getActiveSsh(agent.id).subscribe((res) => {
+            if (res.active && res.session) {
+              this.ssh.set({ ...res.session, success: true });
+            }
+          });
+        }
       }
     });
   }
 
   launch(): void {
     const agent = this.agent();
-    if (!agent) return;
+    if (!agent || !this.gateway.isOpenClawAgent(agent)) {
+      this.status.set(this.gateway.comingSoonMessage(agent));
+      return;
+    }
     this.busy.set(true);
-    this.status.set('Opening OpenClaw gateway…');
+    this.status.set(`Opening OpenClaw at ${this.gateway.aimarketsHost()}…`);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.busy.set(false);
       this.hired.set(this.gateway.getHired(agent.id) || null);
@@ -405,7 +454,10 @@ export class AgentDetailComponent implements OnInit {
 
   generateSsh(): void {
     const agent = this.agent();
-    if (!agent) return;
+    if (!agent || !this.gateway.isOpenClawAgent(agent)) {
+      this.status.set(this.gateway.comingSoonMessage(agent));
+      return;
+    }
     this.sshBusy.set(true);
     this.status.set('Generating temporary SSH access…');
     this.gateway
@@ -419,7 +471,10 @@ export class AgentDetailComponent implements OnInit {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
         } else {
-          this.status.set(res.message || 'SSH generate failed. Login and configure OPENCLAW_SSH_HOST.');
+          this.status.set(
+            res.message ||
+              'SSH generate failed. Login and set OPENCLAW_SSH_HOST_TEMPLATE={userId}.openclaw.aimarkets.vn.',
+          );
         }
       });
   }

@@ -110,14 +110,19 @@ const SLACK_MANIFEST = `{
             <span class="oc-setup__dot" aria-hidden="true"></span>
             {{ connected() ? 'Connected' : 'Offline' }}
           </span>
-          <button type="button" class="oc-setup__pill oc-setup__pill--btn" (click)="openUi()" [disabled]="busy()">
+          <button type="button" class="oc-setup__pill oc-setup__pill--btn" (click)="openUi()" [disabled]="busy() || !isOpenClaw()">
             {{ busy() ? 'Opening…' : 'OpenClaw UI →' }}
           </button>
         </div>
       </header>
 
       <main class="oc-setup__main" [class.oc-setup__main--flow]="!!selected()">
-        @if (!selected()) {
+        @if (!isOpenClaw()) {
+          <p class="oc-setup__lead">
+            {{ gateway.comingSoonMessage(agent()) }}
+          </p>
+          <a routerLink="/hire-agent/openclaw/setup" class="oc-btn">Open OpenClaw setup</a>
+        } @else if (!selected()) {
           <p class="oc-setup__lead">
             Connect a messaging channel to start chatting with your OpenClaw agent.
           </p>
@@ -163,7 +168,7 @@ const SLACK_MANIFEST = `{
               Connect from your desktop to this user’s OpenClaw server/sandbox. Command is valid for 60 minutes.
             </p>
             <label class="oc-label">Server host (optional)</label>
-            <input class="oc-input" [(ngModel)]="sshHost" name="setupSshHost" placeholder="sandbox.phhotel.vn" />
+            <input class="oc-input" [(ngModel)]="sshHost" name="setupSshHost" [placeholder]="sshPlaceholder" />
             <button type="button" class="oc-btn" (click)="generateSsh()" [disabled]="sshBusy()">
               {{ sshBusy() ? 'Generating…' : 'Generate SSH command' }}
             </button>
@@ -496,8 +501,13 @@ export class OpenClawSetupWizardComponent implements OnInit {
   readonly ssh = signal<OpenClawSshAccess | null>(null);
   readonly sshBusy = signal(false);
   sshHost = '';
+  sshPlaceholder = '{userId}.openclaw.aimarkets.vn';
 
   cfg: ChannelConfig = this.emptyCfg();
+
+  isOpenClaw(): boolean {
+    return this.gateway.isOpenClawAgent(this.agent());
+  }
 
   ngOnInit(): void {
     this.seo.set({
@@ -508,12 +518,19 @@ export class OpenClawSetupWizardComponent implements OnInit {
       const id = params.get('agentId') || 'openclaw';
       const agent = this.gateway.getAgent(id) || this.gateway.getAgent('openclaw') || null;
       this.agent.set(agent);
-      if (agent) this.gateway.upsertHired(agent, 'running');
-      this.connected.set(!!agent);
+      this.sshPlaceholder = this.gateway.sshHostHint();
+      const hint = this.gateway.sshHostHint();
+      this.sshHost = hint.includes('{userId}') ? '' : hint;
+      if (agent && this.gateway.isOpenClawAgent(agent)) {
+        this.gateway.upsertHired(agent, 'running');
+      }
+      this.connected.set(!!agent && this.gateway.isOpenClawAgent(agent));
       this.loadComplete(agent?.id || 'openclaw');
-      this.gateway.getActiveSsh(agent?.id || 'openclaw').subscribe((res) => {
-        if (res.active && res.session) this.ssh.set({ ...res.session, success: true });
-      });
+      if (agent && this.gateway.isOpenClawAgent(agent)) {
+        this.gateway.getActiveSsh(agent.id).subscribe((res) => {
+          if (res.active && res.session) this.ssh.set({ ...res.session, success: true });
+        });
+      }
     });
   }
 
@@ -587,12 +604,12 @@ export class OpenClawSetupWizardComponent implements OnInit {
 
   openUi(): void {
     const agent = this.agent() || this.gateway.getAgent('openclaw');
-    if (!agent) {
-      this.status.set('OpenClaw agent not found.');
+    if (!agent || !this.gateway.isOpenClawAgent(agent)) {
+      this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
     this.busy.set(true);
-    this.status.set('Opening OpenClaw Control UI…');
+    this.status.set(`Opening OpenClaw Control UI at ${this.gateway.aimarketsHost()}…`);
     this.connected.set(true);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.busy.set(false);
@@ -606,7 +623,10 @@ export class OpenClawSetupWizardComponent implements OnInit {
 
   generateSsh(): void {
     const agent = this.agent() || this.gateway.getAgent('openclaw');
-    if (!agent) return;
+    if (!agent || !this.gateway.isOpenClawAgent(agent)) {
+      this.status.set(this.gateway.comingSoonMessage(agent));
+      return;
+    }
     this.sshBusy.set(true);
     this.gateway
       .generateSsh({ agentId: agent.id, host: this.sshHost.trim() || undefined })
@@ -616,7 +636,10 @@ export class OpenClawSetupWizardComponent implements OnInit {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
         } else {
-          this.status.set(res.message || 'SSH generate failed. Login required + OPENCLAW_SSH_HOST.');
+          this.status.set(
+            res.message ||
+              'SSH generate failed. Login required, or set OPENCLAW_SSH_HOST_TEMPLATE={userId}.openclaw.aimarkets.vn.',
+          );
         }
       });
   }

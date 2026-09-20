@@ -831,7 +831,7 @@ export class ProductDetailComponent implements OnInit {
   launchOpenClaw(): void {
     if (this.openclawBusy()) return;
     this.openclawBusy.set(true);
-    this.openclawStatus.set('Opening OpenClaw gateway…');
+    this.openclawStatus.set(`Opening OpenClaw at ${this.openclaw.aimarketsHost()}…`);
     const agent = this.openclaw.getAgent('openclaw');
     this.openclaw.launchGateway({ agent: agent || undefined }).subscribe((res) => {
       this.openclawBusy.set(false);
@@ -853,7 +853,8 @@ export class ProductDetailComponent implements OnInit {
       this.launchComputeStream();
       return;
     }
-    if (p.category === 'hire-agent' || p.slug === 'openclaw-ops-agent') {
+    // Only the OpenClaw Ops product launches Control UI; other hire-* listings stay hire form.
+    if (p.slug === 'openclaw-ops-agent') {
       this.launchOpenClaw();
       return;
     }

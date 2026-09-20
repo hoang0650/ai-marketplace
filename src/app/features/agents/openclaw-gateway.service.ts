@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, of, catchError, map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
@@ -46,6 +47,7 @@ export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
     docsUrl: 'https://docs.openclaw.ai',
     public: true,
     hireProductSlug: 'openclaw-ops-agent',
+    openclawGateway: true,
   },
   {
     id: 'open-webui',
@@ -89,6 +91,7 @@ export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
 export class OpenClawGatewayService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
 
   private approveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -101,6 +104,35 @@ export class OpenClawGatewayService {
 
   getAgent(idOrSlug: string): MarketplaceAgent | undefined {
     return MARKETPLACE_AGENTS.find((a) => a.id === idOrSlug || a.slug === idOrSlug);
+  }
+
+  isOpenClawAgent(agent?: { id?: string; slug?: string; openclawGateway?: boolean } | null): boolean {
+    if (!agent) return false;
+    if (agent.openclawGateway) return true;
+    const id = String(agent.id || agent.slug || '').toLowerCase();
+    return id === 'openclaw';
+  }
+
+  comingSoonMessage(agent?: MarketplaceAgent | null): string {
+    const name = agent?.name || 'This agent';
+    return `${name} setup is coming later. Only OpenClaw launches Control UI at {userId}.openclaw.aimarkets.vn for now.`;
+  }
+
+  aimarketsHost(userId?: string): string {
+    const id = String(userId || this.auth.user()?.id || '')
+      .trim()
+      .toLowerCase();
+    const template = String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
+    if (!id) return '{userId}.openclaw.aimarkets.vn';
+    return template
+      .replace(/\{userId\}/gi, id)
+      .replace(/\{tenant\}/gi, id)
+      .replace(/^https?:\/\//i, '')
+      .replace(/\/$/, '');
+  }
+
+  sshHostHint(userId?: string): string {
+    return this.aimarketsHost(userId);
   }
 
   listHired(): HiredAgent[] {
@@ -153,6 +185,25 @@ export class OpenClawGatewayService {
    * open blank tab → fetch direct-url → navigate → auto-approve pairing.
    */
   launchGateway(opts?: { agent?: MarketplaceAgent; userId?: string }): Observable<OpenClawLaunchResult> {
+    if (opts?.agent && !this.isOpenClawAgent(opts.agent)) {
+      return of({ success: false, message: this.comingSoonMessage(opts.agent) });
+    }
+    if (!this.auth.isAuthenticated()) {
+      if (isPlatformBrowser(this.platformId)) {
+        void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      }
+      return of({
+        success: false,
+        message: 'Sign in to launch OpenClaw on {userId}.openclaw.aimarkets.vn.',
+      });
+    }
+    const userId = opts?.userId || this.auth.user()?.id;
+    if (!userId) {
+      return of({
+        success: false,
+        message: 'OpenClaw needs a signed-in marketplace user id for {userId}.openclaw.aimarkets.vn.',
+      });
+    }
     if (this.opening) {
       return of({ success: false, message: 'OpenClaw is already launching…' });
     }
@@ -160,7 +211,6 @@ export class OpenClawGatewayService {
     this.clearApproveTimers();
 
     const newTab = isPlatformBrowser(this.platformId) ? window.open('about:blank', '_blank') : null;
-    const userId = opts?.userId || this.auth.user()?.id;
 
     return this.resolveLaunchUrl(userId).pipe(
       tap((res) => {
