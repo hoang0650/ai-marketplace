@@ -285,6 +285,14 @@
   color: var(--pd-red);
 }
 
+.pd-buy__was {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
 .pd-buy__ok {
   margin: 0;
   font-size: 0.82rem;
@@ -424,6 +432,26 @@
 
 .pd-buy__cta:hover {
   filter: brightness(0.96);
+}
+
+.pd-buy__chat {
+  border: 1.5px solid var(--color-lux-gold, #c9a961);
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.pd-buy__chat:hover {
+  background: color-mix(in srgb, var(--color-lux-gold, #c9a961) 12%, transparent);
+}
+
+.pd-buy__chat:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .pd-buy__cart {

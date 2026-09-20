@@ -112,6 +112,16 @@ export const routes: Routes = [
           import('./features/sell/sell-pages.components').then((m) => m.SellOrdersComponent),
       },
       {
+        path: 'messages/:id',
+        loadComponent: () =>
+          import('./features/chat/chat-thread.component').then((m) => m.ChatThreadComponent),
+      },
+      {
+        path: 'messages',
+        loadComponent: () =>
+          import('./features/chat/chat-inbox.component').then((m) => m.ChatInboxComponent),
+      },
+      {
         path: 'complaints',
         data: { inbox: 'seller' },
         loadComponent: () =>
@@ -119,9 +129,8 @@ export const routes: Routes = [
       },
       {
         path: 'coupons',
-        data: { page: 'coupons' },
         loadComponent: () =>
-          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+          import('./features/sell/sell-coupons.component').then((m) => m.SellCouponsComponent),
       },
       {
         path: 'payment',
@@ -517,6 +526,18 @@ export const routes: Routes = [
         path: 'reviews',
         loadComponent: () =>
           import('./features/commerce/commerce.components').then((m) => m.ReviewsPageComponent),
+      },
+      {
+        path: 'messages/:id',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/chat/chat-thread.component').then((m) => m.ChatThreadComponent),
+      },
+      {
+        path: 'messages',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/chat/chat-inbox.component').then((m) => m.ChatInboxComponent),
       },
       {
         path: 'support',

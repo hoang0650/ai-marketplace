@@ -103,7 +103,7 @@ export class DashboardShellComponent {
         <div class="panel">
           <p class="text-xs uppercase text-muted">Phí sàn (commission)</p>
           <p class="mt-2 font-display text-2xl">{{ (s.platformCommission || 0) | currency: s.currency }}</p>
-          <p class="mt-1 text-xs text-muted">Mặc định 20% — không phải thuế</p>
+          <p class="mt-1 text-xs text-muted">Mặc định 20% — chưa gồm thuế 10% trên 80% seller</p>
         </div>
         <div class="panel">
           <p class="text-xs uppercase text-muted">Phí CHPlay / App Store</p>
@@ -113,6 +113,7 @@ export class DashboardShellComponent {
         <div class="panel">
           <p class="text-xs uppercase text-muted">Thuế khấu trừ</p>
           <p class="mt-2 font-display text-2xl">{{ (s.taxWithholding || 0) | currency: s.currency }}</p>
+          <p class="mt-1 text-xs text-muted">10% trên 80% doanh thu seller (8% đơn)</p>
         </div>
         <div class="panel">
           <p class="text-xs uppercase text-muted">Hoàn tiền</p>
@@ -427,6 +428,13 @@ export class DashboardAnalyticsComponent implements OnInit {
             </select>
           </div>
         }
+        @if (draft.pricingModel !== 'free') {
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Compare-at price (USD)</label>
+            <input class="input" type="number" min="0" step="0.01" [(ngModel)]="draft.compareAtPrice" name="compareAtPrice" />
+            <p class="mt-1 text-xs text-muted">Giá gốc gạch ngang khi cao hơn giá bán. 0 = không giảm giá listing. Voucher mã giảm giá tạo ở Bán hàng → Mã giảm giá.</p>
+          </div>
+        }
         @if (isVoiceDraft()) {
           <div class="md:col-span-2 rounded-lg border border-line p-3">
             <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Seller — nhân bản giọng (MP3)</p>
@@ -716,6 +724,7 @@ export class DashboardProductsComponent implements OnInit {
       priceDay: 0,
       priceMonth: 9,
       priceYear: 79,
+      compareAtPrice: 0,
     };
   }
 
@@ -866,6 +875,10 @@ export class DashboardProductsComponent implements OnInit {
                 currency: 'USD',
               }
             : { model: 'free' as const, price: 0, currency: 'USD' };
+    const compareAtPrice = Number(this.draft.compareAtPrice) || 0;
+    if (compareAtPrice > 0) {
+      Object.assign(pricing, { compareAtPrice });
+    }
 
     const contentMeta = this.isVoiceDraft()
       ? {

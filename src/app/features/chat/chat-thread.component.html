@@ -1,0 +1,55 @@
+<section class="chat-page chat-page--thread page route-enter">
+  <div class="chat-thread__head">
+    <a class="chat-thread__back" [routerLink]="backLink()">{{ 'chat.back' | t }}</a>
+    @if (convo(); as c) {
+      <a class="chat-thread__product" [routerLink]="['/product', c.productSlug]">
+        @if (c.productCover) {
+          <img [src]="c.productCover" [alt]="c.productName" />
+        }
+        <div>
+          <strong>{{ c.productName }}</strong>
+          <span>{{ c.otherName }} · {{ (c.role === 'seller' ? 'chat.role.buyer' : 'chat.role.seller') | t }}</span>
+        </div>
+      </a>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="chat-error">{{ error() }}</p>
+  }
+
+  <div class="chat-msgs" #scroller>
+    @for (m of messages(); track m.id) {
+      <div class="chat-bubble" [class.chat-bubble--mine]="isMine(m)">
+        @if (m.kind === 'image' && m.imageUrl) {
+          <img [src]="m.imageUrl" alt="" />
+        }
+        @if (m.body) {
+          <p>{{ m.body }}</p>
+        }
+        <time>{{ m.createdAt | date: 'short' }}</time>
+      </div>
+    }
+  </div>
+
+  <form class="chat-compose" (submit)="send($event)">
+    <p class="chat-hint">{{ 'chat.lede' | t }}</p>
+    <div class="chat-compose__row">
+      <input #file type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onFile($event)" />
+      <button type="button" class="chat-compose__attach" (click)="file.click()" [disabled]="busy()">
+        {{ 'chat.attach' | t }}
+      </button>
+      <textarea
+        [(ngModel)]="draft"
+        name="draft"
+        rows="2"
+        maxlength="2000"
+        [placeholder]="'chat.placeholder' | t"
+        (keydown.enter)="onEnter($event)"
+      ></textarea>
+      <button type="submit" class="chat-compose__send" [disabled]="busy() || !canSend()">
+        {{ 'chat.send' | t }}
+      </button>
+    </div>
+  </form>
+</section>

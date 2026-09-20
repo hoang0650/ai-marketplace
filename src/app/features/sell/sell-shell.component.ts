@@ -74,6 +74,7 @@ export class SellShellComponent {
       items: [
         { label: 'Sản phẩm', path: '/sell/products' },
         { label: 'Đơn hàng', path: '/sell/orders' },
+        { label: 'Tin nhắn', path: '/sell/messages' },
         { label: 'Khiếu nại', path: '/sell/complaints' },
         { label: 'Mã giảm giá', path: '/sell/coupons' },
       ],

@@ -13,6 +13,8 @@ import {
   Creator,
   DashboardSummary,
   HomeFeed,
+  Coupon,
+  CouponPreview,
   NotificationItem,
   Order,
   Product,
@@ -26,6 +28,8 @@ import {
   IssuedLicense,
   Complaint,
   ComplaintKind,
+  ChatConversation,
+  ChatMessage,
   ContentEpisode,
   ContentUnlock,
 } from '../models/marketplace.models';
@@ -192,9 +196,10 @@ export class ReviewService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiUrl;
 
-  list(productId?: string): Observable<Review[]> {
+  list(productId?: string, creatorSlug?: string): Observable<Review[]> {
     let params = new HttpParams();
     if (productId) params = params.set('productId', productId);
+    if (creatorSlug) params = params.set('creatorSlug', creatorSlug);
     return this.http.get<Review[]>(`${this.base}/reviews`, { params });
   }
 
@@ -510,6 +515,7 @@ export class BillingService {
     productId: string;
     quantity?: number;
     licenseTerm?: 'day' | 'month' | 'year';
+    couponCode?: string;
   }): Observable<{
     checkoutId: string;
     provider: string;
@@ -517,6 +523,8 @@ export class BillingService {
     quantity?: number;
     amount?: number;
     currency?: string;
+    couponCode?: string;
+    couponDiscount?: number;
     balance?: number;
     license?: IssuedLicense | null;
     emailSent?: boolean;
@@ -530,6 +538,8 @@ export class BillingService {
       quantity?: number;
       amount?: number;
       currency?: string;
+      couponCode?: string;
+      couponDiscount?: number;
       balance?: number;
       license?: IssuedLicense | null;
       emailSent?: boolean;
@@ -539,8 +549,40 @@ export class BillingService {
       productId: input.productId,
       quantity: input.quantity,
       licenseTerm: input.licenseTerm,
+      couponCode: input.couponCode,
       provider: 'wallet',
     });
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class CouponService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  list(): Observable<Coupon[]> {
+    return this.http.get<Coupon[]>(`${this.base}/coupons`);
+  }
+
+  create(body: Partial<Coupon> & { code: string; type: 'percent' | 'amount'; value: number }): Observable<Coupon> {
+    return this.http.post<Coupon>(`${this.base}/coupons`, body);
+  }
+
+  update(id: string, body: Partial<Coupon>): Observable<Coupon> {
+    return this.http.patch<Coupon>(`${this.base}/coupons/${id}`, body);
+  }
+
+  deactivate(id: string): Observable<Coupon> {
+    return this.http.delete<Coupon>(`${this.base}/coupons/${id}`);
+  }
+
+  preview(input: {
+    productId: string;
+    code: string;
+    quantity?: number;
+    licenseTerm?: string;
+  }): Observable<CouponPreview> {
+    return this.http.post<CouponPreview>(`${this.base}/coupons/preview`, input);
   }
 }
 
@@ -852,6 +894,32 @@ export class UploadService {
     const form = new FormData();
     form.append('audio', file, file.name);
     return this.http.post<UploadImageResult>(`${this.base}/uploads/audio`, form);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class ChatService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  conversations(): Observable<ChatConversation[]> {
+    return this.http.get<ChatConversation[]>(`${this.base}/chat/conversations`);
+  }
+
+  conversation(id: string): Observable<ChatConversation> {
+    return this.http.get<ChatConversation>(`${this.base}/chat/conversations/${id}`);
+  }
+
+  start(body: { productId: string; body?: string; imageUrl?: string }): Observable<ChatConversation> {
+    return this.http.post<ChatConversation>(`${this.base}/chat/conversations`, body);
+  }
+
+  messages(conversationId: string): Observable<ChatMessage[]> {
+    return this.http.get<ChatMessage[]>(`${this.base}/chat/conversations/${conversationId}/messages`);
+  }
+
+  send(conversationId: string, body: { body?: string; imageUrl?: string }): Observable<ChatMessage> {
+    return this.http.post<ChatMessage>(`${this.base}/chat/conversations/${conversationId}/messages`, body);
   }
 }
 

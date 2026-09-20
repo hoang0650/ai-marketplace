@@ -76,7 +76,12 @@
       <aside class="pd-buy">
         <div class="pd-buy__head">
           <p class="pd-buy__label">{{ 'pd.package' | t }}</p>
-          <p class="pd-buy__price">{{ displayPrice(p) }}</p>
+          <p class="pd-buy__price">
+            @if (hasCompareAt(p)) {
+              <span class="pd-buy__was">{{ compareAtLabel(p) }}</span>
+            }
+            {{ displayPrice(p) }}
+          </p>
           <p class="pd-buy__ok">{{ 'pd.inStock' | t }}</p>
         </div>
 
@@ -102,7 +107,7 @@
         <label class="pd-buy__section" for="pd-qty">{{ 'pd.qty' | t }}</label>
         <div class="pd-qty">
           <button type="button" (click)="bumpQty(-1)" aria-label="Decrease" [disabled]="isLicense(p.category)">−</button>
-          <input id="pd-qty" type="number" min="1" max="99" [(ngModel)]="qty" name="qty" [disabled]="isLicense(p.category)" />
+          <input id="pd-qty" type="number" min="1" max="99" [(ngModel)]="qty" name="qty" [disabled]="isLicense(p.category)" (ngModelChange)="couponPreview.set(null)" />
           <button type="button" (click)="bumpQty(1)" aria-label="Increase" [disabled]="isLicense(p.category)">+</button>
         </div>
 
@@ -110,7 +115,7 @@
           <label class="pd-buy__section">{{ 'pd.accessTerm' | t }}</label>
           <div class="pd-qty" style="display:flex;gap:0.5rem;flex-wrap:wrap">
             @for (t of licenseTerms; track t) {
-              <button type="button" class="btn" [class.btn-fill]="licenseTerm === t" (click)="licenseTerm = t">
+              <button type="button" class="btn" [class.btn-fill]="licenseTerm === t" (click)="licenseTerm = t; couponPreview.set(null)">
                 {{ t === 'day' ? ('pd.termDay' | t) : t === 'month' ? ('pd.termMonth' | t) : ('pd.termYear' | t) }}
               </button>
             }
@@ -193,18 +198,23 @@
             Buy now
           }
         </button>
+        @if (!isContentOwner()) {
+          <button type="button" class="pd-buy__chat" (click)="openSellerChat()" [disabled]="chatStarting()">
+            {{ 'chat.withSeller' | t }}
+          </button>
+        }
         <button type="button" class="pd-buy__cart" (click)="addToCart()">
           🛒 {{ 'lux.addToCart' | t }}
         </button>
 
         <div class="pd-coupon">
           <label class="pd-coupon__check">
-            <input type="checkbox" [(ngModel)]="useCoupon" name="useCoupon" />
-            Have a discount code?
+            <input type="checkbox" [(ngModel)]="useCoupon" name="useCoupon" (ngModelChange)="!useCoupon && couponPreview.set(null)" />
+            {{ 'pd.haveCoupon' | t }}
           </label>
           @if (useCoupon) {
             <div class="pd-coupon__row">
-              <input class="input" [(ngModel)]="couponCode" name="coupon" placeholder="Enter code" />
+              <input class="input" [(ngModel)]="couponCode" name="coupon" [placeholder]="'pd.couponPh' | t" (ngModelChange)="onCouponCodeChange($event)" />
               <button type="button" class="pd-coupon__apply" (click)="applyCoupon()">{{ 'pd.apply' | t }}</button>
             </div>
           }
@@ -215,13 +225,19 @@
             <span>{{ 'pd.subtotal' | t }}</span>
             <strong>{{ displayPrice(p, qty) }}</strong>
           </div>
+          @if (couponPreview(); as c) {
+            <div class="pd-total__row">
+              <span>{{ 'pd.discount' | t }} ({{ c.code }})</span>
+              <span>{{ couponDiscountLabel() }}</span>
+            </div>
+          }
           <div class="pd-total__row">
             <span>{{ 'pd.fee' | t }}</span>
             <span>{{ 'pd.free' | t }}</span>
           </div>
           <div class="pd-total__row pd-total__row--sum">
             <span>{{ 'pd.total' | t }}</span>
-            <strong>{{ displayPrice(p, qty) }}</strong>
+            <strong>{{ displayTotal(p) }}</strong>
           </div>
           <div class="pd-wallet">
             <span>{{ 'pd.showPrice' | t }}</span>

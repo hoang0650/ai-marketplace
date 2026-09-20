@@ -14,12 +14,12 @@ export const environment = {
   brandName: 'AI Markets',
   brandTagline: 'AI models, skill packs, and hire talent.',
   openclaw: {
+    audience: 'aimarkets',
+    publicUrlTemplate: 'https://{userId}.openclaw.aimarkets.vn',
     tenantId: '',
     uiBaseUrl: '',
     gatewayUrl: '',
     gatewayToken: '',
     bearerToken: '',
-
-    
   },
 };

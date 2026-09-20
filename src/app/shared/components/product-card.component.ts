@@ -742,15 +742,17 @@ export class ProductCardComponent {
   }
 
   get onSale(): boolean {
-    return !!this.product.featured || (this.product.salesCount || 0) > 50;
+    const p = this.product.pricing;
+    if (!p || p.model === 'free') return false;
+    const list = Number(p.compareAtPrice) || 0;
+    const now = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
+    return list > now;
   }
 
   get wasPrice(): string {
-    const p = this.product.pricing;
-    if (p.model === 'free') return '';
-    const usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
-    const inflated = Math.round(usd * 1.25 * 100) / 100;
-    return this.currencySvc.formatFromUsd(inflated, this.currency);
+    const list = Number(this.product.pricing?.compareAtPrice) || 0;
+    if (!(list > 0)) return '';
+    return this.currencySvc.formatFromUsd(list, this.currency);
   }
 
   get shopPrice(): string {

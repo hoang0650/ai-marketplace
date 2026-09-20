@@ -125,6 +125,8 @@ export interface Creator {
   rating: number;
   totalSales: number;
   revenue?: number;
+  reviewCount?: number;
+  joinedAt?: string;
 }
 
 export interface ProductPricing {
@@ -134,6 +136,7 @@ export interface ProductPricing {
   interval?: 'day' | 'month' | 'year';
   usageUnit?: string;
   usageRate?: number;
+  compareAtPrice?: number;
 }
 
 export interface ProductContentMeta {
@@ -274,6 +277,35 @@ export interface HomeFeed {
   bestsellers: Product[];
 }
 
+export interface Coupon {
+  id: string;
+  sellerId?: string;
+  code: string;
+  type: 'percent' | 'amount';
+  value: number;
+  productIds: string[];
+  minSubtotal: number;
+  maxDiscount: number;
+  startsAt: string | null;
+  endsAt: string | null;
+  maxUses: number;
+  maxUsesPerBuyer: number;
+  usedCount: number;
+  active: boolean;
+  createdAt?: string | null;
+}
+
+export interface CouponPreview {
+  ok: boolean;
+  code: string;
+  type: 'percent' | 'amount';
+  value: number;
+  subtotal: number;
+  discount: number;
+  total: number;
+  currency: string;
+}
+
 export interface ChangelogEntry {
   version: string;
   date: string;
@@ -283,6 +315,8 @@ export interface ChangelogEntry {
 export interface Review {
   id: string;
   productId: string;
+  productName?: string;
+  productSlug?: string;
   userId: string;
   userName: string;
   rating: number;
@@ -371,6 +405,32 @@ export interface Complaint {
   events: ComplaintEvent[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ChatConversation {
+  id: string;
+  productId: string;
+  productName: string;
+  productSlug: string;
+  productCover: string;
+  role: 'buyer' | 'seller';
+  otherId: string;
+  otherName: string;
+  lastMessage: string;
+  lastKind: 'text' | 'image';
+  lastMessageAt: string | null;
+  unread: number;
+  createdAt: string | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  kind: 'text' | 'image';
+  body: string;
+  imageUrl: string;
+  createdAt: string;
 }
 
 export interface SellerProfile {

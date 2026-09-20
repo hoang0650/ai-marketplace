@@ -255,8 +255,10 @@ export class MockDataStore {
     const paid = db.orders.filter((o) => o.status === 'paid');
     const totalGrossRevenue = paid.reduce((s, o) => s + o.amount, 0);
     const platformFeeRate = 0.2;
+    const sellerTaxRate = 0.1;
     const platformFee = Math.round(totalGrossRevenue * platformFeeRate * 100) / 100;
-    const sellerNet = Math.round((totalGrossRevenue - platformFee) * 100) / 100;
+    const sellerTax = Math.round((totalGrossRevenue - platformFee) * sellerTaxRate * 100) / 100;
+    const sellerNet = Math.round((totalGrossRevenue - platformFee - sellerTax) * 100) / 100;
 
     const bySeller = new Map<string, { shopName: string; creatorSlug: string; avatarUrl: string; orders: number; gross: number }>();
     for (const o of paid) {
@@ -295,6 +297,7 @@ export class MockDataStore {
       buyerDepositCount: deposits.length,
       shops: [...bySeller.entries()].map(([sellerId, row]) => {
         const fee = Math.round(row.gross * platformFeeRate * 100) / 100;
+        const tax = Math.round((row.gross - fee) * sellerTaxRate * 100) / 100;
         return {
           sellerId,
           shopName: row.shopName,
@@ -303,7 +306,8 @@ export class MockDataStore {
           orders: row.orders,
           grossRevenue: row.gross,
           platformFee: fee,
-          sellerNet: Math.round((row.gross - fee) * 100) / 100,
+          taxAmount: tax,
+          sellerNet: Math.round((row.gross - fee - tax) * 100) / 100,
         };
       }),
       usersList: db.users,

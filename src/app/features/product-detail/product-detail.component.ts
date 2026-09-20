@@ -7,16 +7,18 @@ import {
   ReviewService,
   WishlistService,
   BillingService,
+  CouponService,
   PlaygroundService,
   AgentChatService,
   DashboardService,
   UploadService,
   ContentService,
+  ChatService,
 } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
-import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode } from '../../models/marketplace.models';
+import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, CouponPreview } from '../../models/marketplace.models';
 import { isHireCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
@@ -69,6 +71,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly reviewsApi = inject(ReviewService);
   private readonly wishlistApi = inject(WishlistService);
   private readonly billing = inject(BillingService);
+  private readonly couponsApi = inject(CouponService);
   private readonly playgroundApi = inject(PlaygroundService);
   private readonly agentChatApi = inject(AgentChatService);
   private readonly seo = inject(SeoService);
@@ -78,6 +81,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly walletApi = inject(DashboardService);
   private readonly uploadApi = inject(UploadService);
   private readonly contentApi = inject(ContentService);
+  private readonly chatApi = inject(ChatService);
   private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
@@ -101,6 +105,7 @@ export class ProductDetailComponent implements OnInit {
   readonly unlockError = signal('');
   readonly unlocking = signal(false);
   readonly checkingOut = signal(false);
+  readonly chatStarting = signal(false);
   private playSeq = 0;
   readonly walletBalance = signal(0);
   readonly hasActiveLicense = computed(() => {
@@ -127,6 +132,7 @@ export class ProductDetailComponent implements OnInit {
   readonly licenseTerms = ['day', 'month', 'year'] as const;
   useCoupon = false;
   couponCode = '';
+  readonly couponPreview = signal<CouponPreview | null>(null);
   displayCurrency: AppCurrency = 'USD';
 
   readonly mediaList = computed(() => {
@@ -349,6 +355,9 @@ export class ProductDetailComponent implements OnInit {
         if (isLicenseCategory(p.category)) {
           this.loadMyLicense(p.id);
         }
+        this.couponPreview.set(null);
+        this.couponCode = '';
+        this.useCoupon = false;
         this.hireSent.set(false);
         this.skillInstalled.set(false);
         this.sessionLogs.set([]);
@@ -380,8 +389,51 @@ export class ProductDetailComponent implements OnInit {
     return this.currencySvc.formatFromUsd(usd, this.displayCurrency);
   }
 
+  unitUsd(p: Product): number {
+    const pr = p.pricing;
+    if (pr.model === 'free') return 0;
+    return isLicenseCategory(p.category)
+      ? this.licensePrice(p)
+      : pr.model === 'usage'
+        ? Number(pr.usageRate) || 0
+        : Number(pr.price) || 0;
+  }
+
+  hasCompareAt(p: Product): boolean {
+    const list = Number(p.pricing?.compareAtPrice) || 0;
+    return list > this.unitUsd(p);
+  }
+
+  compareAtLabel(p: Product): string {
+    return this.currencySvc.formatFromUsd(Number(p.pricing?.compareAtPrice) || 0, this.displayCurrency);
+  }
+
+  displayTotal(p: Product): string {
+    const preview = this.couponPreview();
+    if (preview && preview.code === this.couponCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')) {
+      return this.currencySvc.formatFromUsd(preview.total, this.displayCurrency);
+    }
+    return this.displayPrice(p, this.qty);
+  }
+
+  couponDiscountLabel(): string {
+    const preview = this.couponPreview();
+    if (!preview) return '';
+    return `−${this.currencySvc.formatFromUsd(preview.discount, this.displayCurrency)}`;
+  }
+
+  onCouponCodeChange(value: string): void {
+    const preview = this.couponPreview();
+    const normalized = String(value || '')
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '');
+    if (preview && preview.code !== normalized) this.couponPreview.set(null);
+  }
+
   bumpQty(delta: number): void {
     this.qty = Math.min(99, Math.max(1, this.qty + delta));
+    this.couponPreview.set(null);
   }
 
   prevMedia(): void {
@@ -397,11 +449,35 @@ export class ProductDetailComponent implements OnInit {
   }
 
   applyCoupon(): void {
-    if (!this.couponCode.trim()) {
-      this.checkoutMsg.set('Enter a discount code first.');
+    const p = this.product();
+    const code = this.couponCode.trim();
+    if (!p || !code) {
+      this.checkoutMsg.set(this.i18n.t('pd.couponNeedCode'));
       return;
     }
-    this.checkoutMsg.set(`Coupon "${this.couponCode.trim()}" noted (demo — not applied).`);
+    if (!this.auth.user()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { redirect: `/product/${p.slug}` } });
+      return;
+    }
+    this.couponsApi
+      .preview({
+        productId: p.id,
+        code,
+        quantity: isLicenseCategory(p.category) ? 1 : this.qty,
+        licenseTerm: isLicenseCategory(p.category) ? this.licenseTerm : undefined,
+      })
+      .subscribe({
+        next: (row) => {
+          this.couponPreview.set(row);
+          this.couponCode = row.code;
+          this.checkoutMsg.set(this.i18n.t('pd.couponOk', { code: row.code }));
+        },
+        error: (err) => {
+          this.couponPreview.set(null);
+          this.checkoutMsg.set(err?.error?.message || this.i18n.t('pd.couponFail'));
+        },
+      });
+  }
   }
 
   label(cat: ProductCategory): string {
@@ -1520,7 +1596,12 @@ export class ProductDetailComponent implements OnInit {
       : Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
     const licenseTerm = isLicenseCategory(p.category) ? this.licenseTerm : undefined;
     this.checkingOut.set(true);
-    this.billing.checkout({ productId: p.id, quantity, licenseTerm }).subscribe({
+    this.billing.checkout({
+      productId: p.id,
+      quantity,
+      licenseTerm,
+      couponCode: this.useCoupon ? this.couponCode.trim() || undefined : undefined,
+    }).subscribe({
       next: (res) => {
         this.checkingOut.set(false);
         if (res.license?.licenseKey) {
@@ -1575,6 +1656,33 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
     this.wishlistApi.toggle(p.id).subscribe();
+  }
+
+  openSellerChat(): void {
+    const p = this.product();
+    if (!p) return;
+    if (!this.auth.isAuthenticated()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+    if (this.isContentOwner()) {
+      this.checkoutMsg.set(this.i18n.t('chat.self'));
+      return;
+    }
+    this.chatStarting.set(true);
+    this.chatApi.start({ productId: p.id }).subscribe({
+      next: (c) => {
+        this.chatStarting.set(false);
+        void this.router.navigate(['/messages', c.id]);
+      },
+      error: (err) => {
+        this.chatStarting.set(false);
+        const code = err?.error?.code;
+        if (code === 'CHAT_SELF') this.checkoutMsg.set(this.i18n.t('chat.self'));
+        else if (code === 'LINKS_NOT_ALLOWED') this.checkoutMsg.set(this.i18n.t('chat.noLinks'));
+        else this.checkoutMsg.set(err?.error?.message || this.i18n.t('chat.err.send'));
+      },
+    });
   }
 
   addToCart(): void {

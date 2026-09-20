@@ -189,8 +189,13 @@ export class OpenClawGatewayService {
     );
   }
 
-  buildManualConnectUrl(gatewayUrl: string, token: string, password = ''): string {
-    const ui = (environment.openclaw?.uiBaseUrl || environment.openclaw?.gatewayUrl || '').replace(
+  buildManualConnectUrl(gatewayUrl: string, token: string, password = '', userId = ''): string {
+    const id = userId || this.auth.user()?.id || '';
+    const templated = String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn')
+      .replace(/\{userId\}/g, id)
+      .replace(/\{tenant\}/g, id)
+      .replace(/\/$/, '');
+    const ui = (environment.openclaw?.uiBaseUrl || templated || environment.openclaw?.gatewayUrl || '').replace(
       /\/$/,
       '',
     );
@@ -202,36 +207,26 @@ export class OpenClawGatewayService {
       password: password || '',
       autoConnect: 'true',
       autoApprove: 'true',
-      session: 'main',
+      session: id ? `market-${id}` : 'main',
+      audience: 'aimarkets',
     });
+    if (id) hash.set('userId', id);
     return `${base}/#${hash.toString()}`;
   }
 
   approvePairing(requestId?: string | null): Observable<{ success: boolean; message?: string }> {
-    const oc = environment.openclaw || {};
-    const tenantId = oc.tenantId || '';
-    const params = new HttpParams()
-      .set('tenant_id', tenantId)
-      .set('current_hotel_id', tenantId)
-      .set('selected_hotel_id', tenantId);
-    const body = {
-      request_id: requestId || null,
-      requestId: requestId || null,
-      client_id: null,
-      clientId: null,
-      client_mode: null,
-      clientMode: null,
-      role: 'operator',
-      scopes: ['operator.read', 'operator.write', 'operator.admin', 'operator.pairing'],
-      tenant_id: tenantId,
-      current_hotel_id: tenantId,
-      selected_hotel_id: tenantId,
-    };
+    const userId = this.auth.user()?.id || '';
     return this.http
       .post<{ success: boolean; message?: string }>(
-        `${environment.aiUrl}/admin/openclaw/device-pairings/approve`,
-        body,
-        { params, headers: this.authHeaders() },
+        `${environment.apiUrl}/openclaw/device-pairings/approve`,
+        {
+          request_id: requestId || null,
+          requestId: requestId || null,
+          role: 'operator',
+          scopes: ['operator.read', 'operator.write', 'operator.admin', 'operator.pairing'],
+          user_id: userId,
+        },
+        { headers: this.authHeaders() },
       )
       .pipe(catchError(() => of({ success: false, message: 'Approve failed' })));
   }
@@ -296,19 +291,15 @@ export class OpenClawGatewayService {
         catchError(() => this.fetchDirectUrl(userId)),
         map((res) => {
           if (res?.success && res.url) return res;
-          return this.fallbackHashUrl();
+          return this.fallbackHashUrl(userId);
         }),
       );
   }
 
   private fetchDirectUrl(userId?: string): Observable<OpenClawLaunchResult> {
-    const oc = environment.openclaw || {};
-    const tenantId = oc.tenantId || '';
-    let params = new HttpParams()
-      .set('tenant_id', tenantId)
-      .set('current_hotel_id', tenantId)
-      .set('selected_hotel_id', tenantId);
-    if (userId) params = params.set('user_id', userId);
+    const id = userId || this.auth.user()?.id || '';
+    let params = new HttpParams().set('audience', 'aimarkets');
+    if (id) params = params.set('user_id', id);
 
     return this.http
       .get<OpenClawLaunchResult>(`${environment.aiUrl}/admin/openclaw/direct-url`, {
@@ -316,25 +307,30 @@ export class OpenClawGatewayService {
         headers: this.authHeaders(),
       })
       .pipe(
-        catchError(() => of(this.fallbackHashUrl())),
-        map((res) => (res?.success && res.url ? res : this.fallbackHashUrl())),
+        catchError(() => of(this.fallbackHashUrl(id))),
+        map((res) => (res?.success && res.url ? res : this.fallbackHashUrl(id))),
       );
   }
 
-  private fallbackHashUrl(): OpenClawLaunchResult {
+  private fallbackHashUrl(userId?: string): OpenClawLaunchResult {
     const oc = environment.openclaw || {};
-    const gatewayUrl = oc.gatewayUrl || '';
+    const id = userId || this.auth.user()?.id || '';
+    const ui = String(oc.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn')
+      .replace(/\{userId\}/g, id)
+      .replace(/\{tenant\}/g, id)
+      .replace(/\/$/, '');
+    const gatewayUrl = oc.gatewayUrl || (id ? ui.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:') : '');
     const token = oc.gatewayToken || '';
-    if (!gatewayUrl || !token) {
+    if (!gatewayUrl || !token || !id) {
       return {
         success: false,
         message:
-          'OpenClaw gateway is not configured. Set openclaw.gatewayUrl + gatewayToken in environment, or configure /v1/openclaw/launch.',
+          'OpenClaw gateway is not configured. Sign in and set OPENCLAW_GATEWAY_TOKEN, or configure /v1/openclaw/launch.',
       };
     }
     return {
       success: true,
-      url: this.buildManualConnectUrl(gatewayUrl, token),
+      url: this.buildManualConnectUrl(gatewayUrl, token, token, id),
       gatewayUrl,
       token,
     };

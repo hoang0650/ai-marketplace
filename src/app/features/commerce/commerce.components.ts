@@ -83,7 +83,7 @@ export class AffiliateComponent implements OnInit {
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
       <p class="mt-2 max-w-2xl text-muted">
-        GMV, phí sàn (commission, mặc định 20%), phí CHPlay/App Store (IAP), thuế khấu trừ và seller payable theo snapshot đơn — không tính lại 80% trên tổng GMV.
+        GMV, phí sàn 20%, thuế 10% trên 80% doanh thu seller (8% đơn), phí CHPlay/App Store (IAP) và seller payable theo snapshot đơn.
       </p>
 
       @if (data(); as d) {
@@ -96,7 +96,7 @@ export class AffiliateComponent implements OnInit {
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Phí sàn (commission)</p>
             <p class="mt-2 font-display text-3xl">{{ d.platformFee | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">Mặc định {{ d.platformFeeRate | percent }} — không phải thuế</p>
+            <p class="mt-1 text-xs text-muted">Mặc định {{ d.platformFeeRate | percent }} — thuế 10% tính riêng trên 80% seller</p>
           </div>
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Seller payable (net)</p>
