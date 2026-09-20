@@ -20,6 +20,7 @@ import {
   Product,
   Review,
   UsageStat,
+  BuyerUsageFeed,
   WalletSummary,
   WalletTx,
   AdminWalletTxList,
@@ -262,6 +263,10 @@ export class DashboardService {
 
   usage(): Observable<UsageStat[]> {
     return this.http.get<UsageStat[]>(`${this.base}/usage`);
+  }
+
+  myUsage(limit = 100): Observable<BuyerUsageFeed> {
+    return this.http.get<BuyerUsageFeed>(`${this.base}/usage/me`, { params: { limit: String(limit) } });
   }
 
   wallet(): Observable<WalletTx[]> {

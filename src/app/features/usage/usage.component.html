@@ -1,0 +1,87 @@
+<section class="usage page route-enter">
+  <div class="usage-hero">
+    <div>
+      <h1>{{ 'usage.title' | t }}</h1>
+      <p>{{ 'usage.sub' | t }}</p>
+    </div>
+    <a routerLink="/wallet" class="usage-hero__wallet">{{ 'usage.toWallet' | t }}</a>
+  </div>
+
+  @if (error()) {
+    <p class="usage-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="usage-stats" aria-live="polite">
+    <div class="usage-stat">
+      <p class="label">{{ 'usage.stat.charged' | t }}</p>
+      <p class="value">{{ summary().totalCharged | currency: currency(): 'symbol-narrow': '1.2-6' }}</p>
+    </div>
+    <div class="usage-stat">
+      <p class="label">{{ 'usage.stat.tokens' | t }}</p>
+      <p class="value">{{ summary().totalTokens | number }}</p>
+    </div>
+    <div class="usage-stat">
+      <p class="label">{{ 'usage.stat.input' | t }}</p>
+      <p class="value">{{ summary().totalInputTokens | number }}</p>
+    </div>
+    <div class="usage-stat">
+      <p class="label">{{ 'usage.stat.output' | t }}</p>
+      <p class="value">{{ summary().totalOutputTokens | number }}</p>
+    </div>
+    <div class="usage-stat">
+      <p class="label">{{ 'usage.stat.requests' | t }}</p>
+      <p class="value">{{ summary().requests | number }}</p>
+    </div>
+  </div>
+
+  <div class="usage-panel">
+    <div class="usage-panel__head">
+      <h2>{{ 'usage.list.title' | t }}</h2>
+      <button type="button" class="usage-refresh" (click)="reload()" [disabled]="loading()">
+        {{ 'usage.refresh' | t }}
+      </button>
+    </div>
+
+    @if (loading()) {
+      <p class="usage-empty">{{ 'usage.loading' | t }}</p>
+    } @else if (!items().length) {
+      <p class="usage-empty">{{ 'usage.empty' | t }}</p>
+    } @else {
+      <div class="usage-table-wrap">
+        <table class="usage-table">
+          <thead>
+            <tr>
+              <th>{{ 'usage.col.time' | t }}</th>
+              <th>{{ 'usage.col.source' | t }}</th>
+              <th>{{ 'usage.col.detail' | t }}</th>
+              <th class="num">{{ 'usage.col.in' | t }}</th>
+              <th class="num">{{ 'usage.col.out' | t }}</th>
+              <th class="num">{{ 'usage.col.amount' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of items(); track row.id) {
+              <tr>
+                <td [attr.data-label]="'usage.col.time' | t">{{ row.createdAt | date: 'short' }}</td>
+                <td [attr.data-label]="'usage.col.source' | t">
+                  <span class="pill">{{ sourceLabel(row) }}</span>
+                </td>
+                <td [attr.data-label]="'usage.col.detail' | t">
+                  <strong>{{ titleFor(row) }}</strong>
+                  @if (row.note && row.note !== titleFor(row)) {
+                    <span class="muted">{{ row.note }}</span>
+                  }
+                </td>
+                <td class="num" [attr.data-label]="'usage.col.in' | t">{{ row.inputTokens | number }}</td>
+                <td class="num" [attr.data-label]="'usage.col.out' | t">{{ row.outputTokens | number }}</td>
+                <td class="num amount" [attr.data-label]="'usage.col.amount' | t">
+                  −{{ row.amount | currency: row.currency || currency(): 'symbol-narrow': '1.2-6' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>

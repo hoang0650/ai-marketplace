@@ -49,6 +49,19 @@
   font-weight: 800;
 }
 
+.wallet-hero__usage {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #444;
+  text-decoration: none;
+}
+
+.wallet-hero__usage:hover {
+  text-decoration: underline;
+}
+
 .wallet-hero__art {
   width: 88px;
   height: 88px;

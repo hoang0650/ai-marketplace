@@ -82,7 +82,7 @@ export class MyAgentsComponent implements OnInit {
   }
 
   isOpenClawHired(row: HiredAgent): boolean {
-    return this.gateway.isOpenClawAgent(this.gateway.getAgent(row.agentId) || { id: row.agentId, slug: row.slug });
+    return this.gateway.isLaunchableAgent(this.gateway.getAgent(row.agentId) || { id: row.agentId, slug: row.slug });
   }
 
   launch(row: HiredAgent): void {
@@ -91,13 +91,13 @@ export class MyAgentsComponent implements OnInit {
       this.status.set('Agent definition not found.');
       return;
     }
-    if (!this.gateway.isOpenClawAgent(agent)) {
+    if (!this.gateway.isLaunchableAgent(agent)) {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
-    this.status.set(`Opening OpenClaw at ${this.gateway.aimarketsHost()}…`);
+    this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
-      this.status.set(res.success ? 'Gateway opened — auto-approving device pairing…' : res.message || 'Launch failed');
+      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
       this.reload();
     });
   }
@@ -116,6 +116,7 @@ export class MyAgentsComponent implements OnInit {
         <div class="agents-header__actions">
           <a routerLink="/hire-agent" class="agents-btn agents-btn--ghost">Manage agents</a>
           <a routerLink="/product/openclaw-ops-agent" class="agents-btn agents-btn--primary">+ Hire OpenClaw</a>
+          <a routerLink="/product/hermes-ops-agent" class="agents-btn agents-btn--ghost">+ Hire Hermes</a>
         </div>
       </div>
 
@@ -141,17 +142,17 @@ export class MyAgentsComponent implements OnInit {
                 type="button"
                 class="agents-btn agents-btn--launch"
                 (click)="launch(agent)"
-                [disabled]="busyId() === agent.id || !agent.openclawGateway"
-                [attr.title]="agent.openclawGateway ? 'Open Control UI' : gateway.comingSoonMessage(agent)"
+                [disabled]="busyId() === agent.id || !canLaunch(agent)"
+                [attr.title]="canLaunch(agent) ? 'Open Control UI / Dashboard' : gateway.comingSoonMessage(agent)"
               >
-                {{ agent.openclawGateway ? '🚀 Launch' : 'Soon' }}
+                {{ canLaunch(agent) ? '🚀 Launch' : 'Soon' }}
               </button>
               <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', agent.id]">Details</a>
             </div>
-            @if (agent.openclawGateway) {
-              <p class="agent-card__hint">Opens {{ gateway.aimarketsHost() || '{userId}.openclaw.aimarkets.vn' }}</p>
+            @if (canLaunch(agent)) {
+              <p class="agent-card__hint">Opens {{ hostFor(agent) }}</p>
             } @else {
-              <p class="agent-card__hint">Setup later — OpenClaw is live now</p>
+              <p class="agent-card__hint">Setup later — OpenClaw &amp; Hermes are live now</p>
             }
           </article>
         } @empty {
@@ -172,8 +173,17 @@ export class AgentMarketplaceComponent implements OnInit {
   readonly agents = signal<MarketplaceAgent[]>([]);
   readonly busyId = signal('');
   readonly status = signal('');
+  readonly hostExample = '{userId}.openclaw.aimarkets.vn';
   publicCount = 0;
   internalCount = 0;
+
+  canLaunch(agent: MarketplaceAgent): boolean {
+    return this.gateway.isLaunchableAgent(agent);
+  }
+
+  hostFor(agent: MarketplaceAgent): string {
+    return this.gateway.aimarketsHost(undefined, agent) || this.hostExample;
+  }
 
   ngOnInit(): void {
     this.seo.set({ title: 'Agent Marketplace' });
@@ -192,19 +202,15 @@ export class AgentMarketplaceComponent implements OnInit {
   }
 
   launch(agent: MarketplaceAgent): void {
-    if (!this.gateway.isOpenClawAgent(agent)) {
+    if (!this.gateway.isLaunchableAgent(agent)) {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
     this.busyId.set(agent.id);
-    this.status.set(`Opening OpenClaw at ${this.gateway.aimarketsHost()}…`);
+    this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.busyId.set('');
-      this.status.set(
-        res.success
-          ? 'OpenClaw Control UI opened — auto-approving pairing…'
-          : res.message || 'Launch failed',
-      );
+      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
     });
   }
 }
@@ -224,9 +230,9 @@ export class AgentMarketplaceComponent implements OnInit {
             <h1 class="agents-title">{{ hired()?.name || a.name }}</h1>
           </div>
           <div class="agents-header__actions">
-            @if (isOpenClaw()) {
+            @if (isLaunchable()) {
               <button type="button" class="agents-btn agents-btn--primary" (click)="launch()" [disabled]="busy()">
-                {{ busy() ? 'Opening…' : 'Launch OpenClaw' }}
+                {{ busy() ? 'Opening…' : (isHermes() ? 'Launch Hermes' : 'Launch OpenClaw') }}
               </button>
             }
           </div>
@@ -256,16 +262,18 @@ export class AgentMarketplaceComponent implements OnInit {
               <h2 class="font-display text-xl">Web Endpoints</h2>
               <p class="text-sm text-muted">Access your agent's web interfaces.</p>
               <div class="mt-4 flex flex-wrap gap-2">
-                @if (isOpenClaw()) {
+                @if (isLaunchable()) {
                   <a class="agents-btn agents-btn--outline" [routerLink]="['/hire-agent', a.id, 'setup']">Setup Wizard</a>
-                  <button type="button" class="agents-btn agents-btn--outline" (click)="launch()">OpenClaw UI</button>
+                  <button type="button" class="agents-btn agents-btn--outline" (click)="launch()">
+                    {{ isHermes() ? 'Hermes Dashboard' : 'OpenClaw UI' }}
+                  </button>
                 } @else {
                   <p class="text-sm text-muted">{{ gateway.comingSoonMessage(a) }}</p>
                 }
               </div>
             </div>
 
-            @if (isOpenClaw()) {
+            @if (isLaunchable()) {
             <div class="panel agents-panel mt-4">
               <h2 class="font-display text-xl">SSH Access</h2>
               <p class="text-sm text-muted">
@@ -348,27 +356,29 @@ export class AgentMarketplaceComponent implements OnInit {
           <aside class="panel agents-panel detail-guide">
             <p class="text-xs uppercase tracking-wider text-muted">Contextual Guide</p>
             <p class="mt-1 text-sm text-muted">Viewing: Marketplace Item</p>
-            <div class="guide-video mt-4">Getting Started with OpenClaw</div>
+            <div class="guide-video mt-4">{{ isHermes() ? 'Getting Started with Hermes' : 'Getting Started with OpenClaw' }}</div>
             <div class="mt-4 space-y-4 text-sm text-muted">
               <div>
-                <p class="font-semibold text-ink">What is OpenClaw?</p>
-                <p>Operator agent with Control UI, skills, and multi-channel tools.</p>
-              </div>
-              <div>
-                <p class="font-semibold text-ink">Managed OpenClaw</p>
-                <p>Launch opens the gateway with token hash + auto device pairing.</p>
-              </div>
-              <div>
-                <p class="font-semibold text-ink">Channels</p>
-                <p>Slack, Discord, Telegram, WhatsApp — connect in Setup Wizard.</p>
+                <p class="font-semibold text-ink">{{ isHermes() ? 'What is Hermes?' : 'What is OpenClaw?' }}</p>
+                <p>
+                  {{
+                    isHermes()
+                      ? 'Self-improving agent with web dashboard, messaging gateway, and skills.'
+                      : 'Operator agent with Control UI, skills, and multi-channel tools.'
+                  }}
+                </p>
               </div>
               <div>
                 <p class="font-semibold text-ink">Host</p>
-                <p>Control UI: {userId}.openclaw.aimarkets.vn (session market-{userId}).</p>
+                <p>
+                  {{ isHermes() ? 'Dashboard' : 'Control UI' }}:
+                  {{ '{' }}userId{{ '}' }}.{{ isHermes() ? 'hermes' : 'openclaw' }}.aimarkets.vn
+                  (session market-{{ '{' }}userId{{ '}' }}).
+                </p>
               </div>
               <div>
                 <p class="font-semibold text-ink">Pricing</p>
-                <p>Hire via OpenClaw Ops Agent product or launch a marketplace seat.</p>
+                <p>Provider cost + 25% markup on OpenRouter/Featherless models.</p>
               </div>
             </div>
           </aside>
@@ -407,6 +417,14 @@ export class AgentDetailComponent implements OnInit {
     return this.gateway.isOpenClawAgent(this.agent());
   }
 
+  isHermes(): boolean {
+    return this.gateway.isHermesAgent(this.agent());
+  }
+
+  isLaunchable(): boolean {
+    return this.gateway.isLaunchableAgent(this.agent());
+  }
+
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       const id = params.get('agentId') || '';
@@ -414,17 +432,17 @@ export class AgentDetailComponent implements OnInit {
       this.agent.set(agent);
       this.hired.set(this.gateway.getHired(id) || null);
       this.ssh.set(null);
-      this.sshPlaceholder = this.gateway.sshHostHint();
-      this.sshHost = this.gateway.sshHostHint().includes('{userId}') ? '' : this.gateway.sshHostHint();
-      const host = this.gateway.aimarketsHost();
+      this.sshPlaceholder = this.gateway.sshHostHint(undefined, agent);
+      this.sshHost = this.sshPlaceholder.includes('{userId}') ? '' : this.sshPlaceholder;
+      const host = this.gateway.aimarketsHost(undefined, agent);
       this.wsUrl = host.includes('{userId}') ? '' : `wss://${host}`;
       if (agent) {
         this.seo.set({ title: agent.name, description: agent.description });
-        if (this.gateway.isOpenClawAgent(agent) && !this.hired()) {
+        if (this.gateway.isLaunchableAgent(agent) && !this.hired()) {
           this.gateway.upsertHired(agent, 'running');
         }
         this.hired.set(this.gateway.getHired(agent.id) || null);
-        if (this.gateway.isOpenClawAgent(agent)) {
+        if (this.gateway.isLaunchableAgent(agent)) {
           this.gateway.getActiveSsh(agent.id).subscribe((res) => {
             if (res.active && res.session) {
               this.ssh.set({ ...res.session, success: true });
@@ -437,24 +455,22 @@ export class AgentDetailComponent implements OnInit {
 
   launch(): void {
     const agent = this.agent();
-    if (!agent || !this.gateway.isOpenClawAgent(agent)) {
+    if (!agent || !this.gateway.isLaunchableAgent(agent)) {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
     this.busy.set(true);
-    this.status.set(`Opening OpenClaw at ${this.gateway.aimarketsHost()}…`);
+    this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.busy.set(false);
       this.hired.set(this.gateway.getHired(agent.id) || null);
-      this.status.set(
-        res.success ? 'Gateway opened — auto-approving device pairing…' : res.message || 'Launch failed',
-      );
+      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
     });
   }
 
   generateSsh(): void {
     const agent = this.agent();
-    if (!agent || !this.gateway.isOpenClawAgent(agent)) {
+    if (!agent || !this.gateway.isLaunchableAgent(agent)) {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
@@ -471,10 +487,10 @@ export class AgentDetailComponent implements OnInit {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
         } else {
-          this.status.set(
-            res.message ||
-              'SSH generate failed. Login and set OPENCLAW_SSH_HOST_TEMPLATE={userId}.openclaw.aimarkets.vn.',
-          );
+          const hint = this.isHermes()
+            ? 'HERMES_SSH_HOST_TEMPLATE={userId}.hermes.aimarkets.vn'
+            : 'OPENCLAW_SSH_HOST_TEMPLATE={userId}.openclaw.aimarkets.vn';
+          this.status.set(res.message || `SSH generate failed. Login and set ${hint}.`);
         }
       });
   }

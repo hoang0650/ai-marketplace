@@ -217,6 +217,7 @@
         </button>
         @if (auth.isAuthenticated()) {
           <a routerLink="/wallet" class="icon-btn hidden sm:inline-flex" [title]="'nav.wallet' | t">💳</a>
+          <a routerLink="/usage" class="icon-btn hidden sm:inline-flex" [title]="'nav.usage' | t">📊</a>
           <div class="noti-menu" [class.open]="notiOpen()">
             <button type="button" class="icon-btn" [attr.aria-expanded]="notiOpen()" (click)="toggleNoti($event)">
               🔔
@@ -258,6 +259,8 @@
                 </div>
                 <ul class="user-menu__list">
                   <li><a routerLink="/profile" (click)="closeUserMenu()">{{ 'nav.profile' | t }}</a></li>
+                  <li><a routerLink="/wallet" (click)="closeUserMenu()">{{ 'nav.wallet' | t }}</a></li>
+                  <li><a routerLink="/usage" (click)="closeUserMenu()">{{ 'nav.usage' | t }}</a></li>
                   <li><a routerLink="/messages" (click)="closeUserMenu()">{{ 'nav.messages' | t }}</a></li>
                   @if (auth.isAdmin()) {
                     <li><a routerLink="/admin" (click)="closeUserMenu()">{{ 'nav.admin' | t }}</a></li>

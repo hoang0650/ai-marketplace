@@ -6,11 +6,12 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { Order, User, WalletTx } from '../../models/marketplace.models';
 import { environment } from '../../../environments/environment';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, DatePipe],
+  imports: [RouterLink, CurrencyPipe, DatePipe, TPipe],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })

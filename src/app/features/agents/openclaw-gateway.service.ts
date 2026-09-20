@@ -14,13 +14,16 @@ export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
     id: 'hermes',
     slug: 'hermes-agent',
     name: 'Hermes Agent',
-    description: 'Building persistent, self-improving AI systems with multi-channel delivery.',
+    description:
+      'AI Markets Hermes dashboard on {userId}.hermes.aimarkets.vn — OpenRouter/Featherless models (provider cost + 25%).',
     icon: 'hermes',
     logoUrl: '/agents/hermes.png',
     version: '1.4.0',
-    model: 'MiniMaxAI/MiniMax-M2.5',
-    docsUrl: 'https://docs.openclaw.ai',
+    model: 'openrouter/openrouter/free',
+    docsUrl: 'https://hermes-agent.nousresearch.com/docs/',
     public: true,
+    hireProductSlug: 'hermes-ops-agent',
+    hermesGateway: true,
   },
   {
     id: 'nano-claw',
@@ -113,17 +116,35 @@ export class OpenClawGatewayService {
     return id === 'openclaw';
   }
 
-  comingSoonMessage(agent?: MarketplaceAgent | null): string {
-    const name = agent?.name || 'This agent';
-    return `${name} setup is coming later. Only OpenClaw launches Control UI at {userId}.openclaw.aimarkets.vn for now.`;
+  isHermesAgent(agent?: { id?: string; slug?: string; hermesGateway?: boolean } | null): boolean {
+    if (!agent) return false;
+    if ((agent as MarketplaceAgent).hermesGateway) return true;
+    const id = String(agent.id || agent.slug || '').toLowerCase();
+    return id === 'hermes' || id === 'hermes-agent';
   }
 
-  aimarketsHost(userId?: string): string {
+  /** OpenClaw or Hermes — Launch enabled on marketplace. */
+  isLaunchableAgent(
+    agent?: { id?: string; slug?: string; openclawGateway?: boolean; hermesGateway?: boolean } | null,
+  ): boolean {
+    return this.isOpenClawAgent(agent) || this.isHermesAgent(agent);
+  }
+
+  comingSoonMessage(agent?: MarketplaceAgent | null): string {
+    const name = agent?.name || 'This agent';
+    return `${name} setup is coming later. OpenClaw ({userId}.openclaw.aimarkets.vn) and Hermes ({userId}.hermes.aimarkets.vn) are live now.`;
+  }
+
+  aimarketsHost(userId?: string, agent?: MarketplaceAgent | null): string {
     const id = String(userId || this.auth.user()?.id || '')
       .trim()
       .toLowerCase();
-    const template = String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
-    if (!id) return '{userId}.openclaw.aimarkets.vn';
+    const hermes = this.isHermesAgent(agent);
+    const template = hermes
+      ? String(environment.hermes?.publicUrlTemplate || 'https://{userId}.hermes.aimarkets.vn')
+      : String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
+    const fallback = hermes ? '{userId}.hermes.aimarkets.vn' : '{userId}.openclaw.aimarkets.vn';
+    if (!id) return fallback;
     return template
       .replace(/\{userId\}/gi, id)
       .replace(/\{tenant\}/gi, id)
@@ -131,8 +152,8 @@ export class OpenClawGatewayService {
       .replace(/\/$/, '');
   }
 
-  sshHostHint(userId?: string): string {
-    return this.aimarketsHost(userId);
+  sshHostHint(userId?: string, agent?: MarketplaceAgent | null): string {
+    return this.aimarketsHost(userId, agent);
   }
 
   listHired(): HiredAgent[] {
@@ -185,41 +206,48 @@ export class OpenClawGatewayService {
    * open blank tab → fetch direct-url → navigate → auto-approve pairing.
    */
   launchGateway(opts?: { agent?: MarketplaceAgent; userId?: string }): Observable<OpenClawLaunchResult> {
-    if (opts?.agent && !this.isOpenClawAgent(opts.agent)) {
+    if (opts?.agent && !this.isLaunchableAgent(opts.agent)) {
       return of({ success: false, message: this.comingSoonMessage(opts.agent) });
     }
     if (!this.auth.isAuthenticated()) {
       if (isPlatformBrowser(this.platformId)) {
         void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
       }
+      const hostHint = this.isHermesAgent(opts?.agent)
+        ? '{userId}.hermes.aimarkets.vn'
+        : '{userId}.openclaw.aimarkets.vn';
       return of({
         success: false,
-        message: 'Sign in to launch OpenClaw on {userId}.openclaw.aimarkets.vn.',
+        message: `Sign in to launch on ${hostHint}.`,
       });
     }
     const userId = opts?.userId || this.auth.user()?.id;
     if (!userId) {
       return of({
         success: false,
-        message: 'OpenClaw needs a signed-in marketplace user id for {userId}.openclaw.aimarkets.vn.',
+        message: 'A signed-in marketplace user id is required.',
       });
     }
     if (this.opening) {
-      return of({ success: false, message: 'OpenClaw is already launching…' });
+      return of({ success: false, message: 'Agent is already launching…' });
     }
     this.opening = true;
     this.clearApproveTimers();
 
     const newTab = isPlatformBrowser(this.platformId) ? window.open('about:blank', '_blank') : null;
+    const agent = opts?.agent || this.getAgent('openclaw');
+    const hermes = this.isHermesAgent(agent);
 
-    return this.resolveLaunchUrl(userId).pipe(
+    return this.resolveLaunchUrl(userId, agent).pipe(
       tap((res) => {
         this.opening = false;
         if (res.success && res.url && isPlatformBrowser(this.platformId)) {
           if (opts?.agent) this.upsertHired(opts.agent, 'running');
           if (newTab) newTab.location.href = res.url;
           else window.open(res.url, '_blank');
-          this.approveDelayTimer(800, () => this.triggerAutoApprove(30, 1000));
+          if (!hermes) {
+            this.approveDelayTimer(800, () => this.triggerAutoApprove(30, 1000));
+          }
         } else if (newTab) {
           newTab.close();
         }
@@ -233,7 +261,7 @@ export class OpenClawGatewayService {
             err?.error?.detail ||
             err?.error?.message ||
             err?.message ||
-            'Failed to launch OpenClaw gateway',
+            (hermes ? 'Failed to launch Hermes dashboard' : 'Failed to launch OpenClaw gateway'),
         });
       }),
     );
@@ -264,11 +292,16 @@ export class OpenClawGatewayService {
     return `${base}/#${hash.toString()}`;
   }
 
-  approvePairing(requestId?: string | null): Observable<{ success: boolean; message?: string }> {
+  approvePairing(
+    requestId?: string | null,
+    agent?: MarketplaceAgent | null,
+  ): Observable<{ success: boolean; message?: string }> {
     const userId = this.auth.user()?.id || '';
+    const hermes = this.isHermesAgent(agent);
+    const path = hermes ? 'hermes' : 'openclaw';
     return this.http
       .post<{ success: boolean; message?: string }>(
-        `${environment.apiUrl}/openclaw/device-pairings/approve`,
+        `${environment.apiUrl}/${path}/device-pairings/approve`,
         {
           request_id: requestId || null,
           requestId: requestId || null,
@@ -288,11 +321,13 @@ export class OpenClawGatewayService {
     port?: number;
     username?: string;
   }): Observable<OpenClawSshAccess> {
+    const agentId = input?.agentId || 'openclaw';
+    const path = this.isHermesAgent({ id: agentId }) ? 'hermes' : 'openclaw';
     return this.http
       .post<OpenClawSshAccess>(
-        `${environment.apiUrl}/openclaw/ssh/generate`,
+        `${environment.apiUrl}/${path}/ssh/generate`,
         {
-          agentId: input?.agentId || 'openclaw',
+          agentId,
           host: input?.host || undefined,
           port: input?.port || undefined,
           username: input?.username || undefined,
@@ -310,9 +345,10 @@ export class OpenClawGatewayService {
   }
 
   getActiveSsh(agentId = 'openclaw'): Observable<OpenClawSshAccess> {
+    const path = this.isHermesAgent({ id: agentId }) ? 'hermes' : 'openclaw';
     const params = new HttpParams().set('agentId', agentId);
     return this.http
-      .get<OpenClawSshAccess>(`${environment.apiUrl}/openclaw/ssh/active`, {
+      .get<OpenClawSshAccess>(`${environment.apiUrl}/${path}/ssh/active`, {
         params,
         headers: this.authHeaders(),
       })
@@ -320,28 +356,33 @@ export class OpenClawGatewayService {
   }
 
   revokeSsh(agentId = 'openclaw'): Observable<{ success: boolean }> {
+    const path = this.isHermesAgent({ id: agentId }) ? 'hermes' : 'openclaw';
     return this.http
       .post<{ success: boolean }>(
-        `${environment.apiUrl}/openclaw/ssh/revoke`,
+        `${environment.apiUrl}/${path}/ssh/revoke`,
         { agentId },
         { headers: this.authHeaders() },
       )
       .pipe(catchError(() => of({ success: false })));
   }
 
-  private resolveLaunchUrl(userId?: string): Observable<OpenClawLaunchResult> {
-    // 1) Marketplace API proxy (preferred when Nest/AI secrets live server-side)
+  private resolveLaunchUrl(
+    userId?: string,
+    agent?: MarketplaceAgent | null,
+  ): Observable<OpenClawLaunchResult> {
+    const hermes = this.isHermesAgent(agent);
+    const path = hermes ? 'hermes' : 'openclaw';
     return this.http
       .post<OpenClawLaunchResult>(
-        `${environment.apiUrl}/openclaw/launch`,
+        `${environment.apiUrl}/${path}/launch`,
         { userId: userId || null },
         { headers: this.authHeaders() },
       )
       .pipe(
-        catchError(() => this.fetchDirectUrl(userId)),
+        catchError(() => (hermes ? of(this.fallbackHermesUrl(userId)) : this.fetchDirectUrl(userId))),
         map((res) => {
           if (res?.success && res.url) return res;
-          return this.fallbackHashUrl(userId);
+          return hermes ? this.fallbackHermesUrl(userId) : this.fallbackHashUrl(userId);
         }),
       );
   }
@@ -384,6 +425,27 @@ export class OpenClawGatewayService {
       gatewayUrl,
       token,
     };
+  }
+
+  private fallbackHermesUrl(userId?: string): OpenClawLaunchResult {
+    const hm = environment.hermes || {};
+    const id = userId || this.auth.user()?.id || '';
+    if (!id) {
+      return { success: false, message: 'Sign in to launch Hermes.' };
+    }
+    const ui = String(hm.publicUrlTemplate || 'https://{userId}.hermes.aimarkets.vn')
+      .replace(/\{userId\}/g, id)
+      .replace(/\{tenant\}/g, id)
+      .replace(/\/$/, '');
+    const token = hm.gatewayToken || '';
+    const qs = new URLSearchParams({
+      userId: id,
+      audience: 'aimarkets',
+      session: `market-${id}`,
+      autoConnect: 'true',
+    });
+    if (token) qs.set('token', token);
+    return { success: true, url: `${ui}/?${qs.toString()}`, token };
   }
 
   private authHeaders(): HttpHeaders {

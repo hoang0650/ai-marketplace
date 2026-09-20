@@ -232,8 +232,10 @@ export class ProductDetailComponent implements OnInit {
 
   readonly isOpenClawHire = computed(() => {
     const p = this.product();
-    return !!p && (p.category === 'hire-agent' || p.slug === 'openclaw-ops-agent');
+    return !!p && (p.slug === 'openclaw-ops-agent' || p.slug === 'hermes-ops-agent');
   });
+
+  readonly isHermesHire = computed(() => this.product()?.slug === 'hermes-ops-agent');
 
   apiClient: ApiClient = 'curl';
   apiMethod: 'POST' | 'GET' = 'POST';
@@ -830,17 +832,14 @@ export class ProductDetailComponent implements OnInit {
   launchOpenClaw(): void {
     if (this.openclawBusy()) return;
     this.openclawBusy.set(true);
-    this.openclawStatus.set(`Opening OpenClaw at ${this.openclaw.aimarketsHost()}…`);
-    const agent = this.openclaw.getAgent('openclaw');
+    const hermes = this.isHermesHire();
+    const agent = this.openclaw.getAgent(hermes ? 'hermes' : 'openclaw');
+    this.openclawStatus.set(`Opening ${agent?.name || 'agent'} at ${this.openclaw.aimarketsHost(undefined, agent)}…`);
     this.openclaw.launchGateway({ agent: agent || undefined }).subscribe((res) => {
       this.openclawBusy.set(false);
-      this.openclawStatus.set(
-        res.success
-          ? 'Gateway opened — auto-approving device pairing…'
-          : res.message || 'Launch failed',
-      );
+      this.openclawStatus.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
       if (res.success) {
-        this.checkoutMsg.set('OpenClaw Control UI launched.');
+        this.checkoutMsg.set(`${hermes ? 'Hermes' : 'OpenClaw'} launched.`);
       }
     });
   }
@@ -852,8 +851,7 @@ export class ProductDetailComponent implements OnInit {
       this.launchComputeStream();
       return;
     }
-    // Only the OpenClaw Ops product launches Control UI; other hire-* listings stay hire form.
-    if (p.slug === 'openclaw-ops-agent') {
+    if (p.slug === 'openclaw-ops-agent' || p.slug === 'hermes-ops-agent') {
       this.launchOpenClaw();
       return;
     }

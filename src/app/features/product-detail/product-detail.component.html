@@ -179,7 +179,7 @@
           } @else if (isComputeStream(p.category)) {
             {{ 'compute.cta.play' | t }}
           } @else if (isHire(p.category)) {
-            {{ isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
+            {{ isHermesHire() ? 'Launch Hermes' : isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
           } @else if (isFilm(p.category)) {
             {{ 'pd.ctaWatch' | t }}
           } @else if (isSkill(p.category)) {
@@ -462,13 +462,18 @@
 
         <aside class="pg-pane">
           @if (isOpenClawHire()) {
-            <div class="pg-pane__head"><h2>OpenClaw</h2></div>
-            <p class="text-muted">Optional Control UI launch (separate from memory chat).</p>
+            <div class="pg-pane__head"><h2>{{ isHermesHire() ? 'Hermes' : 'OpenClaw' }}</h2></div>
+            <p class="text-muted">
+              {{ isHermesHire() ? 'Optional Hermes dashboard launch.' : 'Optional Control UI launch (separate from memory chat).' }}
+            </p>
             <div class="mt-4 flex flex-wrap gap-2">
               <button type="button" class="btn btn-outline" (click)="launchOpenClaw()" [disabled]="openclawBusy()">
-                {{ openclawBusy() ? 'Opening…' : 'Launch OpenClaw' }}
+                {{ openclawBusy() ? 'Opening…' : (isHermesHire() ? 'Launch Hermes' : 'Launch OpenClaw') }}
               </button>
-              <a class="btn btn-outline" routerLink="/hire-agent/openclaw/setup">Setup</a>
+              <a
+                class="btn btn-outline"
+                [routerLink]="['/hire-agent', isHermesHire() ? 'hermes' : 'openclaw', 'setup']"
+              >Setup</a>
             </div>
             @if (openclawStatus()) {
               <p class="cost-hint mt-3 font-mono text-xs">{{ openclawStatus() }}</p>

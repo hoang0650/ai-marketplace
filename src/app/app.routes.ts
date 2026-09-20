@@ -511,6 +511,12 @@ export const routes: Routes = [
           import('./features/wallet/wallet.component').then((m) => m.WalletComponent),
       },
       {
+        path: 'usage',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/usage/usage.component').then((m) => m.UsageComponent),
+      },
+      {
         path: 'account/console',
         canActivate: [authGuard],
         loadComponent: () =>

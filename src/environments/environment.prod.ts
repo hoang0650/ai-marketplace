@@ -22,4 +22,9 @@ export const environment = {
     gatewayToken: '',
     bearerToken: '',
   },
+  hermes: {
+    audience: 'aimarkets',
+    publicUrlTemplate: 'https://{userId}.hermes.aimarkets.vn',
+    gatewayToken: '',
+  },
 };

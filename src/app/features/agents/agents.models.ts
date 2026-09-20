@@ -12,8 +12,9 @@ export interface MarketplaceAgent {
   docsUrl: string;
   public: boolean;
   hireProductSlug?: string;
-  /** Only OpenClaw launches {userId}.openclaw.aimarkets.vn. Other agents stay catalog-only for now. */
+  /** Launchable AI Markets agents (OpenClaw Control UI or Hermes dashboard). */
   openclawGateway?: boolean;
+  hermesGateway?: boolean;
 }
 
 export interface HiredAgent {

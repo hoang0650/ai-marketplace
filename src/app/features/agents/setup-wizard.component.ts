@@ -110,18 +110,19 @@ const SLACK_MANIFEST = `{
             <span class="oc-setup__dot" aria-hidden="true"></span>
             {{ connected() ? 'Connected' : 'Offline' }}
           </span>
-          <button type="button" class="oc-setup__pill oc-setup__pill--btn" (click)="openUi()" [disabled]="busy() || !isOpenClaw()">
-            {{ busy() ? 'Opening…' : 'OpenClaw UI →' }}
+          <button type="button" class="oc-setup__pill oc-setup__pill--btn" (click)="openUi()" [disabled]="busy() || !isLaunchable()">
+            {{ busy() ? 'Opening…' : (isHermes() ? 'Hermes UI →' : 'OpenClaw UI →') }}
           </button>
         </div>
       </header>
 
       <main class="oc-setup__main" [class.oc-setup__main--flow]="!!selected()">
-        @if (!isOpenClaw()) {
+        @if (!isLaunchable()) {
           <p class="oc-setup__lead">
             {{ gateway.comingSoonMessage(agent()) }}
           </p>
           <a routerLink="/hire-agent/openclaw/setup" class="oc-btn">Open OpenClaw setup</a>
+          <a routerLink="/hire-agent/hermes/setup" class="oc-btn oc-btn--ghost">Open Hermes setup</a>
         } @else if (!selected()) {
           <p class="oc-setup__lead">
             Connect a messaging channel to start chatting with your OpenClaw agent.
@@ -483,7 +484,7 @@ const SLACK_MANIFEST = `{
 })
 export class OpenClawSetupWizardComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly gateway = inject(OpenClawGatewayService);
+  readonly gateway = inject(OpenClawGatewayService);
   private readonly seo = inject(SeoService);
 
   readonly channels = CHANNELS;
@@ -509,24 +510,32 @@ export class OpenClawSetupWizardComponent implements OnInit {
     return this.gateway.isOpenClawAgent(this.agent());
   }
 
+  isHermes(): boolean {
+    return this.gateway.isHermesAgent(this.agent());
+  }
+
+  isLaunchable(): boolean {
+    return this.gateway.isLaunchableAgent(this.agent());
+  }
+
   ngOnInit(): void {
     this.seo.set({
-      title: 'OpenClaw Setup',
-      description: 'Connect Telegram, WhatsApp, Discord, Teams, or Slack — 5-step Featherless-style wizard.',
+      title: 'Agent Setup',
+      description: 'Connect Telegram, WhatsApp, Discord, Teams, or Slack — OpenClaw / Hermes wizard.',
     });
     this.route.paramMap.subscribe((params) => {
       const id = params.get('agentId') || 'openclaw';
       const agent = this.gateway.getAgent(id) || this.gateway.getAgent('openclaw') || null;
       this.agent.set(agent);
-      this.sshPlaceholder = this.gateway.sshHostHint();
-      const hint = this.gateway.sshHostHint();
+      this.sshPlaceholder = this.gateway.sshHostHint(undefined, agent);
+      const hint = this.sshPlaceholder;
       this.sshHost = hint.includes('{userId}') ? '' : hint;
-      if (agent && this.gateway.isOpenClawAgent(agent)) {
+      if (agent && this.gateway.isLaunchableAgent(agent)) {
         this.gateway.upsertHired(agent, 'running');
       }
-      this.connected.set(!!agent && this.gateway.isOpenClawAgent(agent));
+      this.connected.set(!!agent && this.gateway.isLaunchableAgent(agent));
       this.loadComplete(agent?.id || 'openclaw');
-      if (agent && this.gateway.isOpenClawAgent(agent)) {
+      if (agent && this.gateway.isLaunchableAgent(agent)) {
         this.gateway.getActiveSsh(agent.id).subscribe((res) => {
           if (res.active && res.session) this.ssh.set({ ...res.session, success: true });
         });
@@ -604,26 +613,22 @@ export class OpenClawSetupWizardComponent implements OnInit {
 
   openUi(): void {
     const agent = this.agent() || this.gateway.getAgent('openclaw');
-    if (!agent || !this.gateway.isOpenClawAgent(agent)) {
+    if (!agent || !this.gateway.isLaunchableAgent(agent)) {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
     this.busy.set(true);
-    this.status.set(`Opening OpenClaw Control UI at ${this.gateway.aimarketsHost()}…`);
+    this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.connected.set(true);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.busy.set(false);
-      this.status.set(
-        res.success
-          ? 'Gateway opened — auto-approving device pairing…'
-          : res.message || 'Failed to open OpenClaw UI',
-      );
+      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Failed to open UI');
     });
   }
 
   generateSsh(): void {
     const agent = this.agent() || this.gateway.getAgent('openclaw');
-    if (!agent || !this.gateway.isOpenClawAgent(agent)) {
+    if (!agent || !this.gateway.isLaunchableAgent(agent)) {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
@@ -636,10 +641,10 @@ export class OpenClawSetupWizardComponent implements OnInit {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
         } else {
-          this.status.set(
-            res.message ||
-              'SSH generate failed. Login required, or set OPENCLAW_SSH_HOST_TEMPLATE={userId}.openclaw.aimarkets.vn.',
-          );
+          const hint = this.gateway.isHermesAgent(agent)
+            ? 'HERMES_SSH_HOST_TEMPLATE={userId}.hermes.aimarkets.vn'
+            : 'OPENCLAW_SSH_HOST_TEMPLATE={userId}.openclaw.aimarkets.vn';
+          this.status.set(res.message || `SSH generate failed. Login required, or set ${hint}.`);
         }
       });
   }
