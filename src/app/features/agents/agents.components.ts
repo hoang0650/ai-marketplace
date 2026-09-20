@@ -98,6 +98,9 @@ export class MyAgentsComponent implements OnInit {
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
+      if (!res.success && typeof window !== 'undefined' && res.message) {
+        window.alert(res.message);
+      }
       this.reload();
     });
   }
@@ -211,6 +214,9 @@ export class AgentMarketplaceComponent implements OnInit {
     this.gateway.launchGateway({ agent }).subscribe((res) => {
       this.busyId.set('');
       this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
+      if (!res.success && typeof window !== 'undefined' && res.message) {
+        window.alert(res.message);
+      }
     });
   }
 }
@@ -465,6 +471,9 @@ export class AgentDetailComponent implements OnInit {
       this.busy.set(false);
       this.hired.set(this.gateway.getHired(agent.id) || null);
       this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
+      if (!res.success && typeof window !== 'undefined' && res.message) {
+        window.alert(res.message);
+      }
     });
   }
 

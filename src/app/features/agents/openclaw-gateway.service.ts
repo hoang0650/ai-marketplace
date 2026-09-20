@@ -234,7 +234,7 @@ export class OpenClawGatewayService {
     this.opening = true;
     this.clearApproveTimers();
 
-    const newTab = isPlatformBrowser(this.platformId) ? window.open('about:blank', '_blank') : null;
+    // Open the tab only after we have a URL — blank→close feels like a broken Launch.
     const agent = opts?.agent || this.getAgent('openclaw');
     const hermes = this.isHermesAgent(agent);
 
@@ -243,18 +243,18 @@ export class OpenClawGatewayService {
         this.opening = false;
         if (res.success && res.url && isPlatformBrowser(this.platformId)) {
           if (opts?.agent) this.upsertHired(opts.agent, 'running');
-          if (newTab) newTab.location.href = res.url;
-          else window.open(res.url, '_blank');
+          const tab = window.open(res.url, '_blank');
+          if (!tab) {
+            // Popup blocked — still surface the URL.
+            window.location.href = res.url;
+          }
           if (!hermes) {
             this.approveDelayTimer(800, () => this.triggerAutoApprove(30, 1000));
           }
-        } else if (newTab) {
-          newTab.close();
         }
       }),
       catchError((err) => {
         this.opening = false;
-        if (newTab) newTab.close();
         return of({
           success: false,
           message:
@@ -406,25 +406,31 @@ export class OpenClawGatewayService {
   private fallbackHashUrl(userId?: string): OpenClawLaunchResult {
     const oc = environment.openclaw || {};
     const id = userId || this.auth.user()?.id || '';
+    if (!id) {
+      return { success: false, message: 'Sign in to launch OpenClaw.' };
+    }
     const ui = String(oc.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn')
       .replace(/\{userId\}/g, id)
       .replace(/\{tenant\}/g, id)
       .replace(/\/$/, '');
-    const gatewayUrl = oc.gatewayUrl || (id ? ui.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:') : '');
+    const gatewayUrl = oc.gatewayUrl || ui.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
     const token = oc.gatewayToken || '';
-    if (!gatewayUrl || !token || !id) {
+    if (gatewayUrl && token) {
       return {
-        success: false,
-        message:
-          'OpenClaw gateway is not configured. Sign in and set OPENCLAW_GATEWAY_TOKEN, or configure /v1/openclaw/launch.',
+        success: true,
+        url: this.buildManualConnectUrl(gatewayUrl, token, token, id),
+        gatewayUrl,
+        token,
       };
     }
-    return {
-      success: true,
-      url: this.buildManualConnectUrl(gatewayUrl, token, token, id),
-      gatewayUrl,
-      token,
-    };
+    // Public host without gateway token — better than failing Launch silently.
+    const qs = new URLSearchParams({
+      userId: id,
+      audience: 'aimarkets',
+      session: `market-${id}`,
+      autoConnect: 'true',
+    });
+    return { success: true, url: `${ui}/#${qs.toString()}` };
   }
 
   private fallbackHermesUrl(userId?: string): OpenClawLaunchResult {
