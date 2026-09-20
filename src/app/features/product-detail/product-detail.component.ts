@@ -478,7 +478,6 @@ export class ProductDetailComponent implements OnInit {
         },
       });
   }
-  }
 
   label(cat: ProductCategory): string {
     return this.i18n.catLabel(cat);

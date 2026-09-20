@@ -39,11 +39,11 @@ export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
     slug: 'openclaw',
     name: 'OpenClaw',
     description:
-      'An AI-powered coding and hospitality agent with a web-based control UI, powered by Featherless inference.',
+      'AI Markets OpenClaw Control UI on {userId}.openclaw.aimarkets.vn — OpenRouter/Featherless models (provider cost + 25%). PHHotel Nest models stay on phhotel.vn.',
     icon: 'openclaw',
     logoUrl: '/agents/openclaw.png',
     version: '2026.3.24',
-    model: 'MiniMaxAI/MiniMax-M2.5',
+    model: 'openrouter/openrouter/free',
     docsUrl: 'https://docs.openclaw.ai',
     public: true,
     hireProductSlug: 'openclaw-ops-agent',
