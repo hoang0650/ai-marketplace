@@ -450,16 +450,25 @@ export class OpenClawGatewayService {
     return headers;
   }
 
+  /** Same as hotelapp ai-chatbox: tick immediately, then poll. */
   private triggerAutoApprove(maxAttempts: number, intervalMs: number): void {
     let attempts = 0;
     this.clearApproveTimers();
-    this.approveInterval = setInterval(() => {
+    const tick = () => {
       attempts += 1;
       this.approvePairing().subscribe((res) => {
         if (res.success || attempts >= maxAttempts) {
           this.clearApproveTimers();
         }
       });
+    };
+    tick();
+    this.approveInterval = setInterval(() => {
+      if (attempts >= maxAttempts) {
+        this.clearApproveTimers();
+        return;
+      }
+      tick();
     }, intervalMs);
   }
 
