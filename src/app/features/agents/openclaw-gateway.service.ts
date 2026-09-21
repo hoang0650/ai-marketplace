@@ -415,43 +415,32 @@ export class OpenClawGatewayService {
       .replace(/\/$/, '');
     const gatewayUrl = oc.gatewayUrl || ui.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
     const token = oc.gatewayToken || '';
-    if (gatewayUrl && token) {
+    if (!token) {
       return {
-        success: true,
-        url: this.buildManualConnectUrl(gatewayUrl, token, token, id),
-        gatewayUrl,
-        token,
+        success: false,
+        message: 'OpenClaw gateway token missing. Launch via API after signing in.',
       };
     }
-    // Public host without gateway token — better than failing Launch silently.
-    const qs = new URLSearchParams({
-      userId: id,
-      audience: 'aimarkets',
-      session: `market-${id}`,
-      autoConnect: 'true',
-    });
-    return { success: true, url: `${ui}/#${qs.toString()}` };
+    return {
+      success: true,
+      url: this.buildManualConnectUrl(gatewayUrl, token, token, id),
+      gatewayUrl,
+      token,
+      autoLogin: true,
+    };
   }
 
   private fallbackHermesUrl(userId?: string): OpenClawLaunchResult {
-    const hm = environment.hermes || {};
     const id = userId || this.auth.user()?.id || '';
     if (!id) {
       return { success: false, message: 'Sign in to launch Hermes.' };
     }
-    const ui = String(hm.publicUrlTemplate || 'https://{userId}.hermes.aimarkets.vn')
-      .replace(/\{userId\}/g, id)
-      .replace(/\{tenant\}/g, id)
-      .replace(/\/$/, '');
-    const token = hm.gatewayToken || '';
-    const qs = new URLSearchParams({
-      userId: id,
-      audience: 'aimarkets',
-      session: `market-${id}`,
-      autoConnect: 'true',
-    });
-    if (token) qs.set('token', token);
-    return { success: true, url: `${ui}/?${qs.toString()}`, token };
+    // Per-buyer credentials are created by POST /hermes/launch — do not fall
+    // back to shared admin Basic Auth (that would leak cross-tenant access).
+    return {
+      success: false,
+      message: 'Hermes Launch requires the marketplace API (per-buyer account).',
+    };
   }
 
   private authHeaders(): HttpHeaders {

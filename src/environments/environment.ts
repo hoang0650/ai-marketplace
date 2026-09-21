@@ -26,5 +26,7 @@ export const environment = {
     audience: 'aimarkets',
     publicUrlTemplate: 'https://{userId}.hermes.aimarkets.vn',
     gatewayToken: '',
+    username: 'admin',
+    password: '',
   },
 };

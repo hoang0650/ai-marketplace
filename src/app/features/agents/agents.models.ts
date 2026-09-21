@@ -35,6 +35,12 @@ export interface OpenClawLaunchResult {
   message?: string;
   gatewayUrl?: string;
   token?: string;
+  gatewayToken?: string;
+  username?: string;
+  password?: string;
+  autoLogin?: boolean;
+  audience?: string;
+  userId?: string;
 }
 
 export interface OpenClawSshAccess {
