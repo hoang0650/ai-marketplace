@@ -31,7 +31,7 @@ export const environment = {
   },
   nanoclaw: {
     audience: 'aimarkets',
-    publicUrlTemplate: 'https://proxvn.phgrouptechs.com',
+    publicUrlTemplate: 'https://nanoclaw.aimarkets.vn',
     dashboardSecret: '',
   },
 };
