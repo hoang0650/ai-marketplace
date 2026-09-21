@@ -29,4 +29,9 @@ export const environment = {
     username: 'admin',
     password: '',
   },
+  nanoclaw: {
+    audience: 'aimarkets',
+    publicUrlTemplate: 'https://{userId}.nanoclaw.aimarkets.vn',
+    dashboardSecret: '',
+  },
 };

@@ -12,9 +12,10 @@ export interface MarketplaceAgent {
   docsUrl: string;
   public: boolean;
   hireProductSlug?: string;
-  /** Launchable AI Markets agents (OpenClaw Control UI or Hermes dashboard). */
+  /** Launchable AI Markets agents (OpenClaw Control UI, Hermes, or NanoClaw dashboard). */
   openclawGateway?: boolean;
   hermesGateway?: boolean;
+  nanoclawGateway?: boolean;
 }
 
 export interface HiredAgent {

@@ -29,13 +29,16 @@ export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
     id: 'nano-claw',
     slug: 'nano-claw',
     name: 'Nano Claw',
-    description: 'Lightweight OpenClaw profile for fast skill packs and chat bots.',
+    description:
+      'AI Markets NanoClaw dashboard on {userId}.nanoclaw.aimarkets.vn — lightweight container agents (provider cost + 25%).',
     icon: 'nano',
     logoUrl: '/agents/nano-claw.png',
-    version: '0.9.2',
-    model: 'MiniMaxAI/MiniMax-M2.5',
-    docsUrl: 'https://docs.openclaw.ai',
+    version: '2.3.0',
+    model: 'openrouter/openrouter/free',
+    docsUrl: 'https://github.com/qwibitai/nanoclaw',
     public: true,
+    hireProductSlug: 'nanoclaw-ops-agent',
+    nanoclawGateway: true,
   },
   {
     id: 'openclaw',
@@ -123,16 +126,31 @@ export class OpenClawGatewayService {
     return id === 'hermes' || id === 'hermes-agent';
   }
 
-  /** OpenClaw or Hermes — Launch enabled on marketplace. */
-  isLaunchableAgent(
-    agent?: { id?: string; slug?: string; openclawGateway?: boolean; hermesGateway?: boolean } | null,
+  isNanoclawAgent(
+    agent?: { id?: string; slug?: string; nanoclawGateway?: boolean } | null,
   ): boolean {
-    return this.isOpenClawAgent(agent) || this.isHermesAgent(agent);
+    if (!agent) return false;
+    if ((agent as MarketplaceAgent).nanoclawGateway) return true;
+    const id = String(agent.id || agent.slug || '').toLowerCase();
+    return id === 'nano-claw' || id === 'nanoclaw';
+  }
+
+  /** OpenClaw, Hermes, or NanoClaw — Launch enabled on marketplace. */
+  isLaunchableAgent(
+    agent?: {
+      id?: string;
+      slug?: string;
+      openclawGateway?: boolean;
+      hermesGateway?: boolean;
+      nanoclawGateway?: boolean;
+    } | null,
+  ): boolean {
+    return this.isOpenClawAgent(agent) || this.isHermesAgent(agent) || this.isNanoclawAgent(agent);
   }
 
   comingSoonMessage(agent?: MarketplaceAgent | null): string {
     const name = agent?.name || 'This agent';
-    return `${name} setup is coming later. OpenClaw ({userId}.openclaw.aimarkets.vn) and Hermes ({userId}.hermes.aimarkets.vn) are live now.`;
+    return `${name} setup is coming later. OpenClaw, Hermes, and NanoClaw ({userId}.*.aimarkets.vn) are live now.`;
   }
 
   aimarketsHost(userId?: string, agent?: MarketplaceAgent | null): string {
@@ -140,10 +158,17 @@ export class OpenClawGatewayService {
       .trim()
       .toLowerCase();
     const hermes = this.isHermesAgent(agent);
+    const nanoclaw = this.isNanoclawAgent(agent);
     const template = hermes
       ? String(environment.hermes?.publicUrlTemplate || 'https://{userId}.hermes.aimarkets.vn')
-      : String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
-    const fallback = hermes ? '{userId}.hermes.aimarkets.vn' : '{userId}.openclaw.aimarkets.vn';
+      : nanoclaw
+        ? String(environment.nanoclaw?.publicUrlTemplate || 'https://{userId}.nanoclaw.aimarkets.vn')
+        : String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
+    const fallback = hermes
+      ? '{userId}.hermes.aimarkets.vn'
+      : nanoclaw
+        ? '{userId}.nanoclaw.aimarkets.vn'
+        : '{userId}.openclaw.aimarkets.vn';
     if (!id) return fallback;
     return template
       .replace(/\{userId\}/gi, id)
@@ -215,7 +240,9 @@ export class OpenClawGatewayService {
       }
       const hostHint = this.isHermesAgent(opts?.agent)
         ? '{userId}.hermes.aimarkets.vn'
-        : '{userId}.openclaw.aimarkets.vn';
+        : this.isNanoclawAgent(opts?.agent)
+          ? '{userId}.nanoclaw.aimarkets.vn'
+          : '{userId}.openclaw.aimarkets.vn';
       return of({
         success: false,
         message: `Sign in to launch on ${hostHint}.`,
@@ -237,6 +264,8 @@ export class OpenClawGatewayService {
     // Open the tab only after we have a URL — blank→close feels like a broken Launch.
     const agent = opts?.agent || this.getAgent('openclaw');
     const hermes = this.isHermesAgent(agent);
+    const nanoclaw = this.isNanoclawAgent(agent);
+    const skipApprove = hermes || nanoclaw;
 
     return this.resolveLaunchUrl(userId, agent).pipe(
       tap((res) => {
@@ -248,20 +277,22 @@ export class OpenClawGatewayService {
             // Popup blocked — still surface the URL.
             window.location.href = res.url;
           }
-          if (!hermes) {
+          if (!skipApprove) {
             this.approveDelayTimer(800, () => this.triggerAutoApprove(30, 1000));
           }
         }
       }),
       catchError((err) => {
         this.opening = false;
+        const fallbackMsg = hermes
+          ? 'Failed to launch Hermes dashboard'
+          : nanoclaw
+            ? 'Failed to launch NanoClaw dashboard'
+            : 'Failed to launch OpenClaw gateway';
         return of({
           success: false,
           message:
-            err?.error?.detail ||
-            err?.error?.message ||
-            err?.message ||
-            (hermes ? 'Failed to launch Hermes dashboard' : 'Failed to launch OpenClaw gateway'),
+            err?.error?.detail || err?.error?.message || err?.message || fallbackMsg,
         });
       }),
     );
@@ -297,8 +328,7 @@ export class OpenClawGatewayService {
     agent?: MarketplaceAgent | null,
   ): Observable<{ success: boolean; message?: string }> {
     const userId = this.auth.user()?.id || '';
-    const hermes = this.isHermesAgent(agent);
-    const path = hermes ? 'hermes' : 'openclaw';
+    const path = this.agentApiPath(agent);
     return this.http
       .post<{ success: boolean; message?: string }>(
         `${environment.apiUrl}/${path}/device-pairings/approve`,
@@ -322,7 +352,7 @@ export class OpenClawGatewayService {
     username?: string;
   }): Observable<OpenClawSshAccess> {
     const agentId = input?.agentId || 'openclaw';
-    const path = this.isHermesAgent({ id: agentId }) ? 'hermes' : 'openclaw';
+    const path = this.agentApiPath({ id: agentId });
     return this.http
       .post<OpenClawSshAccess>(
         `${environment.apiUrl}/${path}/ssh/generate`,
@@ -345,7 +375,7 @@ export class OpenClawGatewayService {
   }
 
   getActiveSsh(agentId = 'openclaw'): Observable<OpenClawSshAccess> {
-    const path = this.isHermesAgent({ id: agentId }) ? 'hermes' : 'openclaw';
+    const path = this.agentApiPath({ id: agentId });
     const params = new HttpParams().set('agentId', agentId);
     return this.http
       .get<OpenClawSshAccess>(`${environment.apiUrl}/${path}/ssh/active`, {
@@ -356,7 +386,7 @@ export class OpenClawGatewayService {
   }
 
   revokeSsh(agentId = 'openclaw'): Observable<{ success: boolean }> {
-    const path = this.isHermesAgent({ id: agentId }) ? 'hermes' : 'openclaw';
+    const path = this.agentApiPath({ id: agentId });
     return this.http
       .post<{ success: boolean }>(
         `${environment.apiUrl}/${path}/ssh/revoke`,
@@ -366,12 +396,19 @@ export class OpenClawGatewayService {
       .pipe(catchError(() => of({ success: false })));
   }
 
+  private agentApiPath(agent?: { id?: string; slug?: string } | null): string {
+    if (this.isHermesAgent(agent)) return 'hermes';
+    if (this.isNanoclawAgent(agent)) return 'nanoclaw';
+    return 'openclaw';
+  }
+
   private resolveLaunchUrl(
     userId?: string,
     agent?: MarketplaceAgent | null,
   ): Observable<OpenClawLaunchResult> {
     const hermes = this.isHermesAgent(agent);
-    const path = hermes ? 'hermes' : 'openclaw';
+    const nanoclaw = this.isNanoclawAgent(agent);
+    const path = this.agentApiPath(agent);
     return this.http
       .post<OpenClawLaunchResult>(
         `${environment.apiUrl}/${path}/launch`,
@@ -379,10 +416,16 @@ export class OpenClawGatewayService {
         { headers: this.authHeaders() },
       )
       .pipe(
-        catchError(() => (hermes ? of(this.fallbackHermesUrl(userId)) : this.fetchDirectUrl(userId))),
+        catchError(() => {
+          if (hermes) return of(this.fallbackHermesUrl(userId));
+          if (nanoclaw) return of(this.fallbackNanoclawUrl(userId));
+          return this.fetchDirectUrl(userId);
+        }),
         map((res) => {
           if (res?.success && res.url) return res;
-          return hermes ? this.fallbackHermesUrl(userId) : this.fallbackHashUrl(userId);
+          if (hermes) return this.fallbackHermesUrl(userId);
+          if (nanoclaw) return this.fallbackNanoclawUrl(userId);
+          return this.fallbackHashUrl(userId);
         }),
       );
   }
@@ -440,6 +483,18 @@ export class OpenClawGatewayService {
     return {
       success: false,
       message: 'Hermes Launch requires the marketplace API (per-buyer account).',
+    };
+  }
+
+  private fallbackNanoclawUrl(userId?: string): OpenClawLaunchResult {
+    const id = userId || this.auth.user()?.id || '';
+    if (!id) {
+      return { success: false, message: 'Sign in to launch NanoClaw.' };
+    }
+    return {
+      success: false,
+      message:
+        'NanoClaw Launch requires the marketplace API (NANOCLAW_DASHBOARD_SECRET + public URL template).',
     };
   }
 
