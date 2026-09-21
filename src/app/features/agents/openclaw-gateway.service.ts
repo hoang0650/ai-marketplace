@@ -30,7 +30,7 @@ export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
     slug: 'nano-claw',
     name: 'Nano Claw',
     description:
-      'AI Markets NanoClaw dashboard on {userId}.nanoclaw.aimarkets.vn — lightweight container agents (provider cost + 25%).',
+      'AI Markets NanoClaw via ProxVN (*.bacsycay.click) — lightweight container agents (provider cost + 25%).',
     icon: 'nano',
     logoUrl: '/agents/nano-claw.png',
     version: '2.3.0',
@@ -162,12 +162,12 @@ export class OpenClawGatewayService {
     const template = hermes
       ? String(environment.hermes?.publicUrlTemplate || 'https://{userId}.hermes.aimarkets.vn')
       : nanoclaw
-        ? String(environment.nanoclaw?.publicUrlTemplate || 'https://{userId}.nanoclaw.aimarkets.vn')
+        ? String(environment.nanoclaw?.publicUrlTemplate || 'https://{userId}.bacsycay.click')
         : String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
     const fallback = hermes
       ? '{userId}.hermes.aimarkets.vn'
       : nanoclaw
-        ? '{userId}.nanoclaw.aimarkets.vn'
+        ? '{userId}.bacsycay.click'
         : '{userId}.openclaw.aimarkets.vn';
     if (!id) return fallback;
     return template
@@ -241,7 +241,7 @@ export class OpenClawGatewayService {
       const hostHint = this.isHermesAgent(opts?.agent)
         ? '{userId}.hermes.aimarkets.vn'
         : this.isNanoclawAgent(opts?.agent)
-          ? '{userId}.nanoclaw.aimarkets.vn'
+          ? '{userId}.bacsycay.click (ProxVN)'
           : '{userId}.openclaw.aimarkets.vn';
       return of({
         success: false,

@@ -31,7 +31,8 @@ export const environment = {
   },
   nanoclaw: {
     audience: 'aimarkets',
-    publicUrlTemplate: 'https://{userId}.nanoclaw.aimarkets.vn',
+    /** ProxVN public URL — shared tunnel or https://{userId}.bacsycay.click */
+    publicUrlTemplate: 'https://{userId}.bacsycay.click',
     dashboardSecret: '',
   },
 };
