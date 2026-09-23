@@ -238,7 +238,7 @@ export class AgentMarketplaceComponent implements OnInit {
           <div class="agents-header__actions">
             @if (isLaunchable()) {
               <button type="button" class="agents-btn agents-btn--primary" (click)="launch()" [disabled]="busy()">
-                {{ busy() ? 'Opening…' : (isHermes() ? 'Launch Hermes' : 'Launch OpenClaw') }}
+                {{ busy() ? 'Opening…' : 'Launch ' + brandName() }}
               </button>
             }
           </div>
@@ -271,7 +271,7 @@ export class AgentMarketplaceComponent implements OnInit {
                 @if (isLaunchable()) {
                   <a class="agents-btn agents-btn--outline" [routerLink]="['/hire-agent', a.id, 'setup']">Setup Wizard</a>
                   <button type="button" class="agents-btn agents-btn--outline" (click)="launch()">
-                    {{ isHermes() ? 'Hermes Dashboard' : 'OpenClaw UI' }}
+                    {{ uiName() }}
                   </button>
                 } @else {
                   <p class="text-sm text-muted">{{ gateway.comingSoonMessage(a) }}</p>
@@ -362,23 +362,17 @@ export class AgentMarketplaceComponent implements OnInit {
           <aside class="panel agents-panel detail-guide">
             <p class="text-xs uppercase tracking-wider text-muted">Contextual Guide</p>
             <p class="mt-1 text-sm text-muted">Viewing: Marketplace Item</p>
-            <div class="guide-video mt-4">{{ isHermes() ? 'Getting Started with Hermes' : 'Getting Started with OpenClaw' }}</div>
+            <div class="guide-video mt-4">Getting Started with {{ brandName() }}</div>
             <div class="mt-4 space-y-4 text-sm text-muted">
               <div>
-                <p class="font-semibold text-ink">{{ isHermes() ? 'What is Hermes?' : 'What is OpenClaw?' }}</p>
-                <p>
-                  {{
-                    isHermes()
-                      ? 'Self-improving agent with web dashboard, messaging gateway, and skills.'
-                      : 'Operator agent with Control UI, skills, and multi-channel tools.'
-                  }}
-                </p>
+                <p class="font-semibold text-ink">What is {{ brandName() }}?</p>
+                <p>{{ brandSummary() }}</p>
               </div>
               <div>
                 <p class="font-semibold text-ink">Host</p>
                 <p>
-                  {{ isHermes() ? 'Dashboard' : 'Control UI' }}:
-                  {{ '{' }}userId{{ '}' }}.{{ isHermes() ? 'hermes' : 'openclaw' }}.aimarkets.vn
+                  {{ surfaceName() }}:
+                  {{ '{' }}userId{{ '}' }}.{{ subdomain() }}.aimarkets.vn
                   (session market-{{ '{' }}userId{{ '}' }}).
                 </p>
               </div>
@@ -427,8 +421,48 @@ export class AgentDetailComponent implements OnInit {
     return this.gateway.isHermesAgent(this.agent());
   }
 
+  isNanoclaw(): boolean {
+    return this.gateway.isNanoclawAgent(this.agent());
+  }
+
   isLaunchable(): boolean {
     return this.gateway.isLaunchableAgent(this.agent());
+  }
+
+  /** Product name for the current agent — OpenClaw, Hermes, or NanoClaw. */
+  brandName(): string {
+    if (this.isHermes()) return 'Hermes';
+    if (this.isNanoclaw()) return 'NanoClaw';
+    return 'OpenClaw';
+  }
+
+  /** Label of the launch button / web endpoint. */
+  uiName(): string {
+    if (this.isHermes()) return 'Hermes Dashboard';
+    if (this.isNanoclaw()) return 'NanoClaw Dashboard';
+    return 'OpenClaw UI';
+  }
+
+  /** Control UI (OpenClaw) vs Dashboard (Hermes / NanoClaw). */
+  surfaceName(): string {
+    return this.isOpenClaw() ? 'Control UI' : 'Dashboard';
+  }
+
+  /** {userId}.<subdomain>.aimarkets.vn */
+  subdomain(): string {
+    if (this.isHermes()) return 'hermes';
+    if (this.isNanoclaw()) return 'nanoclaw';
+    return 'openclaw';
+  }
+
+  brandSummary(): string {
+    if (this.isHermes()) {
+      return 'Self-improving agent with a web dashboard, messaging gateway, and skills.';
+    }
+    if (this.isNanoclaw()) {
+      return 'Isolated container agents with a dashboard — channels installed per agent via skills.';
+    }
+    return 'Operator agent with Control UI, skills, and multi-channel tools.';
   }
 
   ngOnInit(): void {
@@ -496,9 +530,8 @@ export class AgentDetailComponent implements OnInit {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
         } else {
-          const hint = this.isHermes()
-            ? 'HERMES_SSH_HOST_TEMPLATE={userId}.hermes.aimarkets.vn'
-            : 'OPENCLAW_SSH_HOST_TEMPLATE={userId}.openclaw.aimarkets.vn';
+          const prefix = this.isHermes() ? 'HERMES' : this.isNanoclaw() ? 'NANOCLAW' : 'OPENCLAW';
+          const hint = `${prefix}_SSH_HOST_TEMPLATE={userId}.${this.subdomain()}.aimarkets.vn`;
           this.status.set(res.message || `SSH generate failed. Login and set ${hint}.`);
         }
       });

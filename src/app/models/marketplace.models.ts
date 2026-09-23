@@ -38,7 +38,10 @@ export type PricingModel = 'free' | 'one-time' | 'subscription' | 'usage';
 
 export type PaymentProvider = 'wallet' | 'paypal' | 'paddle' | 'payos';
 
-export type UserRole = 'buyer' | 'creator' | 'admin';
+export type UserRole = 'buyer' | 'seller' | 'talent' | 'freelancer' | 'employer' | 'admin';
+
+/** Roles a user may pick at signup (admin is never self-assignable). */
+export type SignupRole = Exclude<UserRole, 'admin'>;
 
 export type ModerationStatus = 'active' | 'suspended' | 'blocked' | 'inactive';
 
@@ -110,7 +113,30 @@ export interface User {
   role: UserRole;
   creatorSlug?: string;
   bio?: string;
+  /** none | draft | pending | verified | rejected */
+  kycStatus?: string;
   createdAt: string;
+}
+
+export type KycStatus = 'none' | 'draft' | 'pending' | 'verified' | 'rejected';
+export type KycIdType = 'cccd' | 'cmnd' | 'passport' | 'other';
+export type KycSide = 'front' | 'back' | 'selfie';
+
+export interface KycProfile {
+  status: KycStatus;
+  fullName: string;
+  idType: KycIdType;
+  idNumber?: string;
+  idNumberMasked: string;
+  hasFront: boolean;
+  hasBack: boolean;
+  hasSelfie: boolean;
+  submittedAt: string | null;
+  reviewedAt: string | null;
+  rejectReason: string;
+  canSubmit: boolean;
+  canEdit: boolean;
+  withdrawAllowed: boolean;
 }
 
 export interface Creator {
@@ -360,7 +386,14 @@ export interface Order {
   canDispute?: boolean;
 }
 
-export type ComplaintKind = 'buyer_seller' | 'buyer_platform' | 'seller_platform';
+export type ComplaintKind =
+  | 'buyer_seller'
+  | 'buyer_platform'
+  | 'seller_platform'
+  | 'employer_freelancer'
+  | 'freelancer_employer'
+  | 'employer_platform'
+  | 'freelancer_platform';
 export type ComplaintStatus =
   | 'received'
   | 'verifying'
@@ -388,6 +421,10 @@ export interface Complaint {
   orderId: string | null;
   productId: string | null;
   productName: string;
+  jobApplicationId?: string | null;
+  jobId?: string | null;
+  jobTitle?: string;
+  jobSlug?: string;
   sellerId: string | null;
   body: string;
   requestedAction: string;
@@ -409,10 +446,16 @@ export interface Complaint {
 
 export interface ChatConversation {
   id: string;
+  contextType?: 'product' | 'job' | 'talent';
   productId: string;
   productName: string;
   productSlug: string;
   productCover: string;
+  jobId?: string;
+  jobTitle?: string;
+  jobSlug?: string;
+  talentSlug?: string;
+  title?: string;
   role: 'buyer' | 'seller';
   otherId: string;
   otherName: string;
@@ -473,6 +516,9 @@ export interface WalletSummary {
   balance: number;
   held: number;
   available: number;
+  persona?: PayoutPersona;
+  personas?: PayoutPersona[];
+  policy?: PayoutPolicy;
   holds: Array<{
     orderId: string;
     productName: string;
@@ -483,6 +529,37 @@ export interface WalletSummary {
     disputeStatus: string;
     disputeReason: string;
   }>;
+}
+
+export type PayoutPersona = 'buyer' | 'seller' | 'talent' | 'freelancer' | 'employer' | 'admin';
+
+export interface PayoutPolicy {
+  persona: PayoutPersona;
+  canWithdraw: boolean;
+  platformFeeRate: number;
+  taxRate: number;
+  totalFeeRate: number;
+  chargeAtWithdraw: boolean;
+  minAmount: number;
+  minAmountCurrency: string;
+  minAmountVnd: number;
+  holdHours: number;
+  requiresNoDispute: boolean;
+}
+
+export interface PayoutQuote {
+  gross: number;
+  platformFee: number;
+  tax: number;
+  net: number;
+  totalFee: number;
+}
+
+export interface PayoutPolicyResponse {
+  persona: PayoutPersona;
+  personas: PayoutPersona[];
+  policy: PayoutPolicy;
+  quote: PayoutQuote | null;
 }
 
 export interface WalletTx {

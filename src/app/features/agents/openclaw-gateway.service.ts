@@ -109,7 +109,19 @@ export class OpenClawGatewayService {
   }
 
   getAgent(idOrSlug: string): MarketplaceAgent | undefined {
-    return MARKETPLACE_AGENTS.find((a) => a.id === idOrSlug || a.slug === idOrSlug);
+    const key = this.normalizeAgentKey(idOrSlug);
+    if (!key) return undefined;
+    return MARKETPLACE_AGENTS.find(
+      (a) => this.normalizeAgentKey(a.id) === key || this.normalizeAgentKey(a.slug) === key,
+    );
+  }
+
+  /** Case/punctuation-insensitive key so `nano-claw`, `nanoclaw`, and `hermes-agent` all resolve. */
+  private normalizeAgentKey(value?: string | null): string {
+    return String(value || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
   }
 
   isOpenClawAgent(agent?: { id?: string; slug?: string; openclawGateway?: boolean } | null): boolean {

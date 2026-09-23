@@ -36,8 +36,14 @@ export class ProfileComponent implements OnInit {
   readonly roleLabel = computed(() => {
     const role = this.user()?.role;
     if (role === 'admin') return 'Admin';
-    if (role === 'creator') return 'Người bán';
-    return 'Thành viên';
+    const map: Record<string, string> = {
+      buyer: 'Người mua',
+      seller: 'Người bán',
+      talent: 'Talent',
+      freelancer: 'Freelancer',
+      employer: 'Nhà tuyển dụng / HR',
+    };
+    return map[role || ''] || 'Thành viên';
   });
 
   readonly balance = computed(() =>

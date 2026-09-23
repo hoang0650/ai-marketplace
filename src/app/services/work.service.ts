@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, catchError } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { JobPosting, JobPostPayload, TalentProfile, WorkField } from '../models/work.models';
+import { JobPosting, JobPostPayload, JobBid, JobApplyPayload, TalentProfile, WorkField } from '../models/work.models';
 
 const MOCK_FIELDS: WorkField[] = [
   {
@@ -93,6 +93,45 @@ export class WorkService {
       return of(MOCK_JOBS.find((j) => j.slug === slug) || null);
     }
     return this.http.get<JobPosting>(`${this.base}/jobs/${slug}`).pipe(catchError(() => of(null)));
+  }
+
+  bids(slug: string): Observable<JobBid[]> {
+    if (environment.useMockApi) return of([]);
+    return this.http.get<JobBid[]>(`${this.base}/jobs/${slug}/bids`).pipe(catchError(() => of([])));
+  }
+
+  applications(slug: string): Observable<JobBid[]> {
+    return this.http.get<JobBid[]>(`${this.base}/jobs/${slug}/applications`).pipe(catchError(() => of([])));
+  }
+
+  apply(slug: string, payload: JobApplyPayload): Observable<JobBid> {
+    return this.http.post<JobBid>(`${this.base}/jobs/${slug}/applications`, payload);
+  }
+
+  updateApplication(id: string, status: 'accepted' | 'rejected' | 'withdrawn'): Observable<JobBid> {
+    return this.http.patch<JobBid>(`${this.base}/applications/${id}`, { status });
+  }
+
+  contracts(as: 'all' | 'employer' | 'freelancer' = 'all'): Observable<JobBid[]> {
+    let params = new HttpParams();
+    if (as) params = params.set('as', as);
+    return this.http.get<JobBid[]>(`${this.base}/contracts/mine`, { params }).pipe(catchError(() => of([])));
+  }
+
+  startWork(id: string): Observable<JobBid> {
+    return this.http.post<JobBid>(`${this.base}/applications/${id}/start`, {});
+  }
+
+  deliver(id: string, payload: { note: string; urls?: string[] }): Observable<JobBid> {
+    return this.http.post<JobBid>(`${this.base}/applications/${id}/deliver`, payload);
+  }
+
+  complete(id: string): Observable<JobBid> {
+    return this.http.post<JobBid>(`${this.base}/applications/${id}/complete`, {});
+  }
+
+  revision(id: string, note: string): Observable<JobBid> {
+    return this.http.post<JobBid>(`${this.base}/applications/${id}/revision`, { note });
   }
 
   postJob(payload: JobPostPayload): Observable<JobPosting> {

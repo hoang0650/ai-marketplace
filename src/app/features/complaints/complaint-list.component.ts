@@ -25,11 +25,13 @@ export class ComplaintListComponent implements OnInit {
   readonly items = signal<Complaint[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
-  readonly inbox = signal<'mine' | 'seller' | 'admin' | ''>('');
+  readonly inbox = signal<'mine' | 'seller' | 'admin' | 'work' | ''>('');
 
   ngOnInit(): void {
     const inbox = String(this.route.snapshot.data['inbox'] || '');
-    this.inbox.set(inbox === 'seller' || inbox === 'admin' || inbox === 'mine' ? inbox : '');
+    this.inbox.set(
+      inbox === 'seller' || inbox === 'admin' || inbox === 'mine' || inbox === 'work' ? inbox : '',
+    );
     this.seo.set({ title: this.i18n.t(this.titleKey()) });
     this.api.complaints(this.inbox() || undefined).subscribe({
       next: (list) => {
@@ -47,6 +49,7 @@ export class ComplaintListComponent implements OnInit {
     const inbox = this.inbox();
     if (inbox === 'seller') return 'complaint.list.sellerTitle';
     if (inbox === 'admin') return 'complaint.list.adminTitle';
+    if (inbox === 'work') return 'complaint.list.workTitle';
     return 'complaint.list.title';
   }
 

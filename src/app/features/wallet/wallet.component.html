@@ -72,11 +72,11 @@
         <h2>{{ 'wallet.withdraw.title' | t }}</h2>
         <p class="lede">{{ 'wallet.withdraw.lede' | t: { brand } }}</p>
         <div class="alert">
-          <strong>{{ 'wallet.withdraw.alertTitle' | t }}</strong>
-          <p>{{ 'wallet.withdraw.alertBody' | t }}</p>
+          <strong>{{ 'payout.rulesTitle' | t }}</strong>
+          <p>{{ 'payout.rulesBody' | t }}</p>
         </div>
         <div class="actions">
-          <a routerLink="/marketplace" class="btn-dark">{{ 'wallet.withdraw.support' | t }}</a>
+          <a routerLink="/settings/kyc" class="btn-dark">{{ 'kyc.goVerify' | t }}</a>
           <a routerLink="/sell/withdraw" class="btn-outline">{{ 'wallet.withdraw.sellerPayout' | t }}</a>
         </div>
       </div>

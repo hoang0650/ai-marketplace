@@ -28,6 +28,12 @@ import {
   LegalDocumentMeta,
   IssuedLicense,
   Complaint,
+  KycProfile,
+  KycSide,
+  KycIdType,
+  PayoutPolicy,
+  PayoutPolicyResponse,
+  PayoutQuote,
   ComplaintKind,
   ChatConversation,
   ChatMessage,
@@ -277,8 +283,15 @@ export class DashboardService {
     return this.http.get<WalletSummary>(`${this.base}/wallet/summary`);
   }
 
-  withdraw(amount: number): Observable<WalletTx> {
-    return this.http.post<WalletTx>(`${this.base}/wallet/withdraw`, { amount });
+  withdraw(amount: number, persona?: string): Observable<WalletTx> {
+    return this.http.post<WalletTx>(`${this.base}/wallet/withdraw`, { amount, persona });
+  }
+
+  payoutPolicy(persona?: string, amount?: number): Observable<PayoutPolicyResponse> {
+    let params = new HttpParams();
+    if (persona) params = params.set('persona', persona);
+    if (amount !== undefined && amount !== null) params = params.set('amount', String(amount));
+    return this.http.get<PayoutPolicyResponse>(`${this.base}/wallet/payout-policy`, { params });
   }
 
   openDispute(orderId: string, reason: string): Observable<Order> {
@@ -297,7 +310,7 @@ export class DashboardService {
     return this.http.patch<Order>(`${this.base}/admin/disputes/${orderId}`, { resolution, note });
   }
 
-  complaints(as?: 'mine' | 'seller' | 'admin'): Observable<Complaint[]> {
+  complaints(as?: 'mine' | 'seller' | 'admin' | 'work'): Observable<Complaint[]> {
     let params = new HttpParams();
     if (as) params = params.set('as', as);
     return this.http.get<Complaint[]>(`${this.base}/complaints`, { params });
@@ -313,6 +326,7 @@ export class DashboardService {
     requestedAction?: string;
     evidenceUrls?: string;
     orderId?: string;
+    jobApplicationId?: string;
     productId?: string;
     productName?: string;
     name?: string;
@@ -903,6 +917,53 @@ export class UploadService {
 }
 
 @Injectable({ providedIn: 'root' })
+export class KycService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  me(): Observable<KycProfile> {
+    return this.http.get<KycProfile>(`${this.base}/kyc/me`);
+  }
+
+  uploadDocument(side: KycSide, file: File): Observable<{ ok: boolean; side: string; previewUrl?: string; kyc: KycProfile }> {
+    const form = new FormData();
+    form.append('image', file, file.name);
+    return this.http.post<{ ok: boolean; side: string; previewUrl?: string; kyc: KycProfile }>(
+      `${this.base}/kyc/documents/${side}`,
+      form,
+    );
+  }
+
+  documentUrl(side: KycSide, userId?: string): Observable<{ side: string; url: string; expiresIn: number }> {
+    let params = new HttpParams();
+    if (userId) params = params.set('userId', userId);
+    return this.http.get<{ side: string; url: string; expiresIn: number }>(`${this.base}/kyc/documents/${side}`, {
+      params,
+    });
+  }
+
+  submit(body: { fullName: string; idType: KycIdType; idNumber: string }): Observable<{ ok: boolean; kyc: KycProfile }> {
+    return this.http.post<{ ok: boolean; kyc: KycProfile }>(`${this.base}/kyc/submit`, body);
+  }
+
+  adminQueue(status = 'pending'): Observable<
+    Array<{ userId: string; email: string; name: string; role: string; kyc: KycProfile }>
+  > {
+    return this.http.get<Array<{ userId: string; email: string; name: string; role: string; kyc: KycProfile }>>(
+      `${this.base}/kyc/admin/queue`,
+      { params: new HttpParams().set('status', status) },
+    );
+  }
+
+  adminDecide(userId: string, decision: 'verified' | 'rejected', rejectReason?: string): Observable<{ ok: boolean; kyc: KycProfile }> {
+    return this.http.patch<{ ok: boolean; kyc: KycProfile }>(`${this.base}/kyc/admin/${userId}`, {
+      decision,
+      rejectReason,
+    });
+  }
+}
+
+@Injectable({ providedIn: 'root' })
 export class ChatService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiUrl;
@@ -915,7 +976,16 @@ export class ChatService {
     return this.http.get<ChatConversation>(`${this.base}/chat/conversations/${id}`);
   }
 
-  start(body: { productId: string; body?: string; imageUrl?: string }): Observable<ChatConversation> {
+  start(body: {
+    productId?: string;
+    jobId?: string;
+    jobSlug?: string;
+    applicantId?: string;
+    applicationId?: string;
+    talentSlug?: string;
+    body?: string;
+    imageUrl?: string;
+  }): Observable<ChatConversation> {
     return this.http.post<ChatConversation>(`${this.base}/chat/conversations`, body);
   }
 

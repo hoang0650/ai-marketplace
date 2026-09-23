@@ -266,7 +266,15 @@
                     <li><a routerLink="/admin" (click)="closeUserMenu()">{{ 'nav.admin' | t }}</a></li>
                     <li><a routerLink="/admin/finance" (click)="closeUserMenu()">{{ 'admin.finance.title' | t }}</a></li>
                   }
-                  <li><a routerLink="/sell" (click)="closeUserMenu()">{{ auth.isCreator() ? ('nav.shop' | t) : ('nav.openShop' | t) }}</a></li>
+                  @if (auth.isSeller()) {
+                    <li><a routerLink="/sell" (click)="closeUserMenu()">{{ 'nav.shop' | t }}</a></li>
+                  }
+                  @if (auth.isTalent()) {
+                    <li><a routerLink="/work/talents" (click)="closeUserMenu()">{{ 'signup.role.talent' | t }}</a></li>
+                  }
+                  @if (auth.isFreelancer() || auth.isEmployer()) {
+                    <li><a routerLink="/work/manage" (click)="closeUserMenu()">{{ 'work.title' | t }}</a></li>
+                  }
                   <li><a routerLink="/settings" (click)="closeUserMenu()">{{ 'nav.settings' | t }}</a></li>
                 </ul>
                 <div class="user-menu__foot">

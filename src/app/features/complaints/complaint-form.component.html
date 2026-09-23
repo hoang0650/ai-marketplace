@@ -1,7 +1,13 @@
 <section class="complaint-page page route-enter">
-  <p class="complaint-meta"><a routerLink="/complaints">{{ 'complaint.back' | t }}</a></p>
+  <p class="complaint-meta">
+    @if (isWork()) {
+      <a routerLink="/work/manage/contracts">{{ 'complaint.backWork' | t }}</a>
+    } @else {
+      <a routerLink="/complaints">{{ 'complaint.back' | t }}</a>
+    }
+  </p>
   <h1>{{ 'complaint.form.title' | t }}</h1>
-  <p class="complaint-lede">{{ 'complaint.form.lede' | t }}</p>
+  <p class="complaint-lede">{{ (isWork() ? 'complaint.form.ledeWork' : 'complaint.form.lede') | t }}</p>
 
   <form class="complaint-form panel" (ngSubmit)="submit()">
     <div class="complaint-field">
@@ -15,24 +21,34 @@
     <div class="complaint-field">
       <p>{{ 'complaint.form.kind' | t }}</p>
       <div class="complaint-radios">
-        <label><input type="radio" name="kind" [(ngModel)]="kind" value="buyer_seller" /> {{ 'complaint.kind.buyer_seller' | t }}</label>
-        <label><input type="radio" name="kind" [(ngModel)]="kind" value="buyer_platform" /> {{ 'complaint.kind.buyer_platform' | t }}</label>
-        <label><input type="radio" name="kind" [(ngModel)]="kind" value="seller_platform" /> {{ 'complaint.kind.seller_platform' | t }}</label>
+        @for (k of kinds(); track k) {
+          <label>
+            <input type="radio" name="kind" [(ngModel)]="kind" [value]="k" />
+            {{ ('complaint.kind.' + k) | t }}
+          </label>
+        }
       </div>
     </div>
-    <div class="complaint-field">
-      <label for="c-order">{{ 'complaint.form.order' | t }}</label>
-      <select id="c-order" class="input" [(ngModel)]="orderId" name="orderId" (ngModelChange)="onOrderChange()">
-        <option value="">{{ 'complaint.form.orderNone' | t }}</option>
-        @for (o of orders(); track o.id) {
-          <option [value]="o.id">{{ o.productName }} · {{ o.id }}</option>
-        }
-      </select>
-    </div>
-    <div class="complaint-field">
-      <label for="c-product">{{ 'complaint.form.product' | t }}</label>
-      <input id="c-product" class="input" [(ngModel)]="productName" name="productName" />
-    </div>
+    @if (isWork()) {
+      <div class="complaint-field">
+        <label for="c-jobapp">{{ 'complaint.form.jobApp' | t }}</label>
+        <input id="c-jobapp" class="input" [ngModel]="jobApplicationId" name="jobApplicationId" disabled />
+      </div>
+    } @else {
+      <div class="complaint-field">
+        <label for="c-order">{{ 'complaint.form.order' | t }}</label>
+        <select id="c-order" class="input" [(ngModel)]="orderId" name="orderId" (ngModelChange)="onOrderChange()">
+          <option value="">{{ 'complaint.form.orderNone' | t }}</option>
+          @for (o of orders(); track o.id) {
+            <option [value]="o.id">{{ o.productName }} · {{ o.id }}</option>
+          }
+        </select>
+      </div>
+      <div class="complaint-field">
+        <label for="c-product">{{ 'complaint.form.product' | t }}</label>
+        <input id="c-product" class="input" [(ngModel)]="productName" name="productName" />
+      </div>
+    }
     <div class="complaint-field">
       <label for="c-body">{{ 'complaint.form.body' | t }}</label>
       <textarea id="c-body" class="input" [(ngModel)]="body" name="body" required></textarea>
@@ -45,7 +61,7 @@
       <label for="c-ev">{{ 'complaint.form.evidence' | t }}</label>
       <textarea id="c-ev" class="input" [(ngModel)]="evidenceUrls" name="evidenceUrls" [placeholder]="'complaint.form.evidencePh' | t"></textarea>
     </div>
-    @if (kind === 'buyer_seller' && selectedOrder()?.canDispute) {
+    @if (!isWork() && kind === 'buyer_seller' && selectedOrder()?.canDispute) {
       <label class="complaint-check">
         <input type="checkbox" [(ngModel)]="openOrderDispute" name="openOrderDispute" />
         <span>{{ 'complaint.form.freeze' | t }}</span>

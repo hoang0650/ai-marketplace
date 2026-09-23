@@ -11,13 +11,40 @@ export const authGuard: CanActivateFn = () => {
   );
 };
 
-export const creatorGuard: CanActivateFn = () => {
+export const sellerGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
   return auth.ensureReady().pipe(
-    map(() => (auth.isCreator() ? true : router.createUrlTree(['/auth/login']))),
+    map(() => (auth.isSeller() ? true : router.createUrlTree(['/auth/login']))),
   );
 };
+
+export const talentGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.ensureReady().pipe(
+    map(() => (auth.isTalent() ? true : router.createUrlTree(['/auth/login']))),
+  );
+};
+
+export const freelancerGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.ensureReady().pipe(
+    map(() => (auth.isFreelancer() ? true : router.createUrlTree(['/auth/login']))),
+  );
+};
+
+export const employerGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.ensureReady().pipe(
+    map(() => (auth.isEmployer() ? true : router.createUrlTree(['/auth/login']))),
+  );
+};
+
+/** @deprecated use sellerGuard — kept for existing routes. */
+export const creatorGuard = sellerGuard;
 
 export const adminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);

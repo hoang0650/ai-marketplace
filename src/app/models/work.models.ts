@@ -64,3 +64,36 @@ export interface JobPostPayload {
   salaryPeriod?: JobPosting['salaryPeriod'];
   salaryNegotiable?: boolean;
 }
+
+export interface JobBid {
+  id: string;
+  jobId?: string;
+  jobSlug?: string;
+  jobTitle?: string;
+  applicantId?: string;
+  applicantName: string;
+  applicantAvatar?: string;
+  proposedAmount: number;
+  proposedCurrency: string;
+  proposedPeriod: string;
+  coverLetter?: string;
+  status: string;
+  workStatus?: string;
+  deliveryNote?: string;
+  deliveryUrls?: string[];
+  deliveredAt?: string | null;
+  revisionNote?: string;
+  revisionCount?: number;
+  completedAt?: string | null;
+  disputedAt?: string | null;
+  conversationId?: string;
+  createdAt?: string;
+  mine?: boolean;
+}
+
+export interface JobApplyPayload {
+  proposedAmount: number;
+  proposedCurrency?: string;
+  proposedPeriod?: string;
+  coverLetter?: string;
+}

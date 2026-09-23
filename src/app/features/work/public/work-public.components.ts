@@ -6,7 +6,8 @@ import { WorkService } from '../../../services/work.service';
 import { AuthService } from '../../../services/auth.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { TPipe } from '../../../i18n/t.pipe';
-import { JobPosting, JobPostPayload, TalentProfile, WorkField } from '../../../models/work.models';
+import { JobPosting, JobPostPayload, JobBid, TalentProfile, WorkField } from '../../../models/work.models';
+import { ChatService } from '../../../services/api.services';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -416,24 +417,35 @@ export class WorkPostJobComponent implements OnInit {
 @Component({
   selector: 'app-work-job-detail',
   standalone: true,
-  imports: [RouterLink, TPipe],
+  imports: [RouterLink, FormsModule, TPipe],
   templateUrl: './work-job-detail.component.html',
   styleUrls: ['./work-public.scss', './work-detail.scss'],
 })
 export class WorkJobDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly api = inject(WorkService);
+  private readonly chat = inject(ChatService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
   readonly auth = inject(AuthService);
 
   readonly job = signal<JobPosting | null>(null);
-  readonly activeTab = signal<'description' | 'deliverables' | 'responsibilities' | 'comments' | 'screening'>('description');
+  readonly bids = signal<JobBid[]>([]);
+  readonly activeTab = signal<'description' | 'bids' | 'deliverables' | 'responsibilities' | 'comments' | 'screening'>(
+    'description',
+  );
   readonly saved = signal(false);
   readonly applyMsg = signal('');
+  readonly applyErr = signal('');
+  readonly busy = signal(false);
+  proposedAmount = '';
+  coverLetter = '';
+  proposedPeriod: 'hour' | 'month' | 'project' = 'project';
 
   readonly tabs = [
     { id: 'description' as const, labelKey: 'work.detail.tabDescription' },
+    { id: 'bids' as const, labelKey: 'work.detail.tabBids' },
     { id: 'deliverables' as const, labelKey: 'work.detail.tabDeliverables' },
     { id: 'responsibilities' as const, labelKey: 'work.detail.tabResponsibilities' },
     { id: 'comments' as const, labelKey: 'work.detail.tabComments' },
@@ -443,14 +455,34 @@ export class WorkJobDetailComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe((p) => {
       const slug = p.get('slug') || '';
-      this.api.job(slug).subscribe((j) => {
-        this.job.set(j);
-        if (j) {
-          this.seo.set({ title: j.title });
-          this.saved.set(this.readSaved(slug));
-        }
-      });
+      this.reload(slug);
     });
+  }
+
+  reload(slug: string): void {
+    this.api.job(slug).subscribe((j) => {
+      this.job.set(j);
+      if (j) {
+        this.seo.set({ title: j.title });
+        this.saved.set(this.readSaved(slug));
+      }
+    });
+    this.api.bids(slug).subscribe((rows) => this.bids.set(rows));
+    if (this.auth.isAuthenticated()) {
+      this.api.applications(slug).subscribe((rows) => {
+        if (rows.length) this.bids.set(rows);
+      });
+    }
+  }
+
+  isEmployer(): boolean {
+    const j = this.job();
+    const me = this.auth.user()?.id;
+    return !!(j?.postedBy && me && String(j.postedBy) === String(me));
+  }
+
+  myBid(): JobBid | undefined {
+    return this.bids().find((b) => b.mine);
   }
 
   views(): number {
@@ -478,6 +510,10 @@ export class WorkJobDetailComponent implements OnInit {
     return this.i18n.t(map[type] || 'work.type.freelance');
   }
 
+  bidLabel(b: JobBid): string {
+    return `${Number(b.proposedAmount || 0).toLocaleString()} ${b.proposedCurrency}/${b.proposedPeriod}`;
+  }
+
   toggleSave(): void {
     const j = this.job();
     if (!j || typeof localStorage === 'undefined') return;
@@ -490,7 +526,97 @@ export class WorkJobDetailComponent implements OnInit {
   }
 
   apply(): void {
-    this.applyMsg.set(this.i18n.t('work.detail.applySent'));
+    const j = this.job();
+    if (!j) return;
+    if (!this.auth.isAuthenticated()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: `/work/jobs/${j.slug}` } });
+      return;
+    }
+    const amount = Number(this.proposedAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      this.applyErr.set(this.i18n.t('work.detail.amountRequired'));
+      return;
+    }
+    this.busy.set(true);
+    this.applyErr.set('');
+    this.api
+      .apply(j.slug, {
+        proposedAmount: amount,
+        proposedCurrency: j.salaryCurrency || 'VND',
+        proposedPeriod: this.proposedPeriod,
+        coverLetter: this.coverLetter.trim(),
+      })
+      .subscribe({
+        next: () => {
+          this.applyMsg.set(this.i18n.t('work.detail.applySent'));
+          this.busy.set(false);
+          this.reload(j.slug);
+          this.activeTab.set('bids');
+        },
+        error: (e) => {
+          this.busy.set(false);
+          this.applyErr.set(e?.error?.message || this.i18n.t('work.detail.applyFail'));
+        },
+      });
+  }
+
+  messageEmployer(): void {
+    const j = this.job();
+    if (!j) return;
+    if (!this.auth.isAuthenticated()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: `/work/jobs/${j.slug}` } });
+      return;
+    }
+    if (!this.myBid()) {
+      this.applyErr.set(this.i18n.t('work.detail.applyFirst'));
+      return;
+    }
+    this.busy.set(true);
+    this.chat.start({ jobSlug: j.slug }).subscribe({
+      next: (c) => {
+        this.busy.set(false);
+        void this.router.navigate(['/messages', c.id]);
+      },
+      error: (e) => {
+        this.busy.set(false);
+        this.applyErr.set(e?.error?.message || this.i18n.t('work.detail.chatFail'));
+      },
+    });
+  }
+
+  messageApplicant(applicantId: string): void {
+    const j = this.job();
+    if (!j || !applicantId) return;
+    this.busy.set(true);
+    this.chat.start({ jobSlug: j.slug, applicantId }).subscribe({
+      next: (c) => {
+        this.busy.set(false);
+        void this.router.navigate(['/messages', c.id]);
+      },
+      error: (e) => {
+        this.busy.set(false);
+        this.applyErr.set(e?.error?.message || this.i18n.t('work.detail.chatFail'));
+      },
+    });
+  }
+
+  hire(b: JobBid): void {
+    const j = this.job();
+    if (!j || !b.id) return;
+    this.busy.set(true);
+    this.applyErr.set('');
+    this.api.updateApplication(b.id, 'accepted').subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.applyMsg.set(this.i18n.t('work.hireOk'));
+        this.reload(j.slug);
+        this.activeTab.set('bids');
+      },
+      error: (e) => {
+        this.busy.set(false);
+        this.applyErr.set(e?.error?.message || this.i18n.t('work.hireFail'));
+      },
+    });
   }
 
   private readSaved(slug: string): boolean {
@@ -509,13 +635,17 @@ export class WorkJobDetailComponent implements OnInit {
 })
 export class WorkTalentDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly api = inject(WorkService);
+  private readonly chat = inject(ChatService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
   readonly auth = inject(AuthService);
 
   readonly talent = signal<TalentProfile | null>(null);
   readonly activeTab = signal<'overview' | 'experience' | 'education' | 'products'>('overview');
+  readonly busy = signal(false);
+  readonly chatErr = signal('');
 
   readonly tabs = [
     { id: 'overview' as const, labelKey: 'work.detail.tabOverview' },
@@ -544,5 +674,26 @@ export class WorkTalentDetailComponent implements OnInit {
     if (t.rateNegotiable && !t.rateAmount) return this.i18n.t('work.negotiable');
     if (t.rateAmount) return `${t.rateAmount.toLocaleString()} ${t.rateCurrency}/${this.i18n.t('work.hour')}`;
     return this.i18n.t('work.negotiable');
+  }
+
+  messageTalent(): void {
+    const t = this.talent();
+    if (!t) return;
+    if (!this.auth.isAuthenticated()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: `/work/talents/${t.slug}` } });
+      return;
+    }
+    this.busy.set(true);
+    this.chatErr.set('');
+    this.chat.start({ talentSlug: t.slug, body: this.i18n.t('work.detail.talentHello') }).subscribe({
+      next: (c) => {
+        this.busy.set(false);
+        void this.router.navigate(['/messages', c.id]);
+      },
+      error: (e) => {
+        this.busy.set(false);
+        this.chatErr.set(e?.error?.message || this.i18n.t('work.detail.chatFail'));
+      },
+    });
   }
 }

@@ -355,6 +355,10 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 
+  &--spaced {
+    margin-left: 1rem;
+  }
+
   &:hover {
     color: var(--oc-text);
   }
@@ -383,6 +387,36 @@
   margin: 0.65rem 0 0;
   color: var(--oc-ok);
   font-size: 0.85rem;
+}
+
+.oc-err-msg {
+  margin: 0.65rem 0 0;
+  color: #ff6b5e;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.oc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.oc-code {
+  border: 1px solid var(--oc-line);
+  border-radius: 0.35rem;
+  background: #121214;
+  color: #e8f0ff;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  padding: 0.1rem 0.35rem;
+}
+
+.oc-creds {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--oc-line);
 }
 
 .oc-ssh {

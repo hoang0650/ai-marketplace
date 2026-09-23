@@ -24,7 +24,16 @@
         <a routerLink="/auth/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'auth.register' | t }}</a>
       </nav>
 
-      <app-google-sign-in divider="bottom" (signedIn)="onGoogleSignedIn($event)" />
+      <app-google-sign-in mode="signup" divider="none" />
+
+      @if (googleLoaded()) {
+        <div class="auth-prefill">
+          <p>{{ 'auth.googlePrefillHint' | t }}</p>
+          <button type="button" class="auth-prefill__clear" (click)="clearGoogle()">{{ 'auth.googlePrefillClear' | t }}</button>
+        </div>
+      }
+
+      <div class="auth-oauth__divider auth-oauth__divider--bottom" style="margin-top: 1rem"><span>{{ 'auth.or' | t }}</span></div>
 
       <form class="auth-form" (ngSubmit)="submit()">
         <div class="auth-field">
@@ -46,6 +55,7 @@
             type="email"
             name="email"
             [(ngModel)]="email"
+            (ngModelChange)="onEmailChange()"
             required
             autocomplete="email"
             [placeholder]="'auth.emailPh' | t"
@@ -61,7 +71,7 @@
               name="password"
               [(ngModel)]="password"
               required
-              minlength="6"
+              minlength="8"
               autocomplete="new-password"
               [placeholder]="'auth.passwordPh' | t"
             />
@@ -76,13 +86,39 @@
           </div>
         </div>
 
-        <label class="auth-option">
-          <input type="checkbox" [(ngModel)]="asCreator" name="asCreator" />
-          <span>
-            <strong>{{ 'auth.wantSell' | t }}</strong>
-            <small>{{ 'auth.wantSellDesc' | t }}</small>
-          </span>
-        </label>
+        <div class="auth-field">
+          <label for="register-confirm">{{ 'auth.confirmPassword' | t }}</label>
+          <input
+            id="register-confirm"
+            [type]="showPassword ? 'text' : 'password'"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            required
+            minlength="8"
+            autocomplete="new-password"
+            [placeholder]="'auth.confirmPasswordPh' | t"
+          />
+        </div>
+
+        <fieldset class="auth-roles">
+          <legend>{{ 'auth.roleLabel' | t }}</legend>
+          <p class="auth-roles__hint">{{ 'auth.roleHint' | t }}</p>
+          <div class="auth-roles__grid">
+            @for (r of roles; track r) {
+              <button
+                type="button"
+                class="auth-role"
+                [class.is-active]="role() === r"
+                [attr.aria-pressed]="role() === r"
+                (click)="chooseRole(r)"
+              >
+                <strong>{{ ('signup.role.' + r) | t }}</strong>
+                <small>{{ ('signup.role.' + r + 'Desc') | t }}</small>
+              </button>
+            }
+          </div>
+          <input type="hidden" name="role" [ngModel]="role()" />
+        </fieldset>
 
         <label class="auth-check">
           <input type="checkbox" [(ngModel)]="agreed" name="agreed" required />

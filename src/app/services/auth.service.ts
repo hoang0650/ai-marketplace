@@ -4,12 +4,20 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, ReplaySubject, tap, map, of, catchError, shareReplay, switchMap, filter, take } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { User, UserRole } from '../models/marketplace.models';
+import { User, UserRole, SignupRole } from '../models/marketplace.models';
 
 interface AuthResponse {
   token: string;
   refreshToken?: string;
   user: User;
+}
+
+export interface GooglePrefill {
+  email: string;
+  name: string;
+  avatarUrl?: string;
+  googleSignupToken: string;
+  hasAccount: boolean;
 }
 
 const TOKEN_KEY = 'phai.token';
@@ -53,7 +61,26 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.userSignal() || tokenUnexpired(this.tokenSignal()));
   readonly isCreator = computed(() => {
     const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
-    return role === 'creator' || role === 'admin';
+    return role === 'seller' || role === 'talent' || role === 'freelancer' || role === 'employer' || role === 'admin';
+  });
+  /** Seller-only capability (shop, coupons, dashboard, compute). */
+  readonly isSeller = computed(() => {
+    const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
+    return role === 'seller' || role === 'admin';
+  });
+  /** Freelancer — applies to jobs and delivers work. */
+  readonly isFreelancer = computed(() => {
+    const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
+    return role === 'freelancer' || role === 'admin';
+  });
+  /** Employer / HR — posts jobs. */
+  readonly isEmployer = computed(() => {
+    const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
+    return role === 'employer' || role === 'admin';
+  });
+  readonly isTalent = computed(() => {
+    const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
+    return role === 'talent' || role === 'admin';
   });
   readonly isAdmin = computed(() => {
     const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
@@ -102,11 +129,25 @@ export class AuthService {
     email: string;
     name: string;
     password: string;
+    confirmPassword?: string;
+    role?: SignupRole;
+    /** @deprecated use role */
     asCreator?: boolean;
+    avatarUrl?: string;
+    googleSignupToken?: string;
   }): Observable<User> {
     return this.http
       .post<AuthResponse>(`${environment.apiUrl}/auth/register`, payload, { withCredentials: true })
       .pipe(tap((res) => this.persist(res)), map((res) => res.user));
+  }
+
+  /** Google for signup: returns prefill data only (no session, no account). */
+  googlePrefill(payload: {
+    idToken?: string;
+    code?: string;
+    redirectUri?: string;
+  }): Observable<GooglePrefill> {
+    return this.http.post<GooglePrefill>(`${environment.apiUrl}/auth/google/prefill`, payload);
   }
 
   refreshAccessToken(): Observable<boolean> {

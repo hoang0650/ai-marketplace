@@ -1,0 +1,78 @@
+<section class="kyc-page page route-enter">
+  <p class="kyc-meta"><a routerLink="/settings/profile">{{ 'kyc.back' | t }}</a></p>
+  <h1>{{ 'kyc.title' | t }}</h1>
+  <p class="kyc-lede">{{ 'kyc.lede' | t }}</p>
+
+  @if (auth.user()?.role === 'admin') {
+    <p class="kyc-banner ok">{{ 'kyc.adminBypass' | t }}</p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'kyc.loading' | t }}</p>
+  } @else if (kyc(); as k) {
+    <p class="kyc-status">
+      <strong>{{ statusKey(k.status) | t }}</strong>
+      @if (k.rejectReason) {
+        <span class="kyc-reject">{{ k.rejectReason }}</span>
+      }
+    </p>
+
+    <div class="kyc-panel">
+      <h2>{{ 'kyc.docs' | t }}</h2>
+      <div class="kyc-docs">
+        @for (side of sides; track side) {
+          <label class="kyc-doc">
+            <span>{{ sideKey(side) | t }}</span>
+            @if (previews()[side]; as url) {
+              <img [src]="url" [alt]="side" />
+            } @else {
+              <div class="kyc-placeholder">{{ 'kyc.noPhoto' | t }}</div>
+            }
+            @if (k.canEdit) {
+              <input type="file" accept="image/jpeg,image/png,image/webp" (change)="onFile(side, $event)" [disabled]="busy()" />
+            }
+          </label>
+        }
+      </div>
+
+      @if (k.canEdit) {
+        <div class="kyc-fields">
+          <label>
+            <span>{{ 'kyc.fullName' | t }}</span>
+            <input class="input" [(ngModel)]="fullName" name="fullName" />
+          </label>
+          <label>
+            <span>{{ 'kyc.idType' | t }}</span>
+            <select class="input" [(ngModel)]="idType" name="idType">
+              @for (t of idTypes; track t) {
+                <option [value]="t">{{ ('kyc.idType.' + t) | t }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ 'kyc.idNumber' | t }}</span>
+            <input class="input" [(ngModel)]="idNumber" name="idNumber" autocomplete="off" />
+          </label>
+        </div>
+        <button type="button" class="btn btn-fill" (click)="submit()" [disabled]="busy() || !k.canSubmit">
+          {{ busy() ? ('kyc.sending' | t) : ('kyc.submit' | t) }}
+        </button>
+        @if (!k.canSubmit) {
+          <p class="kyc-hint">{{ 'kyc.needAllDocs' | t }}</p>
+        }
+      } @else if (k.status === 'pending') {
+        <p class="kyc-hint">{{ 'kyc.waitReview' | t }}</p>
+      } @else if (k.status === 'verified') {
+        <p class="kyc-banner ok">{{ 'kyc.verifiedHint' | t }}</p>
+        <a routerLink="/sell/withdraw" class="btn btn-outline">{{ 'kyc.goWithdraw' | t }}</a>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <p class="kyc-error">{{ error() }}</p>
+  }
+  @if (msg()) {
+    <p class="kyc-ok">{{ msg() }}</p>
+  }
+</section>

@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { of, delay, switchMap, from } from 'rxjs';
 import { MockDataStore } from '../services/mock-data.store';
 import { environment } from '../../environments/environment';
+import { SignupRole } from '../models/marketplace.models';
 import { RUNPOD_PUBLIC_ENDPOINTS } from '../models/runpod-public-endpoints';
 
 function jsonOk<T>(body: T, status = 200) {
@@ -114,7 +115,7 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
           : jsonOk({ message: 'Invalid credentials' }, 401);
       }
       if (req.method === 'POST' && path === '/auth/register') {
-        const body = req.body as { email: string; name: string; password: string; asCreator?: boolean };
+        const body = req.body as { email: string; name: string; password: string; role?: SignupRole; asCreator?: boolean };
         const user = store.register(body);
         return jsonOk({ token: `mock.${user.id}`, user });
       }

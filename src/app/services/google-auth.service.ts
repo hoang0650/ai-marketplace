@@ -26,13 +26,14 @@ export class GoogleAuthService {
   }
 
   /** Redirect through the API host so Google never checks the frontend JS origin. */
-  startRedirect(returnTo?: string): void {
+  startRedirect(returnTo?: string, mode: 'login' | 'signup' = 'login'): void {
     if (typeof window === 'undefined') return;
     const path = `${window.location.pathname}${window.location.search}`;
     const fallback =
       path.startsWith('/auth/') ? `${window.location.origin}/` : `${window.location.origin}${path}`;
     const url = new URL(`${environment.apiUrl}/auth/google/start`);
     url.searchParams.set('returnTo', returnTo || fallback);
+    if (mode === 'signup') url.searchParams.set('mode', 'signup');
     window.location.assign(url.toString());
   }
 }

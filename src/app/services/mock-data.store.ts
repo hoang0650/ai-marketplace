@@ -8,6 +8,7 @@ import {
   Product,
   ProductCategory,
   Review,
+  SignupRole,
   UsageStat,
   User,
   WalletTx,
@@ -205,18 +206,20 @@ export class MockDataStore {
     return this.ensure().users.find((u) => u.email.toLowerCase() === email.toLowerCase());
   }
 
-  register(input: { email: string; name: string; asCreator?: boolean }): User {
+  register(input: { email: string; name: string; asCreator?: boolean; role?: SignupRole }): User {
+    const role: SignupRole = input.role || (input.asCreator ? 'seller' : 'buyer');
+    const isSeller = role === 'seller';
     const user: User = {
       id: `u-${Date.now()}`,
       email: input.email,
       name: input.name,
-      role: input.asCreator ? 'creator' : 'buyer',
-      creatorSlug: input.asCreator ? input.name.toLowerCase().replace(/\s+/g, '-') : undefined,
+      role,
+      creatorSlug: isSeller ? input.name.toLowerCase().replace(/\s+/g, '-') : undefined,
       avatarUrl: `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(input.email)}`,
       createdAt: new Date().toISOString(),
     };
     this.ensure().users.push(user);
-    if (input.asCreator && user.creatorSlug) {
+    if (isSeller && user.creatorSlug) {
       this.ensure().creators.push({
         id: `c-${Date.now()}`,
         slug: user.creatorSlug,

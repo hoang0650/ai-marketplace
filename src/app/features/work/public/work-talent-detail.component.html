@@ -32,11 +32,19 @@
         <p class="work-detail__fee-label">{{ 'work.detail.refFee' | t }}</p>
         <p class="work-detail__fee">{{ rateLabel(t) }}</p>
         @if (auth.isAuthenticated()) {
-          <a routerLink="/work/post" class="work-detail__cta">{{ 'work.detail.inviteApply' | t }}</a>
+          <button type="button" class="work-detail__cta" style="width:100%;" (click)="messageTalent()" [disabled]="busy()">
+            {{ 'work.detail.messageTalent' | t }}
+          </button>
+          <a routerLink="/work/post" class="work-detail__cta work-detail__cta--outline" style="width:100%; margin-top:0.55rem;">
+            {{ 'work.detail.inviteApply' | t }}
+          </a>
         } @else {
           <a routerLink="/auth/login" [queryParams]="{ returnUrl: '/work/talents/' + t.slug }" class="work-detail__cta">
-            {{ 'work.detail.loginInvite' | t }}
+            {{ 'work.detail.messageTalent' | t }}
           </a>
+        }
+        @if (chatErr()) {
+          <p class="msg err" style="margin-top:0.5rem;">{{ chatErr() }}</p>
         }
       </div>
     </div>

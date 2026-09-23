@@ -28,14 +28,16 @@ export class SettingsShellComponent {
     this.i18n.lang();
     const role = this.auth.user()?.role;
     if (role === 'admin') return this.i18n.t('role.admin');
-    if (role === 'creator') return this.i18n.t('role.seller');
-    return this.i18n.t('role.member');
+    const key = `signup.role.${role}`;
+    const label = this.i18n.t(key);
+    return label === key ? this.i18n.t('role.member') : label;
   });
 
   readonly links = computed(() => {
     this.i18n.lang();
     return [
       { path: '/settings/profile', title: this.i18n.t('settings.profile'), desc: this.i18n.t('settings.profileDesc'), icon: '👤' },
+      { path: '/settings/kyc', title: this.i18n.t('settings.kyc'), desc: this.i18n.t('settings.kycDesc'), icon: '🪪' },
       { path: '/settings/activity', title: this.i18n.t('settings.activity'), desc: this.i18n.t('settings.activityDesc'), icon: '🕒' },
       { path: '/settings/security', title: this.i18n.t('settings.security'), desc: this.i18n.t('settings.securityDesc'), icon: '🛡' },
       { path: '/settings/notifications', title: this.i18n.t('settings.noti'), desc: this.i18n.t('settings.notiDesc'), icon: '📣' },

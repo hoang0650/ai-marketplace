@@ -38,7 +38,7 @@ import { I18nService } from '../../i18n/i18n.service';
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        {{ compact() ? ('auth.googleShort' | t) : ('auth.google' | t) }}
+        {{ compact() ? ('auth.googleShort' | t) : (mode() === 'signup' ? ('auth.googleSignup' | t) : ('auth.google' | t)) }}
       </button>
       @if (divider() === 'bottom') {
         <div class="auth-oauth__divider auth-oauth__divider--bottom"><span>{{ 'auth.or' | t }}</span></div>
@@ -136,6 +136,8 @@ export class GoogleSignInComponent implements OnInit {
   /** Compact pill for header nav. */
   readonly compact = input(false);
   readonly divider = input<'top' | 'bottom' | 'none'>('bottom');
+  /** 'signup' → collect Google profile and hand it back instead of starting a session. */
+  readonly mode = input<'login' | 'signup'>('login');
   /** Navigate after sign-in when true (header). */
   readonly redirect = input(false);
 
@@ -146,6 +148,12 @@ export class GoogleSignInComponent implements OnInit {
 
   ngOnInit(): void {
     this.googleAuth.getConfig().subscribe((cfg) => this.ready.set(cfg.enabled));
+    // Signup mode comes back to /auth/register?google=prefill — handled by the page.
+    if (this.mode() !== 'signup' || typeof window === 'undefined') return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('google') === 'error') {
+      this.error.set(q.get('message') || this.i18n.t('auth.googlePrefillFail'));
+    }
   }
 
   signIn(): void {
@@ -155,6 +163,6 @@ export class GoogleSignInComponent implements OnInit {
       return;
     }
     this.busy.set(true);
-    this.googleAuth.startRedirect();
+    this.googleAuth.startRedirect(undefined, this.mode());
   }
 }

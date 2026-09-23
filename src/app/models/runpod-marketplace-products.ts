@@ -129,7 +129,7 @@ export function buildRunpodUser(): User {
     id: 'u-runpod',
     email: 'models@aimarkets.vn',
     name: 'AI Markets Models',
-    role: 'creator',
+    role: 'seller',
     creatorSlug: CREATOR_SLUG,
     bio: 'Hosted models on AI Markets.',
     avatarUrl: 'https://api.dicebear.com/9.x/shapes/svg?seed=aimarkets',

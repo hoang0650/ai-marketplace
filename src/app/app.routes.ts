@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, creatorGuard, adminGuard } from './guards/auth.guards';
+import { authGuard, creatorGuard, sellerGuard, adminGuard } from './guards/auth.guards';
 
 export const routes: Routes = [
   {
@@ -57,13 +57,12 @@ export const routes: Routes = [
       },
       {
         path: 'contracts',
-        data: { page: 'contracts' },
         loadComponent: () =>
-          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+          import('./features/work/work-contracts.component').then((m) => m.WorkContractsComponent),
       },
       {
         path: 'disputes',
-        data: { inbox: 'mine' },
+        data: { inbox: 'work' },
         loadComponent: () =>
           import('./features/complaints/complaint-list.component').then((m) => m.ComplaintListComponent),
       },
@@ -103,6 +102,7 @@ export const routes: Routes = [
       },
       {
         path: 'products',
+        canActivate: [sellerGuard],
         loadComponent: () =>
           import('./features/sell/sell-pages.components').then((m) => m.SellProductsComponent),
       },
@@ -129,6 +129,7 @@ export const routes: Routes = [
       },
       {
         path: 'coupons',
+        canActivate: [sellerGuard],
         loadComponent: () =>
           import('./features/sell/sell-coupons.component').then((m) => m.SellCouponsComponent),
       },
@@ -461,6 +462,11 @@ export const routes: Routes = [
               import('./features/settings/settings-profile.component').then(
                 (m) => m.SettingsProfileComponent,
               ),
+          },
+          {
+            path: 'kyc',
+            loadComponent: () =>
+              import('./features/settings/settings-kyc.component').then((m) => m.SettingsKycComponent),
           },
           {
             path: 'activity',

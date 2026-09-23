@@ -355,3 +355,19 @@
   font-size: 1.25rem;
   flex-shrink: 0;
 }
+
+.work-bid {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.work-bid:last-child { border-bottom: 0; }
+.work-bid__price { font-weight: 800; margin: 0.35rem 0 0; }
+.work-bid__cover { color: var(--color-muted); font-size: 0.9rem; margin: 0.35rem 0 0; }
+.work-bid__you { color: var(--color-muted); font-weight: 600; font-size: 0.85rem; }
+.work-bid__hired { margin: 0.35rem 0 0; font-weight: 700; color: #0f7b4a; font-size: 0.9rem; }
+.work-bid__actions { display: flex; flex-direction: column; gap: 0.45rem; align-items: stretch; min-width: 7.5rem; }
+.work-detail__hint { color: var(--color-muted); font-size: 0.86rem; line-height: 1.45; margin: 0.35rem 0 0; }

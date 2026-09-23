@@ -2,12 +2,22 @@ import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DashboardService, ProductService } from '../../services/api.services';
+import { DashboardService, KycService, ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
-import { Order, Product, WalletSummary, WalletTx } from '../../models/marketplace.models';
+import {
+  KycProfile,
+  Order,
+  PayoutPersona,
+  PayoutPolicy,
+  PayoutQuote,
+  Product,
+  WalletSummary,
+  WalletTx,
+} from '../../models/marketplace.models';
 import { categoryLabel, sellerWorkspaceKind } from '../../models/categories';
 import { ShopProfileService } from './shop-profile.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-sell-images',
@@ -271,11 +281,62 @@ export class SellPaymentComponent {
 @Component({
   selector: 'app-sell-withdraw',
   standalone: true,
-  imports: [FormsModule, CurrencyPipe],
+  imports: [FormsModule, CurrencyPipe, DecimalPipe, RouterLink, TPipe],
   template: `
     <section>
       <p class="crumb">Tài chính / Rút tiền</p>
-      <h1>Rút tiền</h1>
+      <h1>{{ 'wallet.withdraw.title' | t }}</h1>
+
+      @if (personas().length > 1) {
+        <div class="personas">
+          @for (p of personas(); track p) {
+            <button type="button" [class.active]="p === persona()" (click)="setPersona(p)">
+              {{ ('payout.persona.' + p) | t }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (policy(); as pol) {
+        @if (!pol.canWithdraw) {
+          <div class="blocked">
+            <p>{{ 'payout.buyerBlocked' | t }}</p>
+            <p class="hint">{{ 'payout.buyerBlockedHint' | t }}</p>
+            <a routerLink="/sell" class="link">{{ 'payout.goSeller' | t }} →</a>
+          </div>
+        } @else {
+          <div class="policy">
+            <p><strong>{{ ('payout.persona.' + persona()) | t }}</strong> · {{ 'payout.feeLine' | t }}</p>
+            <ul>
+              <li>{{ 'payout.platformFee' | t }}: <strong>{{ pol.platformFeeRate * 100 | number: '1.0-2' }}%</strong></li>
+              @if (pol.taxRate > 0) {
+                <li>{{ 'payout.tax' | t }}: <strong>{{ pol.taxRate * 100 | number: '1.0-2' }}%</strong></li>
+              }
+              <li>{{ 'payout.totalFee' | t }}: <strong>{{ pol.totalFeeRate * 100 | number: '1.0-2' }}%</strong></li>
+              @if (!pol.chargeAtWithdraw) {
+                <li class="note">{{ 'payout.netAtSource' | t }}</li>
+              }
+              @if (pol.holdHours > 0) {
+                <li>{{ 'payout.hold' | t }}: <strong>{{ pol.holdHours }}h</strong></li>
+              }
+              @if (pol.minAmountVnd > 0) {
+                <li>{{ 'payout.minBalance' | t }}: <strong>{{ pol.minAmountVnd | number }} VND</strong> (~{{ pol.minAmount | currency: pol.minAmountCurrency }})</li>
+              }
+            </ul>
+          </div>
+        }
+      }
+
+      @if (kyc(); as k) {
+        @if (!k.withdrawAllowed && auth.user()?.role !== 'admin') {
+          <div class="kyc-block">
+            <p>{{ 'kyc.withdrawBlocked' | t }}</p>
+            <p class="status">{{ ('kyc.status.' + k.status) | t }}</p>
+            <a routerLink="/settings/kyc" class="link">{{ 'kyc.goVerify' | t }} →</a>
+          </div>
+        }
+      }
+
       <div class="grid">
         <form class="card" (ngSubmit)="withdraw()">
           @if (summary(); as s) {
@@ -293,11 +354,25 @@ export class SellPaymentComponent {
           }
           <label>
             <span>Số tiền</span>
-            <input type="number" min="1" [(ngModel)]="amount" name="amount" />
+            <input type="number" min="1" [(ngModel)]="amount" name="amount" (ngModelChange)="refreshQuote()" />
           </label>
-          <button type="submit">Yêu cầu rút tiền</button>
+
+          @if (quote(); as quote) {
+            <ul class="quote">
+              <li><span>{{ 'payout.gross' | t }}</span><strong>{{ quote.gross | currency: 'USD' }}</strong></li>
+              @if (quote.platformFee > 0) {
+                <li><span>{{ 'payout.platformFee' | t }}</span><strong>−{{ quote.platformFee | currency: 'USD' }}</strong></li>
+              }
+              @if (quote.tax > 0) {
+                <li><span>{{ 'payout.tax' | t }}</span><strong>−{{ quote.tax | currency: 'USD' }}</strong></li>
+              }
+              <li class="net"><span>{{ 'payout.net' | t }}</span><strong>{{ quote.net | currency: 'USD' }}</strong></li>
+            </ul>
+          }
+
+          <button type="submit" [disabled]="!canWithdraw()">Yêu cầu rút tiền</button>
           @if (msg()) {
-            <p class="ok">{{ msg() }}</p>
+            <p [class.ok]="!isErr()" [class.err]="isErr()">{{ msg() }}</p>
           }
         </form>
         <div class="card">
@@ -319,40 +394,116 @@ export class SellPaymentComponent {
   styles: `
     .crumb { margin: 0; color: #888; font-size: .8rem; }
     h1 { margin: .3rem 0 1rem; font-size: 1.45rem; font-weight: 800; }
+    .personas { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .personas button { border: 1px solid #e5e5e5; background: #fff; border-radius: 999px; padding: .35rem .9rem; font: inherit; font-weight: 700; cursor: pointer; }
+    .personas button.active { background: #111; color: #fff; border-color: #111; }
+    .policy { background: #f7f7f5; border: 1px solid #ececec; border-radius: 12px; padding: .85rem 1rem; margin-bottom: 1rem; }
+    .policy p { margin: 0 0 .4rem; font-weight: 700; }
+    .policy ul { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+    .policy ul li { border: 0; padding: 0; }
+    .policy ul li.note { color: #666; font-size: .8rem; width: 100%; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .card { background: #fff; border: 1px solid #ececec; border-radius: 14px; padding: 1rem; }
     label { display: grid; gap: .35rem; font-weight: 700; font-size: .85rem; }
     input { border: 1px solid #e5e5e5; border-radius: 10px; padding: .7rem .8rem; font: inherit; }
     button { margin-top: .85rem; min-height: 2.45rem; border: 0; border-radius: 10px; background: #e53935; color: #fff; font: inherit; font-weight: 800; cursor: pointer; padding: 0 1rem; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
     ul { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .55rem; }
     li { display: flex; justify-content: space-between; gap: .75rem; font-size: .85rem; border-bottom: 1px solid #f0f0f0; padding-bottom: .55rem; }
+    .quote .net { border-bottom: 0; }
+    .quote .net strong { color: #15803d; }
     .ok { color: #15803d; font-size: .85rem; }
+    .err { color: #b42318; font-size: .85rem; }
     .empty { color: #999; }
+    .blocked { background: #fff3f3; border: 1px solid #f3c6c6; border-radius: 12px; padding: .9rem 1rem; margin-bottom: 1rem; }
+    .blocked p { margin: 0 0 .35rem; font-weight: 700; }
+    .blocked .hint { font-weight: 500; color: #666; font-size: .85rem; }
+    .kyc-block { background: #fff8e6; border: 1px solid #f0d78c; border-radius: 12px; padding: .9rem 1rem; margin-bottom: 1rem; }
+    .kyc-block .status { font-weight: 800; margin: .35rem 0; }
+    .kyc-block .link, .blocked .link { font-weight: 800; color: #111; }
     @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
   `,
 })
 export class SellWithdrawComponent implements OnInit {
   private readonly api = inject(DashboardService);
+  private readonly kycApi = inject(KycService);
   private readonly seo = inject(SeoService);
+  readonly auth = inject(AuthService);
   readonly txs = signal<WalletTx[]>([]);
   readonly summary = signal<WalletSummary | null>(null);
+  readonly kyc = signal<KycProfile | null>(null);
+  readonly policy = signal<PayoutPolicy | null>(null);
+  readonly personas = signal<PayoutPersona[]>([]);
+  readonly persona = signal<PayoutPersona | ''>('');
+  readonly quote = signal<PayoutQuote | null>(null);
   readonly msg = signal('');
+  readonly errFlag = signal(false);
   amount = 100;
 
   ngOnInit(): void {
     this.seo.set({ title: 'Rút tiền' });
     this.api.wallet().subscribe((t) => this.txs.set(t));
     this.api.walletSummary().subscribe((s) => this.summary.set(s));
+    this.kycApi.me().subscribe({ next: (k) => this.kyc.set(k), error: () => undefined });
+    this.api.payoutPolicy(undefined, this.amount).subscribe({
+      next: (res) => {
+        this.personas.set(res.personas || []);
+        this.persona.set(res.persona);
+        this.policy.set(res.policy);
+        this.quote.set(res.quote);
+      },
+      error: () => undefined,
+    });
+  }
+
+  setPersona(p: PayoutPersona): void {
+    this.persona.set(p);
+    this.refreshQuote();
+  }
+
+  refreshQuote(): void {
+    const amount = Number(this.amount);
+    this.api.payoutPolicy(this.persona() || undefined, Number.isFinite(amount) && amount > 0 ? amount : undefined).subscribe({
+      next: (res) => {
+        this.policy.set(res.policy);
+        this.quote.set(res.quote);
+      },
+      error: () => undefined,
+    });
+  }
+
+  canWithdraw(): boolean {
+    if (this.auth.user()?.role === 'admin') return true;
+    if (!this.policy()?.canWithdraw) return false;
+    return !!this.kyc()?.withdrawAllowed;
+  }
+
+  isErr(): boolean {
+    return this.errFlag();
   }
 
   withdraw(): void {
-    this.api.withdraw(this.amount).subscribe({
+    if (!this.policy()?.canWithdraw) {
+      this.errFlag.set(true);
+      this.msg.set('Ví người mua không hỗ trợ rút tiền.');
+      return;
+    }
+    if (!this.canWithdraw()) {
+      this.errFlag.set(true);
+      this.msg.set('Hoàn tất eKYC trước khi rút tiền.');
+      return;
+    }
+    this.api.withdraw(this.amount, this.persona() || undefined).subscribe({
       next: (tx) => {
+        this.errFlag.set(false);
         this.txs.update((list) => [tx, ...list]);
         this.msg.set(`Đã gửi yêu cầu rút ${tx.amount}. Chờ admin xác nhận.`);
         this.api.walletSummary().subscribe((s) => this.summary.set(s));
       },
-      error: (err) => this.msg.set(err?.error?.message || 'Không rút được'),
+      error: (err) => {
+        this.errFlag.set(true);
+        this.msg.set(err?.error?.message || 'Không rút được');
+      },
     });
   }
 }

@@ -30,6 +30,10 @@
   </div>
   <script>
     (function () {
+      if (location.hostname === 'aimarkets.vn') {
+        location.replace('https://www.aimarkets.vn' + location.pathname + location.search + location.hash);
+        return;
+      }
       var search = window.location.search || '';
       var hash = window.location.hash || '';
       if (!search && !hash) {

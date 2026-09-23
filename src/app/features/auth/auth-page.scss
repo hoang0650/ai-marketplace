@@ -373,6 +373,95 @@
   accent-color: var(--color-accent);
 }
 
+.auth-prefill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(66, 133, 244, 0.35);
+  border-radius: 10px;
+  background: rgba(66, 133, 244, 0.06);
+  font-size: 0.8rem;
+  color: var(--color-ink);
+}
+
+.auth-prefill p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.auth-prefill__clear {
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--color-accent);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.auth-roles {
+  border: 0;
+  padding: 0;
+  margin: 0 0 0.85rem;
+}
+
+.auth-roles legend {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  padding: 0;
+}
+
+.auth-roles__hint {
+  margin: 0.2rem 0 0.55rem;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.auth-roles__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.5rem;
+}
+
+.auth-role {
+  display: grid;
+  gap: 0.15rem;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background: var(--color-surface);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.auth-role strong {
+  font-size: 0.85rem;
+  color: var(--color-ink);
+}
+
+.auth-role small {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  line-height: 1.35;
+}
+
+.auth-role:hover {
+  border-color: var(--color-accent);
+}
+
+.auth-role.is-active {
+  border-color: var(--color-accent);
+  background: rgba(201, 169, 97, 0.1);
+}
+
 .auth-check a {
   color: var(--color-accent);
   font-weight: 700;

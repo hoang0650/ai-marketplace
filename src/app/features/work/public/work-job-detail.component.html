@@ -19,7 +19,7 @@
               <span>{{ 'work.detail.views' | t }}</span>
             </div>
             <div class="work-detail__stat">
-              <strong>{{ j.applicationsCount || 0 }}</strong>
+              <strong>{{ bids().length || j.applicationsCount || 0 }}</strong>
               <span>{{ 'work.detail.applications' | t }}</span>
             </div>
             <div class="work-detail__stat">
@@ -57,6 +57,44 @@
           </div>
         }
 
+        @if (activeTab() === 'bids') {
+          <div class="work-detail__section">
+            <h3>{{ 'work.detail.bidsTitle' | t }}</h3>
+            <p class="work-detail__hint">{{ 'work.detail.bidsLede' | t }}</p>
+            @for (b of bids(); track b.id) {
+              <article class="work-bid">
+                <div>
+                  <strong>{{ b.applicantName }}</strong>
+                  @if (b.mine) {
+                    <span class="work-bid__you"> · {{ 'work.detail.yourBid' | t }}</span>
+                  }
+                  <p class="work-bid__price">{{ bidLabel(b) }}</p>
+                  @if (b.coverLetter) {
+                    <p class="work-bid__cover">{{ b.coverLetter }}</p>
+                  }
+                  @if (b.status === 'accepted') {
+                    <p class="work-bid__hired">{{ 'work.hired' | t }}</p>
+                  }
+                </div>
+                @if (isEmployer() && b.applicantId) {
+                  <div class="work-bid__actions">
+                    @if (b.status === 'pending') {
+                      <button type="button" class="btn btn-fill" (click)="hire(b)" [disabled]="busy()">
+                        {{ 'work.hire' | t }}
+                      </button>
+                    }
+                    <button type="button" class="btn btn-outline" (click)="messageApplicant(b.applicantId!)" [disabled]="busy()">
+                      {{ 'work.detail.chat' | t }}
+                    </button>
+                  </div>
+                }
+              </article>
+            } @empty {
+              <p class="work-detail__empty">{{ 'work.detail.noBids' | t }}</p>
+            }
+          </div>
+        }
+
         @if (activeTab() === 'deliverables') {
           <div class="work-detail__section">
             <h3>{{ 'work.detail.deliverables' | t }}</h3>
@@ -87,18 +125,54 @@
 
       <aside class="work-detail__sidebar">
         <div class="work-detail__sidebar-card">
-          @if (auth.isAuthenticated()) {
-            <button type="button" class="work-detail__cta" style="width:100%;" (click)="apply()">{{ 'work.detail.applyNow' | t }}</button>
-          } @else {
-            <a routerLink="/auth/login" [queryParams]="{ returnUrl: '/work/jobs/' + j.slug }" class="work-detail__cta" style="width:100%;">
-              {{ 'work.detail.applyNow' | t }}
-            </a>
+          <h3>{{ 'work.detail.employer' | t }}</h3>
+          <p><strong>{{ j.postedByName || j.company || ('work.detail.independentRecruiter' | t) }}</strong></p>
+          @if (!isEmployer()) {
+            <button type="button" class="work-detail__cta work-detail__cta--outline" style="width:100%; margin-top:0.55rem;" (click)="messageEmployer()" [disabled]="busy()">
+              {{ 'work.detail.messageEmployer' | t }}
+            </button>
           }
-          <button type="button" class="work-detail__cta work-detail__cta--outline" style="width:100%; margin-top:0.55rem;" (click)="toggleSave()">
-            {{ saved() ? ('work.detail.saved' | t) : ('work.detail.saveJob' | t) }}
-          </button>
-          <p class="work-detail__hint">{{ 'work.detail.applyHint' | t }}</p>
         </div>
+
+        @if (!isEmployer()) {
+          <div class="work-detail__sidebar-card">
+            <h3>{{ 'work.detail.proposePrice' | t }}</h3>
+            <p class="work-detail__hint">{{ 'work.detail.proposeHint' | t }}</p>
+            <label class="work-search" style="margin-top:0.5rem;">
+              <input type="number" [(ngModel)]="proposedAmount" [placeholder]="'work.detail.amountPh' | t" min="1" />
+            </label>
+            <label class="work-search" style="margin-top:0.5rem;">
+              <select [(ngModel)]="proposedPeriod">
+                <option value="project">{{ 'work.period.project' | t }}</option>
+                <option value="hour">{{ 'work.period.hour' | t }}</option>
+                <option value="month">{{ 'work.period.month' | t }}</option>
+              </select>
+            </label>
+            <label class="work-search" style="margin-top:0.5rem;">
+              <textarea [(ngModel)]="coverLetter" rows="3" [placeholder]="'work.detail.coverPh' | t"></textarea>
+            </label>
+            @if (auth.isAuthenticated()) {
+              <button type="button" class="work-detail__cta" style="width:100%; margin-top:0.55rem;" (click)="apply()" [disabled]="busy()">
+                {{ myBid() ? ('work.detail.updateBid' | t) : ('work.detail.applyNow' | t) }}
+              </button>
+            } @else {
+              <a routerLink="/auth/login" [queryParams]="{ returnUrl: '/work/jobs/' + j.slug }" class="work-detail__cta" style="width:100%; margin-top:0.55rem;">
+                {{ 'work.detail.applyNow' | t }}
+              </a>
+            }
+            <button type="button" class="work-detail__cta work-detail__cta--outline" style="width:100%; margin-top:0.55rem;" (click)="toggleSave()">
+              {{ saved() ? ('work.detail.saved' | t) : ('work.detail.saveJob' | t) }}
+            </button>
+            <p class="work-detail__hint">{{ 'work.detail.applyHint' | t }}</p>
+          </div>
+        } @else {
+          <div class="work-detail__sidebar-card">
+            <p class="work-detail__hint">{{ 'work.detail.employerHint' | t }}</p>
+            <button type="button" class="work-detail__cta work-detail__cta--outline" style="width:100%;" (click)="activeTab.set('bids')">
+              {{ 'work.detail.viewBids' | t }}
+            </button>
+          </div>
+        }
 
         <div class="work-detail__sidebar-card">
           <h3>{{ 'work.detail.budget' | t }}</h3>
@@ -116,18 +190,14 @@
             <strong>{{ j.remote ? ('work.remote' | t) : ('work.onsite' | t) }}</strong>
           </div>
         </div>
-
-        <div class="work-detail__sidebar-card">
-          <div class="work-detail__sidebar-row">
-            <span>{{ j.postedByName || j.company }}</span>
-            <a href="mailto:support@aimarkets.vn" class="work-detail__report">{{ 'work.detail.report' | t }}</a>
-          </div>
-        </div>
       </aside>
     </div>
 
     @if (applyMsg()) {
       <p class="msg ok" style="margin-top:1rem;">{{ applyMsg() }}</p>
+    }
+    @if (applyErr()) {
+      <p class="msg err" style="margin-top:1rem;">{{ applyErr() }}</p>
     }
   } @else {
     <div class="work-empty panel">{{ 'work.jobNotFound' | t }}</div>
