@@ -34,4 +34,9 @@ export const environment = {
     publicUrlTemplate: 'https://{userId}.nanoclaw.aimarkets.vn',
     dashboardSecret: '',
   },
+  spacebot: {
+    audience: 'aimarkets',
+    publicUrlTemplate: 'https://{userId}.spacebot.aimarkets.vn',
+    dashboardSecret: '',
+  },
 };

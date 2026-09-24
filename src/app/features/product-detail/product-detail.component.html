@@ -462,17 +462,17 @@
 
         <aside class="pg-pane">
           @if (isOpenClawHire()) {
-            <div class="pg-pane__head"><h2>{{ isHermesHire() ? 'Hermes' : 'OpenClaw' }}</h2></div>
+            <div class="pg-pane__head"><h2>{{ isHermesHire() ? 'Hermes' : isSpacebotHire() ? 'SpaceBot' : 'OpenClaw' }}</h2></div>
             <p class="text-muted">
-              {{ isHermesHire() ? 'Optional Hermes dashboard launch.' : 'Optional Control UI launch (separate from memory chat).' }}
+              {{ isHermesHire() ? 'Optional Hermes dashboard launch.' : isSpacebotHire() ? 'Optional SpaceBot dashboard launch.' : 'Optional Control UI launch (separate from memory chat).' }}
             </p>
             <div class="mt-4 flex flex-wrap gap-2">
               <button type="button" class="btn btn-outline" (click)="launchOpenClaw()" [disabled]="openclawBusy()">
-                {{ openclawBusy() ? 'Opening…' : (isHermesHire() ? 'Launch Hermes' : 'Launch OpenClaw') }}
+                {{ openclawBusy() ? 'Opening…' : (isHermesHire() ? 'Launch Hermes' : isSpacebotHire() ? 'Launch SpaceBot' : 'Launch OpenClaw') }}
               </button>
               <a
                 class="btn btn-outline"
-                [routerLink]="['/hire-agent', isHermesHire() ? 'hermes' : 'openclaw', 'setup']"
+                [routerLink]="['/hire-agent', hireAgentId(), 'setup']"
               >Setup</a>
             </div>
             @if (openclawStatus()) {

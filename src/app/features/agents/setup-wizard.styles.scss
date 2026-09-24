@@ -423,6 +423,64 @@
   margin-top: 1.25rem;
 }
 
+.oc-field {
+  margin-top: 0.35rem;
+}
+
+.oc-copy-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+
+  .oc-ssh-cmd {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .oc-btn {
+    margin-top: 0.35rem;
+    flex: 0 0 auto;
+  }
+}
+
+.oc-btn--sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.oc-ssh-cmd--select {
+  user-select: all;
+  -webkit-user-select: all;
+}
+
+.oc-details {
+  margin-top: 0.75rem;
+  color: var(--oc-muted);
+  font-size: 0.85rem;
+
+  summary {
+    cursor: pointer;
+    color: var(--oc-muted);
+    font-weight: 600;
+
+    &:hover {
+      color: var(--oc-text);
+    }
+  }
+}
+
+.oc-tip {
+  margin: 0.85rem 0 0;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--oc-line);
+  border-left: 3px solid var(--oc-accent);
+  border-radius: 0.5rem;
+  background: #121214;
+  color: var(--oc-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
 .oc-ssh-cmd {
   margin: 0.35rem 0 0;
   padding: 0.7rem 0.85rem;

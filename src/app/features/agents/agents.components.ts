@@ -79,6 +79,7 @@ export class MyAgentsComponent implements OnInit {
 
   reload(): void {
     this.hired.set(this.gateway.listHired());
+    this.gateway.loadHired().subscribe((rows) => this.hired.set(rows));
   }
 
   isOpenClawHired(row: HiredAgent): boolean {
@@ -304,16 +305,60 @@ export class AgentMarketplaceComponent implements OnInit {
                   </button>
                   @if (ssh(); as s) {
                     <button type="button" class="agents-btn agents-btn--ghost" (click)="revokeSsh()">Revoke</button>
-                    <button type="button" class="agents-btn agents-btn--ghost" (click)="copySsh()">Copy command</button>
                   }
                 </div>
               </div>
               @if (ssh(); as s) {
                 <div class="ssh-box mt-4">
-                  <p class="text-xs uppercase tracking-wider text-muted">Command</p>
-                  <pre class="ssh-cmd">{{ s.command }}</pre>
-                  <p class="mt-3 text-xs uppercase tracking-wider text-muted">Password</p>
-                  <pre class="ssh-cmd">{{ s.password }}</pre>
+                  <p class="text-xs uppercase tracking-wider text-muted">Username</p>
+                  <div class="ssh-copy-row">
+                    <pre class="ssh-cmd">{{ s.username }}</pre>
+                    <button type="button" class="agents-btn agents-btn--ghost" (click)="copyValue(s.username, 'user')">
+                      {{ copied() === 'user' ? 'Copied' : 'Copy' }}
+                    </button>
+                  </div>
+
+                  @if (s.authMethod === 'key' || s.privateKey) {
+                    <p class="mt-3 text-xs uppercase tracking-wider text-muted">
+                      Private key{{ s.keyName ? ' (' + s.keyName + ')' : '' }}
+                    </p>
+                    <div class="ssh-copy-row">
+                      <pre class="ssh-cmd ssh-cmd--select">{{ s.privateKey }}</pre>
+                      <button
+                        type="button"
+                        class="agents-btn agents-btn--ghost"
+                        (click)="copyValue(s.privateKey, 'key', 'Private key copied — save it to a file before using.')"
+                      >
+                        {{ copied() === 'key' ? 'Copied' : 'Copy key' }}
+                      </button>
+                    </div>
+                    @if (s.fingerprint) {
+                      <p class="mt-2 text-sm text-muted">
+                        Fingerprint: <code class="font-mono">{{ s.fingerprint }}</code>
+                      </p>
+                    }
+                  } @else {
+                    <p class="mt-3 text-xs uppercase tracking-wider text-muted">Password</p>
+                    <div class="ssh-copy-row">
+                      <pre class="ssh-cmd ssh-cmd--select">{{ s.password }}</pre>
+                      <button
+                        type="button"
+                        class="agents-btn agents-btn--ghost"
+                        (click)="copyValue(s.password, 'pass', 'Password copied.')"
+                      >
+                        {{ copied() === 'pass' ? 'Copied' : 'Copy password' }}
+                      </button>
+                    </div>
+                  }
+
+                  <p class="mt-3 text-xs uppercase tracking-wider text-muted">Command</p>
+                  <div class="ssh-copy-row">
+                    <pre class="ssh-cmd">{{ s.command }}</pre>
+                    <button type="button" class="agents-btn agents-btn--ghost" (click)="copyValue(s.command, 'cmd')">
+                      {{ copied() === 'cmd' ? 'Copied' : 'Copy' }}
+                    </button>
+                  </div>
+
                   <p class="mt-3 text-sm text-muted">
                     Expires in {{ s.expiresInMinutes }} min
                     @if (s.expiresAt) {
@@ -321,6 +366,21 @@ export class AgentMarketplaceComponent implements OnInit {
                     }
                     . {{ s.note }}
                   </p>
+                  @if (s.authMethod === 'key' || s.privateKey) {
+                    <p class="mt-3 text-sm text-muted">
+                      <strong>Key tip:</strong> save the key as
+                      <code class="font-mono">{{ s.keyName || 'spacebot_key' }}</code>, then restrict it — on Windows run
+                      <code class="font-mono"
+                        >icacls {{ s.keyName || 'spacebot_key' }} /inheritance:r /grant:r "%USERNAME%:R"</code
+                      >; on macOS/Linux run <code class="font-mono">chmod 600 {{ s.keyName || 'spacebot_key' }}</code>.
+                    </p>
+                  } @else {
+                    <p class="mt-3 text-sm text-muted">
+                      <strong>Windows tip:</strong> paste the command into Command Prompt, then paste the password when it
+                      asks <em>“…password:”</em> (login is <code class="font-mono">ssh</code>, not
+                      <code class="font-mono">sshpass</code>). Right-click the terminal window to paste.
+                    </p>
+                  }
                   @if (s.howTo?.length) {
                     <ol class="mt-3 list-decimal space-y-1 pl-5 text-sm text-muted">
                       @for (line of s.howTo; track line) {
@@ -413,6 +473,10 @@ export class AgentDetailComponent implements OnInit {
   token = '';
   password = '';
 
+  /** Key of the field most recently copied to the clipboard. */
+  copied = signal('');
+  private copyTimer: ReturnType<typeof setTimeout> | null = null;
+
   isOpenClaw(): boolean {
     return this.gateway.isOpenClawAgent(this.agent());
   }
@@ -425,14 +489,19 @@ export class AgentDetailComponent implements OnInit {
     return this.gateway.isNanoclawAgent(this.agent());
   }
 
+  isSpacebot(): boolean {
+    return this.gateway.isSpacebotAgent(this.agent());
+  }
+
   isLaunchable(): boolean {
     return this.gateway.isLaunchableAgent(this.agent());
   }
 
-  /** Product name for the current agent — OpenClaw, Hermes, or NanoClaw. */
+  /** Product name for the current agent — OpenClaw, Hermes, NanoClaw, or SpaceBot. */
   brandName(): string {
     if (this.isHermes()) return 'Hermes';
     if (this.isNanoclaw()) return 'NanoClaw';
+    if (this.isSpacebot()) return 'SpaceBot';
     return 'OpenClaw';
   }
 
@@ -440,10 +509,11 @@ export class AgentDetailComponent implements OnInit {
   uiName(): string {
     if (this.isHermes()) return 'Hermes Dashboard';
     if (this.isNanoclaw()) return 'NanoClaw Dashboard';
+    if (this.isSpacebot()) return 'SpaceBot Dashboard';
     return 'OpenClaw UI';
   }
 
-  /** Control UI (OpenClaw) vs Dashboard (Hermes / NanoClaw). */
+  /** Control UI (OpenClaw) vs Dashboard (Hermes / NanoClaw / SpaceBot). */
   surfaceName(): string {
     return this.isOpenClaw() ? 'Control UI' : 'Dashboard';
   }
@@ -452,6 +522,7 @@ export class AgentDetailComponent implements OnInit {
   subdomain(): string {
     if (this.isHermes()) return 'hermes';
     if (this.isNanoclaw()) return 'nanoclaw';
+    if (this.isSpacebot()) return 'spacebot';
     return 'openclaw';
   }
 
@@ -461,6 +532,9 @@ export class AgentDetailComponent implements OnInit {
     }
     if (this.isNanoclaw()) {
       return 'Isolated container agents with a dashboard — channels installed per agent via skills.';
+    }
+    if (this.isSpacebot()) {
+      return 'Always-on community agent with a dashboard, memory graph, and Discord/Slack/Telegram/Twitch channels.';
     }
     return 'Operator agent with Control UI, skills, and multi-channel tools.';
   }
@@ -549,8 +623,52 @@ export class AgentDetailComponent implements OnInit {
   copySsh(): void {
     const cmd = this.ssh()?.command;
     if (!cmd) return;
-    void navigator.clipboard?.writeText(cmd);
-    this.status.set('SSH command copied.');
+    this.copyValue(cmd, 'cmd', 'SSH command copied.');
+  }
+
+  /** Copy a single SSH field (username / password / command) with reliable fallback. */
+  copyValue(text: string | undefined, key: string, message?: string): void {
+    const value = String(text ?? '');
+    if (!value) return;
+    void this.writeClipboard(value).then((ok) => {
+      if (!ok) {
+        this.status.set('Copy failed — select the text and press Ctrl+C.');
+        return;
+      }
+      this.copied.set(key);
+      this.status.set(message || `${key} copied.`);
+      if (this.copyTimer) clearTimeout(this.copyTimer);
+      this.copyTimer = setTimeout(() => this.copied.set(''), 2000);
+    });
+  }
+
+  /**
+   * navigator.clipboard needs a secure context; fall back to a hidden textarea so
+   * copy still works over plain HTTP (e.g. a LAN dev host).
+   */
+  private async writeClipboard(text: string): Promise<boolean> {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // fall through to the legacy path
+    }
+    try {
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.setAttribute('readonly', '');
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(el);
+      return ok;
+    } catch {
+      return false;
+    }
   }
 
   manualConnect(): void {

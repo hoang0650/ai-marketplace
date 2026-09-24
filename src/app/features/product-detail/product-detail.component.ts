@@ -232,10 +232,26 @@ export class ProductDetailComponent implements OnInit {
 
   readonly isOpenClawHire = computed(() => {
     const p = this.product();
-    return !!p && (p.slug === 'openclaw-ops-agent' || p.slug === 'hermes-ops-agent');
+    return (
+      !!p &&
+      (p.slug === 'openclaw-ops-agent' ||
+        p.slug === 'hermes-ops-agent' ||
+        p.slug === 'nanoclaw-ops-agent' ||
+        p.slug === 'spacebot-ops-agent')
+    );
   });
 
   readonly isHermesHire = computed(() => this.product()?.slug === 'hermes-ops-agent');
+  readonly isSpacebotHire = computed(() => this.product()?.slug === 'spacebot-ops-agent');
+
+  /** Launchable agent for the current hire product. */
+  hireAgentId(): string {
+    const slug = this.product()?.slug;
+    if (slug === 'hermes-ops-agent') return 'hermes';
+    if (slug === 'nanoclaw-ops-agent') return 'nano-claw';
+    if (slug === 'spacebot-ops-agent') return 'space-bot';
+    return 'openclaw';
+  }
 
   apiClient: ApiClient = 'curl';
   apiMethod: 'POST' | 'GET' = 'POST';
@@ -833,13 +849,14 @@ export class ProductDetailComponent implements OnInit {
     if (this.openclawBusy()) return;
     this.openclawBusy.set(true);
     const hermes = this.isHermesHire();
-    const agent = this.openclaw.getAgent(hermes ? 'hermes' : 'openclaw');
-    this.openclawStatus.set(`Opening ${agent?.name || 'agent'} at ${this.openclaw.aimarketsHost(undefined, agent)}…`);
+    const agent = this.openclaw.getAgent(this.hireAgentId());
+    const brand = agent?.name || 'agent';
+    this.openclawStatus.set(`Opening ${brand} at ${this.openclaw.aimarketsHost(undefined, agent)}…`);
     this.openclaw.launchGateway({ agent: agent || undefined }).subscribe((res) => {
       this.openclawBusy.set(false);
       this.openclawStatus.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
       if (res.success) {
-        this.checkoutMsg.set(`${hermes ? 'Hermes' : 'OpenClaw'} launched.`);
+        this.checkoutMsg.set(`${hermes ? 'Hermes' : brand} launched.`);
       }
     });
   }
@@ -851,7 +868,12 @@ export class ProductDetailComponent implements OnInit {
       this.launchComputeStream();
       return;
     }
-    if (p.slug === 'openclaw-ops-agent' || p.slug === 'hermes-ops-agent') {
+    if (
+      p.slug === 'openclaw-ops-agent' ||
+      p.slug === 'hermes-ops-agent' ||
+      p.slug === 'nanoclaw-ops-agent' ||
+      p.slug === 'spacebot-ops-agent'
+    ) {
       this.launchOpenClaw();
       return;
     }

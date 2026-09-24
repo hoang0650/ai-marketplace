@@ -12,10 +12,11 @@ export interface MarketplaceAgent {
   docsUrl: string;
   public: boolean;
   hireProductSlug?: string;
-  /** Launchable AI Markets agents (OpenClaw Control UI, Hermes, or NanoClaw dashboard). */
+  /** Launchable AI Markets agents (OpenClaw Control UI, Hermes, NanoClaw, or SpaceBot dashboard). */
   openclawGateway?: boolean;
   hermesGateway?: boolean;
   nanoclawGateway?: boolean;
+  spacebotGateway?: boolean;
 }
 
 export interface HiredAgent {
@@ -48,10 +49,16 @@ export interface OpenClawSshAccess {
   success: boolean;
   id?: string;
   agentId?: string;
+  authMethod?: 'password' | 'key';
   host?: string;
   port?: number;
   username?: string;
   password?: string;
+  privateKey?: string;
+  publicKey?: string;
+  fingerprint?: string;
+  keyName?: string;
+  installed?: boolean;
   command?: string;
   commandWithPassword?: string;
   expiresAt?: string;

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +6,13 @@ import { SeoService } from '../../services/seo.service';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
 import { MarketplaceAgent, OpenClawSshAccess } from './agents.models';
 
-export type SetupChannelId = 'telegram' | 'whatsapp' | 'discord' | 'teams' | 'slack';
+export type SetupChannelId =
+  | 'telegram'
+  | 'whatsapp'
+  | 'discord'
+  | 'teams'
+  | 'slack'
+  | 'twitch';
 
 interface ChannelGuide {
   id: SetupChannelId;
@@ -85,15 +91,80 @@ const OPENCLAW_CHANNELS: ChannelGuide[] = [
   },
 ];
 
+/**
+ * SpaceBot channels are configured inside its own dashboard (Config → Channels)
+ * or via `config.toml`; there is no CLI `channels add`. Tokens are the same
+ * platform credentials, stored as `[messaging.<platform>]`.
+ */
+const SPACEBOT_CHANNELS: ChannelGuide[] = [
+  {
+    id: 'discord',
+    label: 'Discord',
+    kind: 'token',
+    envVars: ['DISCORD_BOT_TOKEN', 'DISCORD_GUILD_ID', 'DISCORD_CHANNEL_IDS'],
+    cli: 'config.toml → [messaging.discord]',
+    steps: [
+      'Create an app + bot in the Discord Developer Portal and enable the Message Content intent.',
+      'Invite the bot to your server (OAuth2 URL Generator: bot + applications.commands).',
+      'In the SpaceBot dashboard open Config → Channels → Discord and paste the bot token.',
+      'Optionally add a guild binding (guild_id + channel_ids) to scope the agent to specific channels.',
+    ],
+  },
+  {
+    id: 'telegram',
+    label: 'Telegram',
+    kind: 'token',
+    envVars: ['TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID'],
+    cli: 'config.toml → [messaging.telegram]',
+    steps: [
+      'Open Telegram and message @BotFather → /newbot, then copy the bot token.',
+      'In the SpaceBot dashboard open Config → Channels → Telegram and paste the token.',
+      'Add a telegram binding with the chat_id you want the agent to listen on.',
+    ],
+  },
+  {
+    id: 'slack',
+    label: 'Slack',
+    kind: 'token',
+    envVars: ['SLACK_BOT_TOKEN', 'SLACK_APP_TOKEN'],
+    cli: 'config.toml → [messaging.slack]',
+    steps: [
+      'Create an app at api.slack.com/apps (manifest or from scratch).',
+      'Install to your workspace and copy the Bot User OAuth Token (xoxb-…).',
+      'Create an App-Level Token with the connections:write scope (xapp-…).',
+      'Paste both tokens in the SpaceBot dashboard under Config → Channels → Slack.',
+    ],
+  },
+  {
+    id: 'twitch',
+    label: 'Twitch',
+    kind: 'token',
+    envVars: ['TWITCH_OAUTH_TOKEN', 'TWITCH_USERNAME', 'TWITCH_CLIENT_ID', 'TWITCH_CLIENT_SECRET'],
+    cli: 'config.toml → [messaging.twitch]',
+    steps: [
+      'Register an application in the Twitch Developer Console to get a Client ID + Secret.',
+      'Generate a chat OAuth token with the chat:read + chat:write scopes.',
+      'In the SpaceBot dashboard open Config → Channels → Twitch and enter username + OAuth token.',
+      'Add the channels (without the # prefix) the bot should join.',
+    ],
+  },
+];
+
 interface AgentSetupProfile {
-  id: 'openclaw' | 'hermes' | 'nanoclaw';
+  id: 'openclaw' | 'hermes' | 'nanoclaw' | 'spacebot';
   brand: string;
   /** Label of the primary launch button, e.g. "OpenClaw UI". */
   uiName: string;
   docsUrl: string;
   hostTemplate: string;
-  /** Whether this agent supports the OpenClaw channel grid. */
+  /** Whether this wizard shows the messaging channel grid. */
   channels: boolean;
+  /** Which channel guide set to render when `channels` is true. */
+  channelSet?: 'openclaw' | 'spacebot';
+  /** Whether the device/DM pairing card applies (OpenClaw only). */
+  pairing?: boolean;
+  /** SSH auth model: password (OpenClaw/Hermes/NanoClaw) or key (SpaceBot). */
+  sshAuth?: 'password' | 'key';
   /** One-line summary of what this wizard does for the agent. */
   lead: string;
   launchBlurb: string;
@@ -109,6 +180,9 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
     docsUrl: 'https://docs.openclaw.ai',
     hostTemplate: '{userId}.openclaw.aimarkets.vn',
     channels: true,
+    channelSet: 'openclaw',
+    pairing: true,
+    sshAuth: 'password',
     lead: 'Launch your OpenClaw gateway, connect messaging channels, and open an SSH session to the sandbox.',
     launchBlurb:
       'Opens the OpenClaw Control UI with your marketplace token — the gateway auto-connects and pairs this browser.',
@@ -122,6 +196,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
     docsUrl: 'https://hermes-agent.nousresearch.com/docs/',
     hostTemplate: '{userId}.hermes.aimarkets.vn',
     channels: false,
+    sshAuth: 'password',
     lead: 'Launch your Hermes dashboard with a per-buyer account, then open an SSH session to the sandbox.',
     launchBlurb:
       'Creates (or reuses) your personal Hermes account and opens the dashboard already signed in. No shared operator password is ever used.',
@@ -135,11 +210,28 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
     docsUrl: 'https://github.com/qwibitai/nanoclaw',
     hostTemplate: '{userId}.nanoclaw.aimarkets.vn',
     channels: false,
+    sshAuth: 'password',
     lead: 'Launch your NanoClaw dashboard and open an SSH session to the sandbox.',
     launchBlurb:
       'Opens the NanoClaw dashboard scoped to your session. Auth uses the dashboard bearer secret — no OpenClaw-style device pairing.',
     configNote:
       'NanoClaw has no config files and does not require device pairing. Channels are installed per agent with the `/add-<channel>` skill in Claude Code (e.g. /add-telegram, /add-slack).',
+  },
+  spacebot: {
+    id: 'spacebot',
+    brand: 'SpaceBot',
+    uiName: 'SpaceBot Dashboard',
+    docsUrl: 'https://docs.spacebot.sh',
+    hostTemplate: '{userId}.spacebot.aimarkets.vn',
+    channels: true,
+    channelSet: 'spacebot',
+    pairing: false,
+    sshAuth: 'key',
+    lead: 'Launch your SpaceBot dashboard, connect messaging channels, and get a temporary SSH key for the sandbox.',
+    launchBlurb:
+      'Opens the SpaceBot dashboard scoped to your session. The marketplace token is passed in the URL hash and stored automatically — no device pairing.',
+    configNote:
+      'SpaceBot is a single Rust binary; configuration lives in config.toml ([messaging.*] blocks, [[agents]], [[bindings]]). Edit it from the dashboard (Config → Channels) or over SSH, then the daemon hot-reloads. SSH is key-based on port 2222.',
   },
 };
 
@@ -203,17 +295,22 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
             }
           </article>
 
-          <!-- ========== CHANNELS (OpenClaw only) ========== -->
+          <!-- ========== CHANNELS (OpenClaw / SpaceBot) ========== -->
           @if (profile().channels) {
             @if (!selectedChannel()) {
               <article class="oc-card">
                 <h3><span>2</span> Messaging channels</h3>
                 <p class="oc-card__desc">
-                  Choose a channel for step-by-step instructions. Channels are configured on the gateway (Control UI →
-                  Settings → Channels, or the <code class="oc-code">openclaw channels add</code> CLI).
+                  @if (profile().channelSet === 'spacebot') {
+                    Choose a channel for step-by-step instructions. Channels are configured on the SpaceBot dashboard
+                    (Config → Channels) or in <code class="oc-code">config.toml</code>.
+                  } @else {
+                    Choose a channel for step-by-step instructions. Channels are configured on the gateway (Control UI
+                    → Settings → Channels, or the <code class="oc-code">openclaw channels add</code> CLI).
+                  }
                 </p>
                 <div class="oc-setup__grid" role="list">
-                  @for (ch of channels; track ch.id) {
+                  @for (ch of activeChannels(); track ch.id) {
                     <button type="button" class="oc-channel" role="listitem" (click)="selectChannel(ch)">
                       <span class="oc-channel__icon" [ngClass]="'oc-channel__icon--' + ch.id" aria-hidden="true">
                         @switch (ch.id) {
@@ -231,6 +328,9 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                           }
                           @case ('slack') {
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.2 15.1a1.6 1.6 0 11-1.6 1.6v-1.6h1.6zm.8 0A1.6 1.6 0 018.6 13.5h4.7a1.6 1.6 0 010 3.2H8.6a1.6 1.6 0 01-1.6-1.6z"/><path d="M8.9 6.2a1.6 1.6 0 11-1.6-1.6h1.6v1.6zm0 .8A1.6 1.6 0 0110.5 8.6v4.7a1.6 1.6 0 01-3.2 0V8.6A1.6 1.6 0 018.9 7z"/><path d="M17.8 8.9a1.6 1.6 0 111.6-1.6v1.6h-1.6zm-.8 0a1.6 1.6 0 01-1.6 1.6h-4.7a1.6 1.6 0 010-3.2h4.7a1.6 1.6 0 011.6 1.6z"/><path d="M15.1 17.8a1.6 1.6 0 111.6 1.6h-1.6v-1.6zm0-.8a1.6 1.6 0 01-1.6-1.6v-4.7a1.6 1.6 0 013.2 0v4.7a1.6 1.6 0 01-1.6 1.6z"/></svg>
+                          }
+                          @case ('twitch') {
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.3 3 3 6.4v12.2h3.8V22h2.9l3.2-3.4h3.5l4.6-4.6V3H4.3zm15.1 10.2-2.6 2.6h-4.1l-2.3 2.4v-2.4H6.9V4.5h12.5v8.7zM15.4 7.2h1.6v4.5h-1.6V7.2zm-4.2 0h1.6v4.5h-1.6V7.2z"/></svg>
                           }
                         }
                       </span>
@@ -253,14 +353,20 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                 </article>
                 <article class="oc-card">
                   <h3><span>2</span> Command</h3>
-                  <p class="oc-card__desc">Run this inside your {{ profile().brand }} sandbox:</p>
+                  <p class="oc-card__desc">
+                    @if (profile().channelSet === 'spacebot') {
+                      Open the SpaceBot dashboard and add this block to <code class="oc-code">config.toml</code>:
+                    } @else {
+                      Run this inside your {{ profile().brand }} sandbox:
+                    }
+                  </p>
                   <pre class="oc-ssh-cmd">{{ selectedChannel()!.cli }}</pre>
                   <div class="oc-row">
                     <button type="button" class="oc-btn oc-btn--ghost" (click)="copyText(selectedChannel()!.cli, 'Command copied')">
                       Copy command
                     </button>
                     <button type="button" class="oc-btn" (click)="openUi()" [disabled]="busy()">
-                      Open Control UI →
+                      {{ profile().channelSet === 'spacebot' ? 'Open dashboard →' : 'Open Control UI →' }}
                     </button>
                   </div>
                   @if (selectedChannel()!.envVars.length) {
@@ -273,9 +379,9 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
           }
 
           <!-- ========== PAIRING (OpenClaw only) ========== -->
-          @if (profile().channels) {
+          @if (profile().pairing) {
             <article class="oc-card">
-              <h3><span>{{ profile().channels ? 3 : 2 }}</span> Device &amp; DM pairing</h3>
+              <h3><span>3</span> Device &amp; DM pairing</h3>
               <p class="oc-card__desc">
                 New browsers/nodes must be approved. Approve the pending request, or enter the pairing code your bot
                 replied with (DM policy “pairing”).
@@ -294,26 +400,116 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
 
           <!-- ========== SSH ========== -->
           <article class="oc-card oc-ssh">
-            <h3><span>{{ profile().channels ? 4 : 2 }}</span> SSH access</h3>
+            <h3><span>{{ sshStep() }}</span> SSH access</h3>
             <p class="oc-card__desc">
-              Connect from your desktop to this user’s {{ profile().brand }} server/sandbox. Command is valid for 60
-              minutes.
+              @if (profile().sshAuth === 'key') {
+                Connect from your desktop to this user’s {{ profile().brand }} sandbox with a temporary SSH key. The key
+                is installed on the instance automatically and is valid for 60 minutes.
+              } @else {
+                Connect from your desktop to this user’s {{ profile().brand }} server/sandbox. Credentials are valid for
+                60 minutes.
+              }
             </p>
             <label class="oc-label">Server host (optional)</label>
             <input class="oc-input" [(ngModel)]="sshHost" name="setupSshHost" [placeholder]="sshPlaceholder" />
             <button type="button" class="oc-btn" (click)="generateSsh()" [disabled]="sshBusy()">
-              {{ sshBusy() ? 'Generating…' : 'Generate SSH command' }}
+              {{ sshBusy() ? 'Generating…' : profile().sshAuth === 'key' ? 'Generate SSH key' : 'Generate SSH command' }}
             </button>
             @if (ssh(); as s) {
-              <p class="oc-label">Command</p>
-              <pre class="oc-ssh-cmd">{{ s.command }}</pre>
-              <p class="oc-label">Password</p>
-              <pre class="oc-ssh-cmd">{{ s.password }}</pre>
+              <div class="oc-field">
+                <p class="oc-label">Username</p>
+                <div class="oc-copy-row">
+                  <pre class="oc-ssh-cmd">{{ s.username }}</pre>
+                  <button
+                    type="button"
+                    class="oc-btn oc-btn--ghost oc-btn--sm"
+                    (click)="copyValue(s.username, 'user')"
+                  >
+                    {{ copied() === 'user' ? 'Copied' : 'Copy' }}
+                  </button>
+                </div>
+              </div>
+
+              @if (s.authMethod === 'key' || s.privateKey) {
+                <div class="oc-field">
+                  <p class="oc-label">Private key {{ s.keyName ? '(' + s.keyName + ')' : '' }}</p>
+                  <div class="oc-copy-row">
+                    <pre class="oc-ssh-cmd oc-ssh-cmd--select">{{ s.privateKey }}</pre>
+                    <button
+                      type="button"
+                      class="oc-btn oc-btn--ghost oc-btn--sm"
+                      (click)="copyValue(s.privateKey, 'key', 'Private key copied — save it to a file before using.')"
+                    >
+                      {{ copied() === 'key' ? 'Copied' : 'Copy key' }}
+                    </button>
+                  </div>
+                  <p class="oc-tip">
+                    Save this key to a file (e.g. <code class="oc-code">{{ s.keyName || 'spacebot_key' }}</code>) and
+                    restrict its permissions before connecting.
+                  </p>
+                </div>
+              } @else {
+                <div class="oc-field">
+                  <p class="oc-label">Password</p>
+                  <div class="oc-copy-row">
+                    <pre class="oc-ssh-cmd oc-ssh-cmd--select">{{ s.password }}</pre>
+                    <button
+                      type="button"
+                      class="oc-btn oc-btn--ghost oc-btn--sm"
+                      (click)="copyValue(s.password, 'pass', 'Password copied — paste it at the ssh password prompt.')"
+                    >
+                      {{ copied() === 'pass' ? 'Copied' : 'Copy password' }}
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <div class="oc-field">
+                <p class="oc-label">Command</p>
+                <div class="oc-copy-row">
+                  <pre class="oc-ssh-cmd">{{ s.command }}</pre>
+                  <button type="button" class="oc-btn oc-btn--ghost oc-btn--sm" (click)="copyValue(s.command, 'cmd')">
+                    {{ copied() === 'cmd' ? 'Copied' : 'Copy' }}
+                  </button>
+                </div>
+              </div>
+
               @if (s.expiresInMinutes != null) {
                 <p class="oc-ok-msg">{{ s.note }} ({{ s.expiresInMinutes }} min left)</p>
               }
+              @if (s.fingerprint) {
+                <p class="oc-card__desc">Fingerprint: <code class="oc-code">{{ s.fingerprint }}</code></p>
+              }
+
+              @if (s.commandWithPassword) {
+                <details class="oc-details">
+                  <summary>Linux / macOS (sshpass)</summary>
+                  <div class="oc-copy-row">
+                    <pre class="oc-ssh-cmd">{{ s.commandWithPassword }}</pre>
+                    <button
+                      type="button"
+                      class="oc-btn oc-btn--ghost oc-btn--sm"
+                      (click)="copyValue(s.commandWithPassword ?? '', 'sshpass')"
+                    >
+                      {{ copied() === 'sshpass' ? 'Copied' : 'Copy' }}
+                    </button>
+                  </div>
+                </details>
+              }
+
+              <p class="oc-tip">
+                @if (s.authMethod === 'key' || s.privateKey) {
+                  <strong>Windows tip:</strong> save the key as <code class="oc-code">{{ s.keyName || 'spacebot_key' }}</code>,
+                  then run <code class="oc-code">icacls {{ s.keyName || 'spacebot_key' }} /inheritance:r /grant:r "%USERNAME%:R"</code>
+                  so OpenSSH accepts it. macOS/Linux: <code class="oc-code">chmod 600 {{ s.keyName || 'spacebot_key' }}</code>.
+                } @else {
+                  <strong>Windows tip:</strong> paste the command into Command Prompt, then paste the password when it
+                  asks <em>“…password:”</em> (login is <code class="oc-code">ssh</code>, not
+                  <code class="oc-code">sshpass</code>). Right-click the terminal window to paste.
+                }
+              </p>
+
               <div class="oc-row">
-                <button type="button" class="oc-btn oc-btn--ghost" (click)="copySsh()">Copy command</button>
                 <button type="button" class="oc-btn oc-btn--ghost" (click)="revokeSsh()" [disabled]="sshBusy()">
                   Revoke
                 </button>
@@ -323,7 +519,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
 
           <!-- ========== CONFIG / ABOUT ========== -->
           <article class="oc-card">
-            <h3><span>{{ profile().channels ? 5 : 3 }}</span> Configuration</h3>
+            <h3><span>{{ configStep() }}</span> Configuration</h3>
             <p class="oc-card__desc">{{ profile().configNote }}</p>
             <a class="oc-link" [href]="profile().docsUrl" target="_blank" rel="noopener">Documentation ↗</a>
             <a class="oc-link oc-link--spaced" routerLink="/hire-agent">My Agents</a>
@@ -349,6 +545,13 @@ export class OpenClawSetupWizardComponent implements OnInit {
   private readonly seo = inject(SeoService);
 
   readonly channels = OPENCLAW_CHANNELS;
+  /** Channel grid shown by the current profile (OpenClaw vs SpaceBot). */
+  readonly activeChannels = computed<ChannelGuide[]>(() =>
+    this.profile().channelSet === 'spacebot' ? SPACEBOT_CHANNELS : OPENCLAW_CHANNELS,
+  );
+  /** Step number offset — the pairing card only exists for OpenClaw. */
+  readonly sshStep = computed(() => (this.profile().pairing ? 4 : this.profile().channels ? 3 : 2));
+  readonly configStep = computed(() => this.sshStep() + 1);
 
   readonly agent = signal<MarketplaceAgent | null>(null);
   readonly selectedChannel = signal<ChannelGuide | null>(null);
@@ -358,6 +561,10 @@ export class OpenClawSetupWizardComponent implements OnInit {
   readonly launchError = signal('');
   readonly creds = signal<{ username: string; password: string } | null>(null);
   readonly pairingBusy = signal(false);
+  /** Key of the field most recently copied to the clipboard. */
+  readonly copied = signal('');
+  private copyTimer: ReturnType<typeof setTimeout> | null = null;
+
 
   readonly ssh = signal<OpenClawSshAccess | null>(null);
   readonly sshBusy = signal(false);
@@ -414,20 +621,60 @@ export class OpenClawSetupWizardComponent implements OnInit {
   }
 
   copyText(text: string, message: string): void {
-    void navigator.clipboard?.writeText(text);
+    if (!text) return;
     this.status.set(message);
+    void this.writeClipboard(text);
+  }
+
+  /** Copy a single SSH field (username / password / command) with inline "Copied" feedback. */
+  copyValue(text: string | undefined, key: string, message?: string): void {
+    const value = String(text ?? '');
+    if (!value) return;
+    void this.writeClipboard(value).then((ok) => {
+      if (!ok) {
+        this.status.set('Copy failed — select the text and press Ctrl+C.');
+        return;
+      }
+      this.copied.set(key);
+      this.status.set(message || `${key} copied.`);
+      if (this.copyTimer) clearTimeout(this.copyTimer);
+      this.copyTimer = setTimeout(() => this.copied.set(''), 2000);
+    });
+  }
+
+  /**
+   * navigator.clipboard needs a secure context; fall back to a hidden textarea so
+   * copy still works over plain HTTP (e.g. a LAN dev host).
+   */
+  private async writeClipboard(text: string): Promise<boolean> {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // fall through to the legacy path
+    }
+    try {
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.setAttribute('readonly', '');
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(el);
+      return ok;
+    } catch {
+      return false;
+    }
   }
 
   copyCreds(): void {
     const c = this.creds();
     if (!c) return;
     this.copyText(`username: ${c.username}\npassword: ${c.password}`, 'Credentials copied');
-  }
-
-  copySsh(): void {
-    const cmd = this.ssh()?.commandWithPassword || this.ssh()?.command;
-    if (!cmd) return;
-    this.copyText(cmd, 'SSH command copied');
   }
 
   openUi(): void {
@@ -517,6 +764,7 @@ export class OpenClawSetupWizardComponent implements OnInit {
   private profileId(agent: MarketplaceAgent | null): AgentSetupProfile['id'] {
     if (this.gateway.isHermesAgent(agent)) return 'hermes';
     if (this.gateway.isNanoclawAgent(agent)) return 'nanoclaw';
+    if (this.gateway.isSpacebotAgent(agent)) return 'spacebot';
     return 'openclaw';
   }
 }

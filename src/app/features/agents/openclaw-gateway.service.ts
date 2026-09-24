@@ -83,13 +83,16 @@ export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
     id: 'space-bot',
     slug: 'space-bot',
     name: 'Space Bot',
-    description: 'Slack / Discord presence bot with scheduled digests and tools.',
+    description:
+      'AI Markets SpaceBot on {userId}.spacebot.aimarkets.vn — always-on community agent with Discord/Slack/Telegram/Twitch channels (provider cost + 25%).',
     icon: 'space',
     logoUrl: '/agents/space-bot.png',
     version: '2.1.0',
-    model: 'MiniMaxAI/MiniMax-M2.5',
-    docsUrl: 'https://docs.openclaw.ai',
+    model: 'openrouter/openrouter/free',
+    docsUrl: 'https://docs.spacebot.sh',
     public: true,
+    hireProductSlug: 'spacebot-ops-agent',
+    spacebotGateway: true,
   },
 ];
 
@@ -147,7 +150,16 @@ export class OpenClawGatewayService {
     return id === 'nano-claw' || id === 'nanoclaw';
   }
 
-  /** OpenClaw, Hermes, or NanoClaw — Launch enabled on marketplace. */
+  isSpacebotAgent(
+    agent?: { id?: string; slug?: string; spacebotGateway?: boolean } | null,
+  ): boolean {
+    if (!agent) return false;
+    if ((agent as MarketplaceAgent).spacebotGateway) return true;
+    const id = String(agent.id || agent.slug || '').toLowerCase();
+    return id === 'space-bot' || id === 'spacebot';
+  }
+
+  /** OpenClaw, Hermes, NanoClaw, or SpaceBot — Launch enabled on marketplace. */
   isLaunchableAgent(
     agent?: {
       id?: string;
@@ -155,14 +167,20 @@ export class OpenClawGatewayService {
       openclawGateway?: boolean;
       hermesGateway?: boolean;
       nanoclawGateway?: boolean;
+      spacebotGateway?: boolean;
     } | null,
   ): boolean {
-    return this.isOpenClawAgent(agent) || this.isHermesAgent(agent) || this.isNanoclawAgent(agent);
+    return (
+      this.isOpenClawAgent(agent) ||
+      this.isHermesAgent(agent) ||
+      this.isNanoclawAgent(agent) ||
+      this.isSpacebotAgent(agent)
+    );
   }
 
   comingSoonMessage(agent?: MarketplaceAgent | null): string {
     const name = agent?.name || 'This agent';
-    return `${name} setup is coming later. OpenClaw, Hermes, and NanoClaw ({userId}.*.aimarkets.vn) are live now.`;
+    return `${name} setup is coming later. OpenClaw, Hermes, NanoClaw, and SpaceBot ({userId}.*.aimarkets.vn) are live now.`;
   }
 
   aimarketsHost(userId?: string, agent?: MarketplaceAgent | null): string {
@@ -171,16 +189,21 @@ export class OpenClawGatewayService {
       .toLowerCase();
     const hermes = this.isHermesAgent(agent);
     const nanoclaw = this.isNanoclawAgent(agent);
+    const spacebot = this.isSpacebotAgent(agent);
     const template = hermes
       ? String(environment.hermes?.publicUrlTemplate || 'https://{userId}.hermes.aimarkets.vn')
       : nanoclaw
         ? String(environment.nanoclaw?.publicUrlTemplate || 'https://{userId}.nanoclaw.aimarkets.vn')
-        : String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
+        : spacebot
+          ? String(environment.spacebot?.publicUrlTemplate || 'https://{userId}.spacebot.aimarkets.vn')
+          : String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
     const fallback = hermes
       ? '{userId}.hermes.aimarkets.vn'
       : nanoclaw
         ? '{userId}.nanoclaw.aimarkets.vn'
-        : '{userId}.openclaw.aimarkets.vn';
+        : spacebot
+          ? '{userId}.spacebot.aimarkets.vn'
+          : '{userId}.openclaw.aimarkets.vn';
     if (!id) return fallback;
     return template
       .replace(/\{userId\}/gi, id)
@@ -201,6 +224,20 @@ export class OpenClawGatewayService {
     } catch {
       return [];
     }
+  }
+
+  /**
+   * Refresh the hired list from the API (source of truth, shared with the app)
+   * and mirror it into the local cache for instant synchronous reads.
+   */
+  loadHired(): Observable<HiredAgent[]> {
+    if (!this.auth.isAuthenticated()) return of(this.listHired());
+    return this.http
+      .get<HiredAgent[]>(`${environment.apiUrl}/agents/hired`, { headers: this.authHeaders() })
+      .pipe(
+        tap((rows) => this.persistHired(rows || [])),
+        catchError(() => of(this.listHired())),
+      );
   }
 
   getHired(id: string): HiredAgent | undefined {
@@ -226,6 +263,7 @@ export class OpenClawGatewayService {
       ? list.map((h) => (h.agentId === agent.id ? row : h))
       : [row, ...list];
     this.persistHired(next);
+    this.pushHired(row);
     return row;
   }
 
@@ -236,6 +274,40 @@ export class OpenClawGatewayService {
         : h,
     );
     this.persistHired(next);
+    const target = this.listHired().find((h) => h.id === id || h.agentId === id);
+    if (target) this.pushArchive(target.agentId);
+  }
+
+  /** Fire-and-forget server upsert so web + app stay in sync. */
+  private pushHired(row: HiredAgent): void {
+    if (!this.auth.isAuthenticated()) return;
+    this.http
+      .post<HiredAgent>(
+        `${environment.apiUrl}/agents/hired`,
+        {
+          agentId: row.agentId,
+          slug: row.slug,
+          name: row.name,
+          status: row.status,
+          version: row.version,
+          model: row.model,
+        },
+        { headers: this.authHeaders() },
+      )
+      .pipe(catchError(() => of(null)))
+      .subscribe();
+  }
+
+  private pushArchive(agentId: string): void {
+    if (!this.auth.isAuthenticated()) return;
+    this.http
+      .patch<HiredAgent>(
+        `${environment.apiUrl}/agents/hired/${encodeURIComponent(agentId)}`,
+        { status: 'archived' },
+        { headers: this.authHeaders() },
+      )
+      .pipe(catchError(() => of(null)))
+      .subscribe();
   }
 
   /**
@@ -254,7 +326,9 @@ export class OpenClawGatewayService {
         ? '{userId}.hermes.aimarkets.vn'
         : this.isNanoclawAgent(opts?.agent)
           ? '{userId}.nanoclaw.aimarkets.vn'
-          : '{userId}.openclaw.aimarkets.vn';
+          : this.isSpacebotAgent(opts?.agent)
+            ? '{userId}.spacebot.aimarkets.vn'
+            : '{userId}.openclaw.aimarkets.vn';
       return of({
         success: false,
         message: `Sign in to launch on ${hostHint}.`,
@@ -277,7 +351,8 @@ export class OpenClawGatewayService {
     const agent = opts?.agent || this.getAgent('openclaw');
     const hermes = this.isHermesAgent(agent);
     const nanoclaw = this.isNanoclawAgent(agent);
-    const skipApprove = hermes || nanoclaw;
+    const spacebot = this.isSpacebotAgent(agent);
+    const skipApprove = hermes || nanoclaw || spacebot;
 
     return this.resolveLaunchUrl(userId, agent).pipe(
       tap((res) => {
@@ -300,7 +375,9 @@ export class OpenClawGatewayService {
           ? 'Failed to launch Hermes dashboard'
           : nanoclaw
             ? 'Failed to launch NanoClaw dashboard'
-            : 'Failed to launch OpenClaw gateway';
+            : spacebot
+              ? 'Failed to launch SpaceBot dashboard'
+              : 'Failed to launch OpenClaw gateway';
         return of({
           success: false,
           message:
@@ -411,6 +488,7 @@ export class OpenClawGatewayService {
   private agentApiPath(agent?: { id?: string; slug?: string } | null): string {
     if (this.isHermesAgent(agent)) return 'hermes';
     if (this.isNanoclawAgent(agent)) return 'nanoclaw';
+    if (this.isSpacebotAgent(agent)) return 'spacebot';
     return 'openclaw';
   }
 
@@ -420,6 +498,7 @@ export class OpenClawGatewayService {
   ): Observable<OpenClawLaunchResult> {
     const hermes = this.isHermesAgent(agent);
     const nanoclaw = this.isNanoclawAgent(agent);
+    const spacebot = this.isSpacebotAgent(agent);
     const path = this.agentApiPath(agent);
     return this.http
       .post<OpenClawLaunchResult>(
@@ -431,12 +510,14 @@ export class OpenClawGatewayService {
         catchError(() => {
           if (hermes) return of(this.fallbackHermesUrl(userId));
           if (nanoclaw) return of(this.fallbackNanoclawUrl(userId));
+          if (spacebot) return of(this.fallbackSpacebotUrl(userId));
           return this.fetchDirectUrl(userId);
         }),
         map((res) => {
           if (res?.success && res.url) return res;
           if (hermes) return this.fallbackHermesUrl(userId);
           if (nanoclaw) return this.fallbackNanoclawUrl(userId);
+          if (spacebot) return this.fallbackSpacebotUrl(userId);
           return this.fallbackHashUrl(userId);
         }),
       );
@@ -507,6 +588,18 @@ export class OpenClawGatewayService {
       success: false,
       message:
         'NanoClaw Launch requires the marketplace API (NANOCLAW_DASHBOARD_SECRET + public URL template).',
+    };
+  }
+
+  private fallbackSpacebotUrl(userId?: string): OpenClawLaunchResult {
+    const id = userId || this.auth.user()?.id || '';
+    if (!id) {
+      return { success: false, message: 'Sign in to launch SpaceBot.' };
+    }
+    return {
+      success: false,
+      message:
+        'SpaceBot Launch requires the marketplace API (SPACEBOT_DASHBOARD_SECRET + public URL template).',
     };
   }
 

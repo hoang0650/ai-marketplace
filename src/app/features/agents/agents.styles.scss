@@ -349,6 +349,27 @@
   word-break: break-all;
 }
 
+.ssh-cmd--select {
+  user-select: all;
+  -webkit-user-select: all;
+}
+
+.ssh-copy-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+
+  .ssh-cmd {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .agents-btn {
+    flex: 0 0 auto;
+    margin-top: 0.35rem;
+  }
+}
+
 [data-theme='light'] .ssh-cmd {
   background: #0b1220;
 }
