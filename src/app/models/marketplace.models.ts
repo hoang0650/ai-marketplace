@@ -572,10 +572,35 @@ export interface WalletTx {
   payoutId?: string;
   paymentMethod?: string;
   paypalOrderId?: string;
+  gpayTransactionId?: string;
+  gpayAccountNumber?: string;
   reviewNote?: string;
   reviewedAt?: string | null;
   createdAt: string;
   user?: { id: string; name: string; email: string; role: string };
+}
+
+export interface GpayConfig {
+  enabled: boolean;
+  sandbox: boolean;
+  bankCode: string;
+  accountType: string;
+  minTopupVnd: number;
+  vndPerUsd: number;
+  merchantName?: string;
+  webhookUrl?: string;
+}
+
+export interface GpayVirtualAccount {
+  id: string;
+  accountNumber: string;
+  accountName: string;
+  bankCode: string;
+  accountType: string;
+  status: 'pending' | 'open' | 'closed';
+  balanceVnd: number;
+  qrCode?: string;
+  openedAt: string | null;
 }
 
 export interface BuyerUsageItem {

@@ -23,43 +23,124 @@
       <div class="tab-body">
         <h2>{{ 'wallet.deposit.title' | t }}</h2>
         <div class="methods">
-          <button type="button" class="method method--paypal selected">
+          <button
+            type="button"
+            class="method method--paypal"
+            [class.selected]="depositMethod() === 'paypal'"
+            (click)="setDepositMethod('paypal')"
+          >
             <span class="method__icon method__icon--paypal" aria-hidden="true">P</span>
             <div>
               <strong>{{ 'wallet.deposit.paypalOnlyName' | t }}</strong>
               <p>{{ 'wallet.deposit.paypalOnlyDesc' | t }}</p>
             </div>
           </button>
-        </div>
-        <p class="hint">{{ railHint() }}</p>
-
-        <div class="amount-row">
-          <label>
-            <span>{{ 'wallet.deposit.amount' | t: { currency: depositCurrency() } }}</span>
-            <input type="number" min="1" [(ngModel)]="depositAmount" name="depositAmount" />
-          </label>
-          <div class="quick">
-            <span>{{ 'wallet.deposit.quick' | t }}</span>
-            <div class="quick__btns">
-              @for (q of quickAmounts(); track q) {
-                <button type="button" [class.active]="depositAmount === q" (click)="pickAmount(q)">
-                  {{ q | currency: depositCurrency(): 'symbol-narrow': '1.0-0' }}
-                </button>
-              }
-            </div>
-          </div>
-        </div>
-
-        <div class="actions">
-          @if (!paypalEnabled()) {
-            <p class="offline">{{ 'wallet.deposit.paypalOffline' | t }}</p>
-          } @else {
-            <div class="wallet-pay-stack" [class.busy]="paypalBusy()">
-              <div id="paypal-btn-paypal" class="paypal-slot"></div>
-            </div>
-            <p class="note">♥ {{ 'wallet.deposit.paypalNote' | t }}</p>
+          @if (gpayEnabled()) {
+            <button
+              type="button"
+              class="method method--gpay"
+              [class.selected]="depositMethod() === 'gpay'"
+              (click)="setDepositMethod('gpay')"
+            >
+              <span class="method__icon method__icon--gpay" aria-hidden="true">G</span>
+              <div>
+                <strong>{{ 'wallet.gpay.name' | t }}</strong>
+                <p>{{ 'wallet.gpay.desc' | t }}</p>
+              </div>
+            </button>
           }
         </div>
+
+        @if (depositMethod() === 'paypal') {
+          <p class="hint">{{ railHint() }}</p>
+
+          <div class="amount-row">
+            <label>
+              <span>{{ 'wallet.deposit.amount' | t: { currency: depositCurrency() } }}</span>
+              <input type="number" min="1" [(ngModel)]="depositAmount" name="depositAmount" />
+            </label>
+            <div class="quick">
+              <span>{{ 'wallet.deposit.quick' | t }}</span>
+              <div class="quick__btns">
+                @for (q of quickAmounts(); track q) {
+                  <button type="button" [class.active]="depositAmount === q" (click)="pickAmount(q)">
+                    {{ q | currency: depositCurrency(): 'symbol-narrow': '1.0-0' }}
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            @if (!paypalEnabled()) {
+              <p class="offline">{{ 'wallet.deposit.paypalOffline' | t }}</p>
+            } @else {
+              <div class="wallet-pay-stack" [class.busy]="paypalBusy()">
+                <div id="paypal-btn-paypal" class="paypal-slot"></div>
+              </div>
+              <p class="note">♥ {{ 'wallet.deposit.paypalNote' | t }}</p>
+            }
+          </div>
+        } @else {
+          <p class="hint">{{ 'wallet.gpay.hint' | t }}</p>
+
+          @if (!gpayAccount()) {
+            <div class="actions">
+              <button type="button" class="btn-dark" [disabled]="gpayBusy()" (click)="ensureGpayAccount()">
+                {{ gpayBusy() ? ('wallet.gpay.creating' | t) : ('wallet.gpay.create' | t) }}
+              </button>
+            </div>
+          } @else {
+            <div class="gpay-box">
+              <div class="gpay-box__info">
+                <p class="gpay-box__bank">{{ gpayAccount()!.bankCode }} · {{ gpayAccount()!.accountName }}</p>
+                <p class="gpay-box__label">{{ 'wallet.gpay.accountNumber' | t }}</p>
+                <div class="gpay-box__row">
+                  <code class="gpay-box__num">{{ gpayAccount()!.accountNumber }}</code>
+                  <button type="button" class="gpay-box__copy" (click)="copyGpay(gpayAccount()!.accountNumber)">
+                    {{ 'wallet.gpay.copy' | t }}
+                  </button>
+                </div>
+                @if (gpayAccount()!.balanceVnd > 0) {
+                  <p class="gpay-box__bal">
+                    {{ 'wallet.gpay.received' | t: { amount: gpayAccount()!.balanceVnd.toLocaleString('vi-VN') } }}
+                  </p>
+                }
+              </div>
+              @if (gpayQrSrc()) {
+                <img class="gpay-box__qr" [src]="gpayQrSrc()" [alt]="'wallet.gpay.qrAlt' | t" />
+              }
+            </div>
+
+            <div class="amount-row">
+              <label>
+                <span>{{ 'wallet.gpay.amount' | t }}</span>
+                <input type="number" min="1" [(ngModel)]="depositVnd" name="depositVnd" />
+              </label>
+              <div class="quick">
+                <span>{{ 'wallet.deposit.quick' | t }}</span>
+                <div class="quick__btns">
+                  @for (q of gpayQuickAmounts(); track q) {
+                    <button type="button" [class.active]="depositVnd === q" (click)="pickGpayAmount(q)">
+                      {{ q.toLocaleString('vi-VN') }}₫
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+            <p class="note">{{ 'wallet.gpay.estimate' | t: { usd: gpayEstimateUsd() } }}</p>
+
+            @if (gpaySandbox()) {
+              <div class="actions">
+                <button type="button" class="btn-outline" [disabled]="gpayBusy()" (click)="sandboxCredit()">
+                  {{ 'wallet.gpay.sandboxSim' | t }}
+                </button>
+                <p class="hint">{{ 'wallet.gpay.sandboxHint' | t }}</p>
+              </div>
+            }
+          }
+        }
+
         @if (msg()) {
           <p class="msg" [class.msg--err]="msgIsError()">{{ msg() }}</p>
         }

@@ -31,6 +31,8 @@ import {
   KycProfile,
   KycSide,
   KycIdType,
+  GpayConfig,
+  GpayVirtualAccount,
   PayoutPolicy,
   PayoutPolicyResponse,
   PayoutQuote,
@@ -392,6 +394,30 @@ export class DashboardService {
     return this.http.post<{ success: boolean; status: string; wallet?: WalletTx }>(
       `${this.base}/paypal/capture-order`,
       { orderId },
+    );
+  }
+
+  gpayConfig(): Observable<GpayConfig> {
+    return this.http.get<GpayConfig>(`${this.base}/gpay/config`);
+  }
+
+  /** Create (or fetch) the caller's GPay Virtual Account for VND bank transfer. */
+  gpayAccount(accountName?: string): Observable<{ success: boolean; created?: boolean; account: GpayVirtualAccount | null }> {
+    return this.http.post<{ success: boolean; created?: boolean; account: GpayVirtualAccount | null }>(
+      `${this.base}/gpay/account`,
+      { accountName },
+    );
+  }
+
+  gpayTransactions(): Observable<WalletTx[]> {
+    return this.http.get<WalletTx[]>(`${this.base}/gpay/transactions`);
+  }
+
+  /** Sandbox-only: simulate a bank transfer into the VA. */
+  gpaySandboxCredit(amountVnd: number): Observable<{ success: boolean; creditedUsd: number; wallet: WalletTx }> {
+    return this.http.post<{ success: boolean; creditedUsd: number; wallet: WalletTx }>(
+      `${this.base}/gpay/sandbox/credit`,
+      { amountVnd },
     );
   }
 

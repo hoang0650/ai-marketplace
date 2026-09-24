@@ -202,6 +202,83 @@
   font-weight: 800;
 }
 
+.method--gpay .method__icon--gpay {
+  background: #00a651;
+  color: #fff;
+  border-color: #00a651;
+  font-weight: 800;
+}
+
+.gpay-box {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  border: 1px solid #ececec;
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin: 0.75rem 0 0;
+  max-width: 520px;
+  background: #fff;
+}
+
+.gpay-box__info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.gpay-box__bank {
+  margin: 0;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.gpay-box__label {
+  margin: 0.5rem 0 0.2rem;
+  color: #777;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gpay-box__row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.gpay-box__num {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.gpay-box__copy {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gpay-box__bal {
+  margin: 0.5rem 0 0;
+  color: #15803d;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.gpay-box__qr {
+  width: 148px;
+  height: 148px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  object-fit: contain;
+}
+
 .method.selected {
   background: #fff5f5;
   border-color: #e53935;

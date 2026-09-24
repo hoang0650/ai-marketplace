@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { DashboardService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
-import { WalletTx } from '../../models/marketplace.models';
+import { WalletTx, GpayVirtualAccount } from '../../models/marketplace.models';
 import { environment } from '../../../environments/environment';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
@@ -16,8 +16,10 @@ declare const paypal: {
 };
 
 type WalletTab = 'deposit' | 'withdraw' | 'history';
+type DepositMethod = 'paypal' | 'gpay';
 
 const PAYPAL_QUICK = [5, 10, 20, 50, 100];
+const GPAY_QUICK_VND = [50_000, 100_000, 200_000, 500_000, 1_000_000];
 
 @Component({
   selector: 'app-wallet',
@@ -43,13 +45,27 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly paypalBusy = signal(false);
   readonly msgIsError = signal(false);
 
+  readonly depositMethod = signal<DepositMethod>('paypal');
+  readonly gpayEnabled = signal(false);
+  readonly gpayAccount = signal<GpayVirtualAccount | null>(null);
+  readonly gpayBusy = signal(false);
+  readonly gpaySandbox = signal(false);
+  readonly gpayVndPerUsd = signal(26000);
+  readonly gpayMinTopupVnd = signal(0);
+
   depositAmount = 10;
+  depositVnd = 100000;
   private paypalClientId = '';
   private paypalScript?: HTMLScriptElement;
   private paypalButtonsGen = 0;
 
   readonly depositCurrency = computed(() => 'USD');
   readonly quickAmounts = computed(() => PAYPAL_QUICK);
+  readonly gpayQuickAmounts = computed(() => GPAY_QUICK_VND);
+  readonly gpayEstimateUsd = computed(() => {
+    const rate = this.gpayVndPerUsd() || 26000;
+    return Math.round((this.depositVnd / rate) * 100) / 100;
+  });
 
   readonly monthOptions = computed(() => {
     const now = new Date();
@@ -102,6 +118,17 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: () => this.paypalEnabled.set(false),
     });
+
+    this.api.gpayConfig().subscribe({
+      next: (cfg) => {
+        this.gpayEnabled.set(!!cfg.enabled);
+        this.gpaySandbox.set(!!cfg.sandbox);
+        this.gpayVndPerUsd.set(Number(cfg.vndPerUsd) || 26000);
+        this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);
+        if (cfg.enabled) this.loadGpayAccount();
+      },
+      error: () => this.gpayEnabled.set(false),
+    });
   }
 
   ngAfterViewInit(): void {
@@ -120,6 +147,85 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   pickAmount(v: number): void {
     this.depositAmount = v;
+  }
+
+  pickGpayAmount(v: number): void {
+    this.depositVnd = v;
+  }
+
+  setDepositMethod(method: DepositMethod): void {
+    this.depositMethod.set(method);
+    this.setMsg('', false);
+    if (method === 'paypal') {
+      setTimeout(() => this.ensurePayPalButtons(), 50);
+    } else if (this.gpayEnabled() && !this.gpayAccount()) {
+      this.loadGpayAccount();
+    }
+  }
+
+  copyGpay(text: string): void {
+    void navigator?.clipboard?.writeText(String(text || '')).then(
+      () => this.setMsg(this.i18n.t('wallet.gpay.copied'), false),
+      () => this.setMsg(this.i18n.t('wallet.gpay.copyFail'), true),
+    );
+  }
+
+  gpayQrSrc(): string {
+    const qr = this.gpayAccount()?.qrCode || '';
+    if (!qr) return '';
+    return qr.startsWith('data:') ? qr : `data:image/png;base64,${qr}`;
+  }
+
+  private loadGpayAccount(): void {
+    this.api.gpayAccount().subscribe({
+      next: (res) => {
+        this.gpayAccount.set(res?.account || null);
+      },
+      error: (err: unknown) => {
+        const message = (err as { error?: { message?: string } })?.error?.message;
+        this.setMsg(message || this.i18n.t('wallet.gpay.accountFail'), true);
+      },
+    });
+  }
+
+  private createGpayAccount(): void {
+    this.gpayBusy.set(true);
+    this.api.gpayAccount().subscribe({
+      next: (res) => {
+        this.gpayAccount.set(res?.account || null);
+        this.gpayBusy.set(false);
+      },
+      error: (err: unknown) => {
+        this.gpayBusy.set(false);
+        const message = (err as { error?: { message?: string } })?.error?.message;
+        this.setMsg(message || this.i18n.t('wallet.gpay.accountFail'), true);
+      },
+    });
+  }
+
+  sandboxCredit(): void {
+    if (!this.depositVnd || this.depositVnd < 1) {
+      this.setMsg(this.i18n.t('wallet.gpay.amountInvalid'), true);
+      return;
+    }
+    this.gpayBusy.set(true);
+    this.api.gpaySandboxCredit(this.depositVnd).subscribe({
+      next: () => {
+        this.gpayBusy.set(false);
+        this.setMsg(this.i18n.t('wallet.gpay.sandboxOk'), false);
+        this.reload();
+      },
+      error: (err: unknown) => {
+        this.gpayBusy.set(false);
+        const message = (err as { error?: { message?: string } })?.error?.message;
+        this.setMsg(message || this.i18n.t('wallet.gpay.sandboxFail'), true);
+      },
+    });
+  }
+
+  ensureGpayAccount(): void {
+    if (this.gpayAccount()) return;
+    this.createGpayAccount();
   }
 
   reload(): void {
@@ -144,6 +250,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       return this.i18n.t('wallet.method.iap');
     }
     if (t.paymentMethod === 'paypal') return this.i18n.t('wallet.method.paypal');
+    if (t.paymentMethod === 'gpay') return this.i18n.t('wallet.method.gpayVn');
     if (t.paymentMethod === 'apple_pay') return this.i18n.t('wallet.method.apple');
     if (t.paymentMethod === 'google_pay') return this.i18n.t('wallet.method.gpay');
     if (t.type === 'deposit') return this.i18n.t('wallet.method.transfer');
