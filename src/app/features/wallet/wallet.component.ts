@@ -46,7 +46,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly msgIsError = signal(false);
 
   readonly depositMethod = signal<DepositMethod>('paypal');
+  readonly gpayAvailable = signal(false);
   readonly gpayEnabled = signal(false);
+  readonly gpayCanSimulate = signal(false);
   readonly gpayAccount = signal<GpayVirtualAccount | null>(null);
   readonly gpayBusy = signal(false);
   readonly gpaySandbox = signal(false);
@@ -121,13 +123,18 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.api.gpayConfig().subscribe({
       next: (cfg) => {
+        this.gpayAvailable.set(cfg.available ?? !!cfg.enabled);
         this.gpayEnabled.set(!!cfg.enabled);
+        this.gpayCanSimulate.set(!!cfg.canSimulate);
         this.gpaySandbox.set(!!cfg.sandbox);
         this.gpayVndPerUsd.set(Number(cfg.vndPerUsd) || 26000);
         this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);
         if (cfg.enabled) this.loadGpayAccount();
       },
-      error: () => this.gpayEnabled.set(false),
+      error: () => {
+        this.gpayAvailable.set(false);
+        this.gpayEnabled.set(false);
+      },
     });
   }
 

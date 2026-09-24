@@ -35,7 +35,7 @@
               <p>{{ 'wallet.deposit.paypalOnlyDesc' | t }}</p>
             </div>
           </button>
-          @if (gpayEnabled()) {
+          @if (gpayAvailable()) {
             <button
               type="button"
               class="method method--gpay"
@@ -84,7 +84,9 @@
         } @else {
           <p class="hint">{{ 'wallet.gpay.hint' | t }}</p>
 
-          @if (!gpayAccount()) {
+          @if (!gpayEnabled()) {
+            <p class="offline">{{ 'wallet.gpay.offline' | t }}</p>
+          } @else if (!gpayAccount()) {
             <div class="actions">
               <button type="button" class="btn-dark" [disabled]="gpayBusy()" (click)="ensureGpayAccount()">
                 {{ gpayBusy() ? ('wallet.gpay.creating' | t) : ('wallet.gpay.create' | t) }}
@@ -130,7 +132,7 @@
             </div>
             <p class="note">{{ 'wallet.gpay.estimate' | t: { usd: gpayEstimateUsd() } }}</p>
 
-            @if (gpaySandbox()) {
+            @if (gpayCanSimulate()) {
               <div class="actions">
                 <button type="button" class="btn-outline" [disabled]="gpayBusy()" (click)="sandboxCredit()">
                   {{ 'wallet.gpay.sandboxSim' | t }}

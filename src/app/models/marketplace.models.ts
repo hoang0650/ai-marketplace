@@ -581,8 +581,12 @@ export interface WalletTx {
 }
 
 export interface GpayConfig {
+  /** Method is shown in the deposit picker. */
+  available?: boolean;
+  /** Merchant credentials configured — VA can be created. */
   enabled: boolean;
   sandbox: boolean;
+  canSimulate?: boolean;
   bankCode: string;
   accountType: string;
   minTopupVnd: number;
