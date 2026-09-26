@@ -86,34 +86,26 @@
 
           @if (!gpayEnabled()) {
             <p class="offline">{{ 'wallet.gpay.offline' | t }}</p>
-          } @else if (!gpayAccount()) {
-            <div class="actions">
-              <button type="button" class="btn-dark" [disabled]="gpayBusy()" (click)="ensureGpayAccount()">
-                {{ gpayBusy() ? ('wallet.gpay.creating' | t) : ('wallet.gpay.create' | t) }}
-              </button>
-            </div>
-          } @else {
+          } @else if (gpayQr()) {
             <div class="gpay-box">
               <div class="gpay-box__info">
-                <p class="gpay-box__bank">{{ gpayAccount()!.bankCode }} · {{ gpayAccount()!.accountName }}</p>
-                <p class="gpay-box__label">{{ 'wallet.gpay.accountNumber' | t }}</p>
-                <div class="gpay-box__row">
-                  <code class="gpay-box__num">{{ gpayAccount()!.accountNumber }}</code>
-                  <button type="button" class="gpay-box__copy" (click)="copyGpay(gpayAccount()!.accountNumber)">
-                    {{ 'wallet.gpay.copy' | t }}
-                  </button>
-                </div>
-                @if (gpayAccount()!.balanceVnd > 0) {
-                  <p class="gpay-box__bal">
-                    {{ 'wallet.gpay.received' | t: { amount: gpayAccount()!.balanceVnd.toLocaleString('vi-VN') } }}
-                  </p>
+                <p class="gpay-box__bank">
+                  {{ 'wallet.gpay.qrTitle' | t: { amount: gpayQr()!.order.amountVnd.toLocaleString('vi-VN') } }}
+                </p>
+                @if (gpayQr()!.accountNumber) {
+                  <p class="gpay-box__label">{{ gpayQr()!.provider }} · {{ gpayQr()!.accountName }}</p>
+                  <code class="gpay-box__num">{{ gpayQr()!.accountNumber }}</code>
                 }
+                <p class="gpay-box__bal">{{ 'wallet.gpay.qrWaiting' | t }}</p>
+                <button type="button" class="gpay-box__copy" (click)="closeGpayQr()">
+                  {{ 'wallet.gpay.qrClose' | t }}
+                </button>
               </div>
               @if (gpayQrSrc()) {
                 <img class="gpay-box__qr" [src]="gpayQrSrc()" [alt]="'wallet.gpay.qrAlt' | t" />
               }
             </div>
-
+          } @else {
             <div class="amount-row">
               <label>
                 <span>{{ 'wallet.gpay.amount' | t }}</span>
@@ -131,6 +123,22 @@
               </div>
             </div>
             <p class="note">{{ 'wallet.gpay.estimate' | t: { usd: gpayEstimateUsd() } }}</p>
+
+            <div class="actions">
+              @if (gpayPortalEnabled()) {
+                <button type="button" class="btn-dark" [disabled]="gpayBusy() || gpayPolling()" (click)="gpayCheckout()">
+                  {{ 'wallet.gpay.portalBtn' | t }}
+                </button>
+              }
+              @if (gpayQrEnabled()) {
+                <button type="button" class="btn-outline" [disabled]="gpayBusy() || gpayPolling()" (click)="gpayCreateQr()">
+                  {{ 'wallet.gpay.qrBtn' | t }}
+                </button>
+              }
+              @if (gpayPortalEnabled()) {
+                <p class="hint">{{ 'wallet.gpay.portalHint' | t }}</p>
+              }
+            </div>
 
             @if (gpayCanSimulate()) {
               <div class="actions">

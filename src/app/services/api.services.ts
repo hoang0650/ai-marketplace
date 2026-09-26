@@ -32,7 +32,9 @@ import {
   KycSide,
   KycIdType,
   GpayConfig,
-  GpayVirtualAccount,
+  GpayCheckoutResponse,
+  GpayOrder,
+  GpayQrResponse,
   PayoutPolicy,
   PayoutPolicyResponse,
   PayoutQuote,
@@ -401,11 +403,19 @@ export class DashboardService {
     return this.http.get<GpayConfig>(`${this.base}/gpay/config`);
   }
 
-  /** Create (or fetch) the caller's GPay Virtual Account for VND bank transfer. */
-  gpayAccount(accountName?: string): Observable<{ success: boolean; created?: boolean; account: GpayVirtualAccount | null }> {
-    return this.http.post<{ success: boolean; created?: boolean; account: GpayVirtualAccount | null }>(
-      `${this.base}/gpay/account`,
-      { accountName },
+  /** GPay payment gateway: returns `billUrl` to redirect the payer to. */
+  gpayCheckout(amountVnd: number): Observable<GpayCheckoutResponse> {
+    return this.http.post<GpayCheckoutResponse>(`${this.base}/gpay/checkout`, { amountVnd, platform: 'web' });
+  }
+
+  /** GPay QR Payment: dynamic VietQR for one top-up. */
+  gpayQr(amountVnd: number): Observable<GpayQrResponse> {
+    return this.http.post<GpayQrResponse>(`${this.base}/gpay/qr`, { amountVnd });
+  }
+
+  gpayOrder(requestId: string): Observable<{ success: boolean; order: GpayOrder }> {
+    return this.http.get<{ success: boolean; order: GpayOrder }>(
+      `${this.base}/gpay/orders/${encodeURIComponent(requestId)}`,
     );
   }
 
