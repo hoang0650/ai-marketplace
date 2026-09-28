@@ -583,6 +583,11 @@ export const routes: Routes = [
           import('./features/admin/admin-finance.component').then((m) => m.AdminFinanceComponent),
       },
       {
+        path: 'admin/kyc',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/admin/admin-kyc.component').then((m) => m.AdminKycComponent),
+      },
+      {
         path: 'admin/complaints/:id',
         canActivate: [adminGuard],
         loadComponent: () =>

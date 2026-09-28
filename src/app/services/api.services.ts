@@ -30,7 +30,10 @@ import {
   Complaint,
   KycProfile,
   KycSide,
-  KycIdType,
+  KycSubmitBody,
+  KycSubjectType,
+  KycReviewStatus,
+  KycQueueResponse,
   GpayConfig,
   GpayCheckoutResponse,
   GpayOrder,
@@ -978,17 +981,15 @@ export class KycService {
     });
   }
 
-  submit(body: { fullName: string; idType: KycIdType; idNumber: string }): Observable<{ ok: boolean; kyc: KycProfile }> {
+  submit(body: KycSubmitBody): Observable<{ ok: boolean; kyc: KycProfile }> {
     return this.http.post<{ ok: boolean; kyc: KycProfile }>(`${this.base}/kyc/submit`, body);
   }
 
-  adminQueue(status = 'pending'): Observable<
-    Array<{ userId: string; email: string; name: string; role: string; kyc: KycProfile }>
-  > {
-    return this.http.get<Array<{ userId: string; email: string; name: string; role: string; kyc: KycProfile }>>(
-      `${this.base}/kyc/admin/queue`,
-      { params: new HttpParams().set('status', status) },
-    );
+  adminQueue(query: { status?: KycReviewStatus; subjectType?: KycSubjectType | ''; q?: string } = {}): Observable<KycQueueResponse> {
+    let params = new HttpParams().set('status', query.status || 'pending');
+    if (query.subjectType) params = params.set('subjectType', query.subjectType);
+    if (query.q) params = params.set('q', query.q);
+    return this.http.get<KycQueueResponse>(`${this.base}/kyc/admin/queue`, { params });
   }
 
   adminDecide(userId: string, decision: 'verified' | 'rejected', rejectReason?: string): Observable<{ ok: boolean; kyc: KycProfile }> {

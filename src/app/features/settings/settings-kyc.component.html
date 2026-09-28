@@ -18,7 +18,107 @@
     </p>
 
     <div class="kyc-panel">
-      <h2>{{ 'kyc.docs' | t }}</h2>
+      @if (k.canEdit) {
+        <div class="kyc-type" role="radiogroup" [attr.aria-label]="'kyc.subjectType' | t">
+          @for (st of subjectTypes; track st) {
+            <button
+              type="button"
+              role="radio"
+              [attr.aria-checked]="subjectType === st"
+              [class.active]="subjectType === st"
+              (click)="subjectType = st"
+            >
+              <strong>{{ ('kyc.subject.' + st) | t }}</strong>
+              <small>{{ ('kyc.subject.' + st + '.hint') | t }}</small>
+            </button>
+          }
+        </div>
+
+        @if (isOrg) {
+          <h2>{{ 'kyc.orgSection' | t }}</h2>
+          <div class="kyc-fields">
+            <label>
+              <span>{{ 'kyc.orgType' | t }}</span>
+              <select class="input" [(ngModel)]="orgType" name="orgType">
+                @for (ot of orgTypes; track ot) {
+                  <option [value]="ot">{{ ('kyc.orgType.' + ot) | t }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>{{ (orgType === 'company' ? 'kyc.orgName.company' : 'kyc.orgName.household') | t }}</span>
+              <input class="input" [(ngModel)]="orgName" name="orgName" autocomplete="organization" />
+            </label>
+            <label>
+              <span>{{ 'kyc.orgTaxCode' | t }}</span>
+              <input class="input" [(ngModel)]="orgTaxCode" name="orgTaxCode" inputmode="numeric" autocomplete="off" />
+              <small class="kyc-field-hint">{{ (orgType === 'company' ? 'kyc.orgTaxCode.hintCompany' : 'kyc.orgTaxCode.hintHousehold') | t }}</small>
+            </label>
+            <label>
+              <span>{{ 'kyc.orgAddress' | t }}</span>
+              <textarea class="input" rows="2" [(ngModel)]="orgAddress" name="orgAddress" autocomplete="street-address"></textarea>
+              <small class="kyc-field-hint">{{ 'kyc.orgAddress.hint' | t }}</small>
+            </label>
+          </div>
+        }
+
+        <h2>{{ (isOrg ? 'kyc.repSection' : 'kyc.personSection') | t }}</h2>
+        <div class="kyc-fields">
+          <label>
+            <span>{{ (isOrg ? 'kyc.repName' : 'kyc.fullName') | t }}</span>
+            <input class="input" [(ngModel)]="fullName" name="fullName" autocomplete="name" />
+          </label>
+          <label>
+            <span>{{ 'kyc.idType' | t }}</span>
+            <select class="input" [(ngModel)]="idType" name="idType">
+              @for (t of idTypes; track t) {
+                <option [value]="t">{{ ('kyc.idType.' + t) | t }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ 'kyc.idNumber' | t }}</span>
+            <input class="input" [(ngModel)]="idNumber" name="idNumber" autocomplete="off" />
+          </label>
+          @if (!isOrg) {
+            <label>
+              <span>{{ 'kyc.personalTaxCode' | t }}</span>
+              <span class="kyc-inline">
+                <input class="input" [(ngModel)]="personalTaxCode" name="personalTaxCode" inputmode="numeric" autocomplete="off" />
+                @if (idType === 'cccd' && idNumber) {
+                  <button type="button" class="btn btn-ghost" (click)="useIdAsTaxCode()">{{ 'kyc.useIdAsTax' | t }}</button>
+                }
+              </span>
+              <small class="kyc-field-hint">{{ 'kyc.personalTaxCode.hint' | t }}</small>
+            </label>
+          }
+        </div>
+      } @else {
+        <dl class="kyc-summary">
+          <dt>{{ 'kyc.subjectType' | t }}</dt>
+          <dd>{{ ('kyc.subject.' + k.subjectType) | t }}</dd>
+          @if (k.subjectType === 'organization') {
+            <dt>{{ 'kyc.orgType' | t }}</dt>
+            <dd>{{ ('kyc.orgType.' + (k.orgType || 'household')) | t }}</dd>
+            <dt>{{ (k.orgType === 'company' ? 'kyc.orgName.company' : 'kyc.orgName.household') | t }}</dt>
+            <dd>{{ k.orgName }}</dd>
+            <dt>{{ 'kyc.orgTaxCode' | t }}</dt>
+            <dd>{{ k.orgTaxCode }}</dd>
+            <dt>{{ 'kyc.orgAddress' | t }}</dt>
+            <dd>{{ k.orgAddress }}</dd>
+          }
+          <dt>{{ (k.subjectType === 'organization' ? 'kyc.repName' : 'kyc.fullName') | t }}</dt>
+          <dd>{{ k.fullName }}</dd>
+          <dt>{{ 'kyc.idNumber' | t }}</dt>
+          <dd>{{ ('kyc.idType.' + k.idType) | t }} · {{ k.idNumberMasked }}</dd>
+          @if (k.subjectType !== 'organization' && k.personalTaxCodeMasked) {
+            <dt>{{ 'kyc.personalTaxCode' | t }}</dt>
+            <dd>{{ k.personalTaxCodeMasked }}</dd>
+          }
+        </dl>
+      }
+
+      <h2>{{ (isOrg ? 'kyc.docsRep' : 'kyc.docs') | t }}</h2>
       <div class="kyc-docs">
         @for (side of sides; track side) {
           <label class="kyc-doc">
@@ -36,24 +136,6 @@
       </div>
 
       @if (k.canEdit) {
-        <div class="kyc-fields">
-          <label>
-            <span>{{ 'kyc.fullName' | t }}</span>
-            <input class="input" [(ngModel)]="fullName" name="fullName" />
-          </label>
-          <label>
-            <span>{{ 'kyc.idType' | t }}</span>
-            <select class="input" [(ngModel)]="idType" name="idType">
-              @for (t of idTypes; track t) {
-                <option [value]="t">{{ ('kyc.idType.' + t) | t }}</option>
-              }
-            </select>
-          </label>
-          <label>
-            <span>{{ 'kyc.idNumber' | t }}</span>
-            <input class="input" [(ngModel)]="idNumber" name="idNumber" autocomplete="off" />
-          </label>
-        </div>
         <button type="button" class="btn btn-fill" (click)="submit()" [disabled]="busy() || !k.canSubmit">
           {{ busy() ? ('kyc.sending' | t) : ('kyc.submit' | t) }}
         </button>

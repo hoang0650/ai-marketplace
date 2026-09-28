@@ -229,6 +229,12 @@ export class AffiliateComponent implements OnInit {
         </div>
 
         <div class="panel mt-8">
+          <h2 class="font-display text-2xl">Duyệt eKYC</h2>
+          <p class="mt-1 text-sm text-muted">Xác minh hồ sơ cá nhân và tổ chức (hộ kinh doanh / công ty). Chỉ tài khoản đã duyệt mới được rút tiền.</p>
+          <p class="mt-2"><a class="text-accent underline" routerLink="/admin/kyc">Mở hàng chờ duyệt eKYC</a></p>
+        </div>
+
+        <div class="panel mt-8">
           <h2 class="font-display text-2xl">Complaints</h2>
           <p class="mt-1 text-sm text-muted">Hồ sơ khiếu nại theo quy trình tiếp nhận → xác minh → quyết định.</p>
           <p class="mt-2"><a class="text-accent underline" routerLink="/admin/complaints">Mở danh sách khiếu nại</a></p>

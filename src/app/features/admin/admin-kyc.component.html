@@ -1,0 +1,147 @@
+<section class="admin-kyc page route-enter">
+  <p class="admin-kyc__crumb">
+    <a routerLink="/admin">{{ 'nav.admin' | t }}</a>
+  </p>
+  <h1>{{ 'admin.kyc.title' | t }}</h1>
+  <p class="admin-kyc__lede">{{ 'admin.kyc.lede' | t }}</p>
+
+  <div class="admin-kyc__tabs" role="tablist">
+    @for (s of statuses; track s) {
+      <button type="button" role="tab" [attr.aria-selected]="status() === s" [class.active]="status() === s" (click)="setStatus(s)">
+        {{ filterKey(s) | t }}
+        <span class="admin-kyc__count">{{ countFor(s) }}</span>
+      </button>
+    }
+  </div>
+
+  <form class="admin-kyc__filters" (ngSubmit)="reload()">
+    <select class="input" name="subjectType" [ngModel]="subjectType()" (ngModelChange)="setSubject($event)">
+      @for (st of subjectFilters; track st) {
+        <option [value]="st">{{ subjectKey(st) | t }}</option>
+      }
+    </select>
+    <input class="input" name="q" [(ngModel)]="q" [placeholder]="'admin.kyc.searchPh' | t" />
+    <button class="btn btn-outline" type="submit">{{ 'admin.kyc.search' | t }}</button>
+  </form>
+
+  @if (msg()) {
+    <p class="admin-kyc__ok">{{ msg() }}</p>
+  }
+  @if (error()) {
+    <p class="admin-kyc__err">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="text-muted">{{ 'admin.kyc.loading' | t }}</p>
+  } @else {
+    <div class="admin-kyc__layout">
+      <ul class="admin-kyc__list panel">
+        @for (item of items(); track item.userId) {
+          <li>
+            <button type="button" [class.active]="item.userId === selectedId()" (click)="select(item.userId)">
+              <span class="admin-kyc__row-top">
+                <strong>{{ displayName(item) }}</strong>
+                <span class="admin-kyc__pill" [attr.data-status]="item.kyc.status">{{ statusKey(item.kyc.status) | t }}</span>
+              </span>
+              <span class="admin-kyc__row-sub">
+                <span class="admin-kyc__type" [attr.data-type]="item.kyc.subjectType">{{ ('kyc.subject.' + item.kyc.subjectType) | t }}</span>
+                {{ item.email }}
+              </span>
+              <span class="admin-kyc__row-sub">{{ item.kyc.submittedAt | date: 'short' }}</span>
+            </button>
+          </li>
+        } @empty {
+          <li class="admin-kyc__empty">{{ 'admin.kyc.empty' | t }}</li>
+        }
+      </ul>
+
+      @if (selected(); as item) {
+        <article class="admin-kyc__detail panel">
+          <header class="admin-kyc__detail-head">
+            <div>
+              <h2>{{ displayName(item) }}</h2>
+              <p class="text-muted">
+                <a [routerLink]="['/admin/users', item.userId]">{{ item.name }}</a> · {{ item.email }} · {{ item.role }}
+              </p>
+            </div>
+            <span class="admin-kyc__pill" [attr.data-status]="item.kyc.status">{{ statusKey(item.kyc.status) | t }}</span>
+          </header>
+
+          <dl class="admin-kyc__facts">
+            <dt>{{ 'kyc.subjectType' | t }}</dt>
+            <dd>{{ ('kyc.subject.' + item.kyc.subjectType) | t }}</dd>
+            @if (item.kyc.subjectType === 'organization') {
+              <dt>{{ 'kyc.orgType' | t }}</dt>
+              <dd>{{ ('kyc.orgType.' + (item.kyc.orgType || 'household')) | t }}</dd>
+              <dt>{{ (item.kyc.orgType === 'company' ? 'kyc.orgName.company' : 'kyc.orgName.household') | t }}</dt>
+              <dd>{{ item.kyc.orgName }}</dd>
+              <dt>{{ 'kyc.orgTaxCode' | t }}</dt>
+              <dd class="mono">{{ item.kyc.orgTaxCode }}</dd>
+              <dt>{{ 'kyc.orgAddress' | t }}</dt>
+              <dd>{{ item.kyc.orgAddress }}</dd>
+            }
+            <dt>{{ (item.kyc.subjectType === 'organization' ? 'kyc.repName' : 'kyc.fullName') | t }}</dt>
+            <dd>{{ item.kyc.fullName }}</dd>
+            <dt>{{ 'kyc.idType' | t }}</dt>
+            <dd>{{ ('kyc.idType.' + item.kyc.idType) | t }}</dd>
+            <dt>{{ 'kyc.idNumber' | t }}</dt>
+            <dd class="mono">{{ item.kyc.idNumber }}</dd>
+            @if (item.kyc.subjectType !== 'organization') {
+              <dt>{{ 'kyc.personalTaxCode' | t }}</dt>
+              <dd class="mono">{{ item.kyc.personalTaxCode || '—' }}</dd>
+            }
+            <dt>{{ 'admin.kyc.submittedAt' | t }}</dt>
+            <dd>{{ item.kyc.submittedAt | date: 'medium' }}</dd>
+            @if (item.kyc.reviewedAt) {
+              <dt>{{ 'admin.kyc.reviewedAt' | t }}</dt>
+              <dd>{{ item.kyc.reviewedAt | date: 'medium' }} @if (item.reviewedBy) { · {{ item.reviewedBy.name || item.reviewedBy.email }} }</dd>
+            }
+            @if (item.kyc.rejectReason) {
+              <dt>{{ 'admin.kyc.reason' | t }}</dt>
+              <dd class="admin-kyc__reject-text">{{ item.kyc.rejectReason }}</dd>
+            }
+          </dl>
+
+          <h3>{{ (item.kyc.subjectType === 'organization' ? 'kyc.docsRep' : 'kyc.docs') | t }}</h3>
+          <div class="admin-kyc__docs">
+            @for (side of sides; track side) {
+              <figure>
+                @if (docs()[side]; as url) {
+                  <a [href]="url" target="_blank" rel="noopener noreferrer"><img [src]="url" [alt]="side" /></a>
+                } @else {
+                  <div class="admin-kyc__placeholder">{{ 'kyc.noPhoto' | t }}</div>
+                }
+                <figcaption>{{ ('kyc.side.' + side) | t }}</figcaption>
+              </figure>
+            }
+          </div>
+
+          @if (item.kyc.status === 'pending') {
+            <div class="admin-kyc__checklist">
+              <p>{{ 'admin.kyc.checklist' | t }}</p>
+              <ul>
+                <li>{{ 'admin.kyc.check.name' | t }}</li>
+                <li>{{ 'admin.kyc.check.id' | t }}</li>
+                @if (item.kyc.subjectType === 'organization') {
+                  <li>{{ 'admin.kyc.check.org' | t }}</li>
+                } @else {
+                  <li>{{ 'admin.kyc.check.tax' | t }}</li>
+                }
+              </ul>
+            </div>
+            <label class="admin-kyc__reason">
+              <span>{{ 'admin.kyc.reason' | t }}</span>
+              <textarea class="input" rows="2" name="rejectReason" [(ngModel)]="rejectReason" [placeholder]="'admin.kyc.reasonPh' | t"></textarea>
+            </label>
+            <div class="admin-kyc__actions">
+              <button class="btn btn-fill" type="button" [disabled]="busy()" (click)="approve(item)">{{ 'admin.kyc.approve' | t }}</button>
+              <button class="btn btn-outline admin-kyc__btn-reject" type="button" [disabled]="busy()" (click)="reject(item)">
+                {{ 'admin.kyc.reject' | t }}
+              </button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

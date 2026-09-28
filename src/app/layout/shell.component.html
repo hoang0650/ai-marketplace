@@ -265,6 +265,7 @@
                   @if (auth.isAdmin()) {
                     <li><a routerLink="/admin" (click)="closeUserMenu()">{{ 'nav.admin' | t }}</a></li>
                     <li><a routerLink="/admin/finance" (click)="closeUserMenu()">{{ 'admin.finance.title' | t }}</a></li>
+                    <li><a routerLink="/admin/kyc" (click)="closeUserMenu()">{{ 'admin.kyc.title' | t }}</a></li>
                   }
                   @if (auth.isSeller()) {
                     <li><a routerLink="/sell" (click)="closeUserMenu()">{{ 'nav.shop' | t }}</a></li>
