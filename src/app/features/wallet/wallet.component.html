@@ -78,7 +78,6 @@
               <div class="wallet-pay-stack" [class.busy]="paypalBusy()">
                 <div id="paypal-btn-paypal" class="paypal-slot"></div>
               </div>
-              <p class="note">♥ {{ 'wallet.deposit.paypalNote' | t }}</p>
             }
           </div>
         } @else {
@@ -139,15 +138,6 @@
                 <p class="hint">{{ 'wallet.gpay.portalHint' | t }}</p>
               }
             </div>
-
-            @if (gpayCanSimulate()) {
-              <div class="actions">
-                <button type="button" class="btn-outline" [disabled]="gpayBusy()" (click)="sandboxCredit()">
-                  {{ 'wallet.gpay.sandboxSim' | t }}
-                </button>
-                <p class="hint">{{ 'wallet.gpay.sandboxHint' | t }}</p>
-              </div>
-            }
           }
         }
 

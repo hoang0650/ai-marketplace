@@ -627,7 +627,6 @@ export interface GpayConfig {
   /** Dynamic VietQR via GPay QR Payment. */
   qrEnabled?: boolean;
   sandbox: boolean;
-  canSimulate?: boolean;
   bankCode: string;
   accountType: string;
   minTopupVnd: number;

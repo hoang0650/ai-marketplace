@@ -53,11 +53,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly gpayEnabled = signal(false);
   readonly gpayPortalEnabled = signal(false);
   readonly gpayQrEnabled = signal(false);
-  readonly gpayCanSimulate = signal(false);
   readonly gpayQr = signal<GpayQrResponse | null>(null);
   readonly gpayPolling = signal(false);
   readonly gpayBusy = signal(false);
-  readonly gpaySandbox = signal(false);
   readonly gpayVndPerUsd = signal(26000);
   readonly gpayMinTopupVnd = signal(0);
 
@@ -135,8 +133,6 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gpayEnabled.set(!!cfg.enabled);
         this.gpayPortalEnabled.set(!!cfg.portalEnabled);
         this.gpayQrEnabled.set(!!cfg.qrEnabled);
-        this.gpayCanSimulate.set(!!cfg.canSimulate);
-        this.gpaySandbox.set(!!cfg.sandbox);
         this.gpayVndPerUsd.set(Number(cfg.vndPerUsd) || 26000);
         this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);
       },
@@ -296,26 +292,6 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gpayPollTimer = undefined;
     this.gpayPollOrder = '';
     this.gpayPolling.set(false);
-  }
-
-  sandboxCredit(): void {
-    if (!this.depositVnd || this.depositVnd < 1) {
-      this.setMsg(this.i18n.t('wallet.gpay.amountInvalid'), true);
-      return;
-    }
-    this.gpayBusy.set(true);
-    this.api.gpaySandboxCredit(this.depositVnd).subscribe({
-      next: () => {
-        this.gpayBusy.set(false);
-        this.setMsg(this.i18n.t('wallet.gpay.sandboxOk'), false);
-        this.reload();
-      },
-      error: (err: unknown) => {
-        this.gpayBusy.set(false);
-        const message = (err as { error?: { message?: string } })?.error?.message;
-        this.setMsg(message || this.i18n.t('wallet.gpay.sandboxFail'), true);
-      },
-    });
   }
 
   reload(): void {

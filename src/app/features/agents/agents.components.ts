@@ -119,8 +119,6 @@ export class MyAgentsComponent implements OnInit {
         <h1 class="agents-title">Agent Marketplace</h1>
         <div class="agents-header__actions">
           <a routerLink="/hire-agent" class="agents-btn agents-btn--ghost">Manage agents</a>
-          <a routerLink="/product/openclaw-ops-agent" class="agents-btn agents-btn--primary">+ Hire OpenClaw</a>
-          <a routerLink="/product/hermes-ops-agent" class="agents-btn agents-btn--ghost">+ Hire Hermes</a>
         </div>
       </div>
 
@@ -435,10 +433,6 @@ export class AgentMarketplaceComponent implements OnInit {
                   {{ '{' }}userId{{ '}' }}.{{ subdomain() }}.aimarkets.vn
                   (session market-{{ '{' }}userId{{ '}' }}).
                 </p>
-              </div>
-              <div>
-                <p class="font-semibold text-ink">Pricing</p>
-                <p>Provider cost + 25% markup on OpenRouter/Featherless models.</p>
               </div>
             </div>
           </aside>

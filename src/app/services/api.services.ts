@@ -426,14 +426,6 @@ export class DashboardService {
     return this.http.get<WalletTx[]>(`${this.base}/gpay/transactions`);
   }
 
-  /** Sandbox-only: simulate a bank transfer into the VA. */
-  gpaySandboxCredit(amountVnd: number): Observable<{ success: boolean; creditedUsd: number; wallet: WalletTx }> {
-    return this.http.post<{ success: boolean; creditedUsd: number; wallet: WalletTx }>(
-      `${this.base}/gpay/sandbox/credit`,
-      { amountVnd },
-    );
-  }
-
   adminWalletTxs(params?: {
     type?: 'deposit' | 'withdraw';
     status?: 'pending' | 'completed' | 'failed' | 'cancelled' | '';
