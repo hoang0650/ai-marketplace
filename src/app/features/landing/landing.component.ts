@@ -1,5 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
-import { Component, DestroyRef, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
+import { Component, DestroyRef, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -136,17 +136,17 @@ const HERO_SLIDES = [
   {
     id: 1,
     titleKey: 'lux.slide1',
-    bg: 'linear-gradient(135deg, #1a1a1a 0%, #3d3528 50%, #2a2a2a 100%)',
+    bg: 'radial-gradient(circle at 78% 30%, rgba(201,169,97,0.3), transparent 48%), linear-gradient(135deg, #111 0%, #2b2519 55%, #151515 100%)',
   },
   {
     id: 2,
     titleKey: 'lux.slide2',
-    bg: 'linear-gradient(135deg, #1a2332 0%, #2d3f5c 50%, #111 100%)',
+    bg: 'radial-gradient(circle at 80% 35%, rgba(90,150,255,0.26), transparent 48%), linear-gradient(135deg, #0f1622 0%, #1d2d47 55%, #0d0d0d 100%)',
   },
   {
     id: 3,
     titleKey: 'lux.slide3',
-    bg: 'linear-gradient(135deg, #2a2a1a 0%, #4a4530 50%, #1a1a1a 100%)',
+    bg: 'radial-gradient(circle at 76% 30%, rgba(170,120,255,0.24), transparent 48%), linear-gradient(135deg, #15121c 0%, #2e2440 55%, #111 100%)',
   },
 ];
 
@@ -204,7 +204,7 @@ type LoadState = 'loading' | 'ready' | 'error';
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, FormsModule, ProductCardComponent, TPipe, CategoryIconComponent],
+  imports: [RouterLink, FormsModule, NgTemplateOutlet, ProductCardComponent, TPipe, CategoryIconComponent],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
 })
@@ -229,8 +229,18 @@ export class LandingComponent implements OnInit, OnDestroy {
   readonly newArrivals = signal<Product[]>([]);
   readonly promoted = signal<Product[]>([]);
   readonly bestsellers = signal<Product[]>([]);
-  readonly recentTags = signal(['inference', 'api-endpoint', 'text-to-image', 'gpu']);
+  readonly quickTags = ['inference', 'api-endpoint', 'text-to-image', 'gpu'];
+  readonly shopCoverFallback = 'linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%)';
+  readonly brokenAvatars = signal<ReadonlySet<string>>(new Set());
   readonly heroIndex = signal(0);
+  /** Hero shortcuts: busiest categories first, catalogue order as tie-break. */
+  readonly heroTiles = computed(() =>
+    this.categoryIcons()
+      .map((c, i) => ({ c, i }))
+      .sort((a, b) => b.c.count - a.c.count || a.i - b.i)
+      .slice(0, 6)
+      .map(({ c }) => c),
+  );
 
   get hasRails(): boolean {
     return !!(
@@ -252,9 +262,10 @@ export class LandingComponent implements OnInit, OnDestroy {
       description: this.i18n.t('home.slogan'),
     });
 
-    this.startHeroAutoplay();
-
+    // A pending interval keeps the SSR render from ever becoming stable, so autoplay is browser-only.
     if (!isPlatformBrowser(this.platformId)) return;
+
+    this.startHeroAutoplay();
 
     this.reload$
       .pipe(
@@ -307,6 +318,8 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   startHeroAutoplay(): void {
     this.stopHeroAutoplay();
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     this.heroTimer = setInterval(() => this.nextSlide(), 6000);
   }
 
@@ -319,11 +332,6 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   nextSlide(): void {
     this.heroIndex.update((i) => (i + 1) % HERO_SLIDES.length);
-  }
-
-  prevSlide(): void {
-    this.heroIndex.update((i) => (i - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
-    this.startHeroAutoplay();
   }
 
   goSlide(index: number): void {
@@ -348,10 +356,20 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.search();
   }
 
-  dismissTag(tag: string, event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.recentTags.update((tags) => tags.filter((t) => t !== tag));
+  scrollRail(rail: HTMLElement, dir: 1 | -1): void {
+    const atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+    const atStart = rail.scrollLeft <= 4;
+    if (dir === 1 && atEnd) {
+      rail.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (dir === -1 && atStart) {
+      rail.scrollTo({ left: rail.scrollWidth, behavior: 'smooth' });
+    } else {
+      rail.scrollBy({ left: dir * rail.clientWidth * 0.9, behavior: 'smooth' });
+    }
+  }
+
+  markAvatarBroken(id: string): void {
+    this.brokenAvatars.update((s) => new Set(s).add(id));
   }
 
   shopInitial(shop: Creator): string {

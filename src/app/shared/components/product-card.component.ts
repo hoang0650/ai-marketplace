@@ -22,6 +22,7 @@ import { WishlistService } from '../../services/api.services';
             loading="lazy"
             width="112"
             height="112"
+            (error)="onImgError($event)"
           />
           @if (onSale) {
             <span class="lux-list__sale">Sale</span>
@@ -57,7 +58,7 @@ import { WishlistService } from '../../services/api.services';
         </div>
       </a>
     } @else if (variant === 'luxury') {
-      <a [routerLink]="['/product', product.slug]" class="lux-card">
+      <a [routerLink]="['/product', product.slug]" class="lux-card" [class.lux-card--compact]="compact">
         <div class="lux-card__media">
           <img
             [src]="product.coverUrl || placeholder"
@@ -66,6 +67,7 @@ import { WishlistService } from '../../services/api.services';
             [attr.fetchpriority]="priority ? 'high' : null"
             width="400"
             height="500"
+            (error)="onImgError($event)"
           />
           @if (onSale) {
             <span class="lux-card__sale">Sale</span>
@@ -106,6 +108,7 @@ import { WishlistService } from '../../services/api.services';
             [attr.fetchpriority]="priority ? 'high' : null"
             width="400"
             height="400"
+            (error)="onImgError($event)"
           />
           @if (isRunpod) {
             <span class="shop-card__badge">RunPod</span>
@@ -133,6 +136,7 @@ import { WishlistService } from '../../services/api.services';
             [attr.fetchpriority]="priority ? 'high' : null"
             width="480"
             height="480"
+            (error)="onImgError($event)"
           />
           <button
             type="button"
@@ -190,6 +194,17 @@ import { WishlistService } from '../../services/api.services';
       }
       .lux-card:hover .lux-card__media img {
         transform: scale(1.05);
+      }
+      .lux-card--compact .lux-card__media {
+        aspect-ratio: 4 / 3;
+        border-radius: 6px;
+      }
+      .lux-card--compact .lux-card__body {
+        text-align: left;
+        padding: 0.7rem 0.1rem 0.25rem;
+      }
+      .lux-card--compact .lux-card__title {
+        font-weight: 600;
       }
       .lux-card__sale {
         position: absolute;
@@ -705,12 +720,19 @@ export class ProductCardComponent {
   @Input() currency: AppCurrency = 'USD';
   /** Eager-load cover for above-the-fold cards on home. */
   @Input() priority = false;
+  /** Landscape 4:3 cover for horizontal rails (luxury grid variant only). */
+  @Input() compact = false;
 
   readonly placeholder =
     'data:image/svg+xml,' +
     encodeURIComponent(
       `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480"><rect fill="#eee" width="100%" height="100%"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-family="sans-serif" font-size="22">AI</text></svg>`,
     );
+
+  onImgError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img.src !== this.placeholder) img.src = this.placeholder;
+  }
 
   get label(): string {
     return this.i18n.catLabel(this.product.category);

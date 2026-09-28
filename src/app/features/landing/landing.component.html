@@ -1,157 +1,170 @@
-<!-- Hero carousel (Luxury Shop style) -->
-<section class="lux-hero route-enter" aria-label="Hero">
-  <div class="lux-hero__slides">
+<!-- Hero: rotating headline + search + category shortcuts -->
+<section class="lux-hero route-enter" aria-label="Hero" (mouseenter)="stopHeroAutoplay()" (mouseleave)="startHeroAutoplay()">
+  <div class="lux-hero__bg" aria-hidden="true">
     @for (slide of slides; track slide.id; let i = $index) {
-      <div class="lux-hero__slide" [class.active]="heroIndex() === i" [style.background-image]="'url(' + slide.bg + ')'">
-        <div class="lux-hero__overlay"></div>
-        <div class="lux-hero__content">
-          <h1 class="font-display">{{ slide.titleKey | t }}</h1>
-          <a routerLink="/marketplace" class="btn btn-fill lux-hero__cta">{{ 'lux.shopNow' | t }}</a>
-        </div>
-      </div>
+      <div class="lux-hero__layer" [class.active]="heroIndex() === i" [style.background]="slide.bg"></div>
     }
+    <div class="lux-hero__overlay"></div>
   </div>
-  <button type="button" class="lux-hero__nav lux-hero__nav--prev" (click)="prevSlide()" aria-label="Previous">‹</button>
-  <button type="button" class="lux-hero__nav lux-hero__nav--next" (click)="nextSlide()" aria-label="Next">›</button>
-  <div class="lux-hero__dots">
-    @for (slide of slides; track slide.id; let i = $index) {
-      <button type="button" [class.active]="heroIndex() === i" (click)="goSlide(i)" [attr.aria-label]="'Slide ' + (i + 1)"></button>
-    }
+
+  <div class="lux-hero__inner">
+    <div class="lux-hero__main">
+      <p class="lux-hero__eyebrow">{{ 'home.eyebrow' | t }}</p>
+      @for (slide of [slides[heroIndex()]]; track slide.id) {
+        <h1 class="lux-hero__title font-display">{{ slide.titleKey | t }}</h1>
+      }
+      <p class="lux-hero__slogan">{{ 'home.slogan' | t }}</p>
+
+      <form class="lux-search" role="search" (ngSubmit)="search()">
+        <svg class="lux-search__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          type="search"
+          name="q"
+          [(ngModel)]="query"
+          [placeholder]="'home.searchPh' | t"
+          [attr.aria-label]="'home.searchAria' | t"
+          autocomplete="off"
+        />
+        <select name="category" [(ngModel)]="selectedCategory" [attr.aria-label]="'home.category' | t">
+          <option value="">{{ 'home.allCats' | t }}</option>
+          @for (c of aiCategories; track c.id) {
+            <option [value]="c.id">{{ ('cat.' + c.id + '.label') | t }}</option>
+          }
+        </select>
+        <button type="submit" class="lux-search__btn">{{ 'home.search' | t }}</button>
+      </form>
+
+      <div class="lux-hero__quick">
+        <span class="lux-hero__quick-label">{{ 'home.quick' | t }}:</span>
+        @for (tag of quickTags; track tag) {
+          <button type="button" class="lux-tag" (click)="searchTag(tag)">{{ tag }}</button>
+        }
+      </div>
+
+      <div class="lux-hero__dots">
+        @for (slide of slides; track slide.id; let i = $index) {
+          <button
+            type="button"
+            [class.active]="heroIndex() === i"
+            (click)="goSlide(i)"
+            [attr.aria-label]="'Slide ' + (i + 1)"
+            [attr.aria-current]="heroIndex() === i ? 'true' : null"
+          ></button>
+        }
+      </div>
+    </div>
+
+    <nav class="lux-hero__side" [attr.aria-label]="'home.browseCats' | t">
+      @for (c of heroTiles(); track c.id) {
+        <a [routerLink]="c.hubPath" class="lux-hero__tile">
+          <span class="lux-hero__tile-icon" [style.background]="c.accent">
+            <app-category-icon [name]="c.id" size="md" />
+          </span>
+          <span class="lux-hero__tile-label">{{ ('cat.' + c.id + '.short') | t }}</span>
+          @if (c.count) {
+            <span class="lux-hero__tile-count">{{ 'home.shopListings' | t: { n: c.count } }}</span>
+          }
+        </a>
+      }
+    </nav>
   </div>
 </section>
 
 <!-- Promo strip -->
 <section class="lux-promo" aria-label="Promotions">
-  <div class="lux-promo__item">
-    <h3 class="font-display">{{ 'lux.promo1Title' | t }}</h3>
-    <p>{{ 'lux.promo1Desc' | t }}</p>
-  </div>
-  <div class="lux-promo__item lux-promo__item--accent">
-    <h3 class="font-display">{{ 'lux.promo2Title' | t }}</h3>
-    <p>{{ 'lux.promo2Desc' | t }}</p>
-  </div>
-  <div class="lux-promo__item">
-    <h3 class="font-display">{{ 'lux.promo3Title' | t }}</h3>
-    <p>{{ 'lux.promo3Desc' | t }}</p>
+  <div class="lux-promo__inner">
+    <div class="lux-promo__item">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" /><circle cx="7.5" cy="7.5" r="1.5" /></svg>
+      <div>
+        <h3>{{ 'lux.promo1Title' | t }}</h3>
+        <p>{{ 'lux.promo1Desc' | t }}</p>
+      </div>
+    </div>
+    <div class="lux-promo__item">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7l9 5 9-5-9-5Z" /><path d="m3 12 9 5 9-5" /><path d="m3 17 9 5 9-5" /></svg>
+      <div>
+        <h3>{{ 'lux.promo2Title' | t }}</h3>
+        <p>{{ 'lux.promo2Desc' | t }}</p>
+      </div>
+    </div>
+    <div class="lux-promo__item">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+      <div>
+        <h3>{{ 'lux.promo3Title' | t }}</h3>
+        <p>{{ 'lux.promo3Desc' | t }}</p>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- Category grid -->
 <section class="lux-cats page" [attr.aria-label]="'home.browseCats' | t">
+  <div class="lux-section__head">
+    <div>
+      <h2 class="section-title font-display">{{ 'home.browseCats' | t }}</h2>
+      <p class="lux-section__sub">{{ 'home.catsDesc' | t }}</p>
+    </div>
+    <a routerLink="/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
+  </div>
   <div class="lux-cats__grid">
-    @for (c of categoryIcons(); track c.id; let i = $index) {
-      <a [routerLink]="c.hubPath" class="lux-cat" [class.lux-cat--wide]="i === 0">
+    @for (c of categoryIcons(); track c.id) {
+      <a [routerLink]="c.hubPath" class="lux-cat" [style.background]="c.bg">
+        <span class="lux-cat__glow" [style.background]="c.accent" aria-hidden="true"></span>
         @if (c.isNew) {
           <span class="lux-cat__badge">{{ 'lux.footer.new' | t }}</span>
         }
-        <div class="lux-cat__img" [style.background]="c.bg">
-          <span class="lux-cat__glow" [style.background]="c.accent"></span>
-          <span class="lux-cat__icon-wrap">
-            <app-category-icon [name]="c.id" size="lg" />
-          </span>
-        </div>
-        <div class="lux-cat__info">
-          <span class="lux-cat__count">+{{ c.count }}</span>
-          <span class="lux-cat__label">{{ ('cat.' + c.id + '.short') | t }}</span>
-        </div>
+        <span class="lux-cat__icon-wrap">
+          <app-category-icon [name]="c.id" size="lg" />
+        </span>
+        <span class="lux-cat__label">{{ ('cat.' + c.id + '.short') | t }}</span>
+        @if (c.count) {
+          <span class="lux-cat__count">{{ 'home.shopListings' | t: { n: c.count } }}</span>
+        }
       </a>
     }
   </div>
 </section>
 
-<!-- Search bar -->
-<section class="lux-search-wrap page">
-  <form class="lux-search" (ngSubmit)="search()">
-    <input
-      type="search"
-      name="q"
-      [(ngModel)]="query"
-      [placeholder]="'home.searchPh' | t"
-      [attr.aria-label]="'home.searchAria' | t"
-      autocomplete="off"
-    />
-    <select name="category" [(ngModel)]="selectedCategory" [attr.aria-label]="'home.category' | t">
-      <option value="">{{ 'home.allCats' | t }}</option>
-      @for (c of aiCategories; track c.id) {
-        <option [value]="c.id">{{ ('cat.' + c.id + '.label') | t }}</option>
-      }
-    </select>
-    <button type="submit" class="btn btn-fill">{{ 'home.search' | t }}</button>
-  </form>
-  @if (recentTags().length) {
-    <div class="lux-tags">
-      @for (tag of recentTags(); track tag) {
-        <button type="button" class="lux-tag" (click)="searchTag(tag)">
-          {{ tag }}
-          <span (click)="dismissTag(tag, $event)">×</span>
-        </button>
-      }
-    </div>
-  }
-</section>
-
-<!-- Merchandising rails -->
+<!-- Merchandising rails: one scrollable row each -->
 @if (loadState() === 'loading') {
   <section class="page lux-section">
-    <div class="lux-grid" aria-busy="true">
+    <div class="lux-rail lux-rail--static" aria-busy="true" [attr.aria-label]="'home.loading' | t">
       @for (slot of skeletonSlots; track slot) {
         <div class="lux-skel">
           <div class="lux-skel__media"></div>
           <div class="lux-skel__line"></div>
+          <div class="lux-skel__line lux-skel__line--short"></div>
         </div>
       }
     </div>
   </section>
 } @else if (loadState() === 'error') {
   <section class="page lux-section">
-    <div class="lux-empty">
-      <p>{{ 'home.loadFail' | t }}</p>
-      <button type="button" class="btn btn-fill" (click)="loadCatalog()">{{ 'home.retry' | t }}</button>
+    <div class="lux-empty" role="alert">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 3v6h-6" /></svg>
+      <h3>{{ 'home.loadFail' | t }}</h3>
+      <p>{{ 'home.loadFailSub' | t }}</p>
+      <div class="lux-empty__actions">
+        <button type="button" class="btn btn-fill" (click)="loadCatalog()">{{ 'home.retry' | t }}</button>
+        <a routerLink="/marketplace" class="btn btn-outline">{{ 'footer.browse' | t }}</a>
+      </div>
     </div>
   </section>
 } @else if (!hasRails) {
   <section class="page lux-section">
     <div class="lux-empty">
-      <p>{{ 'home.empty' | t }}</p>
-      <a routerLink="/marketplace" class="btn btn-outline">{{ 'footer.browse' | t }}</a>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18l-2 13H5L3 7Z" /><path d="M8 7a4 4 0 0 1 8 0" /></svg>
+      <h3>{{ 'home.empty' | t }}</h3>
+      <p>{{ 'home.emptySub' | t: { brand: brand } }}</p>
+      <div class="lux-empty__actions">
+        <a routerLink="/marketplace" class="btn btn-outline">{{ 'footer.browse' | t }}</a>
+      </div>
     </div>
   </section>
 } @else {
-  @if (shops().length) {
-    <section class="page lux-section" [attr.aria-label]="'home.shopsTitle' | t">
-      <div class="lux-section__head">
-        <div>
-          <h2 class="section-title font-display">{{ 'home.shopsTitle' | t }}</h2>
-          <p class="lux-section__sub">{{ 'home.shopsDesc' | t }}</p>
-        </div>
-        <a routerLink="/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
-      </div>
-      <div class="lux-shops">
-        @for (shop of shops(); track shop.id) {
-          <a [routerLink]="['/store', shop.slug]" class="lux-shop">
-            <div class="lux-shop__cover" [style.background-image]="shop.coverUrl ? 'url(' + shop.coverUrl + ')' : null">
-              @if (shop.avatarUrl) {
-                <img class="lux-shop__avatar" [src]="shop.avatarUrl" [alt]="shop.name" width="56" height="56" />
-              } @else {
-                <span class="lux-shop__avatar lux-shop__avatar--letter">{{ shopInitial(shop) }}</span>
-              }
-            </div>
-            <div class="lux-shop__body">
-              <h3 class="lux-shop__name">
-                {{ shop.name }}
-                @if (shop.verified) {
-                  <span class="lux-shop__verified" [attr.title]="'home.shopVerified' | t">✓</span>
-                }
-              </h3>
-              <p class="lux-shop__meta">{{ 'home.shopListings' | t: { n: shop.productCount } }}</p>
-              <p class="lux-shop__rev">{{ 'home.shopRevenue' | t: { amount: shopRevenue(shop) } }}</p>
-            </div>
-          </a>
-        }
-      </div>
-    </section>
-  }
-
   @if (newArrivals().length) {
     <section class="page lux-section" [attr.aria-label]="'home.newTitle' | t">
       <div class="lux-section__head">
@@ -159,12 +172,71 @@
           <h2 class="section-title font-display">{{ 'home.newTitle' | t }}</h2>
           <p class="lux-section__sub">{{ 'home.newDesc' | t }}</p>
         </div>
-        <a routerLink="/marketplace" [queryParams]="{ sort: 'newest' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+        <div class="lux-section__tools">
+          @if (newArrivals().length > 4) {
+            <ng-container *ngTemplateOutlet="railNav; context: { $implicit: newRail }" />
+          }
+          <a routerLink="/marketplace" [queryParams]="{ sort: 'newest' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+        </div>
       </div>
-      <div class="lux-grid">
+      <div class="lux-rail" #newRail>
         @for (p of newArrivals(); track p.id; let i = $index) {
-          <app-product-card [product]="p" variant="luxury" [priority]="i < 4" />
+          <app-product-card [product]="p" variant="luxury" [compact]="true" [priority]="i < 4" />
         }
+      </div>
+    </section>
+  }
+
+  @if (shops().length) {
+    <section class="lux-band lux-section" [attr.aria-label]="'home.shopsTitle' | t">
+      <div class="page">
+        <div class="lux-section__head">
+          <div>
+            <h2 class="section-title font-display">{{ 'home.shopsTitle' | t }}</h2>
+            <p class="lux-section__sub">{{ 'home.shopsDesc' | t }}</p>
+          </div>
+          <div class="lux-section__tools">
+            @if (shops().length > 5) {
+              <ng-container *ngTemplateOutlet="railNav; context: { $implicit: shopRail }" />
+            }
+            <a routerLink="/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
+          </div>
+        </div>
+        <div class="lux-rail lux-rail--shops" #shopRail>
+          @for (shop of shops(); track shop.id; let i = $index) {
+            <a [routerLink]="['/store', shop.slug]" class="lux-shop">
+              <div
+                class="lux-shop__cover"
+                [style.background-image]="shop.coverUrl ? 'url(' + shop.coverUrl + '), ' + shopCoverFallback : null"
+              >
+                <span class="lux-shop__rank">#{{ i + 1 }}</span>
+                @if (shop.avatarUrl && !brokenAvatars().has(shop.id)) {
+                  <img
+                    class="lux-shop__avatar"
+                    [src]="shop.avatarUrl"
+                    [alt]="shop.name"
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    (error)="markAvatarBroken(shop.id)"
+                  />
+                } @else {
+                  <span class="lux-shop__avatar lux-shop__avatar--letter">{{ shopInitial(shop) }}</span>
+                }
+              </div>
+              <div class="lux-shop__body">
+                <h3 class="lux-shop__name">
+                  <span class="lux-shop__name-text">{{ shop.name }}</span>
+                  @if (shop.verified) {
+                    <span class="lux-shop__verified" [attr.title]="'home.shopVerified' | t">✓</span>
+                  }
+                </h3>
+                <p class="lux-shop__meta">{{ 'home.shopListings' | t: { n: shop.productCount } }}</p>
+                <p class="lux-shop__rev">{{ 'home.shopRevenue' | t: { amount: shopRevenue(shop) } }}</p>
+              </div>
+            </a>
+          }
+        </div>
       </div>
     </section>
   }
@@ -176,11 +248,16 @@
           <h2 class="section-title font-display">{{ 'home.promotedTitle' | t }}</h2>
           <p class="lux-section__sub">{{ 'home.promotedDesc' | t }}</p>
         </div>
-        <a routerLink="/marketplace" [queryParams]="{ sort: 'featured' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+        <div class="lux-section__tools">
+          @if (promoted().length > 4) {
+            <ng-container *ngTemplateOutlet="railNav; context: { $implicit: promotedRail }" />
+          }
+          <a routerLink="/marketplace" [queryParams]="{ sort: 'featured' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+        </div>
       </div>
-      <div class="lux-grid">
+      <div class="lux-rail" #promotedRail>
         @for (p of promoted(); track p.id) {
-          <app-product-card [product]="p" variant="luxury" />
+          <app-product-card [product]="p" variant="luxury" [compact]="true" />
         }
       </div>
     </section>
@@ -193,13 +270,27 @@
           <h2 class="section-title font-display">{{ 'home.bestTitle' | t }}</h2>
           <p class="lux-section__sub">{{ 'home.bestDesc' | t }}</p>
         </div>
-        <a routerLink="/marketplace" [queryParams]="{ sort: 'bestsellers' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+        <div class="lux-section__tools">
+          @if (bestsellers().length > 4) {
+            <ng-container *ngTemplateOutlet="railNav; context: { $implicit: bestRail }" />
+          }
+          <a routerLink="/marketplace" [queryParams]="{ sort: 'bestsellers' }" class="lux-more">{{ 'home.seeMore' | t }}</a>
+        </div>
       </div>
-      <div class="lux-grid">
-        @for (p of bestsellers(); track p.id) {
-          <app-product-card [product]="p" variant="luxury" />
+      <div class="lux-rail" #bestRail>
+        @for (p of bestsellers(); track p.id; let i = $index) {
+          <div class="lux-ranked" [attr.data-rank]="i + 1">
+            <app-product-card [product]="p" variant="luxury" [compact]="true" />
+          </div>
         }
       </div>
     </section>
   }
 }
+
+<ng-template #railNav let-rail>
+  <div class="lux-rail-nav">
+    <button type="button" (click)="scrollRail(rail, -1)" [attr.aria-label]="'home.prev' | t">‹</button>
+    <button type="button" (click)="scrollRail(rail, 1)" [attr.aria-label]="'home.next' | t">›</button>
+  </div>
+</ng-template>
