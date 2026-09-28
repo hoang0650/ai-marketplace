@@ -201,9 +201,12 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     return true;
   }
 
+  /** 4xx carry a user-facing reason (amount, auth); GPay/server failures get the generic message. */
   private gpayError(err: unknown): void {
     this.gpayBusy.set(false);
-    const message = (err as { error?: { message?: string } })?.error?.message;
+    const e = err as { status?: number; error?: { message?: string } } | null;
+    const status = Number(e?.status) || 0;
+    const message = status >= 400 && status < 500 ? e?.error?.message : '';
     this.setMsg(message || this.i18n.t('wallet.gpay.createFail'), true);
   }
 
@@ -232,7 +235,15 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setMsg('', false);
         this.pollGpayOrder(res.order.requestId);
       },
-      error: (err: unknown) => this.gpayError(err),
+      error: (err: unknown) => {
+        // VietQR down on GPay's side: fall back to the gateway instead of dead-ending.
+        if (Number((err as { status?: number })?.status) >= 500 && this.gpayPortalEnabled()) {
+          this.gpayBusy.set(false);
+          this.gpayCheckout();
+          return;
+        }
+        this.gpayError(err);
+      },
     });
   }
 
