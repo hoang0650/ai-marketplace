@@ -5,25 +5,122 @@ import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../../environments/environment';
 import { ShopProfileService } from './shop-profile.service';
 import { ProductService } from '../../services/api.services';
+import { TPipe } from '../../i18n/t.pipe';
+import { SellWorkspace, sellWorkspaceOf } from './sell-workspace';
 
 interface NavItem {
-  label: string;
-  path?: string;
+  labelKey: string;
+  path: string;
   exact?: boolean;
   badge?: boolean;
 }
 
 interface NavGroup {
-  title: string;
+  titleKey: string;
   key: string;
   collapsible?: boolean;
   items: NavItem[];
 }
 
+const SELLER_GROUPS: NavGroup[] = [
+  {
+    titleKey: 'sell.nav.overview',
+    key: 'overview',
+    items: [{ labelKey: 'sell.nav.overview', path: '/sell', exact: true }],
+  },
+  {
+    titleKey: 'sell.nav.setup',
+    key: 'setup',
+    collapsible: true,
+    items: [
+      { labelKey: 'sell.nav.kyc', path: '/sell/kyc' },
+      { labelKey: 'sell.nav.verification', path: '/sell/verification', badge: true },
+      { labelKey: 'sell.nav.profile', path: '/sell/profile', badge: true },
+      { labelKey: 'sell.nav.images', path: '/sell/images' },
+    ],
+  },
+  {
+    titleKey: 'sell.nav.sales',
+    key: 'sales',
+    collapsible: true,
+    items: [
+      { labelKey: 'sell.nav.products', path: '/sell/products' },
+      { labelKey: 'sell.nav.orders', path: '/sell/orders' },
+      { labelKey: 'sell.nav.messages', path: '/sell/messages' },
+      { labelKey: 'sell.nav.complaints', path: '/sell/complaints' },
+      { labelKey: 'sell.nav.coupons', path: '/sell/coupons' },
+    ],
+  },
+  {
+    titleKey: 'sell.nav.finance',
+    key: 'finance',
+    collapsible: true,
+    items: [
+      { labelKey: 'sell.nav.payment', path: '/sell/payment' },
+      { labelKey: 'sell.nav.withdraw', path: '/sell/withdraw' },
+      { labelKey: 'sell.nav.ledger', path: '/sell/ledger' },
+    ],
+  },
+  {
+    titleKey: 'sell.nav.dev',
+    key: 'dev',
+    collapsible: true,
+    items: [
+      { labelKey: 'sell.nav.apiDocs', path: '/sell/docs/api-usage' },
+      { labelKey: 'sell.nav.integrate', path: '/sell/integrate' },
+    ],
+  },
+];
+
+function partnerGroups(ws: Exclude<SellWorkspace, 'seller'>): NavGroup[] {
+  const work: NavItem[] =
+    ws === 'talent'
+      ? [
+          { labelKey: 'sell.nav.workProfile', path: '/work/manage/profile' },
+          { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
+        ]
+      : [
+          { labelKey: 'sell.nav.workBoard', path: '/work/manage' },
+          { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
+        ];
+  return [
+    {
+      titleKey: 'sell.nav.overview',
+      key: 'overview',
+      items: [{ labelKey: 'sell.nav.overview', path: '/sell', exact: true }],
+    },
+    {
+      titleKey: 'sell.nav.identity',
+      key: 'setup',
+      collapsible: true,
+      items: [{ labelKey: 'sell.nav.kyc', path: '/sell/kyc' }],
+    },
+    {
+      titleKey: 'sell.nav.work',
+      key: 'sales',
+      collapsible: true,
+      items: [
+        ...work,
+        { labelKey: 'sell.nav.messages', path: '/sell/messages' },
+        { labelKey: 'sell.nav.issues', path: '/sell/issues' },
+      ],
+    },
+    {
+      titleKey: 'sell.nav.finance',
+      key: 'finance',
+      collapsible: true,
+      items: [
+        { labelKey: 'sell.nav.withdraw', path: '/sell/withdraw' },
+        { labelKey: 'sell.nav.wallet', path: '/wallet' },
+      ],
+    },
+  ];
+}
+
 @Component({
   selector: 'app-sell-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe],
   templateUrl: './sell-shell.component.html',
   styleUrl: './sell-shell.component.scss',
 })
@@ -51,59 +148,16 @@ export class SellShellComponent {
     return name.slice(0, 2).toUpperCase();
   });
 
-  readonly groups: NavGroup[] = [
-    {
-      title: 'Tổng quan',
-      key: 'overview',
-      items: [{ label: 'Tổng quan', path: '/sell', exact: true }],
-    },
-    {
-      title: 'Thiết lập gian hàng',
-      key: 'setup',
-      collapsible: true,
-      items: [
-        { label: 'Xác minh Seller', path: '/sell/verification', badge: true },
-        { label: 'Hồ sơ gian hàng', path: '/sell/profile', badge: true },
-        { label: 'Hình ảnh', path: '/sell/images' },
-      ],
-    },
-    {
-      title: 'Bán hàng',
-      key: 'sales',
-      collapsible: true,
-      items: [
-        { label: 'Sản phẩm', path: '/sell/products' },
-        { label: 'Đơn hàng', path: '/sell/orders' },
-        { label: 'Tin nhắn', path: '/sell/messages' },
-        { label: 'Khiếu nại', path: '/sell/complaints' },
-        { label: 'Mã giảm giá', path: '/sell/coupons' },
-      ],
-    },
-    {
-      title: 'Tài chính',
-      key: 'finance',
-      collapsible: true,
-      items: [
-        { label: 'Thanh toán', path: '/sell/payment' },
-        { label: 'Rút tiền', path: '/sell/withdraw' },
-        { label: 'Sổ cái', path: '/sell/ledger' },
-      ],
-    },
-    {
-      title: 'Nhà phát triển',
-      key: 'dev',
-      collapsible: true,
-      items: [
-        { label: 'Docs API & token', path: '/sell/docs/api-usage' },
-        { label: 'Tích hợp', path: '/sell/integrate' },
-      ],
-    },
-  ];
+  readonly workspace = computed<SellWorkspace>(() => sellWorkspaceOf(this.auth.user()?.role));
+  readonly groups = computed<NavGroup[]>(() => {
+    const ws = this.workspace();
+    return ws === 'seller' ? SELLER_GROUPS : partnerGroups(ws);
+  });
 
   constructor() {
     this.shop.reload();
     const slug = this.auth.user()?.creatorSlug;
-    if (slug) {
+    if (slug && this.workspace() === 'seller') {
       this.productsApi.list({ creatorSlug: slug }).subscribe((items) => this.productCount.set(items.length));
     }
   }

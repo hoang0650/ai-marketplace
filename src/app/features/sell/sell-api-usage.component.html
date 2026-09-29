@@ -5,7 +5,7 @@
   <h1>{{ 'sellDocs.title' | t }}</h1>
   <p class="seller-docs__lede">{{ 'sellDocs.lede' | t: { brand } }}</p>
 
-  <nav class="seller-docs__toc" aria-label="Mục lục">
+  <nav class="seller-docs__toc" [attr.aria-label]="'sellx.apiUsage.toc' | t">
     @for (item of toc; track item.id) {
       <a [href]="'#' + item.id">{{ item.labelKey | t }}</a>
     }

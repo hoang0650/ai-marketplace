@@ -1,72 +1,121 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
+import { AuthService } from '../../services/auth.service';
+import { KycService } from '../../services/api.services';
+import { KycProfile } from '../../models/marketplace.models';
 import { environment } from '../../../environments/environment';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 import { ShopProfileService } from './shop-profile.service';
+import { SellWorkspace, sellWorkspaceOf } from './sell-workspace';
 
 @Component({
   selector: 'app-sell-overview',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TPipe],
   template: `
     <section class="ov">
-      @if (!shop.started()) {
+      @if (workspace() !== 'seller') {
+        <div class="ov-dash">
+          <p class="crumb">{{ ('sell.ws.' + workspace() + '.title') | t }} / {{ 'sell.nav.overview' | t }}</p>
+          <h1>{{ ('sell.ws.' + workspace() + '.heading') | t }}</h1>
+          <p class="muted">{{ 'sell.partner.lede' | t }}</p>
+
+          <div class="ov-kyc" [class.ok]="kyc()?.status === 'verified'">
+            <div>
+              <strong>{{ 'sell.partner.kycTitle' | t }}</strong>
+              <span>{{ ('kyc.status.' + (kyc()?.status || 'none')) | t }}</span>
+              @if (kyc()?.status === 'rejected' && kyc()?.rejectReason) {
+                <span class="reason">{{ kyc()?.rejectReason }}</span>
+              }
+            </div>
+            <a routerLink="/sell/kyc" class="btn-primary">
+              {{ (kyc()?.status === 'verified' ? 'sell.partner.kycView' : 'kyc.goVerify') | t }} ›
+            </a>
+          </div>
+
+          <div class="ov-cards">
+            <a routerLink="/work/manage" class="card">
+              <strong>{{ 'sell.nav.work' | t }}</strong>
+              <span>{{ ('sell.partner.workDesc.' + workspace()) | t }}</span>
+            </a>
+            <a routerLink="/work/manage/contracts" class="card">
+              <strong>{{ 'sell.nav.contracts' | t }}</strong>
+              <span>{{ 'sell.partner.contractsDesc' | t }}</span>
+            </a>
+            <a routerLink="/sell/messages" class="card">
+              <strong>{{ 'sell.nav.messages' | t }}</strong>
+              <span>{{ 'sell.partner.messagesDesc' | t }}</span>
+            </a>
+            <a routerLink="/sell/issues" class="card">
+              <strong>{{ 'sell.nav.issues' | t }}</strong>
+              <span>{{ 'sell.partner.issuesDesc' | t }}</span>
+            </a>
+            <a routerLink="/sell/withdraw" class="card">
+              <strong>{{ 'sell.nav.withdraw' | t }}</strong>
+              <span>{{ 'payout.rulesBody' | t }}</span>
+            </a>
+          </div>
+        </div>
+      } @else if (!shop.started()) {
         <div class="ov-hero">
           <span class="ov-hero__icon" aria-hidden="true">🏪</span>
-          <p class="ov-hero__eyebrow">Bắt đầu bán hàng trên {{ brand }}</p>
-          <h1>Tạo hồ sơ người bán</h1>
-          <p class="ov-hero__desc">
-            Thiết lập gian hàng đáng tin cậy trước khi đăng sản phẩm đầu tiên. Hoàn tất hồ sơ để mở bán,
-            nhận đơn và rút doanh thu.
-          </p>
+          <p class="ov-hero__eyebrow">{{ 'sell.ov.eyebrow' | t: { brand } }}</p>
+          <h1>{{ 'sell.ov.title' | t }}</h1>
+          <p class="ov-hero__desc">{{ 'sell.ov.desc' | t }}</p>
           <div class="ov-hero__actions">
-            <button type="button" class="btn-primary" (click)="start()">Bắt đầu hồ sơ ›</button>
-            <a routerLink="/marketplace" class="btn-ghost">Xem quy định người bán</a>
+            <button type="button" class="btn-primary" (click)="start()">{{ 'sell.ov.start' | t }} ›</button>
+            <a routerLink="/legal/chinh-sach-nguoi-ban" class="btn-ghost">{{ 'sell.ov.rules' | t }}</a>
           </div>
           <div class="ov-steps">
             <article>
               <span>1</span>
-              <h3>Tạo gian hàng</h3>
-              <p>Thêm tên shop, đường dẫn và thông tin liên hệ.</p>
+              <h3>{{ 'sell.ov.step1' | t }}</h3>
+              <p>{{ 'sell.ov.step1Desc' | t }}</p>
             </article>
             <article>
               <span>2</span>
-              <h3>Gửi xét duyệt</h3>
-              <p>Hoàn tất thông tin bắt buộc và theo dõi trạng thái duyệt.</p>
+              <h3>{{ 'sell.ov.step2' | t }}</h3>
+              <p>{{ 'sell.ov.step2Desc' | t }}</p>
             </article>
             <article>
               <span>3</span>
-              <h3>Đăng sản phẩm đầu tiên</h3>
-              <p>Thiết lập giá, giao hàng và tồn kho để bắt đầu bán.</p>
+              <h3>{{ 'sell.ov.step3' | t }}</h3>
+              <p>{{ 'sell.ov.step3Desc' | t }}</p>
             </article>
           </div>
-          <p class="ov-note">✓ Gửi hồ sơ không đồng nghĩa với việc đăng sản phẩm tự động.</p>
+          <p class="ov-note">✓ {{ 'sell.ov.note' | t }}</p>
         </div>
       } @else {
         <div class="ov-dash">
-          <p class="crumb">Kênh bán hàng / Tổng quan</p>
-          <h1>Tổng quan gian hàng</h1>
-          <p class="muted">Theo dõi trạng thái shop và lối tắt quản lý.</p>
+          <p class="crumb">{{ 'sell.ws.seller.title' | t }} / {{ 'sell.nav.overview' | t }}</p>
+          <h1>{{ 'sell.ov.dashTitle' | t }}</h1>
+          <p class="muted">{{ 'sell.ov.dashLede' | t }}</p>
           <div class="ov-cards">
             <a routerLink="/sell/profile" class="card">
-              <strong>Hồ sơ gian hàng</strong>
-              <span>Trạng thái: {{ shop.statusLabel() }}</span>
+              <strong>{{ 'sell.nav.profile' | t }}</strong>
+              <span>{{ 'sell.ov.statusLine' | t: { status: shop.statusLabel() } }}</span>
+            </a>
+            <a routerLink="/sell/kyc" class="card">
+              <strong>{{ 'sell.nav.kyc' | t }}</strong>
+              <span>{{ ('kyc.status.' + (kyc()?.status || 'none')) | t }}</span>
             </a>
             <a routerLink="/sell/products" class="card">
-              <strong>Sản phẩm</strong>
-              <span>Quản lý catalog bán hàng</span>
+              <strong>{{ 'sell.nav.products' | t }}</strong>
+              <span>{{ 'sell.ov.productsDesc' | t }}</span>
             </a>
             <a routerLink="/sell/orders" class="card">
-              <strong>Đơn hàng</strong>
-              <span>Theo dõi đơn mua gần đây</span>
+              <strong>{{ 'sell.nav.orders' | t }}</strong>
+              <span>{{ 'sell.ov.ordersDesc' | t }}</span>
             </a>
             <a routerLink="/sell/docs/api-usage" class="card">
-              <strong>Docs API & token</strong>
-              <span>Hướng dẫn buyer đếm token qua Gateway</span>
+              <strong>{{ 'sell.nav.apiDocs' | t }}</strong>
+              <span>{{ 'sell.ov.apiDocsDesc' | t }}</span>
             </a>
             <a routerLink="/sell/payment" class="card">
-              <strong>Thanh toán</strong>
-              <span>Thiết lập nhận tiền</span>
+              <strong>{{ 'sell.nav.payment' | t }}</strong>
+              <span>{{ 'sell.ov.paymentDesc' | t }}</span>
             </a>
           </div>
         </div>
@@ -219,7 +268,37 @@ import { ShopProfileService } from './shop-profile.service';
       color: #777;
       font-size: 0.85rem;
     }
+    .ov-kyc {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.2rem;
+      padding: 1rem 1.1rem;
+      border-radius: 14px;
+      border: 1px solid #f0d78c;
+      background: #fff8e6;
+    }
+    .ov-kyc.ok {
+      border-color: #bfe5cc;
+      background: #eefaf2;
+    }
+    .ov-kyc div {
+      display: grid;
+      gap: 0.2rem;
+    }
+    .ov-kyc span {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .ov-kyc .reason {
+      color: #b42318;
+    }
     @media (max-width: 720px) {
+      .ov-kyc {
+        flex-direction: column;
+        align-items: flex-start;
+      }
       .ov-steps,
       .ov-cards {
         grid-template-columns: 1fr;
@@ -232,10 +311,17 @@ export class SellOverviewComponent {
   readonly brand = environment.brandName;
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
+  private readonly auth = inject(AuthService);
+  private readonly i18n = inject(I18nService);
+  private readonly kycApi = inject(KycService);
+
+  readonly workspace = computed<SellWorkspace>(() => sellWorkspaceOf(this.auth.user()?.role));
+  readonly kyc = signal<KycProfile | null>(null);
 
   constructor() {
-    this.seo.set({ title: 'Kênh bán hàng' });
+    this.seo.set({ title: this.i18n.t(`sell.ws.${this.workspace()}.title`) });
     this.shop.reload();
+    this.kycApi.me().subscribe({ next: (k) => this.kyc.set(k), error: () => undefined });
   }
 
   start(): void {

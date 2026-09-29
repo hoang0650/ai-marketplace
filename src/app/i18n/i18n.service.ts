@@ -21,6 +21,23 @@ export class I18nService {
     return text;
   }
 
+  /** Title/body of a notification in the current language; falls back to the stored text. */
+  notif(n: { title: string; body: string; key?: string; params?: Record<string, string | number> }): {
+    title: string;
+    body: string;
+  } {
+    const base = n.key ? `notify.${n.key}` : '';
+    if (!base || !MESSAGES.vi[`${base}.title`]) return { title: n.title, body: n.body };
+    const params: Record<string, string | number> = { ...(n.params || {}) };
+    for (const [field, prefix] of [['kind', 'notify.kind'], ['decision', 'notify.decision'], ['ownership', 'notify.ownership']]) {
+      const v = params[field];
+      if (v != null && MESSAGES.vi[`${prefix}.${v}`]) params[field] = this.t(`${prefix}.${v}`);
+    }
+    const body = this.t(`${base}.body`, params).trim();
+    const note = String(params['note'] ?? '').trim();
+    return { title: this.t(`${base}.title`, params), body: note ? `${body} ${note}` : body };
+  }
+
   catLabel(id: string): string {
     if (id === 'openrouter' || id === 'featherless' || id === 'runpod-public') {
       return this.t('cat.inference.label');

@@ -233,10 +233,11 @@
                 </div>
                 <ul class="noti-menu__list">
                   @for (n of visibleNotifs(); track n.id) {
+                    @let text = i18n.notif(n);
                     <li [class.unread]="!n.read">
                       <a [routerLink]="n.href || '/notifications'" (click)="closeNoti()">
-                        <p class="noti-menu__title">{{ n.title }}</p>
-                        <p class="noti-menu__body">{{ n.body }}</p>
+                        <p class="noti-menu__title">{{ text.title }}</p>
+                        <p class="noti-menu__body">{{ text.body }}</p>
                       </a>
                     </li>
                   } @empty {
@@ -269,6 +270,8 @@
                   }
                   @if (auth.isSeller()) {
                     <li><a routerLink="/sell" (click)="closeUserMenu()">{{ 'nav.shop' | t }}</a></li>
+                  } @else if (auth.isTalent() || auth.isFreelancer() || auth.isEmployer()) {
+                    <li><a routerLink="/sell" (click)="closeUserMenu()">{{ ('sell.ws.' + auth.user()?.role + '.title') | t }}</a></li>
                   }
                   @if (auth.isTalent()) {
                     <li><a routerLink="/work/talents" (click)="closeUserMenu()">{{ 'signup.role.talent' | t }}</a></li>

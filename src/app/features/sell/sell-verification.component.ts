@@ -5,82 +5,84 @@ import { RouterLink } from '@angular/router';
 import { SellerService, LegalService } from '../../services/api.services';
 import { SellerProfile, LegalDocumentMeta } from '../../models/marketplace.models';
 import { SeoService } from '../../services/seo.service';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-sell-verification',
   standalone: true,
-  imports: [FormsModule, NgIf, RouterLink],
+  imports: [FormsModule, NgIf, RouterLink, TPipe],
   template: `
     <div class="verify">
-      <h1>Xác minh Seller (sàn trung gian)</h1>
-      <p class="verify__lead">
-        Để đăng bán bên thứ ba trên AI Markets, bạn phải hoàn tất hồ sơ pháp lý, chấp thuận Thỏa thuận
-        Seller và được sàn phê duyệt. RunPod / OpenRouter chỉ là <strong>Provider hạ tầng</strong>, không
-        phải Seller.
+      <h1>{{ 'sell.verify.title' | t }}</h1>
+      <p class="verify__lead">{{ 'sell.verify.lead' | t }}</p>
+      <p class="verify__kyc">
+        {{ 'sell.verify.kycHint' | t }}
+        <a routerLink="/sell/kyc">{{ 'kyc.goVerify' | t }} ›</a>
       </p>
 
       <div class="verify__status" *ngIf="profile">
         <p>
-          Trạng thái:
-          <strong>{{ profile.verificationStatus }}</strong>
-          · Có thể publish: {{ profile.canPublish ? 'Có' : 'Chưa' }}
+          {{ 'sell.verify.status' | t }}:
+          <strong>{{ statusText(profile.verificationStatus) }}</strong>
+          · {{ 'sell.verify.canPublish' | t }}: {{ (profile.canPublish ? 'sell.verify.yes' : 'sell.verify.notYet') | t }}
         </p>
-        <p *ngIf="profile.statusReason">Ghi chú: {{ profile.statusReason }}</p>
+        <p *ngIf="profile.statusReason">{{ 'sell.verify.note' | t }}: {{ profile.statusReason }}</p>
       </div>
 
       <form class="verify__form" (ngSubmit)="submit()">
         <label>
-          Loại Seller
+          {{ 'sell.verify.sellerType' | t }}
           <select [(ngModel)]="form.sellerType" name="sellerType">
-            <option value="individual">Cá nhân</option>
-            <option value="household_business">Hộ kinh doanh</option>
-            <option value="enterprise">Doanh nghiệp</option>
-            <option value="organization">Tổ chức</option>
+            <option value="individual">{{ 'sell.verify.type.individual' | t }}</option>
+            <option value="household_business">{{ 'sell.verify.type.household_business' | t }}</option>
+            <option value="enterprise">{{ 'sell.verify.type.enterprise' | t }}</option>
+            <option value="organization">{{ 'sell.verify.type.organization' | t }}</option>
           </select>
         </label>
         <label>
-          Tên pháp lý
+          {{ 'sell.verify.legalName' | t }}
           <input [(ngModel)]="form.legalName" name="legalName" required />
         </label>
         <label>
-          Tên hiển thị
+          {{ 'sell.verify.displayName' | t }}
           <input [(ngModel)]="form.displayName" name="displayName" required />
         </label>
         <label>
-          Mã số thuế (nếu có)
+          {{ 'sell.verify.taxCode' | t }}
           <input [(ngModel)]="form.taxCode" name="taxCode" />
         </label>
         <label>
-          Đăng ký kinh doanh (nếu có)
+          {{ 'sell.verify.brn' | t }}
           <input [(ngModel)]="form.businessRegistrationNumber" name="brn" />
         </label>
         <label>
-          Địa chỉ kinh doanh
+          {{ 'sell.verify.address' | t }}
           <input [(ngModel)]="form.businessAddress" name="addr" />
         </label>
         <label>
-          Email liên hệ
+          {{ 'sell.verify.email' | t }}
           <input [(ngModel)]="form.contactEmail" name="email" type="email" />
         </label>
         <label>
-          Số điện thoại
+          {{ 'sell.verify.phone' | t }}
           <input [(ngModel)]="form.contactPhone" name="phone" />
         </label>
-        <button type="submit" [disabled]="saving">Gửi hồ sơ xác minh</button>
+        <button type="submit" [disabled]="saving">{{ 'sell.verify.submit' | t }}</button>
       </form>
 
       <section class="verify__agreement" *ngIf="agreement">
         <h2>{{ agreement.title }} (v{{ agreement.version }})</h2>
         <pre>{{ agreement.content }}</pre>
         <button type="button" (click)="acceptAgreement()" [disabled]="saving">
-          Tôi đã đọc và chấp thuận Thỏa thuận Seller
+          {{ 'sell.verify.accept' | t }}
         </button>
       </section>
 
       <p class="verify__msg" *ngIf="message">{{ message }}</p>
-      <p><a routerLink="/legal/chinh-sach-nguoi-ban">Chính sách người bán</a> ·
-        <a routerLink="/legal/quy-che-hoat-dong-san-tmdt">Quy chế sàn</a> ·
-        <a routerLink="/legal/mau-hop-dong-cung-cap-dich-vu-nguoi-ban">Thỏa thuận Seller</a></p>
+      <p><a routerLink="/legal/chinh-sach-nguoi-ban">{{ 'sell.verify.sellerPolicy' | t }}</a> ·
+        <a routerLink="/legal/quy-che-hoat-dong-san-tmdt">{{ 'sell.verify.rules' | t }}</a> ·
+        <a routerLink="/legal/mau-hop-dong-cung-cap-dich-vu-nguoi-ban">{{ 'sell.verify.agreement' | t }}</a></p>
     </div>
   `,
   styles: [
@@ -88,6 +90,17 @@ import { SeoService } from '../../services/seo.service';
       .verify {
         max-width: 40rem;
         padding: 0.5rem 0 2rem;
+      }
+      .verify__kyc {
+        padding: 0.75rem 0.9rem;
+        border-radius: 10px;
+        background: #fff8e6;
+        border: 1px solid #f0d78c;
+        font-size: 0.9rem;
+      }
+      .verify__kyc a {
+        font-weight: 800;
+        color: inherit;
       }
       .verify__lead,
       .verify__status {
@@ -146,6 +159,7 @@ export class SellVerificationComponent implements OnInit {
   private readonly sellers = inject(SellerService);
   private readonly legal = inject(LegalService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
 
   profile: SellerProfile | null = null;
   agreement: LegalDocumentMeta | null = null;
@@ -163,10 +177,16 @@ export class SellVerificationComponent implements OnInit {
     contactPhone: '',
   };
 
+  statusText(status: string): string {
+    const key = `sell.verify.st.${status}`;
+    const text = this.i18n.t(key);
+    return text === key ? status : text;
+  }
+
   ngOnInit(): void {
     this.seo.set({
-      title: 'Xác minh Seller',
-      description: 'Onboarding Seller cho sàn TMĐT trung gian AI Markets.',
+      title: this.i18n.t('sell.nav.verification'),
+      description: this.i18n.t('sell.verify.seoDesc'),
     });
     this.sellers.me().subscribe((p) => {
       this.profile = p;
@@ -194,11 +214,11 @@ export class SellVerificationComponent implements OnInit {
     this.sellers.apply(this.form).subscribe({
       next: (p) => {
         this.profile = p;
-        this.message = 'Đã gửi hồ sơ. Chờ admin phê duyệt (VERIFIED).';
+        this.message = this.i18n.t('sell.verify.sent');
         this.saving = false;
       },
       error: (err) => {
-        this.message = err?.error?.message || 'Gửi hồ sơ thất bại';
+        this.message = err?.error?.message || this.i18n.t('sell.verify.sendFail');
         this.saving = false;
       },
     });
@@ -209,11 +229,11 @@ export class SellVerificationComponent implements OnInit {
     this.sellers.acceptAgreement().subscribe({
       next: (p) => {
         this.profile = p;
-        this.message = 'Đã chấp thuận Thỏa thuận Seller.';
+        this.message = this.i18n.t('sell.verify.accepted');
         this.saving = false;
       },
       error: (err) => {
-        this.message = err?.error?.message || 'Chấp thuận thất bại';
+        this.message = err?.error?.message || this.i18n.t('sell.verify.acceptFail');
         this.saving = false;
       },
     });

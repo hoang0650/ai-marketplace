@@ -20,13 +20,15 @@ export class SellApiUsageDocsComponent implements OnInit {
   readonly brand = environment.brandName;
   readonly apiBase = environment.apiUrl.replace(/\/v1\/?$/, '/v1');
 
-  readonly flowDiagram = `Buyer (JWT hoặc mk_live_ key)
+  get flowDiagram(): string {
+    return `${this.i18n.t('sellx.apiUsage.flowBuyer')}
   → POST /v1/chat/completions
-  → AI Markets API (meter + ví)
+  → ${this.i18n.t('sellx.apiUsage.flowApi')}
   → AI Markets AI /v1/infer
   → Provider (Featherless, OpenRouter, RunPod…)
   ← usage { input_tokens, output_tokens }
   → UsageEvent + UsageStat + WalletTx`;
+  }
 
   readonly sampleResponse = `{
   "usage": {

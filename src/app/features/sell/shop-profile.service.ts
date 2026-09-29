@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 export type ShopStatus = 'not_started' | 'draft' | 'pending' | 'active';
 
@@ -46,17 +47,12 @@ const DEFAULT: ShopProfile = {
 export class ShopProfileService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly auth = inject(AuthService);
+  private readonly i18n = inject(I18nService);
   private readonly profileSignal = signal<ShopProfile>({ ...DEFAULT });
 
   readonly profile = this.profileSignal.asReadonly();
   readonly started = computed(() => this.profileSignal().status !== 'not_started');
-  readonly statusLabel = computed(() => {
-    const s = this.profileSignal().status;
-    if (s === 'draft') return 'nháp';
-    if (s === 'pending') return 'chờ duyệt';
-    if (s === 'active') return 'đang hoạt động';
-    return 'chưa bắt đầu';
-  });
+  readonly statusLabel = computed(() => this.i18n.t(`sell.status.${this.profileSignal().status}`));
 
   constructor() {
     this.reload();

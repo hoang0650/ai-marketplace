@@ -6,64 +6,66 @@ import { CouponService, ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { Coupon, Product } from '../../models/marketplace.models';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-sell-coupons',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, DecimalPipe],
+  imports: [FormsModule, RouterLink, DatePipe, DecimalPipe, TPipe],
   template: `
     <section>
-      <p class="crumb">Bán hàng / Mã giảm giá</p>
-      <h1>Voucher & giảm giá</h1>
+      <p class="crumb">{{ 'sellx.coupons.crumb' | t }}</p>
+      <h1>{{ 'sellx.coupons.title' | t }}</h1>
       <p class="lead">
-        Tạo mã cho toàn shop hoặc một sản phẩm. Giảm trừ vào đơn trước phí nền tảng — seller chịu phần giảm.
+        {{ 'sellx.coupons.lead' | t }}
       </p>
 
       <form class="card form" (ngSubmit)="create()">
-        <h2>Tạo mã mới</h2>
+        <h2>{{ 'sellx.coupons.newTitle' | t }}</h2>
         <div class="grid">
           <label>
-            Mã
+            {{ 'sellx.coupons.code' | t }}
             <input class="in" name="code" [(ngModel)]="draft.code" required maxlength="24" placeholder="SALE20" />
           </label>
           <label>
-            Loại
+            {{ 'sellx.coupons.type' | t }}
             <select class="in" name="type" [(ngModel)]="draft.type">
-              <option value="percent">Phần trăm (%)</option>
-              <option value="amount">Số tiền (USD)</option>
+              <option value="percent">{{ 'sellx.coupons.typePercent' | t }}</option>
+              <option value="amount">{{ 'sellx.coupons.typeAmount' | t }}</option>
             </select>
           </label>
           <label>
-            Mức giảm
+            {{ 'sellx.coupons.value' | t }}
             <input class="in" type="number" min="0.01" step="0.01" name="value" [(ngModel)]="draft.value" required />
           </label>
           <label>
-            Áp dụng
+            {{ 'sellx.coupons.appliesTo' | t }}
             <select class="in" name="productId" [(ngModel)]="draft.productId">
-              <option value="">Toàn bộ sản phẩm của shop</option>
+              <option value="">{{ 'sellx.coupons.allProducts' | t }}</option>
               @for (p of products(); track p.id) {
                 <option [value]="p.id">{{ p.name }}</option>
               }
             </select>
           </label>
           <label>
-            Đơn tối thiểu (USD)
+            {{ 'sellx.coupons.minSubtotal' | t }}
             <input class="in" type="number" min="0" step="0.01" name="minSubtotal" [(ngModel)]="draft.minSubtotal" />
           </label>
           <label>
-            Giảm tối đa (USD, % )
+            {{ 'sellx.coupons.maxDiscount' | t }}
             <input class="in" type="number" min="0" step="0.01" name="maxDiscount" [(ngModel)]="draft.maxDiscount" />
           </label>
           <label>
-            Lượt dùng tối đa (0 = không giới hạn)
+            {{ 'sellx.coupons.maxUses' | t }}
             <input class="in" type="number" min="0" step="1" name="maxUses" [(ngModel)]="draft.maxUses" />
           </label>
           <label>
-            Hết hạn
+            {{ 'sellx.coupons.endsAt' | t }}
             <input class="in" type="date" name="endsAt" [(ngModel)]="draft.endsAt" />
           </label>
         </div>
-        <button type="submit" class="btn" [disabled]="saving()">Tạo mã</button>
+        <button type="submit" class="btn" [disabled]="saving()">{{ 'sellx.coupons.create' | t }}</button>
         @if (msg()) {
           <p class="msg" [class.err]="isErr()">{{ msg() }}</p>
         }
@@ -76,26 +78,26 @@ import { Coupon, Product } from '../../models/marketplace.models';
               <p class="code">{{ c.code }}</p>
               <p class="meta">
                 {{ c.type === 'percent' ? (c.value | number: '1.0-0') + '%' : '$' + (c.value | number: '1.2-2') }}
-                · {{ c.usedCount | number }} lượt
+                · {{ c.usedCount | number }} {{ 'sellx.coupons.usesUnit' | t }}
                 @if (c.maxUses) {
                   / {{ c.maxUses | number }}
                 }
                 @if (c.endsAt) {
-                  · hết {{ c.endsAt | date: 'dd/MM/yyyy' }}
+                  · {{ 'sellx.coupons.expires' | t }} {{ c.endsAt | date: 'dd/MM/yyyy' }}
                 }
-                · {{ c.productIds.length ? 'một sản phẩm' : 'toàn shop' }}
+                · {{ (c.productIds.length ? 'sellx.coupons.scopeProduct' : 'sellx.coupons.scopeShop') | t }}
               </p>
             </div>
             <div class="acts">
-              <span class="pill" [class.off]="!c.active">{{ c.active ? 'Đang chạy' : 'Tắt' }}</span>
-              <button type="button" class="ghost" (click)="toggle(c)">{{ c.active ? 'Tắt' : 'Bật' }}</button>
+              <span class="pill" [class.off]="!c.active">{{ (c.active ? 'sellx.coupons.running' : 'sellx.coupons.off') | t }}</span>
+              <button type="button" class="ghost" (click)="toggle(c)">{{ (c.active ? 'sellx.coupons.turnOff' : 'sellx.coupons.turnOn') | t }}</button>
             </div>
           </article>
         } @empty {
-          <div class="card empty">Chưa có mã. Tạo mã đầu tiên ở form trên.</div>
+          <div class="card empty">{{ 'sellx.coupons.empty' | t }}</div>
         }
       </div>
-      <a routerLink="/sell/products" class="link">Quản lý sản phẩm ›</a>
+      <a routerLink="/sell/products" class="link">{{ 'sellx.coupons.manageProducts' | t }}</a>
     </section>
   `,
   styles: `
@@ -130,6 +132,7 @@ export class SellCouponsComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly auth = inject(AuthService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
 
   readonly coupons = signal<Coupon[]>([]);
   readonly products = signal<Product[]>([]);
@@ -149,7 +152,7 @@ export class SellCouponsComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Mã giảm giá' });
+    this.seo.set({ title: this.i18n.t('sellx.coupons.seoTitle') });
     this.reload();
     const slug = this.auth.user()?.creatorSlug;
     if (slug) {
@@ -162,7 +165,7 @@ export class SellCouponsComponent implements OnInit {
       next: (rows) => this.coupons.set(rows),
       error: (err) => {
         this.isErr.set(true);
-        this.msg.set(err?.error?.message || 'Không tải được mã giảm giá');
+        this.msg.set(err?.error?.message || this.i18n.t('sellx.coupons.errLoad'));
       },
     });
   }
@@ -188,12 +191,12 @@ export class SellCouponsComponent implements OnInit {
           this.saving.set(false);
           this.coupons.update((list) => [row, ...list]);
           this.draft.code = '';
-          this.msg.set(`Đã tạo mã ${row.code}`);
+          this.msg.set(this.i18n.t('sellx.coupons.created', { code: row.code }));
         },
         error: (err) => {
           this.saving.set(false);
           this.isErr.set(true);
-          this.msg.set(err?.error?.message || 'Không tạo được mã');
+          this.msg.set(err?.error?.message || this.i18n.t('sellx.coupons.errCreate'));
         },
       });
   }
@@ -204,7 +207,7 @@ export class SellCouponsComponent implements OnInit {
       next: (row) => this.coupons.update((list) => list.map((x) => (x.id === row.id ? row : x))),
       error: (err) => {
         this.isErr.set(true);
-        this.msg.set(err?.error?.message || 'Không cập nhật được mã');
+        this.msg.set(err?.error?.message || this.i18n.t('sellx.coupons.errUpdate'));
       },
     });
   }

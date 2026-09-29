@@ -36,7 +36,7 @@
       <div class="field">
         <span class="field-label">{{ 'sellCompute.field.kind' | t }}</span>
         <div class="segmented">
-          <button type="button" [class.active]="kind === 'game'" (click)="kind = 'game'">Game</button>
+          <button type="button" [class.active]="kind === 'game'" (click)="kind = 'game'">{{ 'sellx.integrate.kindGame' | t }}</button>
           <button type="button" [class.active]="kind === 'compute'" (click)="kind = 'compute'">GPU</button>
         </div>
       </div>
@@ -107,7 +107,7 @@
 
       <div class="field">
         <label class="field-label" for="sc-iframe">{{ 'sellCompute.field.iframeUrl' | t }}</label>
-        <input id="sc-iframe" class="input" type="url" [(ngModel)]="iframeUrl" name="iframeUrl" placeholder="Optional embed URL" />
+        <input id="sc-iframe" class="input" type="url" [(ngModel)]="iframeUrl" name="iframeUrl" [placeholder]="'sellx.integrate.iframePh' | t" />
       </div>
       <div class="field">
         <label class="field-label" for="sc-health">{{ 'sellCompute.field.healthUrl' | t }}</label>

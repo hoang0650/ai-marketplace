@@ -4,19 +4,22 @@ import { RouterLink } from '@angular/router';
 import { DashboardService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { NotificationItem } from '../../models/marketplace.models';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 type NotiFilter = 'all' | 'unread';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, TPipe],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.scss',
 })
 export class NotificationsComponent implements OnInit {
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
+  readonly i18n = inject(I18nService);
 
   readonly items = signal<NotificationItem[]>([]);
   readonly filter = signal<NotiFilter>('all');
@@ -29,7 +32,7 @@ export class NotificationsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Thông báo' });
+    this.seo.set({ title: this.i18n.t('nav.notifications') });
     this.reload();
   }
 

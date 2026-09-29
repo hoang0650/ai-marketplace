@@ -122,7 +122,7 @@ Stop → bill usage (wallet)`;
 
   pingNode(id: string): void {
     this.computeApi.pingNode(id).subscribe({
-      next: (r) => this.msg.set(r.ok ? `Ping OK (${r.via})` : `Ping failed (${r.via})`),
+      next: (r) => this.msg.set(this.i18n.t(r.ok ? 'sellx.integrate.pingOk' : 'sellx.integrate.pingFailed', { via: r.via ?? '' })),
       error: () => this.err.set(this.i18n.t('sellCompute.err.ping')),
     });
   }

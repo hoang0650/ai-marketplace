@@ -161,6 +161,17 @@ export const routes: Routes = [
             (m) => m.SellComputeIntegrateComponent,
           ),
       },
+      {
+        path: 'kyc',
+        loadComponent: () =>
+          import('./features/settings/settings-kyc.component').then((m) => m.SettingsKycComponent),
+      },
+      {
+        path: 'issues',
+        data: { inbox: 'work' },
+        loadComponent: () =>
+          import('./features/complaints/complaint-list.component').then((m) => m.ComplaintListComponent),
+      },
     ],
   },
   {

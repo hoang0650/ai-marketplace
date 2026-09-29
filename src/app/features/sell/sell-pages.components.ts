@@ -18,15 +18,16 @@ import {
 import { categoryLabel, sellerWorkspaceKind } from '../../models/categories';
 import { ShopProfileService } from './shop-profile.service';
 import { TPipe } from '../../i18n/t.pipe';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
   selector: 'app-sell-images',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TPipe],
   template: `
     <section class="si">
-      <p class="crumb">Kênh bán hàng · {{ shop.statusLabel() }} · Hình ảnh</p>
-      <h1>Hình ảnh gian hàng</h1>
+      <p class="crumb">{{ 'sell.ws.seller.title' | t }} · {{ shop.statusLabel() }} · {{ 'sell.nav.images' | t }}</p>
+      <h1>{{ 'sell.img.title' | t }}</h1>
       <div class="si-grid">
         <div class="si-main">
           <div class="card row">
@@ -36,55 +37,55 @@ import { TPipe } from '../../i18n/t.pipe';
                   <img [src]="logoUrl" alt="Logo preview" />
                 } @else {
                   <span>🏪</span>
-                  <p>Xem trước logo</p>
+                  <p>{{ 'sell.img.logoPreview' | t }}</p>
                 }
               </div>
               <label class="btn">
-                Tải logo
+                {{ 'sell.img.uploadLogo' | t }}
                 <input type="file" accept="image/*" hidden (change)="onLogo($event)" />
               </label>
-              <input class="url" [(ngModel)]="logoUrl" name="logoUrl" placeholder="Hoặc dán URL logo" />
+              <input class="url" [(ngModel)]="logoUrl" name="logoUrl" [placeholder]="'sell.img.logoUrl' | t" />
             </div>
             <div class="upload grow">
               <div class="upload__box upload__box--cover">
                 @if (coverUrl) {
                   <img [src]="coverUrl" alt="Cover preview" />
                 } @else {
-                  <p>Xem trước ảnh bìa</p>
+                  <p>{{ 'sell.img.coverPreview' | t }}</p>
                 }
               </div>
               <label class="btn">
-                Tải ảnh bìa
+                {{ 'sell.img.uploadCover' | t }}
                 <input type="file" accept="image/*" hidden (change)="onCover($event)" />
               </label>
-              <input class="url" [(ngModel)]="coverUrl" name="coverUrl" placeholder="Hoặc dán URL ảnh bìa" />
+              <input class="url" [(ngModel)]="coverUrl" name="coverUrl" [placeholder]="'sell.img.coverUrl' | t" />
             </div>
           </div>
-          <button type="button" class="save" (click)="save()">Lưu hình ảnh vào hồ sơ</button>
+          <button type="button" class="save" (click)="save()">{{ 'sell.img.save' | t }}</button>
           @if (msg()) {
             <p class="ok">{{ msg() }}</p>
           }
         </div>
         <aside class="card">
-          <h2>Xem trước cách dùng</h2>
+          <h2>{{ 'sell.img.usage' | t }}</h2>
           <div class="mini-card">
-            <p class="label">Thẻ sản phẩm</p>
+            <p class="label">{{ 'sell.img.productCard' | t }}</p>
             <div class="mini-card__row">
               <div class="avatar">{{ initials }}</div>
               <div>
-                <strong>{{ shop.profile().shopName || 'Tên gian hàng' }}</strong>
-                <span>Người bán</span>
+                <strong>{{ shop.profile().shopName || ('sell.img.shopName' | t) }}</strong>
+                <span>{{ 'sell.img.seller' | t }}</span>
               </div>
             </div>
           </div>
           <div class="mini-card">
-            <p class="label">Đầu trang gian hàng</p>
+            <p class="label">{{ 'sell.img.shopHeader' | t }}</p>
             <div class="header-prev" [style.backgroundImage]="coverUrl ? 'url(' + coverUrl + ')' : null">
               <div class="avatar">{{ initials }}</div>
-              <strong>{{ shop.profile().shopName || 'Tên gian hàng' }}</strong>
+              <strong>{{ shop.profile().shopName || ('sell.img.shopName' | t) }}</strong>
             </div>
           </div>
-          <a routerLink="/sell/profile" class="link">Quay lại hồ sơ ›</a>
+          <a routerLink="/sell/profile" class="link">{{ 'sell.img.back' | t }} ›</a>
         </aside>
       </div>
     </section>
@@ -119,13 +120,14 @@ import { TPipe } from '../../i18n/t.pipe';
 export class SellImagesComponent {
   readonly shop = inject(ShopProfileService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
   logoUrl = '';
   coverUrl = '';
   readonly msg = signal('');
   initials = 'GH';
 
   constructor() {
-    this.seo.set({ title: 'Hình ảnh gian hàng' });
+    this.seo.set({ title: this.i18n.t('sell.img.title') });
     const p = this.shop.profile();
     this.logoUrl = p.logoUrl;
     this.coverUrl = p.coverUrl;
@@ -146,7 +148,7 @@ export class SellImagesComponent {
 
   save(): void {
     this.shop.patch({ logoUrl: this.logoUrl, coverUrl: this.coverUrl });
-    this.msg.set('Đã lưu hình ảnh vào hồ sơ');
+    this.msg.set(this.i18n.t('sell.img.saved'));
   }
 
   private readFile(file: File, cb: (url: string) => void): void {
@@ -159,22 +161,22 @@ export class SellImagesComponent {
 @Component({
   selector: 'app-sell-orders',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe, DatePipe, TPipe],
   template: `
     <section>
-      <p class="crumb">Bán hàng / Đơn hàng</p>
-      <h1>Đơn hàng</h1>
-      <p class="lede">Theo dõi và xử lý đơn hàng từ khách mua.</p>
+      <p class="crumb">{{ 'sell.nav.sales' | t }} / {{ 'sell.nav.orders' | t }}</p>
+      <h1>{{ 'sell.nav.orders' | t }}</h1>
+      <p class="lede">{{ 'sell.orders.lede' | t }}</p>
       <div class="card">
         <table>
           <thead>
             <tr>
-              <th>Mã đơn</th>
-              <th>Sản phẩm</th>
-              <th>Người mua</th>
-              <th>Số tiền</th>
-              <th>Trạng thái</th>
-              <th>Ngày</th>
+              <th>{{ 'sell.orders.id' | t }}</th>
+              <th>{{ 'sell.orders.product' | t }}</th>
+              <th>{{ 'sell.orders.buyer' | t }}</th>
+              <th>{{ 'sell.orders.amount' | t }}</th>
+              <th>{{ 'sell.orders.status' | t }}</th>
+              <th>{{ 'sell.orders.date' | t }}</th>
             </tr>
           </thead>
           <tbody>
@@ -193,7 +195,7 @@ export class SellImagesComponent {
               </tr>
             } @empty {
               <tr>
-                <td colspan="6" class="empty">Chưa có đơn hàng nào.</td>
+                <td colspan="6" class="empty">{{ 'sell.orders.empty' | t }}</td>
               </tr>
             }
           </tbody>
@@ -219,43 +221,41 @@ export class SellImagesComponent {
 export class SellOrdersComponent implements OnInit {
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
   readonly orders = signal<Order[]>([]);
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Đơn hàng' });
+    this.seo.set({ title: this.i18n.t('sell.nav.orders') });
     this.api.orders().subscribe((list) => this.orders.set(list));
   }
 
   statusLabel(status: Order['status']): string {
-    if (status === 'paid') return 'Đã thanh toán';
-    if (status === 'pending') return 'Đang xử lý';
-    return 'Đã hoàn';
+    if (status === 'paid') return this.i18n.t('sell.orders.st.paid');
+    if (status === 'pending') return this.i18n.t('sell.orders.st.pending');
+    return this.i18n.t('sell.orders.st.refunded');
   }
 }
 
 @Component({
   selector: 'app-sell-payment',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TPipe],
   template: `
     <section class="pay">
-      <p class="crumb">Không gian bán hàng · {{ shop.statusLabel() }} · Thanh toán</p>
-      <h1>Thanh toán</h1>
+      <p class="crumb">{{ 'sell.ws.seller.sub' | t }} · {{ shop.statusLabel() }} · {{ 'sell.nav.payment' | t }}</p>
+      <h1>{{ 'sell.nav.payment' | t }}</h1>
       @if (!shop.started() || shop.profile().status === 'draft') {
         <div class="gate">
           <span class="gate__icon">ℹ</span>
-          <h2>Tạo hồ sơ người bán</h2>
-          <p>Tạo hồ sơ gian hàng và gửi xét duyệt trước khi dùng Thanh toán.</p>
-          <a routerLink="/sell/profile" class="btn">Bắt đầu hồ sơ</a>
+          <h2>{{ 'sell.pay.gateTitle' | t }}</h2>
+          <p>{{ 'sell.pay.gateDesc' | t }}</p>
+          <a routerLink="/sell/profile" class="btn">{{ 'sell.pay.gateBtn' | t }}</a>
         </div>
       } @else {
         <div class="card">
-          <h2>Thiết lập nhận tiền</h2>
-          <p>
-            Hồ sơ đang ở trạng thái <strong>{{ shop.statusLabel() }}</strong>. Sau khi được duyệt bạn có thể liên
-            kết tài khoản nhận thanh toán.
-          </p>
-          <a routerLink="/sell/withdraw" class="link">Đi tới Rút tiền ›</a>
+          <h2>{{ 'sell.pay.setupTitle' | t }}</h2>
+          <p>{{ 'sell.pay.setupDesc' | t: { status: shop.statusLabel() } }}</p>
+          <a routerLink="/sell/withdraw" class="link">{{ 'sell.pay.goWithdraw' | t }} ›</a>
         </div>
       }
     </section>
@@ -274,7 +274,7 @@ export class SellOrdersComponent implements OnInit {
 export class SellPaymentComponent {
   readonly shop = inject(ShopProfileService);
   constructor() {
-    inject(SeoService).set({ title: 'Thanh toán' });
+    inject(SeoService).set({ title: inject(I18nService).t('sell.nav.payment') });
   }
 }
 
@@ -284,7 +284,7 @@ export class SellPaymentComponent {
   imports: [FormsModule, CurrencyPipe, DecimalPipe, RouterLink, TPipe],
   template: `
     <section>
-      <p class="crumb">Tài chính / Rút tiền</p>
+      <p class="crumb">{{ 'sell.nav.finance' | t }} / {{ 'sell.nav.withdraw' | t }}</p>
       <h1>{{ 'wallet.withdraw.title' | t }}</h1>
 
       @if (personas().length > 1) {
@@ -332,7 +332,7 @@ export class SellPaymentComponent {
           <div class="kyc-block">
             <p>{{ 'kyc.withdrawBlocked' | t }}</p>
             <p class="status">{{ ('kyc.status.' + k.status) | t }}</p>
-            <a routerLink="/settings/kyc" class="link">{{ 'kyc.goVerify' | t }} →</a>
+            <a routerLink="/sell/kyc" class="link">{{ 'kyc.goVerify' | t }} →</a>
           </div>
         }
       }
@@ -340,12 +340,12 @@ export class SellPaymentComponent {
       <div class="grid">
         <form class="card" (ngSubmit)="withdraw()">
           @if (summary(); as s) {
-            <p class="ok">Có thể rút: {{ s.available | currency: s.currency }} · Đóng băng (từng đơn): {{ s.held | currency: s.currency }}</p>
+            <p class="ok">{{ 'sell.wd.available' | t }}: {{ s.available | currency: s.currency }} · {{ 'sell.wd.held' | t }}: {{ s.held | currency: s.currency }}</p>
             @if (s.holds.length) {
               <ul>
                 @for (h of s.holds; track h.orderId) {
                   <li>
-                    <span>{{ h.productName }} · {{ h.kind === 'dispute' ? 'Khiếu nại' : 'Chờ 48h' }}</span>
+                    <span>{{ h.productName }} · {{ (h.kind === 'dispute' ? 'sell.wd.holdDispute' : 'sell.wd.hold48') | t }}</span>
                     <strong>{{ h.amount | currency: h.currency }}</strong>
                   </li>
                 }
@@ -353,7 +353,7 @@ export class SellPaymentComponent {
             }
           }
           <label>
-            <span>Số tiền</span>
+            <span>{{ 'sell.wd.amount' | t }}</span>
             <input type="number" min="1" [(ngModel)]="amount" name="amount" (ngModelChange)="refreshQuote()" />
           </label>
 
@@ -370,13 +370,13 @@ export class SellPaymentComponent {
             </ul>
           }
 
-          <button type="submit" [disabled]="!canWithdraw()">Yêu cầu rút tiền</button>
+          <button type="submit" [disabled]="!canWithdraw()">{{ 'sell.wd.submit' | t }}</button>
           @if (msg()) {
             <p [class.ok]="!isErr()" [class.err]="isErr()">{{ msg() }}</p>
           }
         </form>
         <div class="card">
-          <h2>Lịch sử ví</h2>
+          <h2>{{ 'sell.wd.history' | t }}</h2>
           <ul>
             @for (t of txs(); track t.id) {
               <li>
@@ -384,7 +384,7 @@ export class SellPaymentComponent {
                 <strong>{{ t.amount | currency: t.currency }}</strong>
               </li>
             } @empty {
-              <li class="empty">Chưa có giao dịch.</li>
+              <li class="empty">{{ 'sell.wd.noTx' | t }}</li>
             }
           </ul>
         </div>
@@ -428,6 +428,7 @@ export class SellWithdrawComponent implements OnInit {
   private readonly api = inject(DashboardService);
   private readonly kycApi = inject(KycService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
   readonly auth = inject(AuthService);
   readonly txs = signal<WalletTx[]>([]);
   readonly summary = signal<WalletSummary | null>(null);
@@ -441,7 +442,7 @@ export class SellWithdrawComponent implements OnInit {
   amount = 100;
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Rút tiền' });
+    this.seo.set({ title: this.i18n.t('sell.nav.withdraw') });
     this.api.wallet().subscribe((t) => this.txs.set(t));
     this.api.walletSummary().subscribe((s) => this.summary.set(s));
     this.kycApi.me().subscribe({ next: (k) => this.kyc.set(k), error: () => undefined });
@@ -485,24 +486,24 @@ export class SellWithdrawComponent implements OnInit {
   withdraw(): void {
     if (!this.policy()?.canWithdraw) {
       this.errFlag.set(true);
-      this.msg.set('Ví người mua không hỗ trợ rút tiền.');
+      this.msg.set(this.i18n.t('sell.wd.buyerBlocked'));
       return;
     }
     if (!this.canWithdraw()) {
       this.errFlag.set(true);
-      this.msg.set('Hoàn tất eKYC trước khi rút tiền.');
+      this.msg.set(this.i18n.t('sell.wd.kycFirst'));
       return;
     }
     this.api.withdraw(this.amount, this.persona() || undefined).subscribe({
       next: (tx) => {
         this.errFlag.set(false);
         this.txs.update((list) => [tx, ...list]);
-        this.msg.set(`Đã gửi yêu cầu rút ${tx.amount}. Chờ admin xác nhận.`);
+        this.msg.set(this.i18n.t('sell.wd.sent', { amount: tx.amount }));
         this.api.walletSummary().subscribe((s) => this.summary.set(s));
       },
       error: (err) => {
         this.errFlag.set(true);
-        this.msg.set(err?.error?.message || 'Không rút được');
+        this.msg.set(err?.error?.message || this.i18n.t('sell.wd.fail'));
       },
     });
   }
@@ -511,15 +512,15 @@ export class SellWithdrawComponent implements OnInit {
 @Component({
   selector: 'app-sell-products',
   standalone: true,
-  imports: [RouterLink, DecimalPipe],
+  imports: [RouterLink, DecimalPipe, TPipe],
   template: `
     <section>
       <div class="head">
         <div>
-          <p class="crumb">Bán hàng / Sản phẩm</p>
-          <h1>Sản phẩm</h1>
+          <p class="crumb">{{ 'sell.nav.sales' | t }} / {{ 'sell.nav.products' | t }}</p>
+          <h1>{{ 'sell.nav.products' | t }}</h1>
         </div>
-        <a routerLink="/dashboard/products" class="btn">+ Đăng sản phẩm</a>
+        <a routerLink="/dashboard/products" class="btn">+ {{ 'sell.prod.add' | t }}</a>
       </div>
       <div class="list">
         @for (p of products(); track p.id) {
@@ -527,14 +528,14 @@ export class SellWithdrawComponent implements OnInit {
             <div>
               <p class="cat">{{ label(p.category) }}</p>
               <a [routerLink]="['/product', p.slug]">{{ p.name }}</a>
-              <p class="meta">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number: '1.1-1' }}</p>
+              <p class="meta">{{ 'sell.prod.sold' | t: { n: ((p.salesCount || 0) | number) ?? '0' } }} · ★ {{ p.rating | number: '1.1-1' }}</p>
             </div>
             <a class="ghost" [routerLink]="actionLink(p)">{{ actionLabel(p) }}</a>
           </article>
         } @empty {
           <div class="card empty">
-            <p>Chưa có sản phẩm. Hãy đăng sản phẩm đầu tiên.</p>
-            <a routerLink="/dashboard/products" class="btn">Đăng sản phẩm</a>
+            <p>{{ 'sell.prod.empty' | t }}</p>
+            <a routerLink="/dashboard/products" class="btn">{{ 'sell.prod.add' | t }}</a>
           </div>
         }
       </div>
@@ -558,13 +559,14 @@ export class SellProductsComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly auth = inject(AuthService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
   readonly products = signal<Product[]>([]);
   readonly label = categoryLabel;
 
   actionLabel(p: Product): string {
     const k = sellerWorkspaceKind(p.category);
-    if (k === 'voice') return 'Giọng';
-    if (k === 'watch') return 'Tập / chương';
+    if (k === 'voice') return this.i18n.t('sell.prod.act.voice');
+    if (k === 'watch') return this.i18n.t('sell.prod.act.watch');
     if (k === 'download') return 'License';
     if (k === 'hire') return 'Listing';
     if (k === 'compute') return 'GPU';
@@ -581,7 +583,7 @@ export class SellProductsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Sản phẩm' });
+    this.seo.set({ title: this.i18n.t('sell.nav.products') });
     const slug = this.auth.user()?.creatorSlug;
     if (!slug) return;
     this.productsApi.list({ creatorSlug: slug }).subscribe((items) => this.products.set(items));
@@ -591,14 +593,14 @@ export class SellProductsComponent implements OnInit {
 @Component({
   selector: 'app-sell-placeholder',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TPipe],
   template: `
     <section class="ph">
       <p class="crumb">{{ crumb }}</p>
       <h1>{{ title }}</h1>
       <div class="card">
         <p>{{ desc }}</p>
-        <a routerLink="/sell" class="link">Về tổng quan ›</a>
+        <a routerLink="/sell" class="link">{{ 'sell.ph.back' | t }} ›</a>
       </div>
     </section>
   `,
@@ -613,28 +615,25 @@ export class SellProductsComponent implements OnInit {
 export class SellPlaceholderComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(SeoService);
-  title = 'Đang cập nhật';
-  crumb = 'Kênh bán hàng';
-  desc = 'Tính năng này sẽ sớm có mặt trong kênh bán hàng.';
+  private readonly i18n = inject(I18nService);
+  title = this.i18n.t('sell.ph.title');
+  crumb = this.i18n.t('sell.ws.seller.title');
+  desc = this.i18n.t('sell.ph.desc');
 
   constructor() {
     const key = this.route.snapshot.data['page'] as string | undefined;
-    if (key === 'complaints') {
-      this.title = 'Khiếu nại';
-      this.crumb = 'Bán hàng / Khiếu nại';
-      this.desc = 'Theo dõi và phản hồi khiếu nại từ người mua.';
-    } else if (key === 'coupons') {
-      this.title = 'Mã giảm giá';
-      this.crumb = 'Bán hàng / Mã giảm giá';
-      this.desc = 'Tạo mã giảm giá để tăng chuyển đổi cho gian hàng.';
-    } else if (key === 'ledger') {
-      this.title = 'Sổ cái';
-      this.crumb = 'Tài chính / Sổ cái';
-      this.desc = 'Xem sổ cái doanh thu, phí nền tảng và số dư.';
-    } else if (key === 'integrate') {
-      this.title = 'Tích hợp';
-      this.crumb = 'Nhà phát triển / Tích hợp';
-      this.desc = 'Kết nối webhook, API key và cổng thanh toán.';
+    const sections: Record<string, [string, string]> = {
+      complaints: ['complaints', 'sales'],
+      coupons: ['coupons', 'sales'],
+      ledger: ['ledger', 'finance'],
+      integrate: ['integrate', 'dev'],
+    };
+    const hit = key ? sections[key] : undefined;
+    if (hit) {
+      const [page, group] = hit;
+      this.title = this.i18n.t(`sell.nav.${page}`);
+      this.crumb = `${this.i18n.t(`sell.nav.${group}`)} / ${this.title}`;
+      this.desc = this.i18n.t(`sell.ph.${page}`);
     }
     this.seo.set({ title: this.title });
   }
