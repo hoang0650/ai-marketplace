@@ -5,9 +5,28 @@ import { Router } from '@angular/router';
 import { Observable, of, catchError, map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
-import { HiredAgent, MarketplaceAgent, OpenClawLaunchResult, OpenClawSshAccess } from './agents.models';
+import {
+  AgentRuntimeKind,
+  HiredAgent,
+  MarketplaceAgent,
+  OpenClawLaunchResult,
+  OpenClawSshAccess,
+} from './agents.models';
 
 const HIRED_KEY = 'phai.openclaw.hired';
+
+/** API path (`/v1/<apiPath>`), host (`{userId}.<subdomain>.aimarkets.vn`) and env block per runtime. */
+export const AGENT_RUNTIMES: Record<
+  AgentRuntimeKind,
+  { apiPath: string; subdomain: string; envKey: string; label: string; ssh: boolean; pairing: boolean }
+> = {
+  openclaw: { apiPath: 'openclaw', subdomain: 'openclaw', envKey: 'openclaw', label: 'OpenClaw', ssh: true, pairing: true },
+  hermes: { apiPath: 'hermes', subdomain: 'hermes', envKey: 'hermes', label: 'Hermes', ssh: true, pairing: false },
+  nanoclaw: { apiPath: 'nanoclaw', subdomain: 'nanoclaw', envKey: 'nanoclaw', label: 'NanoClaw', ssh: true, pairing: false },
+  spacebot: { apiPath: 'spacebot', subdomain: 'spacebot', envKey: 'spacebot', label: 'SpaceBot', ssh: true, pairing: false },
+  openwebui: { apiPath: 'openwebui', subdomain: 'openwebui', envKey: 'openwebui', label: 'Open WebUI', ssh: false, pairing: false },
+  paperclip: { apiPath: 'paperclip', subdomain: 'paperclip', envKey: 'paperclip', label: 'Paperclip', ssh: false, pairing: false },
+};
 
 export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
   {
@@ -59,25 +78,31 @@ export const MARKETPLACE_AGENTS: MarketplaceAgent[] = [
     id: 'open-webui',
     slug: 'open-webui',
     name: 'Open WebUI',
-    description: 'Chat-first interface for private models and agent tooling.',
+    description:
+      'AI Markets Open WebUI on {userId}.openwebui.aimarkets.vn — private chat workspace with your own model keys (BYOK).',
     icon: 'webui',
     logoUrl: '/agents/open-webui.png',
-    version: '0.6.1',
-    model: 'MiniMaxAI/MiniMax-M2.5',
+    version: '0.6.x',
+    model: 'BYOK (OpenAI-compatible)',
     docsUrl: 'https://docs.openwebui.com',
     public: true,
+    hireProductSlug: 'openwebui-ops-agent',
+    openwebuiGateway: true,
   },
   {
-    id: 'sillytavern',
-    slug: 'sillytavern',
-    name: 'SillyTavern',
-    description: 'Character-driven conversational front-end for creative agents.',
-    icon: 'tavern',
-    logoUrl: '/agents/sillytavern.png',
-    version: '1.12.0',
-    model: 'MiniMaxAI/MiniMax-M2.5',
-    docsUrl: 'https://docs.sillytavern.app',
+    id: 'paperclip',
+    slug: 'paperclip',
+    name: 'Paperclip',
+    description:
+      'AI Markets Paperclip on {userId}.paperclip.aimarkets.vn — run a company of AI agents with goals, org chart and budgets.',
+    icon: 'paperclip',
+    logoUrl: '/agents/paperclip.png',
+    version: '0.x',
+    model: 'BYOK (Claude / Codex / OpenAI-compatible)',
+    docsUrl: 'https://github.com/paperclipai/paperclip',
     public: true,
+    hireProductSlug: 'paperclip-ops-agent',
+    paperclipGateway: true,
   },
   {
     id: 'space-bot',
@@ -159,51 +184,65 @@ export class OpenClawGatewayService {
     return id === 'space-bot' || id === 'spacebot';
   }
 
-  /** OpenClaw, Hermes, NanoClaw, or SpaceBot — Launch enabled on marketplace. */
-  isLaunchableAgent(
-    agent?: {
-      id?: string;
-      slug?: string;
-      openclawGateway?: boolean;
-      hermesGateway?: boolean;
-      nanoclawGateway?: boolean;
-      spacebotGateway?: boolean;
-    } | null,
+  isOpenWebuiAgent(
+    agent?: { id?: string; slug?: string; openwebuiGateway?: boolean } | null,
   ): boolean {
-    return (
-      this.isOpenClawAgent(agent) ||
-      this.isHermesAgent(agent) ||
-      this.isNanoclawAgent(agent) ||
-      this.isSpacebotAgent(agent)
-    );
+    if (!agent) return false;
+    if ((agent as MarketplaceAgent).openwebuiGateway) return true;
+    const id = String(agent.id || agent.slug || '').toLowerCase();
+    return id === 'open-webui' || id === 'openwebui';
+  }
+
+  isPaperclipAgent(
+    agent?: { id?: string; slug?: string; paperclipGateway?: boolean } | null,
+  ): boolean {
+    if (!agent) return false;
+    if ((agent as MarketplaceAgent).paperclipGateway) return true;
+    const id = String(agent.id || agent.slug || '').toLowerCase();
+    return id === 'paperclip';
+  }
+
+  /** Which AI Markets runtime backs the agent; `null` when it has no Launch yet. */
+  runtimeKind(agent?: Partial<MarketplaceAgent> | null): AgentRuntimeKind | null {
+    if (this.isHermesAgent(agent)) return 'hermes';
+    if (this.isNanoclawAgent(agent)) return 'nanoclaw';
+    if (this.isSpacebotAgent(agent)) return 'spacebot';
+    if (this.isOpenWebuiAgent(agent)) return 'openwebui';
+    if (this.isPaperclipAgent(agent)) return 'paperclip';
+    if (this.isOpenClawAgent(agent)) return 'openclaw';
+    return null;
+  }
+
+  runtimeInfo(agent?: Partial<MarketplaceAgent> | null): (typeof AGENT_RUNTIMES)[AgentRuntimeKind] {
+    return AGENT_RUNTIMES[this.runtimeKind(agent) || 'openclaw'];
+  }
+
+  /** OpenClaw, Hermes, NanoClaw, SpaceBot, Open WebUI, or Paperclip — Launch enabled on marketplace. */
+  isLaunchableAgent(agent?: Partial<MarketplaceAgent> | null): boolean {
+    return this.runtimeKind(agent) !== null;
+  }
+
+  /** Temporary SSH access exists only for the container runtimes, not the SSO web apps. */
+  supportsSsh(agent?: Partial<MarketplaceAgent> | null): boolean {
+    const kind = this.runtimeKind(agent);
+    return kind !== null && AGENT_RUNTIMES[kind].ssh;
   }
 
   comingSoonMessage(agent?: MarketplaceAgent | null): string {
     const name = agent?.name || 'This agent';
-    return `${name} setup is coming later. OpenClaw, Hermes, NanoClaw, and SpaceBot ({userId}.*.aimarkets.vn) are live now.`;
+    return `${name} setup is coming later. OpenClaw, Hermes, NanoClaw, SpaceBot, Open WebUI, and Paperclip ({userId}.*.aimarkets.vn) are live now.`;
   }
 
   aimarketsHost(userId?: string, agent?: MarketplaceAgent | null): string {
     const id = String(userId || this.auth.user()?.id || '')
       .trim()
       .toLowerCase();
-    const hermes = this.isHermesAgent(agent);
-    const nanoclaw = this.isNanoclawAgent(agent);
-    const spacebot = this.isSpacebotAgent(agent);
-    const template = hermes
-      ? String(environment.hermes?.publicUrlTemplate || 'https://{userId}.hermes.aimarkets.vn')
-      : nanoclaw
-        ? String(environment.nanoclaw?.publicUrlTemplate || 'https://{userId}.nanoclaw.aimarkets.vn')
-        : spacebot
-          ? String(environment.spacebot?.publicUrlTemplate || 'https://{userId}.spacebot.aimarkets.vn')
-          : String(environment.openclaw?.publicUrlTemplate || 'https://{userId}.openclaw.aimarkets.vn');
-    const fallback = hermes
-      ? '{userId}.hermes.aimarkets.vn'
-      : nanoclaw
-        ? '{userId}.nanoclaw.aimarkets.vn'
-        : spacebot
-          ? '{userId}.spacebot.aimarkets.vn'
-          : '{userId}.openclaw.aimarkets.vn';
+    const info = this.runtimeInfo(agent);
+    const envBlock = (environment as Record<string, unknown>)[info.envKey] as
+      | { publicUrlTemplate?: string }
+      | undefined;
+    const template = String(envBlock?.publicUrlTemplate || `https://{userId}.${info.subdomain}.aimarkets.vn`);
+    const fallback = `{userId}.${info.subdomain}.aimarkets.vn`;
     if (!id) return fallback;
     return template
       .replace(/\{userId\}/gi, id)
@@ -322,13 +361,7 @@ export class OpenClawGatewayService {
       if (isPlatformBrowser(this.platformId)) {
         void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
       }
-      const hostHint = this.isHermesAgent(opts?.agent)
-        ? '{userId}.hermes.aimarkets.vn'
-        : this.isNanoclawAgent(opts?.agent)
-          ? '{userId}.nanoclaw.aimarkets.vn'
-          : this.isSpacebotAgent(opts?.agent)
-            ? '{userId}.spacebot.aimarkets.vn'
-            : '{userId}.openclaw.aimarkets.vn';
+      const hostHint = `{userId}.${this.runtimeInfo(opts?.agent).subdomain}.aimarkets.vn`;
       return of({
         success: false,
         message: `Sign in to launch on ${hostHint}.`,
@@ -349,10 +382,8 @@ export class OpenClawGatewayService {
 
     // Open the tab only after we have a URL — blank→close feels like a broken Launch.
     const agent = opts?.agent || this.getAgent('openclaw');
-    const hermes = this.isHermesAgent(agent);
-    const nanoclaw = this.isNanoclawAgent(agent);
-    const spacebot = this.isSpacebotAgent(agent);
-    const skipApprove = hermes || nanoclaw || spacebot;
+    const info = this.runtimeInfo(agent);
+    const skipApprove = !info.pairing;
 
     return this.resolveLaunchUrl(userId, agent).pipe(
       tap((res) => {
@@ -371,13 +402,9 @@ export class OpenClawGatewayService {
       }),
       catchError((err) => {
         this.opening = false;
-        const fallbackMsg = hermes
-          ? 'Failed to launch Hermes dashboard'
-          : nanoclaw
-            ? 'Failed to launch NanoClaw dashboard'
-            : spacebot
-              ? 'Failed to launch SpaceBot dashboard'
-              : 'Failed to launch OpenClaw gateway';
+        const fallbackMsg = info.pairing
+          ? `Failed to launch ${info.label} gateway`
+          : `Failed to launch ${info.label} dashboard`;
         return of({
           success: false,
           message:
@@ -486,19 +513,18 @@ export class OpenClawGatewayService {
   }
 
   private agentApiPath(agent?: { id?: string; slug?: string } | null): string {
-    if (this.isHermesAgent(agent)) return 'hermes';
-    if (this.isNanoclawAgent(agent)) return 'nanoclaw';
-    if (this.isSpacebotAgent(agent)) return 'spacebot';
-    return 'openclaw';
+    return this.runtimeInfo(agent).apiPath;
   }
 
   private resolveLaunchUrl(
     userId?: string,
     agent?: MarketplaceAgent | null,
   ): Observable<OpenClawLaunchResult> {
-    const hermes = this.isHermesAgent(agent);
-    const nanoclaw = this.isNanoclawAgent(agent);
-    const spacebot = this.isSpacebotAgent(agent);
+    const kind = this.runtimeKind(agent);
+    const hermes = kind === 'hermes';
+    const nanoclaw = kind === 'nanoclaw';
+    const spacebot = kind === 'spacebot';
+    const sso = kind === 'openwebui' || kind === 'paperclip';
     const path = this.agentApiPath(agent);
     return this.http
       .post<OpenClawLaunchResult>(
@@ -507,7 +533,8 @@ export class OpenClawGatewayService {
         { headers: this.authHeaders() },
       )
       .pipe(
-        catchError(() => {
+        catchError((err) => {
+          if (sso) return of(this.fallbackSsoUrl(agent, err?.error?.message));
           if (hermes) return of(this.fallbackHermesUrl(userId));
           if (nanoclaw) return of(this.fallbackNanoclawUrl(userId));
           if (spacebot) return of(this.fallbackSpacebotUrl(userId));
@@ -515,6 +542,7 @@ export class OpenClawGatewayService {
         }),
         map((res) => {
           if (res?.success && res.url) return res;
+          if (sso) return res?.message ? res : this.fallbackSsoUrl(agent);
           if (hermes) return this.fallbackHermesUrl(userId);
           if (nanoclaw) return this.fallbackNanoclawUrl(userId);
           if (spacebot) return this.fallbackSpacebotUrl(userId);
@@ -588,6 +616,15 @@ export class OpenClawGatewayService {
       success: false,
       message:
         'NanoClaw Launch requires the marketplace API (NANOCLAW_DASHBOARD_SECRET + public URL template).',
+    };
+  }
+
+  /** Open WebUI / Paperclip accounts are per buyer — only the API can sign the SSO ticket. */
+  private fallbackSsoUrl(agent?: MarketplaceAgent | null, message?: string): OpenClawLaunchResult {
+    const info = this.runtimeInfo(agent);
+    return {
+      success: false,
+      message: message || `${info.label} Launch requires the marketplace API (per-buyer SSO ticket).`,
     };
   }
 

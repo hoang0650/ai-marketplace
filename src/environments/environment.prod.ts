@@ -39,4 +39,12 @@ export const environment = {
     publicUrlTemplate: 'https://{userId}.spacebot.aimarkets.vn',
     dashboardSecret: '',
   },
+  openwebui: {
+    audience: 'aimarkets',
+    publicUrlTemplate: 'https://{userId}.openwebui.aimarkets.vn',
+  },
+  paperclip: {
+    audience: 'aimarkets',
+    publicUrlTemplate: 'https://{userId}.paperclip.aimarkets.vn',
+  },
 };

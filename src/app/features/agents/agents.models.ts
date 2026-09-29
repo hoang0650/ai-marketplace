@@ -5,19 +5,25 @@ export interface MarketplaceAgent {
   slug: string;
   name: string;
   description: string;
-  icon: 'openclaw' | 'hermes' | 'nano' | 'webui' | 'tavern' | 'space';
+  icon: 'openclaw' | 'hermes' | 'nano' | 'webui' | 'paperclip' | 'space';
   logoUrl: string;
   version: string;
   model: string;
   docsUrl: string;
   public: boolean;
   hireProductSlug?: string;
-  /** Launchable AI Markets agents (OpenClaw Control UI, Hermes, NanoClaw, or SpaceBot dashboard). */
+  /** Launchable AI Markets agents (OpenClaw Control UI, Hermes, NanoClaw, SpaceBot, Open WebUI, Paperclip). */
   openclawGateway?: boolean;
   hermesGateway?: boolean;
   nanoclawGateway?: boolean;
   spacebotGateway?: boolean;
+  /** Per-buyer account on {userId}.openwebui.aimarkets.vn, signed in by a launch SSO ticket. */
+  openwebuiGateway?: boolean;
+  /** Per-buyer account on {userId}.paperclip.aimarkets.vn, signed in by a launch SSO ticket. */
+  paperclipGateway?: boolean;
 }
+
+export type AgentRuntimeKind = 'openclaw' | 'hermes' | 'nanoclaw' | 'spacebot' | 'openwebui' | 'paperclip';
 
 export interface HiredAgent {
   id: string;

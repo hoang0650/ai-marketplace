@@ -179,7 +179,7 @@
           } @else if (isComputeStream(p.category)) {
             {{ 'compute.cta.play' | t }}
           } @else if (isHire(p.category)) {
-            {{ isHermesHire() ? 'Launch Hermes' : isOpenClawHire() ? 'Launch OpenClaw' : 'Hire / Request' }}
+            {{ isOpenClawHire() ? 'Launch ' + hireBrand() : 'Hire / Request' }}
           } @else if (isFilm(p.category)) {
             {{ 'pd.ctaWatch' | t }}
           } @else if (isSkill(p.category)) {
@@ -462,13 +462,13 @@
 
         <aside class="pg-pane">
           @if (isOpenClawHire()) {
-            <div class="pg-pane__head"><h2>{{ isHermesHire() ? 'Hermes' : isSpacebotHire() ? 'SpaceBot' : 'OpenClaw' }}</h2></div>
+            <div class="pg-pane__head"><h2>{{ hireBrand() }}</h2></div>
             <p class="text-muted">
-              {{ isHermesHire() ? 'Optional Hermes dashboard launch.' : isSpacebotHire() ? 'Optional SpaceBot dashboard launch.' : 'Optional Control UI launch (separate from memory chat).' }}
+              {{ hireBrand() === 'OpenClaw' ? 'Optional Control UI launch (separate from memory chat).' : 'Optional ' + hireBrand() + ' dashboard launch.' }}
             </p>
             <div class="mt-4 flex flex-wrap gap-2">
               <button type="button" class="btn btn-outline" (click)="launchOpenClaw()" [disabled]="openclawBusy()">
-                {{ openclawBusy() ? 'Opening…' : (isHermesHire() ? 'Launch Hermes' : isSpacebotHire() ? 'Launch SpaceBot' : 'Launch OpenClaw') }}
+                {{ openclawBusy() ? 'Opening…' : 'Launch ' + hireBrand() }}
               </button>
               <a
                 class="btn btn-outline"

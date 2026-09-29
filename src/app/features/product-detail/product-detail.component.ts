@@ -23,7 +23,7 @@ import { isHireCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeC
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
-import { OpenClawGatewayService } from '../agents/openclaw-gateway.service';
+import { MARKETPLACE_AGENTS, OpenClawGatewayService } from '../agents/openclaw-gateway.service';
 import { isRunpodProduct, resolveRunpodEndpoint } from '../../models/runpod-playground';
 import {
   RunpodField,
@@ -230,27 +230,21 @@ export class ProductDetailComponent implements OnInit {
   readonly openclawBusy = signal(false);
   readonly openclawStatus = signal('');
 
-  readonly isOpenClawHire = computed(() => {
-    const p = this.product();
-    return (
-      !!p &&
-      (p.slug === 'openclaw-ops-agent' ||
-        p.slug === 'hermes-ops-agent' ||
-        p.slug === 'nanoclaw-ops-agent' ||
-        p.slug === 'spacebot-ops-agent')
-    );
+  /** Launchable marketplace agent whose `hireProductSlug` is this product (OpenClaw, Hermes, …, Paperclip). */
+  readonly hireAgent = computed(() => {
+    const slug = this.product()?.slug;
+    if (!slug) return null;
+    return MARKETPLACE_AGENTS.find((a) => a.hireProductSlug === slug && this.openclaw.isLaunchableAgent(a)) || null;
   });
 
-  readonly isHermesHire = computed(() => this.product()?.slug === 'hermes-ops-agent');
-  readonly isSpacebotHire = computed(() => this.product()?.slug === 'spacebot-ops-agent');
+  readonly isOpenClawHire = computed(() => !!this.hireAgent());
+
+  /** Product name of the hire agent — shown on the launch pane. */
+  readonly hireBrand = computed(() => this.openclaw.runtimeInfo(this.hireAgent()).label);
 
   /** Launchable agent for the current hire product. */
   hireAgentId(): string {
-    const slug = this.product()?.slug;
-    if (slug === 'hermes-ops-agent') return 'hermes';
-    if (slug === 'nanoclaw-ops-agent') return 'nano-claw';
-    if (slug === 'spacebot-ops-agent') return 'space-bot';
-    return 'openclaw';
+    return this.hireAgent()?.id || 'openclaw';
   }
 
   apiClient: ApiClient = 'curl';
@@ -848,7 +842,6 @@ export class ProductDetailComponent implements OnInit {
   launchOpenClaw(): void {
     if (this.openclawBusy()) return;
     this.openclawBusy.set(true);
-    const hermes = this.isHermesHire();
     const agent = this.openclaw.getAgent(this.hireAgentId());
     const brand = agent?.name || 'agent';
     this.openclawStatus.set(`Opening ${brand} at ${this.openclaw.aimarketsHost(undefined, agent)}…`);
@@ -856,7 +849,7 @@ export class ProductDetailComponent implements OnInit {
       this.openclawBusy.set(false);
       this.openclawStatus.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
       if (res.success) {
-        this.checkoutMsg.set(`${hermes ? 'Hermes' : brand} launched.`);
+        this.checkoutMsg.set(`${brand} launched.`);
       }
     });
   }
@@ -868,12 +861,7 @@ export class ProductDetailComponent implements OnInit {
       this.launchComputeStream();
       return;
     }
-    if (
-      p.slug === 'openclaw-ops-agent' ||
-      p.slug === 'hermes-ops-agent' ||
-      p.slug === 'nanoclaw-ops-agent' ||
-      p.slug === 'spacebot-ops-agent'
-    ) {
+    if (this.isOpenClawHire()) {
       this.launchOpenClaw();
       return;
     }

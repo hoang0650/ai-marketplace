@@ -151,7 +151,7 @@ const SPACEBOT_CHANNELS: ChannelGuide[] = [
 ];
 
 interface AgentSetupProfile {
-  id: 'openclaw' | 'hermes' | 'nanoclaw' | 'spacebot';
+  id: 'openclaw' | 'hermes' | 'nanoclaw' | 'spacebot' | 'openwebui' | 'paperclip';
   brand: string;
   /** Label of the primary launch button, e.g. "OpenClaw UI". */
   uiName: string;
@@ -163,7 +163,7 @@ interface AgentSetupProfile {
   channelSet?: 'openclaw' | 'spacebot';
   /** Whether the device/DM pairing card applies (OpenClaw only). */
   pairing?: boolean;
-  /** SSH auth model: password (OpenClaw/Hermes/NanoClaw) or key (SpaceBot). */
+  /** SSH auth model: password (OpenClaw/Hermes/NanoClaw) or key (SpaceBot); unset = no SSH card. */
   sshAuth?: 'password' | 'key';
   /** One-line summary of what this wizard does for the agent. */
   lead: string;
@@ -232,6 +232,32 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
       'Opens the SpaceBot dashboard scoped to your session. The marketplace token is passed in the URL hash and stored automatically — no device pairing.',
     configNote:
       'SpaceBot is a single Rust binary; configuration lives in config.toml ([messaging.*] blocks, [[agents]], [[bindings]]). Edit it from the dashboard (Config → Channels) or over SSH, then the daemon hot-reloads. SSH is key-based on port 2222.',
+  },
+  openwebui: {
+    id: 'openwebui',
+    brand: 'Open WebUI',
+    uiName: 'Open WebUI',
+    docsUrl: 'https://docs.openwebui.com',
+    hostTemplate: '{userId}.openwebui.aimarkets.vn',
+    channels: false,
+    lead: 'Launch your private Open WebUI workspace, then add your own model provider keys.',
+    launchBlurb:
+      'Creates (or reuses) your personal Open WebUI account and opens it already signed in with a one-time ticket. Chats, knowledge and settings are only visible to you.',
+    configNote:
+      'Add your own OpenAI-compatible endpoint and API key under Settings → Connections (Direct Connections). Keys stay in your account; AI Markets does not charge token fees for BYOK usage.',
+  },
+  paperclip: {
+    id: 'paperclip',
+    brand: 'Paperclip',
+    uiName: 'Paperclip Dashboard',
+    docsUrl: 'https://github.com/paperclipai/paperclip',
+    hostTemplate: '{userId}.paperclip.aimarkets.vn',
+    channels: false,
+    lead: 'Launch your Paperclip control plane and set up your first AI company.',
+    launchBlurb:
+      'Creates (or reuses) your personal Paperclip account and opens the board already signed in with a one-time ticket.',
+    configNote:
+      'Create a company, set its goal, then hire agents (Claude Code, Codex, OpenAI-compatible HTTP…) with your own API keys stored as company secrets. Budgets and heartbeats are managed per agent in the dashboard.',
   },
 };
 
@@ -399,6 +425,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
             }
 
           <!-- ========== SSH ========== -->
+          @if (profile().sshAuth) {
           <article class="oc-card oc-ssh">
             <h3><span>{{ sshStep() }}</span> SSH access</h3>
             <p class="oc-card__desc">
@@ -516,6 +543,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                 </div>
             }
           </article>
+          }
 
           <!-- ========== CONFIG / ABOUT ========== -->
           <article class="oc-card">
@@ -551,7 +579,7 @@ export class OpenClawSetupWizardComponent implements OnInit {
   );
   /** Step number offset — the pairing card only exists for OpenClaw. */
   readonly sshStep = computed(() => (this.profile().pairing ? 4 : this.profile().channels ? 3 : 2));
-  readonly configStep = computed(() => this.sshStep() + 1);
+  readonly configStep = computed(() => (this.profile().sshAuth ? this.sshStep() + 1 : this.sshStep()));
 
   readonly agent = signal<MarketplaceAgent | null>(null);
   readonly selectedChannel = signal<ChannelGuide | null>(null);
@@ -603,7 +631,7 @@ export class OpenClawSetupWizardComponent implements OnInit {
       const hint = this.sshPlaceholder;
       this.sshHost = hint.includes('{userId}') ? '' : hint;
 
-      if (agent && this.gateway.isLaunchableAgent(agent)) {
+      if (agent && this.gateway.supportsSsh(agent)) {
         this.gateway.getActiveSsh(agent.id).subscribe((res) => {
           if (res.active && res.session) this.ssh.set({ ...res.session, success: true });
         });
@@ -765,6 +793,8 @@ export class OpenClawSetupWizardComponent implements OnInit {
     if (this.gateway.isHermesAgent(agent)) return 'hermes';
     if (this.gateway.isNanoclawAgent(agent)) return 'nanoclaw';
     if (this.gateway.isSpacebotAgent(agent)) return 'spacebot';
+    if (this.gateway.isOpenWebuiAgent(agent)) return 'openwebui';
+    if (this.gateway.isPaperclipAgent(agent)) return 'paperclip';
     return 'openclaw';
   }
 }

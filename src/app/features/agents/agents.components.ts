@@ -154,7 +154,7 @@ export class MyAgentsComponent implements OnInit {
             @if (canLaunch(agent)) {
               <p class="agent-card__hint">Opens {{ hostFor(agent) }}</p>
             } @else {
-              <p class="agent-card__hint">Setup later — OpenClaw &amp; Hermes are live now</p>
+              <p class="agent-card__hint">Setup later — other agents are live now</p>
             }
           </article>
         } @empty {
@@ -278,7 +278,7 @@ export class AgentMarketplaceComponent implements OnInit {
               </div>
             </div>
 
-            @if (isLaunchable()) {
+            @if (supportsSsh()) {
             <div class="panel agents-panel mt-4">
               <h2 class="font-display text-xl">SSH Access</h2>
               <p class="text-sm text-muted">
@@ -491,36 +491,41 @@ export class AgentDetailComponent implements OnInit {
     return this.gateway.isLaunchableAgent(this.agent());
   }
 
-  /** Product name for the current agent — OpenClaw, Hermes, NanoClaw, or SpaceBot. */
+  supportsSsh(): boolean {
+    return this.gateway.supportsSsh(this.agent());
+  }
+
+  /** Product name for the current agent — OpenClaw, Hermes, NanoClaw, SpaceBot, Open WebUI, or Paperclip. */
   brandName(): string {
-    if (this.isHermes()) return 'Hermes';
-    if (this.isNanoclaw()) return 'NanoClaw';
-    if (this.isSpacebot()) return 'SpaceBot';
-    return 'OpenClaw';
+    return this.gateway.runtimeInfo(this.agent()).label;
   }
 
   /** Label of the launch button / web endpoint. */
   uiName(): string {
-    if (this.isHermes()) return 'Hermes Dashboard';
-    if (this.isNanoclaw()) return 'NanoClaw Dashboard';
-    if (this.isSpacebot()) return 'SpaceBot Dashboard';
-    return 'OpenClaw UI';
+    if (this.isOpenClaw()) return 'OpenClaw UI';
+    const kind = this.gateway.runtimeKind(this.agent());
+    if (kind === 'openwebui') return 'Open WebUI';
+    return `${this.brandName()} Dashboard`;
   }
 
-  /** Control UI (OpenClaw) vs Dashboard (Hermes / NanoClaw / SpaceBot). */
+  /** Control UI (OpenClaw) vs Dashboard (the other runtimes). */
   surfaceName(): string {
     return this.isOpenClaw() ? 'Control UI' : 'Dashboard';
   }
 
   /** {userId}.<subdomain>.aimarkets.vn */
   subdomain(): string {
-    if (this.isHermes()) return 'hermes';
-    if (this.isNanoclaw()) return 'nanoclaw';
-    if (this.isSpacebot()) return 'spacebot';
-    return 'openclaw';
+    return this.gateway.runtimeInfo(this.agent()).subdomain;
   }
 
   brandSummary(): string {
+    const kind = this.gateway.runtimeKind(this.agent());
+    if (kind === 'openwebui') {
+      return 'Private ChatGPT-style workspace — your own account, chats, knowledge and model keys (BYOK).';
+    }
+    if (kind === 'paperclip') {
+      return 'Control plane for a company of AI agents — goals, org chart, tickets, budgets and heartbeats.';
+    }
     if (this.isHermes()) {
       return 'Self-improving agent with a web dashboard, messaging gateway, and skills.';
     }
@@ -550,7 +555,7 @@ export class AgentDetailComponent implements OnInit {
           this.gateway.upsertHired(agent, 'running');
         }
         this.hired.set(this.gateway.getHired(agent.id) || null);
-        if (this.gateway.isLaunchableAgent(agent)) {
+        if (this.gateway.supportsSsh(agent)) {
           this.gateway.getActiveSsh(agent.id).subscribe((res) => {
             if (res.active && res.session) {
               this.ssh.set({ ...res.session, success: true });
@@ -581,7 +586,7 @@ export class AgentDetailComponent implements OnInit {
 
   generateSsh(): void {
     const agent = this.agent();
-    if (!agent || !this.gateway.isLaunchableAgent(agent)) {
+    if (!agent || !this.gateway.supportsSsh(agent)) {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
@@ -598,7 +603,7 @@ export class AgentDetailComponent implements OnInit {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
         } else {
-          const prefix = this.isHermes() ? 'HERMES' : this.isNanoclaw() ? 'NANOCLAW' : 'OPENCLAW';
+          const prefix = this.subdomain().toUpperCase();
           const hint = `${prefix}_SSH_HOST_TEMPLATE={userId}.${this.subdomain()}.aimarkets.vn`;
           this.status.set(res.message || `SSH generate failed. Login and set ${hint}.`);
         }
