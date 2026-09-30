@@ -36,7 +36,7 @@ Quyền sử dụng phụ thuộc **license** và điều kiện của từng s�
 
 Một số sản phẩm có thể sử dụng hạ tầng hoặc API của nhà cung cấp bên thứ ba (**Provider**). Việc sử dụng phải tuân thủ điều khoản của sản phẩm và nhà cung cấp liên quan.
 
-Provider hạ tầng (RunPod, OpenRouter, AWS…) **không** mặc định là bên bán trên sàn.
+Provider hạ tầng (nhà cung cấp GPU, OpenRouter, AWS…) **không** mặc định là bên bán trên sàn.
 
 ## Điều 5. Hành vi bị cấm
 

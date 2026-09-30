@@ -14,7 +14,7 @@ export function isProviderUrl(url?: string | null): boolean {
 }
 
 export function publicGatewayUrls(modelId: string) {
-  const id = encodeURIComponent(String(modelId || 'model').replace(/^runpod-/, '') || 'model');
+  const id = encodeURIComponent(String(modelId || 'model').replace(/^(?:aim|runpod)-/, '') || 'model');
   const slug = decodeURIComponent(id);
   const v1 = trimSlash(environment.apiUrl);
   const v2 = trimSlash(environment.apiV2Url);

@@ -40,7 +40,7 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       if (req.method === 'GET' && path === '/categories') {
         return jsonOk(store.categories());
       }
-      if (req.method === 'GET' && path === '/runpod/public-endpoints') {
+      if (req.method === 'GET' && path === '/endpoints/public-endpoints') {
         let rows = RUNPOD_PUBLIC_ENDPOINTS;
         const kind = params.get('kind');
         const modality = params.get('modality');
@@ -54,7 +54,7 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
         }
         return jsonOk(rows);
       }
-      if (req.method === 'GET' && path.startsWith('/runpod/public-endpoints/')) {
+      if (req.method === 'GET' && path.startsWith('/endpoints/public-endpoints/')) {
         const slug = path.split('/')[3];
         const hit = RUNPOD_PUBLIC_ENDPOINTS.find((e) => e.slug === slug);
         return hit ? jsonOk(hit) : jsonOk({ message: 'Not found' }, 404);

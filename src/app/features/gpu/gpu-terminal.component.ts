@@ -34,7 +34,7 @@ import { SeoService } from '../../services/seo.service';
         <p class="mt-3 text-sm text-red-400">{{ friendlyError() }}</p>
       }
       <pre #term class="mt-4 h-[420px] overflow-auto rounded-xl bg-black p-4 font-mono text-sm leading-relaxed text-emerald-300 outline-none" tabindex="0" (keydown)="onKey($event)"></pre>
-      <p class="mt-2 text-xs text-muted">Ctrl+C / Ctrl+D / Ctrl+L · input stays on this origin · no RunPod console iframe</p>
+      <p class="mt-2 text-xs text-muted">Ctrl+C / Ctrl+D / Ctrl+L · input stays on this origin · no third-party console iframe</p>
     </section>
   `,
 })

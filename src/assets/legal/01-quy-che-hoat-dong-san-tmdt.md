@@ -39,7 +39,7 @@ Nền tảng thực hiện vai trò trung gian, công nghệ, quản lý listing
 ### 2.2. Sản phẩm do nền tảng trực tiếp cung cấp
 Khi sản phẩm được đánh dấu `PLATFORM_DIRECT`, Công ty TNHH giải pháp công nghệ PHGroup là bên trực tiếp cung cấp sản phẩm/dịch vụ đó.
 
-Không được hiểu nhà cung cấp hạ tầng như RunPod, AWS, GCP, OpenRouter hoặc Featherless là bên bán chỉ vì sản phẩm sử dụng hạ tầng/API của họ.
+Không được hiểu nhà cung cấp hạ tầng như AWS, GCP, OpenRouter, Featherless hoặc các nhà cung cấp GPU là bên bán chỉ vì sản phẩm sử dụng hạ tầng/API của họ.
 
 ## Điều 3. Tài khoản
 

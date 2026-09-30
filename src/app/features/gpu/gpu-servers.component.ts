@@ -19,7 +19,7 @@ import { environment } from '../../../environments/environment';
           <div>
             <h2 class="font-display text-2xl">GPU & live streams</h2>
             <p class="mt-1 text-sm text-muted">
-              GPU is a marketplace resource. Provider is selected from the registry (RunPod is one adapter). Terminal and play stay on this origin.
+              GPU is a marketplace resource provisioned by AI Markets. Terminal and play stay on this origin.
             </p>
           </div>
         </div>
@@ -85,13 +85,13 @@ export class GpuServersComponent implements OnInit {
   readonly projectId = 'default';
   readonly servers = signal<GpuServer[]>([]);
   readonly usage = signal<UsageStat[]>([]);
-  readonly computeProviders = signal<Array<{ provider: string; label: string }>>([{ provider: 'runpod', label: 'RunPod' }]);
+  readonly computeProviders = signal<Array<{ provider: string; label: string }>>([{ provider: 'aimarkets-gpu', label: 'AI Markets GPU' }]);
   readonly total = signal(0);
   readonly busy = signal(false);
   readonly error = signal('');
   name = 'GPU Game Lab';
   kind: 'game' | 'compute' = 'game';
-  provider = 'runpod';
+  provider = 'aimarkets-gpu';
 
   ngOnInit(): void {
     this.seo.set({ title: 'GPU servers' });

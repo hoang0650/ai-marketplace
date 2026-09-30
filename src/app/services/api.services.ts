@@ -90,7 +90,7 @@ export class RunpodService {
     if (filter.kind) params = params.set('kind', filter.kind);
     if (filter.modality) params = params.set('modality', filter.modality);
     if (filter.q) params = params.set('q', filter.q);
-    return this.http.get<RunpodPublicEndpoint[]>(`${this.base}/runpod/public-endpoints`, { params });
+    return this.http.get<RunpodPublicEndpoint[]>(`${this.base}/endpoints/public-endpoints`, { params });
   }
 
   bySlug(slug: string): Observable<RunpodPublicEndpoint> {
@@ -98,7 +98,7 @@ export class RunpodService {
       const hit = RUNPOD_PUBLIC_ENDPOINTS.find((e) => e.slug === slug);
       return hit ? of(hit) : throwError(() => ({ status: 404 }));
     }
-    return this.http.get<RunpodPublicEndpoint>(`${this.base}/runpod/public-endpoints/${slug}`);
+    return this.http.get<RunpodPublicEndpoint>(`${this.base}/endpoints/public-endpoints/${slug}`);
   }
 }
 
@@ -690,7 +690,7 @@ export class PlaygroundService {
   /** Exact `input` schema + pricing formula for a RunPod Public Endpoint. */
   modelSchema(slugOrEndpointId: string): Observable<RunpodModelSchema> {
     return this.http.get<RunpodModelSchema>(
-      `${this.base}/runpod/public-endpoints/${encodeURIComponent(slugOrEndpointId)}/schema`,
+      `${this.base}/endpoints/public-endpoints/${encodeURIComponent(slugOrEndpointId)}/schema`,
     );
   }
 }
@@ -781,6 +781,94 @@ export interface ComputeNode {
   maxConcurrent: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface GpuOffer {
+  id: string;
+  name: string;
+  memoryGb: number;
+  pricePerHour: number;
+  availability: 'high' | 'medium' | 'low' | 'unknown';
+}
+
+export interface GpuOffersResponse {
+  offers: GpuOffer[];
+  currency: 'USD';
+  wallet: { available: number };
+  limits: {
+    minPrepayHours: number;
+    maxGpuCount: number;
+    maxActive: number;
+    volumeGb: { min: number; max: number; default: number };
+    diskGb: number;
+    warnMinutes: number;
+    terminateGraceHours: number;
+  };
+}
+
+export type GpuRentalStatus = 'creating' | 'running' | 'stopped' | 'terminated' | 'error';
+
+export interface GpuRental {
+  id: string;
+  name: string;
+  gpu: { id: string; name: string; memoryGb: number; count: number };
+  diskGb: number;
+  volumeGb: number;
+  status: GpuRentalStatus;
+  ready: boolean;
+  pricePerHour: number;
+  stoppedPricePerHour: number;
+  currency: 'USD';
+  billedMinutes: number;
+  billedTotal: number;
+  stoppedReason: '' | 'user' | 'insufficient_funds' | 'admin';
+  terminateAfter: string | null;
+  createdAt: string;
+  stoppedAt: string | null;
+  terminatedAt: string | null;
+}
+
+@Injectable({ providedIn: 'root' })
+export class GpuRentalService {
+  private readonly http = inject(HttpClient);
+  private readonly base = `${environment.apiUrl}/gpu`;
+
+  offers(): Observable<GpuOffersResponse> {
+    return this.http.get<GpuOffersResponse>(`${this.base}/offers`);
+  }
+
+  list(): Observable<{ rentals: GpuRental[] }> {
+    return this.http.get<{ rentals: GpuRental[] }>(`${this.base}/rentals`);
+  }
+
+  get(id: string): Observable<{ rental: GpuRental }> {
+    return this.http.get<{ rental: GpuRental }>(`${this.base}/rentals/${id}`);
+  }
+
+  create(body: { offerId: string; name?: string; volumeGb?: number; gpuCount?: number }): Observable<{ rental: GpuRental }> {
+    return this.http.post<{ rental: GpuRental }>(`${this.base}/rentals`, body);
+  }
+
+  start(id: string): Observable<{ rental: GpuRental }> {
+    return this.http.post<{ rental: GpuRental }>(`${this.base}/rentals/${id}/start`, {});
+  }
+
+  stop(id: string): Observable<{ rental: GpuRental }> {
+    return this.http.post<{ rental: GpuRental }>(`${this.base}/rentals/${id}/stop`, {});
+  }
+
+  remove(id: string): Observable<{ rental: GpuRental }> {
+    return this.http.delete<{ rental: GpuRental }>(`${this.base}/rentals/${id}`);
+  }
+
+  /** Absolute URL of the workspace (JupyterLab or its terminal) on the API origin. */
+  open(id: string, target: 'lab' | 'terminal'): Observable<{ path: string; expiresIn: number }> {
+    return this.http.post<{ path: string; expiresIn: number }>(`${this.base}/rentals/${id}/open`, { target });
+  }
+
+  absoluteUrl(path: string): string {
+    return `${new URL(environment.apiUrl).origin}${path}`;
+  }
 }
 
 @Injectable({ providedIn: 'root' })

@@ -25,7 +25,7 @@ export class SellApiUsageDocsComponent implements OnInit {
   → POST /v1/chat/completions
   → ${this.i18n.t('sellx.apiUsage.flowApi')}
   → AI Markets AI /v1/infer
-  → Provider (Featherless, OpenRouter, RunPod…)
+  → Provider (Featherless, OpenRouter, GPU cloud…)
   ← usage { input_tokens, output_tokens }
   → UsageEvent + UsageStat + WalletTx`;
   }

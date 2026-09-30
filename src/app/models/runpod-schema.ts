@@ -1,7 +1,7 @@
 /**
  * Turns a RunPod Public Endpoint `input` schema into playground form fields.
  *
- * The schema itself comes from `GET /v1/runpod/public-endpoints/:slug/schema`,
+ * The schema itself comes from `GET /v1/endpoints/public-endpoints/:slug/schema`,
  * which proxies the catalog in the AI Markets AI API (the mirror of docs.runpod.io).
  * Every model accepts a different subset of parameters, so the form is built
  * from that schema rather than from the marketplace category — a Seedance run

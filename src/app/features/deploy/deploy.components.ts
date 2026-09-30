@@ -89,14 +89,12 @@ function fillRuntimeFromProduct(form: ReturnType<typeof emptyRuntimeForm>, p: Pr
     <section class="page route-enter">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">RunPod Public Endpoints</p>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">AI Markets Public Endpoints</p>
           <h1 class="section-title mt-1">AI Models</h1>
           <p class="mt-2 max-w-2xl text-muted">
-            Official pre-deployed models from
-            <a class="text-accent underline" href="https://docs.runpod.io/public-endpoints/reference" target="_blank" rel="noopener">
-              RunPod Public Endpoints
-            </a>
-            — call with <code class="text-xs">Authorization: Bearer RUNPOD_API_KEY</code> via
+            Pre-deployed models on the
+            <a class="text-accent underline" routerLink="/docs/models">AI Markets gateway</a>
+            — call with <code class="text-xs">Authorization: Bearer mk_live_…</code> via
             <code class="text-xs">/runsync</code> or <code class="text-xs">/run</code>.
           </p>
         </div>
@@ -281,8 +279,8 @@ export class ModelsHubComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.set({
-      title: 'AI Models — RunPod Public Endpoints',
-      description: 'Browse official RunPod Public Endpoints and seller-deployed models.',
+      title: 'AI Models — AI Markets Public Endpoints',
+      description: 'Browse pre-deployed AI Markets endpoints and seller-deployed models.',
     });
     this.runpodApi.publicEndpoints().subscribe({
       next: (items) => this.publicEndpoints.set(items),
@@ -368,7 +366,7 @@ export class ModelsHubComponent implements OnInit {
             @if (isPreset()) {
               <div class="rounded-xl border border-line p-4 text-sm text-muted">
                 Giọng sàn <strong class="text-ink">{{ p.contentMeta?.presetVoiceName || p.name }}</strong> do AI Markets vận hành
-                (VieNeu-TTS-v3-Turbo + vinai/PhoWhisper-large). Seller không gắn Chatterbox / RunPod public model.
+                (VieNeu-TTS-v3-Turbo + vinai/PhoWhisper-large). Seller không gắn model public bên ngoài.
               </div>
             } @else {
               <fieldset class="space-y-3 rounded-xl border border-line p-4">
@@ -437,7 +435,7 @@ export class ModelsHubComponent implements OnInit {
           </div>
         } @else if (workspace() === 'hire') {
           <div class="mt-8 rounded-xl border border-line p-5 text-sm text-muted">
-            Listing thuê ({{ categoryLabel(p.category) }}). Buyer gửi brief / hire — không cấu hình RunPod public endpoint.
+            Listing thuê ({{ categoryLabel(p.category) }}). Buyer gửi brief / hire — không cấu hình public endpoint.
             <div class="mt-4">
               <a class="btn-primary" [routerLink]="['/product', p.slug]">Mở listing</a>
             </div>
@@ -817,7 +815,7 @@ export class DeployWizardComponent implements OnInit {
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Seller deployments</p>
           <h1 class="section-title mt-1">Agent Browser</h1>
           <p class="mt-2 max-w-2xl text-muted">
-            Public RunPod endpoints &amp; agents published by sellers. Skills and gateways shown when configured.
+            Public endpoints &amp; agents published by sellers. Skills and gateways shown when configured.
           </p>
         </div>
         <a routerLink="/models" class="btn-primary">+ Deploy your product</a>
@@ -879,7 +877,7 @@ export class AgentBrowserComponent implements OnInit {
   readonly items = signal<Deployment[]>([]);
 
   ngOnInit(): void {
-    this.seo.set({ title: 'Agent Browser', description: 'Browse seller-published RunPod agents.' });
+    this.seo.set({ title: 'Agent Browser', description: 'Browse seller-published AI agents.' });
     this.deployments.browser().subscribe((rows) => this.items.set(rows));
   }
 }
@@ -896,7 +894,7 @@ export class AgentBrowserComponent implements OnInit {
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 class="section-title">Seller Deployments</h1>
-          <p class="mt-2 text-muted">Update RunPod serverless, tokenize, gateway, public endpoint, .env &amp; skills.</p>
+          <p class="mt-2 text-muted">Update serverless runtime, tokenize, gateway, public endpoint, .env &amp; skills.</p>
         </div>
         <a routerLink="/models" class="btn-primary">+ New deployment</a>
       </div>
@@ -998,7 +996,7 @@ export class AgentBrowserComponent implements OnInit {
           </article>
         } @empty {
           <div class="panel rounded-xl border border-line p-10 text-center text-muted">
-            <p>No seller deployments yet. Publish a product, then configure RunPod runtime.</p>
+            <p>No seller deployments yet. Publish a product, then configure its GPU runtime.</p>
             <a routerLink="/dashboard/products" class="btn-primary mt-4 inline-flex">Go to Products</a>
           </div>
         }

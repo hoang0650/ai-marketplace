@@ -111,7 +111,7 @@ import { WishlistService } from '../../services/api.services';
             (error)="onImgError($event)"
           />
           @if (isRunpod) {
-            <span class="shop-card__badge">RunPod</span>
+            <span class="shop-card__badge">GPU Cloud</span>
           }
         </div>
         <div class="shop-card__body">
@@ -148,7 +148,7 @@ import { WishlistService } from '../../services/api.services';
             {{ saved ? '♥' : '♡' }}
           </button>
           @if (isRunpod) {
-            <span class="ct-card__badge">RunPod</span>
+            <span class="ct-card__badge">GPU Cloud</span>
           }
           <span class="ct-card__ago">{{ ago }}</span>
           @if (product.gallery.length) {
@@ -742,8 +742,9 @@ export class ProductCardComponent {
     const infra = (this.product.infraProvider || this.product.provider || '').toLowerCase();
     return (
       infra.includes('runpod') ||
+      infra.startsWith('aimarkets-') ||
       this.product.tags?.includes('public-endpoint') ||
-      this.product.slug?.startsWith('runpod-')
+      /^(?:aim|runpod)-/.test(this.product.slug || '')
     );
   }
 

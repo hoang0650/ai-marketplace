@@ -58,13 +58,13 @@ export function buildRunpodMarketplaceProducts(): Product[] {
   return RUNPOD_PUBLIC_ENDPOINTS.map((ep, index) => {
     const cover = COVER_BY_KIND[ep.kind] || COVER_BY_KIND['image'];
     return {
-      id: `p-runpod-${ep.slug}`,
-      slug: `runpod-${ep.slug}`,
+      id: `p-aim-${ep.slug}`,
+      slug: `aim-${ep.slug}`,
       name: ep.name,
       tagline: `${ep.pricing} · AI Markets endpoint`,
       description: `${ep.description} Available on AI Markets via \`api.aimarkets.vn\` (model \`${ep.slug}\`).`,
       category: ep.modality,
-      creatorId: 'c-runpod',
+      creatorId: 'c-aimarkets',
       creatorSlug: CREATOR_SLUG,
       creatorName: 'AI Markets Models',
       coverUrl: cover,
@@ -111,7 +111,7 @@ export function buildRunpodMarketplaceProducts(): Product[] {
 
 export function buildRunpodCreator(): Creator {
   return {
-    id: 'c-runpod',
+    id: 'c-aimarkets',
     slug: CREATOR_SLUG,
     name: 'AI Markets Models',
     bio: 'Hosted model endpoints on AI Markets — call via api.aimarkets.vn.',
@@ -126,7 +126,7 @@ export function buildRunpodCreator(): Creator {
 
 export function buildRunpodUser(): User {
   return {
-    id: 'u-runpod',
+    id: 'u-aimarkets',
     email: 'models@aimarkets.vn',
     name: 'AI Markets Models',
     role: 'seller',

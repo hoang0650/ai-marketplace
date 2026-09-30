@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CurrencyPipe, DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe, Location, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   ProductService,
@@ -83,6 +83,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly contentApi = inject(ContentService);
   private readonly chatApi = inject(ChatService);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
   readonly auth = inject(AuthService);
 
   readonly product = signal<Product | null>(null);
@@ -312,7 +313,7 @@ export class ProductDetailComponent implements OnInit {
       }
     }
     if (isRunpodProduct(p) && ep?.pricing) {
-      return `RunPod Public Endpoint · ${ep.pricing}`;
+      return `Public Endpoint · ${ep.pricing}`;
     }
     const pr = p.pricing;
     if (pr.model === 'usage') {
@@ -331,6 +332,7 @@ export class ProductDetailComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       const slug = params.get('slug') || '';
       this.productsApi.bySlug(slug).subscribe((p) => {
+        if (p.slug && p.slug !== slug) this.location.replaceState(`/product/${p.slug}`);
         this.product.set(p);
         this.issuedLicense.set(null);
         this.episodes.set([]);
@@ -966,10 +968,9 @@ export class ProductDetailComponent implements OnInit {
 
   /** Prefill the same example inputs the RunPod Hub playground ships with. */
   private seedSampleInput(product: Product): void {
-    const ep = this.runpodEndpoint();
     const samples: Partial<Record<ProductCategory, string>> = {
-      'text-to-text': 'What is Runpod?',
-      inference: 'What is Runpod?',
+      'text-to-text': 'What is AI Markets?',
+      inference: 'What is AI Markets?',
       'text-to-image': 'A beautiful sunset over mountains',
       'image-to-image': 'Keep composition, restyle as watercolor with warm pastel palette.',
       'text-to-video':
@@ -981,10 +982,7 @@ export class ProductDetailComponent implements OnInit {
     this.prompt = samples[product.category] ?? '';
 
     if ('image' in this.paramValues || 'images' in this.paramValues) {
-      const reference =
-        ep?.slug === 'seedance-1-5-pro'
-          ? 'https://image.runpod.ai/asset/bytedance/seedance-v1-5-pro-i2.png'
-          : product.coverUrl;
+      const reference = product.coverUrl;
       if ('image' in this.paramValues) this.paramValues['image'] = reference;
       if ('images' in this.paramValues) this.paramValues['images'] = reference ? [reference] : [];
     }

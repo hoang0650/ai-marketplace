@@ -223,6 +223,12 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'gpu',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/gpu/gpu-rent.component').then((m) => m.GpuRentComponent),
+      },
+      {
         path: 'play/:productSlug',
         canActivate: [authGuard],
         loadComponent: () =>

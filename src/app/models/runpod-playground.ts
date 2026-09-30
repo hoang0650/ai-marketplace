@@ -5,7 +5,7 @@ import { publicGatewayUrls } from './gateway-urls';
 export function isRunpodProduct(p: Product | null | undefined): boolean {
   if (!p) return false;
   return (
-    p.slug.startsWith('runpod-') ||
+    /^(?:aim|runpod)-/.test(p.slug) ||
     p.tags?.includes('public-endpoint') ||
     p.tags?.includes('aimarkets') ||
     !!p.runtime?.publicEndpoint?.includes('aimarkets.vn') ||
@@ -15,7 +15,7 @@ export function isRunpodProduct(p: Product | null | undefined): boolean {
 }
 
 export function runpodCatalogSlug(p: Product): string {
-  return p.slug.replace(/^runpod-/, '');
+  return p.slug.replace(/^(?:aim|runpod)-/, '');
 }
 
 export function resolveRunpodEndpoint(p: Product): RunpodPublicEndpoint | undefined {

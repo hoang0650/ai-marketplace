@@ -561,7 +561,7 @@ export class DashboardAnalyticsComponent implements OnInit {
             } @else if (workspaceKind(p.category) === 'download') {
               <p class="mt-1 text-xs text-muted">License AIM-xxxx ngày / tháng / năm — không gắn API endpoint</p>
             } @else if (workspaceKind(p.category) === 'hire') {
-              <p class="mt-1 text-xs text-muted">Listing thuê — buyer gửi brief, không deploy RunPod</p>
+              <p class="mt-1 text-xs text-muted">Listing thuê — buyer gửi brief, không deploy GPU</p>
             } @else if (workspaceKind(p.category) === 'compute') {
               <p class="mt-1 text-xs text-muted">GPU / stream — quản lý ở tab GPU</p>
             } @else if (needsEndpointDeploy(p.category) && (p.runtime?.publicEndpoint || p.runtime?.serverlessEndpoint)) {
