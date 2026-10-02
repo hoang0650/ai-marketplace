@@ -23,19 +23,21 @@
       <div class="tab-body">
         <h2>{{ 'wallet.deposit.title' | t }}</h2>
         <div class="methods">
-          <button
-            type="button"
-            class="method method--paypal"
-            [class.selected]="depositMethod() === 'paypal'"
-            (click)="setDepositMethod('paypal')"
-          >
-            <span class="method__icon method__icon--paypal" aria-hidden="true">P</span>
-            <div>
-              <strong>{{ 'wallet.deposit.paypalOnlyName' | t }}</strong>
-              <p>{{ 'wallet.deposit.paypalOnlyDesc' | t }}</p>
-            </div>
-          </button>
-          @if (gpayAvailable()) {
+          @if (paypalVisible) {
+            <button
+              type="button"
+              class="method method--paypal"
+              [class.selected]="depositMethod() === 'paypal'"
+              (click)="setDepositMethod('paypal')"
+            >
+              <span class="method__icon method__icon--paypal" aria-hidden="true">P</span>
+              <div>
+                <strong>{{ 'wallet.deposit.paypalOnlyName' | t }}</strong>
+                <p>{{ 'wallet.deposit.paypalOnlyDesc' | t }}</p>
+              </div>
+            </button>
+          }
+          @if (gpayAvailable() || !paypalVisible) {
             <button
               type="button"
               class="method method--gpay"
@@ -51,7 +53,7 @@
           }
         </div>
 
-        @if (depositMethod() === 'paypal') {
+        @if (paypalVisible && depositMethod() === 'paypal') {
           <p class="hint">{{ railHint() }}</p>
 
           <div class="amount-row">

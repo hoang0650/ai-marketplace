@@ -2,7 +2,8 @@
   <div class="auth-page__layout">
     <aside class="auth-page__aside">
       <a routerLink="/" class="auth-page__brand">
-        <img src="/ai-markets-logo.png" alt="AI Markets" class="auth-page__brand-img" width="200" height="56" />
+        <img src="/brand/ai-markets-icon.svg" alt="" class="auth-page__brand-icon" width="44" height="44" />
+        <span class="auth-page__brand-text">AI Markets</span>
       </a>
       <h1>{{ 'auth.create' | t }}</h1>
       <p>{{ 'auth.registerSubtitle' | t: { brand } }}</p>
@@ -100,25 +101,21 @@
           />
         </div>
 
-        <fieldset class="auth-roles">
-          <legend>{{ 'auth.roleLabel' | t }}</legend>
-          <p class="auth-roles__hint">{{ 'auth.roleHint' | t }}</p>
-          <div class="auth-roles__grid">
+        <div class="auth-field">
+          <label for="register-role">{{ 'auth.roleLabel' | t }}</label>
+          <select
+            id="register-role"
+            name="role"
+            [ngModel]="role()"
+            (ngModelChange)="chooseRole($event)"
+            aria-describedby="register-role-desc"
+          >
             @for (r of roles; track r) {
-              <button
-                type="button"
-                class="auth-role"
-                [class.is-active]="role() === r"
-                [attr.aria-pressed]="role() === r"
-                (click)="chooseRole(r)"
-              >
-                <strong>{{ ('signup.role.' + r) | t }}</strong>
-                <small>{{ ('signup.role.' + r + 'Desc') | t }}</small>
-              </button>
+              <option [value]="r">{{ ('signup.role.' + r) | t }}</option>
             }
-          </div>
-          <input type="hidden" name="role" [ngModel]="role()" />
-        </fieldset>
+          </select>
+          <small id="register-role-desc" class="auth-field__hint">{{ ('signup.role.' + role() + 'Desc') | t }}</small>
+        </div>
 
         <label class="auth-check">
           <input type="checkbox" [(ngModel)]="agreed" name="agreed" required />

@@ -18,6 +18,8 @@ declare const paypal: {
 type WalletTab = 'deposit' | 'withdraw' | 'history';
 type DepositMethod = 'paypal' | 'gpay';
 
+/** PayPal is hidden on the web (GPay only); the /v1/paypal API stays so it can be re-enabled. */
+const PAYPAL_UI_ENABLED = false;
 const PAYPAL_QUICK = [5, 10, 20, 50, 100];
 const GPAY_QUICK_VND = [50_000, 100_000, 200_000, 500_000, 1_000_000];
 const GPAY_POLL_MS = 4000;
@@ -48,7 +50,8 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly paypalBusy = signal(false);
   readonly msgIsError = signal(false);
 
-  readonly depositMethod = signal<DepositMethod>('paypal');
+  readonly paypalVisible = PAYPAL_UI_ENABLED;
+  readonly depositMethod = signal<DepositMethod>(PAYPAL_UI_ENABLED ? 'paypal' : 'gpay');
   readonly gpayAvailable = signal(false);
   readonly gpayEnabled = signal(false);
   readonly gpayPortalEnabled = signal(false);
@@ -118,14 +121,16 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     if (payStatus === 'cancel') this.setMsg(this.i18n.t('wallet.msg.paypalCancel'), true);
     const amountQ = Number(this.route.snapshot.queryParamMap.get('amount'));
     if (Number.isFinite(amountQ) && amountQ >= 1) this.depositAmount = Math.round(amountQ);
-    this.api.paypalConfig().subscribe({
-      next: (cfg) => {
-        this.paypalEnabled.set(!!cfg.enabled && !!cfg.clientId);
-        this.paypalClientId = cfg.clientId || '';
-        queueMicrotask(() => this.ensurePayPalButtons());
-      },
-      error: () => this.paypalEnabled.set(false),
-    });
+    if (PAYPAL_UI_ENABLED) {
+      this.api.paypalConfig().subscribe({
+        next: (cfg) => {
+          this.paypalEnabled.set(!!cfg.enabled && !!cfg.clientId);
+          this.paypalClientId = cfg.clientId || '';
+          queueMicrotask(() => this.ensurePayPalButtons());
+        },
+        error: () => this.paypalEnabled.set(false),
+      });
+    }
 
     this.api.gpayConfig().subscribe({
       next: (cfg) => {

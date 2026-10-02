@@ -147,15 +147,10 @@
 }
 
 .work-top__mark {
+  display: block;
   width: 1.7rem;
   height: 1.7rem;
   border-radius: 8px;
-  background: #e53935;
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 0.7rem;
-  font-weight: 800;
 }
 
 .work-top__theme {
