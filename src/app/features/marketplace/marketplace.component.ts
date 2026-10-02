@@ -79,7 +79,9 @@ export class MarketplaceComponent implements OnInit {
     const cat = this.selectedCategory();
     const q = this.appliedQuery().trim().toLowerCase();
     const min = Math.min(this.priceMinSig(), this.priceMaxSig());
-    const max = Math.max(this.priceMinSig(), this.priceMaxSig());
+    const upper = Math.max(this.priceMinSig(), this.priceMaxSig());
+    // Slider end = no upper limit (hire listings cost thousands).
+    const max = upper === this.priceCeiling ? Infinity : upper;
 
     if (cat) rows = rows.filter((p) => p.category === cat);
     if (q) {
