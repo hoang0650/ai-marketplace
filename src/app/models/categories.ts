@@ -265,7 +265,39 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     navGroup: 'talent',
     lane: 'ai',
   },
+  {
+    id: 'template-web',
+    label: 'Web templates',
+    description: 'Seller-made website templates you restyle with AI.',
+    hubPath: '/template-web',
+    group: 'models',
+    navGroup: 'platform',
+    lane: 'ai',
+  },
+  {
+    id: 'template-app',
+    label: 'App templates',
+    description: 'React Native app templates with a phone simulator.',
+    hubPath: '/template-app',
+    group: 'models',
+    navGroup: 'platform',
+    lane: 'ai',
+  },
 ];
+
+const TEMPLATE_KIND: Partial<Record<ProductCategory, 'web' | 'app'>> = {
+  'template-web': 'web',
+  'template-app': 'app',
+};
+
+/** Builder template listing → project kind ('' for other categories). */
+export function templateKind(id?: ProductCategory | string): 'web' | 'app' | '' {
+  return TEMPLATE_KIND[String(id || '') as ProductCategory] || '';
+}
+
+export function isTemplateCategory(id?: ProductCategory | string): boolean {
+  return !!templateKind(id);
+}
 
 /** @deprecated Digital goods lane removed — AI marketplace only. */
 export const DIGITAL_CATEGORIES: CategoryMeta[] = [];

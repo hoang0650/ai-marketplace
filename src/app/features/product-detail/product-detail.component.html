@@ -106,9 +106,9 @@
 
         <label class="pd-buy__section" for="pd-qty">{{ 'pd.qty' | t }}</label>
         <div class="pd-qty">
-          <button type="button" (click)="bumpQty(-1)" aria-label="Decrease" [disabled]="isLicense(p.category)">−</button>
-          <input id="pd-qty" type="number" min="1" max="99" [(ngModel)]="qty" name="qty" [disabled]="isLicense(p.category)" (ngModelChange)="couponPreview.set(null)" />
-          <button type="button" (click)="bumpQty(1)" aria-label="Increase" [disabled]="isLicense(p.category)">+</button>
+          <button type="button" (click)="bumpQty(-1)" aria-label="Decrease" [disabled]="isLicense(p.category) || isTemplate(p.category)">−</button>
+          <input id="pd-qty" type="number" min="1" max="99" [(ngModel)]="qty" name="qty" [disabled]="isLicense(p.category) || isTemplate(p.category)" (ngModelChange)="couponPreview.set(null)" />
+          <button type="button" (click)="bumpQty(1)" aria-label="Increase" [disabled]="isLicense(p.category) || isTemplate(p.category)">+</button>
         </div>
 
         @if (isLicense(p.category)) {
@@ -174,7 +174,9 @@
         </div>
 
         <button type="button" class="pd-buy__cta" (click)="primaryCta()">
-          @if (isGpuCompute(p.category)) {
+          @if (isTemplate(p.category)) {
+            {{ (p.pricing.model === 'free' || !p.pricing.price ? 'builder.tpl.ctaFree' : 'builder.tpl.ctaBuy') | t }}
+          } @else if (isGpuCompute(p.category)) {
             {{ 'compute.cta.terminal' | t }}
           } @else if (isComputeStream(p.category)) {
             {{ 'compute.cta.play' | t }}
@@ -331,7 +333,11 @@
     }
 
     <nav class="ws-tabs" aria-label="Workspace">
-      @if (isHire(p.category)) {
+      @if (isTemplate(p.category)) {
+        <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'template'" (click)="setWorkspace('template')">
+          {{ 'builder.tpl.tab' | t }}
+        </button>
+      } @else if (isHire(p.category)) {
         <button type="button" class="ws-tab" [class.active]="workspaceTab() === 'hire'" (click)="setWorkspace('hire')">
           Hire
         </button>
@@ -362,6 +368,12 @@
         Reviews
       </button>
     </nav>
+
+    @if (workspaceTab() === 'template') {
+      <section class="pg-pane">
+        <app-template-panel [product]="p" [refresh]="templateRefresh()" (buy)="checkout()" />
+      </section>
+    }
 
     @if (workspaceTab() === 'install') {
       <div class="hire-layout">

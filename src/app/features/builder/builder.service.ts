@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
+import { Product } from '../../models/marketplace.models';
 
 export type BuilderKind = 'web' | 'app';
 
@@ -31,10 +32,89 @@ export interface BuilderProject {
   fileCount: number;
   previewUrl: string;
   lastGeneratedAt: string | null;
+  template: { productId: string; name: string; version: number } | null;
+  git?: ProjectGit | null;
   createdAt: string;
   updatedAt: string;
   files?: BuilderFile[];
   messages?: BuilderMessage[];
+}
+
+export interface ProjectGit {
+  provider: 'github';
+  owner: string;
+  repo: string;
+  fullName: string;
+  branch: string;
+  repoUrl: string;
+  private: boolean;
+  lastCommitSha: string;
+  lastCommitUrl: string;
+  lastPushedAt: string | null;
+  lastPushedVersion: number;
+}
+
+export interface GitConnection {
+  provider: 'github';
+  method: 'oauth' | 'token';
+  login: string;
+  avatarUrl: string;
+  scopes: string;
+  status: 'active' | 'invalid';
+  lastUsedAt: string | null;
+  connectedAt: string;
+}
+
+export interface GitStatus {
+  providers: Array<{ id: 'github'; label: string; oauth: boolean }>;
+  connections: GitConnection[];
+}
+
+export interface GitRepo {
+  fullName: string;
+  owner: string;
+  name: string;
+  private: boolean;
+  defaultBranch: string;
+  htmlUrl: string;
+  pushedAt: string | null;
+}
+
+export interface GitPushBody {
+  create?: { name?: string; private?: boolean };
+  repo?: string;
+  branch?: string;
+  message?: string;
+}
+
+export interface GitPushResult {
+  git: ProjectGit;
+  commit: { sha: string; url: string; unchanged: boolean };
+  repo: { fullName: string; url: string; private: boolean; created: boolean };
+}
+
+export interface TemplateMeta {
+  productId: string;
+  kind: BuilderKind;
+  ready: boolean;
+  version: number;
+  fileCount: number;
+  demoEnabled: boolean;
+  demoUrl: string;
+  useCount: number;
+  updatedAt: string | null;
+  access: boolean;
+  paths?: string[];
+}
+
+export interface TemplateListing {
+  product: Product & { moderationStatus?: string; published?: boolean };
+  template: TemplateMeta;
+}
+
+export interface TemplateUploadResult {
+  template: TemplateMeta;
+  skipped: Array<{ path: string; reason: 'type' | 'binary' | 'size' }>;
 }
 
 export interface ByokProvider {
@@ -138,6 +218,75 @@ export class BuilderService {
 
   deleteFile(id: string, path: string): Observable<{ project: BuilderProject }> {
     return this.http.delete<{ project: BuilderProject }>(`${this.base}/projects/${id}/files`, { params: { path } });
+  }
+
+  // ---------- push to the buyer's GitHub ----------
+
+  gitStatus(): Observable<GitStatus> {
+    return this.http.get<GitStatus>(`${this.base}/git`);
+  }
+
+  /** Returns the GitHub authorize URL; GitHub sends the browser back to `returnTo?git_connect=…`. */
+  gitOAuthStart(returnTo: string): Observable<{ url: string }> {
+    return this.http.post<{ url: string }>(`${this.base}/git/github/oauth/start`, { returnTo });
+  }
+
+  gitOAuthComplete(connectId: string): Observable<{ connection: GitConnection }> {
+    return this.http.post<{ connection: GitConnection }>(`${this.base}/git/github/oauth/complete`, { connectId });
+  }
+
+  gitConnectToken(token: string): Observable<{ connection: GitConnection }> {
+    return this.http.post<{ connection: GitConnection }>(`${this.base}/git/github/token`, { token });
+  }
+
+  gitDisconnect(): Observable<{ success: boolean }> {
+    return this.http.delete<{ success: boolean }>(`${this.base}/git/github`);
+  }
+
+  gitRepos(): Observable<{ repos: GitRepo[] }> {
+    return this.http.get<{ repos: GitRepo[] }>(`${this.base}/git/github/repos`);
+  }
+
+  gitPush(id: string, body: GitPushBody): Observable<GitPushResult> {
+    return this.http.post<GitPushResult>(`${this.base}/git/projects/${id}/push`, body);
+  }
+
+  gitUnlink(id: string): Observable<{ git: null }> {
+    return this.http.delete<{ git: null }>(`${this.base}/git/projects/${id}/link`);
+  }
+
+  // ---------- seller templates ----------
+
+  templates(kind?: BuilderKind): Observable<{ templates: TemplateListing[] }> {
+    const params: Record<string, string> = kind ? { kind } : {};
+    return this.http.get<{ templates: TemplateListing[] }>(`${this.base}/templates`, { params });
+  }
+
+  myTemplates(): Observable<{ templates: TemplateListing[] }> {
+    return this.http.get<{ templates: TemplateListing[] }>(`${this.base}/templates/mine`);
+  }
+
+  template(productId: string): Observable<{ template: TemplateMeta; isOwner: boolean }> {
+    return this.http.get<{ template: TemplateMeta; isOwner: boolean }>(`${this.base}/templates/${productId}`);
+  }
+
+  /** Files from a .zip, a folder picker or loose files; names keep folder-relative paths. */
+  uploadTemplate(productId: string, files: Array<{ file: File; path: string }>): Observable<TemplateUploadResult> {
+    const form = new FormData();
+    for (const f of files) form.append('files', f.file, f.path);
+    return this.http.put<TemplateUploadResult>(`${this.base}/templates/${productId}/files`, form);
+  }
+
+  templateFromProject(productId: string, projectId: string): Observable<TemplateUploadResult> {
+    return this.http.put<TemplateUploadResult>(`${this.base}/templates/${productId}/files`, { fromProject: projectId });
+  }
+
+  updateTemplate(productId: string, body: { demoEnabled: boolean }): Observable<{ template: TemplateMeta }> {
+    return this.http.patch<{ template: TemplateMeta }>(`${this.base}/templates/${productId}`, body);
+  }
+
+  useTemplate(productId: string, name?: string): Observable<{ project: BuilderProject }> {
+    return this.http.post<{ project: BuilderProject }>(`${this.base}/templates/${productId}/use`, name ? { name } : {});
   }
 
   /**

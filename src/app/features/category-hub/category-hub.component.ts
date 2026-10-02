@@ -11,6 +11,8 @@ import { TPipe } from '../../i18n/t.pipe';
 const BUILDER_KIND: Partial<Record<ProductCategory, 'web' | 'app'>> = {
   'hire-build-web': 'web',
   'hire-build-app': 'app',
+  'template-web': 'web',
+  'template-app': 'app',
 };
 
 @Component({

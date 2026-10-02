@@ -19,8 +19,10 @@ import { firstValueFrom } from 'rxjs';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { SeoService } from '../../services/seo.service';
-import { BuilderProject, BuilderService, BuilderStreamError, ByokKey, ByokProvider } from './builder.service';
+import { AuthService } from '../../services/auth.service';
+import { BuilderProject, BuilderService, BuilderStreamError, ByokKey, ByokProvider, ProjectGit } from './builder.service';
 import { ByokKeysComponent } from './byok-keys.component';
+import { GitPanelComponent } from './git-panel.component';
 import { buildZip, expoScaffold } from './zip';
 
 interface Device {
@@ -46,7 +48,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
 @Component({
   selector: 'app-builder-studio',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent],
+  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, GitPanelComponent],
   styles: [
     `
       :host { display: block; }
@@ -73,6 +75,9 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           />
           <span class="rounded-full border border-line px-2 py-0.5 text-xs">{{ 'builder.kind.' + p.kind | t }}</span>
           <span class="text-xs text-muted">v{{ p.version }}</span>
+          @if (p.template) {
+            <span class="truncate text-xs text-muted">{{ 'builder.tpl.from' | t: { name: p.template.name } }}</span>
+          }
           <div class="ml-auto flex flex-wrap items-center gap-2">
             <select class="input py-1 text-xs" [ngModel]="provider()" (ngModelChange)="pickProvider($event)" [attr.aria-label]="'builder.provider' | t">
               @for (k of activeKeys(); track k.provider) {
@@ -96,11 +101,22 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
             <button type="button" class="btn btn-outline text-xs" (click)="showKeys.set(!showKeys())">{{ 'builder.keys.manage' | t }}</button>
             <button type="button" class="btn btn-outline text-xs" (click)="exportZip()">{{ 'builder.export' | t }}</button>
             <a class="btn btn-outline text-xs" [href]="p.previewUrl" target="_blank" rel="noopener noreferrer">{{ 'builder.openTab' | t }}</a>
+            <button type="button" class="btn btn-outline text-xs" [class.border-accent]="showGit()" (click)="showGit.set(!showGit())">
+              {{ p.git ? ('builder.git.buttonLinked' | t: { repo: p.git.repo }) : ('builder.git.button' | t) }}
+            </button>
+            @if (canSellTemplate()) {
+              <a class="btn btn-outline text-xs" routerLink="/sell/templates" [queryParams]="{ fromProject: p.id, kind: p.kind }">
+                {{ 'builder.tpl.sellThis' | t }}
+              </a>
+            }
           </div>
         </header>
 
         @if (showKeys()) {
           <div class="panel"><app-byok-keys (changed)="onKeys($event)" /></div>
+        }
+        @if (showGit()) {
+          <div class="panel"><app-git-panel [project]="p" [generating]="generating()" (gitChange)="onGit($event)" /></div>
         }
         @if (error()) {
           <p class="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-400">{{ error() }}</p>
@@ -307,6 +323,8 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   private readonly api = inject(BuilderService);
   private readonly i18n = inject(I18nService);
   private readonly seo = inject(SeoService);
+  private readonly auth = inject(AuthService);
+  readonly canSellTemplate = computed(() => ['seller', 'admin'].includes(this.auth.user()?.role || ''));
   private readonly route = inject(ActivatedRoute);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
@@ -364,6 +382,8 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   });
   readonly error = signal('');
   readonly showKeys = signal(false);
+  /** Opens itself when GitHub OAuth sends the browser back here (?git_connect / ?git_error). */
+  readonly showGit = signal(false);
   readonly copied = signal(false);
 
   prompt = '';
@@ -382,6 +402,8 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     if (!this.browser) return;
     const id = this.route.snapshot.paramMap.get('id') || '';
+    const q = this.route.snapshot.queryParamMap;
+    if (q.get('git_connect') || q.get('git_error')) this.showGit.set(true);
     const initialPrompt = String((history.state as { prompt?: string } | null)?.prompt || '');
     if (initialPrompt) history.replaceState({ ...history.state, prompt: undefined }, '');
 
@@ -430,6 +452,10 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
       const first = this.activeKeys()[0]?.provider || '';
       if (first) this.pickProvider(first);
     }
+  }
+
+  onGit(git: ProjectGit | null): void {
+    this.project.update((cur) => (cur ? { ...cur, git } : cur));
   }
 
   pickProvider(id: string): void {

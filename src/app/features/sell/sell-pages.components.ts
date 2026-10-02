@@ -15,7 +15,7 @@ import {
   WalletSummary,
   WalletTx,
 } from '../../models/marketplace.models';
-import { categoryLabel, sellerWorkspaceKind } from '../../models/categories';
+import { categoryLabel, isTemplateCategory, sellerWorkspaceKind } from '../../models/categories';
 import { ShopProfileService } from './shop-profile.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
@@ -564,6 +564,7 @@ export class SellProductsComponent implements OnInit {
   readonly label = categoryLabel;
 
   actionLabel(p: Product): string {
+    if (isTemplateCategory(p.category)) return this.i18n.t('sell.nav.templates');
     const k = sellerWorkspaceKind(p.category);
     if (k === 'voice') return this.i18n.t('sell.prod.act.voice');
     if (k === 'watch') return this.i18n.t('sell.prod.act.watch');
@@ -574,6 +575,7 @@ export class SellProductsComponent implements OnInit {
   }
 
   actionLink(p: Product): string | string[] {
+    if (isTemplateCategory(p.category)) return '/sell/templates';
     const k = sellerWorkspaceKind(p.category);
     if (k === 'watch') return '/dashboard/products';
     if (k === 'download') return '/dashboard/licenses';

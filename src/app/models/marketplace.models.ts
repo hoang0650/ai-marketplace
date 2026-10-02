@@ -22,6 +22,8 @@ export type ProductCategory =
   | 'hire-workflow'
   | 'hire-build-app'
   | 'hire-build-web'
+  | 'template-web'
+  | 'template-app'
   | 'skill-pack'
   | 'voice-clone'
   | 'voice-preset'

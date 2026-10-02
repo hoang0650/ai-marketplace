@@ -45,6 +45,7 @@ const SELLER_GROUPS: NavGroup[] = [
     collapsible: true,
     items: [
       { labelKey: 'sell.nav.products', path: '/sell/products' },
+      { labelKey: 'sell.nav.templates', path: '/sell/templates' },
       { labelKey: 'sell.nav.orders', path: '/sell/orders' },
       { labelKey: 'sell.nav.messages', path: '/sell/messages' },
       { labelKey: 'sell.nav.complaints', path: '/sell/complaints' },

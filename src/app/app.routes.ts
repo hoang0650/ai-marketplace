@@ -107,6 +107,12 @@ export const routes: Routes = [
           import('./features/sell/sell-pages.components').then((m) => m.SellProductsComponent),
       },
       {
+        path: 'templates',
+        canActivate: [sellerGuard],
+        loadComponent: () =>
+          import('./features/builder/sell-templates.component').then((m) => m.SellTemplatesComponent),
+      },
+      {
         path: 'orders',
         loadComponent: () =>
           import('./features/sell/sell-pages.components').then((m) => m.SellOrdersComponent),
@@ -377,6 +383,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'hire-build-web', title: 'Build web' },
+      },
+      {
+        path: 'template-web',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'template-web', title: 'Web templates' },
+      },
+      {
+        path: 'template-app',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'template-app', title: 'App templates' },
       },
       {
         path: 'providers',

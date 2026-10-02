@@ -19,7 +19,8 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, CouponPreview, StreamDevice } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
+import { isHireCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
+import { TemplatePanelComponent } from '../builder/template-panel.component';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -35,7 +36,7 @@ import {
   schemaFields,
 } from '../../models/runpod-schema';
 
-type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews' | 'stream' | 'watch';
+type WorkspaceTab = 'playground' | 'hire' | 'install' | 'api' | 'overview' | 'reviews' | 'stream' | 'watch' | 'template';
 type ResultView = 'preview' | 'json';
 type InputMode = 'messages' | 'prompt';
 type RunStatus = 'idle' | 'running' | 'done' | 'error';
@@ -61,7 +62,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -107,6 +108,7 @@ export class ProductDetailComponent implements OnInit {
   readonly unlocking = signal(false);
   readonly checkingOut = signal(false);
   readonly chatStarting = signal(false);
+  readonly templateRefresh = signal(0);
   private playSeq = 0;
   readonly walletBalance = signal(0);
   readonly hasActiveLicense = computed(() => {
@@ -353,7 +355,9 @@ export class ProductDetailComponent implements OnInit {
         });
         this.resetPlayground(p);
         this.workspaceTab.set(
-          isWatchContentCategory(p.category)
+          isTemplateCategory(p.category)
+            ? 'template'
+            : isWatchContentCategory(p.category)
             ? 'watch'
             : isComputeStreamCategory(p.category)
               ? 'stream'
@@ -878,9 +882,18 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  isTemplate(cat: ProductCategory | string): boolean {
+    return isTemplateCategory(cat);
+  }
+
   primaryCta(): void {
     const p = this.product();
     if (!p) return;
+    if (isTemplateCategory(p.category)) {
+      this.setWorkspace('template');
+      this.checkout();
+      return;
+    }
     if (isComputeStreamCategory(p.category)) {
       this.launchComputeStream();
       return;
@@ -1619,7 +1632,7 @@ export class ProductDetailComponent implements OnInit {
       }
       return;
     }
-    const quantity = isLicenseCategory(p.category)
+    const quantity = isLicenseCategory(p.category) || isTemplateCategory(p.category)
       ? 1
       : Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
     const licenseTerm = isLicenseCategory(p.category) ? this.licenseTerm : undefined;
@@ -1660,6 +1673,10 @@ export class ProductDetailComponent implements OnInit {
                 })
               : this.i18n.t('cart.successTitle'),
           );
+        }
+        if (isTemplateCategory(p.category)) {
+          this.templateRefresh.update((n) => n + 1);
+          this.setWorkspace('template');
         }
         if (typeof res.balance === 'number') this.walletBalance.set(res.balance);
         else this.loadWallet();
