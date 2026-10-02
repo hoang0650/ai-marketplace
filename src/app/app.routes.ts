@@ -229,6 +229,22 @@ export const routes: Routes = [
           import('./features/gpu/gpu-rent.component').then((m) => m.GpuRentComponent),
       },
       {
+        path: 'training',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/training/training-studio.component').then((m) => m.TrainingStudioComponent),
+      },
+      {
+        path: 'build',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/builder/builder-home.component').then((m) => m.BuilderHomeComponent),
+      },
+      {
+        path: 'build/:id',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/builder/builder-studio.component').then((m) => m.BuilderStudioComponent),
+      },
+      {
         path: 'play/:productSlug',
         canActivate: [authGuard],
         loadComponent: () =>
@@ -417,6 +433,10 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'skill-pack', title: 'Skill packs' },
+      },
+      {
+        path: 'shops',
+        loadComponent: () => import('./features/shops/shops.component').then((m) => m.ShopsComponent),
       },
       {
         path: 'store/:creatorSlug',

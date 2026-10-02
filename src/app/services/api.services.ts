@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -47,7 +47,7 @@ import {
   ContentEpisode,
   ContentUnlock,
 } from '../models/marketplace.models';
-import { CategoryMeta } from '../models/marketplace.models';
+import { CategoryMeta, StreamDevice } from '../models/marketplace.models';
 import {
   Deployment,
   DeploymentRuntime,
@@ -198,6 +198,11 @@ export class CreatorService {
 
   list(): Observable<Creator[]> {
     return this.http.get<Creator[]>(`${this.base}/creators`);
+  }
+
+  /** Shops with visible listings, ranked by paid revenue (same ranking as the home rail). */
+  ranked(): Observable<Creator[]> {
+    return this.http.get<Creator[]>(`${this.base}/home/shops`);
   }
 
   bySlug(slug: string): Observable<Creator> {
@@ -763,6 +768,37 @@ export interface GameSessionInfo {
   productSlug?: string;
   hosting?: 'external' | 'aimarkets';
   playerMode?: 'terminal' | 'game';
+  client?: 'pc' | 'android' | 'ios';
+  device?: StreamDevice;
+  profile?: StreamProfile;
+  stopReason?: string;
+  heartbeatMs?: number;
+  idleTimeoutMs?: number;
+  billedMinutes?: number;
+  billedCost?: number;
+}
+
+export interface StreamProfile {
+  device: StreamDevice;
+  maxWidth: number;
+  maxHeight: number;
+  fps: number;
+  bitrateKbps: number;
+  inputs: string[];
+  orientation: 'any' | 'landscape';
+}
+
+export interface GameHeartbeat {
+  ok?: boolean;
+  status?: string;
+  code?: string;
+  stopReason?: string;
+  ratePerHour: number;
+  billedMinutes: number;
+  billedCost: number;
+  currency: string;
+  available?: number;
+  minutesLeft?: number;
 }
 
 export interface ComputeNode {
@@ -778,9 +814,21 @@ export interface ComputeNode {
   region: string;
   webhookUrl: boolean;
   hasStream: boolean;
+  devices?: StreamDevice[];
+  hasMobileStream?: boolean;
+  supply?: 'platform' | 'seller';
   maxConcurrent: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface MobileStreamConfig {
+  kind?: string;
+  host?: string;
+  port?: number;
+  path?: string;
+  tls?: boolean;
+  iframeUrl?: string;
 }
 
 export interface GpuOffer {
@@ -821,7 +869,7 @@ export interface GpuRental {
   currency: 'USD';
   billedMinutes: number;
   billedTotal: number;
-  stoppedReason: '' | 'user' | 'insufficient_funds' | 'admin';
+  stoppedReason: '' | 'user' | 'insufficient_funds' | 'admin' | 'job_done';
   terminateAfter: string | null;
   createdAt: string;
   stoppedAt: string | null;
@@ -871,6 +919,165 @@ export class GpuRentalService {
   }
 }
 
+/** raw = prepared dataset files / HF id; video = footage of people performing; audio = voice recordings. */
+export type TrainingSource = 'raw' | 'video' | 'audio';
+export type TrainingTask =
+  | 'llm-sft'
+  | 'image-classification'
+  | 'tabular'
+  | 'action-recognition'
+  | 'motion-scoring'
+  | 'speech-recognition'
+  | 'audio-classification'
+  | 'custom';
+
+export interface TrainingFile {
+  id: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  label: string;
+  transcript: string;
+  role: 'sample' | 'reference';
+  status: 'pending' | 'ready';
+  createdAt: string;
+}
+
+export interface TrainingDataset {
+  id: string;
+  name: string;
+  source: TrainingSource;
+  description: string;
+  hfDataset: string;
+  labels: string[];
+  fileCount: number;
+  transcribedCount: number;
+  totalBytes: number;
+  files: TrainingFile[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TrainingLimits {
+  rawFileMaxBytes: number;
+  videoFileMaxBytes: number;
+  audioFileMaxBytes: number;
+  datasetMaxBytes: number;
+  maxFiles: number;
+  maxDatasets: number;
+}
+
+export interface TrainingJob {
+  jobId: string;
+  source: TrainingSource;
+  task: TrainingTask;
+  modelId: string;
+  datasetId: string;
+  datasetName: string;
+  hfDataset: string;
+  gpuType: string;
+  status: 'queued' | 'running' | 'paused' | 'succeeded' | 'failed' | 'cancelled';
+  stage: string;
+  progress: number;
+  logs: string;
+  metrics: Record<string, unknown>;
+  config: Record<string, unknown>;
+  cost: number;
+  pricePerHour: number | null;
+  rentalId: string | null;
+  workspaceStatus: GpuRental['status'] | null;
+  autoStop: boolean;
+  artifact: { size: number } | null;
+  finishedAt: string | null;
+  createdAt: string;
+}
+
+export interface CreateTrainingJobBody {
+  source: TrainingSource;
+  task: TrainingTask;
+  datasetId?: string;
+  hfDataset?: string;
+  modelId?: string;
+  offerId?: string;
+  config?: Record<string, unknown>;
+  autoStop?: boolean;
+}
+
+@Injectable({ providedIn: 'root' })
+export class TrainingService {
+  private readonly http = inject(HttpClient);
+  private readonly datasetsBase = `${environment.apiUrl}/training-datasets`;
+  private readonly jobsBase = `${environment.apiUrl}/training-jobs`;
+
+  listDatasets(source?: TrainingSource): Observable<{ datasets: TrainingDataset[]; limits: TrainingLimits }> {
+    const params: Record<string, string> = source ? { source } : {};
+    return this.http.get<{ datasets: TrainingDataset[]; limits: TrainingLimits }>(this.datasetsBase, { params });
+  }
+
+  createDataset(body: { name: string; source: TrainingSource; description?: string; hfDataset?: string }): Observable<{ dataset: TrainingDataset }> {
+    return this.http.post<{ dataset: TrainingDataset }>(this.datasetsBase, body);
+  }
+
+  updateDataset(id: string, body: { name?: string; description?: string; hfDataset?: string }): Observable<{ dataset: TrainingDataset }> {
+    return this.http.patch<{ dataset: TrainingDataset }>(`${this.datasetsBase}/${id}`, body);
+  }
+
+  deleteDataset(id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.datasetsBase}/${id}`);
+  }
+
+  requestUpload(
+    id: string,
+    body: { filename: string; size: number; contentType?: string; label?: string; role?: 'sample' | 'reference' },
+  ): Observable<{ file: TrainingFile; upload: { method: 'PUT'; url: string; expiresIn: number } }> {
+    return this.http.post<{ file: TrainingFile; upload: { method: 'PUT'; url: string; expiresIn: number } }>(
+      `${this.datasetsBase}/${id}/files`,
+      body,
+    );
+  }
+
+  /** Straight to storage through the presigned URL (no API auth header), with progress events. */
+  putToStorage(url: string, file: File): Observable<HttpEvent<unknown>> {
+    return this.http.request(new HttpRequest('PUT', url, file, { reportProgress: true }));
+  }
+
+  completeUpload(id: string, fileId: string): Observable<{ file: TrainingFile; dataset: TrainingDataset }> {
+    return this.http.post<{ file: TrainingFile; dataset: TrainingDataset }>(`${this.datasetsBase}/${id}/files/${fileId}/complete`, {});
+  }
+
+  updateFile(
+    id: string,
+    fileId: string,
+    body: { label?: string; role?: 'sample' | 'reference'; transcript?: string },
+  ): Observable<{ dataset: TrainingDataset }> {
+    return this.http.patch<{ dataset: TrainingDataset }>(`${this.datasetsBase}/${id}/files/${fileId}`, body);
+  }
+
+  deleteFile(id: string, fileId: string): Observable<{ dataset: TrainingDataset }> {
+    return this.http.delete<{ dataset: TrainingDataset }>(`${this.datasetsBase}/${id}/files/${fileId}`);
+  }
+
+  listJobs(): Observable<TrainingJob[]> {
+    return this.http.get<TrainingJob[]>(this.jobsBase);
+  }
+
+  getJob(jobId: string): Observable<TrainingJob> {
+    return this.http.get<TrainingJob>(`${this.jobsBase}/${encodeURIComponent(jobId)}`);
+  }
+
+  createJob(body: CreateTrainingJobBody): Observable<TrainingJob> {
+    return this.http.post<TrainingJob>(this.jobsBase, body);
+  }
+
+  cancelJob(jobId: string): Observable<TrainingJob> {
+    return this.http.delete<TrainingJob>(`${this.jobsBase}/${encodeURIComponent(jobId)}`);
+  }
+
+  artifact(jobId: string): Observable<{ url: string; expiresIn: number; size: number }> {
+    return this.http.get<{ url: string; expiresIn: number; size: number }>(`${this.jobsBase}/${encodeURIComponent(jobId)}/artifact`);
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class GpuGatewayService {
   private readonly http = inject(HttpClient);
@@ -910,6 +1117,7 @@ export class GpuGatewayService {
     return this.http.delete<{ ok: boolean }>(`${this.base}/terminal/sessions/${sessionId}`);
   }
 
+  /** Web is the PC stream flow (keyboard + mouse); the mobile flow lives in the Android/iOS app. */
   createGameSession(
     serverIdOrOpts: string | { serverId?: string; productSlug?: string; projectId?: string },
     projectId = 'default',
@@ -918,13 +1126,18 @@ export class GpuGatewayService {
       return this.http.post<GameSessionInfo>(`${this.base}/game-sessions`, {
         serverId: serverIdOrOpts,
         projectId,
+        client: 'pc',
       });
     }
     const opts = serverIdOrOpts;
-    const body: Record<string, string> = { projectId: opts.projectId ?? 'default' };
+    const body: Record<string, string> = { projectId: opts.projectId ?? 'default', client: 'pc' };
     if (opts.productSlug) body['productSlug'] = opts.productSlug;
     if (opts.serverId) body['serverId'] = opts.serverId;
     return this.http.post<GameSessionInfo>(`${this.base}/game-sessions`, body);
+  }
+
+  heartbeatGameSession(sessionId: string): Observable<GameHeartbeat> {
+    return this.http.post<GameHeartbeat>(`${this.base}/game-sessions/${sessionId}/heartbeat`, {});
   }
 
   closeGameSession(sessionId: string): Observable<{ ok: boolean; billedCost?: number }> {
@@ -968,6 +1181,8 @@ export class SellerComputeService {
     healthUrl?: string;
     region?: string;
     maxConcurrent?: number;
+    devices?: StreamDevice[];
+    mobileStream?: MobileStreamConfig;
   }): Observable<ComputeNode> {
     return this.http.post<ComputeNode>(`${this.base}/seller/compute/nodes`, body);
   }
@@ -988,6 +1203,8 @@ export class SellerComputeService {
       healthUrl: string;
       region: string;
       maxConcurrent: number;
+      devices: StreamDevice[];
+      mobileStream: MobileStreamConfig;
     }>,
   ): Observable<ComputeNode> {
     return this.http.patch<ComputeNode>(`${this.base}/seller/compute/nodes/${id}`, body);

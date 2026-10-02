@@ -1925,3 +1925,35 @@
   color: var(--color-muted);
   padding: 4rem 1rem;
 }
+
+.stream-devices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.stream-devices__chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--color-surface);
+}
+
+.stream-devices__chip--supply {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.stream-devices__warn {
+  margin-top: 0.75rem;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 0.6rem;
+  background: rgba(245, 158, 11, 0.08);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+}

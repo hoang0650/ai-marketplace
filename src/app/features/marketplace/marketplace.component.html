@@ -18,6 +18,8 @@
         <span aria-hidden="true">⚙</span> {{ 'mkt.filters' | t }}
       </h2>
 
+      <div class="mkt-filter__body">
+
       <label class="mkt-filter__search">
         <span aria-hidden="true">⌕</span>
         <input
@@ -127,9 +129,12 @@
         <input type="checkbox" [(ngModel)]="inStockOnly" />
         {{ 'mkt.available' | t }}
       </label>
+      </div>
 
-      <button type="button" class="mkt-filter__apply" (click)="applyFilters()">{{ 'mkt.apply' | t }}</button>
-      <button type="button" class="mkt-filter__reset" (click)="resetFilters()">{{ 'mkt.reset' | t }}</button>
+      <div class="mkt-filter__actions">
+        <button type="button" class="mkt-filter__apply" (click)="applyFilters()">{{ 'mkt.apply' | t }}</button>
+        <button type="button" class="mkt-filter__reset" (click)="resetFilters()">{{ 'mkt.reset' | t }}</button>
+      </div>
     </aside>
 
     <div class="mkt-main">

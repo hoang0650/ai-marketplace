@@ -292,6 +292,16 @@ export type SellerVerificationStatus =
   | 'REJECTED'
   | 'TERMINATED';
 
+/** pc = web / desktop (keyboard + mouse); mobile = Android / iOS app (touch, landscape). */
+export type StreamDevice = 'pc' | 'mobile';
+
+export interface ProductStreaming {
+  devices: StreamDevice[];
+  /** Platform-sold GPU: rented as a platform GPU workspace (/gpu) instead of a seller stream. */
+  platformRental?: boolean;
+  rentalOfferId?: string;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -319,6 +329,8 @@ export interface Product {
   gallery: string[];
   pricing: ProductPricing;
   contentMeta?: ProductContentMeta | null;
+  /** GPU / game stream listings only. */
+  streaming?: ProductStreaming;
   runtime?: ProductRuntime;
   rating: number;
   reviewCount: number;

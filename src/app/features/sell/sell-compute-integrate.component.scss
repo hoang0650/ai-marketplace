@@ -82,6 +82,25 @@
   gap: 0.4rem;
 }
 
+.node-card__device {
+  display: inline-block;
+  margin-right: 0.35rem;
+  padding: 0.05rem 0.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.mobile-stream {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px dashed var(--color-line);
+  border-radius: 12px;
+}
+
 .btn-sm {
   font-size: 0.78rem;
   padding: 0.35rem 0.65rem;

@@ -48,6 +48,39 @@
   top: 4.25rem;
 }
 
+/* Desktop: the sidebar fits the viewport so Apply/Reset stay visible; filters scroll inside. */
+@media (min-width: 960px) {
+  .mkt-filter {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 5.25rem);
+    padding-bottom: 0;
+  }
+
+  .mkt-filter__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin-right: -0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .mkt-filter__body .mkt-filter__cats {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .mkt-filter__actions {
+    flex: none;
+    margin: 0 -1rem;
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid var(--color-line);
+    background: var(--color-surface);
+    border-radius: 0 0 12px 12px;
+  }
+}
+
 .mkt-filter__title {
   margin: 0 0 0.85rem;
   font-size: 1rem;

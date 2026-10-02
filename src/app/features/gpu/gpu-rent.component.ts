@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GpuOffer, GpuOffersResponse, GpuRental, GpuRentalService } from '../../services/api.services';
 import { CurrencyService } from '../../i18n/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
@@ -140,6 +140,7 @@ import { SeoService } from '../../services/seo.service';
 })
 export class GpuRentComponent implements OnInit {
   private readonly api = inject(GpuRentalService);
+  private readonly route = inject(ActivatedRoute);
   private readonly currency = inject(CurrencyService);
   private readonly i18n = inject(I18nService);
   private readonly seo = inject(SeoService);
@@ -191,6 +192,9 @@ export class GpuRentComponent implements OnInit {
     this.api.offers().subscribe({
       next: (r) => {
         this.offers.set(r.offers || []);
+        const preset = this.route.snapshot.queryParamMap.get('offer');
+        const match = preset ? (r.offers || []).find((o) => o.id === preset) : undefined;
+        if (match && !this.selected()) this.select(match);
         this.limits.set(r.limits);
         this.available.set(r.wallet?.available ?? 0);
         this.volumeGb = r.limits?.volumeGb?.default ?? 20;

@@ -1,0 +1,113 @@
+<section class="shops route-enter">
+  <nav class="shops-crumb" aria-label="Breadcrumb">
+    <a routerLink="/">{{ 'mkt.home' | t }}</a>
+    <span>/</span>
+    <span>{{ 'shops.title' | t }}</span>
+  </nav>
+
+  <header class="shops-head">
+    <div>
+      <h1 class="shops-head__title font-display">{{ 'shops.title' | t }}</h1>
+      <p class="shops-head__sub">{{ (hasRevenue() ? 'shops.desc' : 'shops.descSales') | t }}</p>
+    </div>
+  </header>
+
+  <div class="shops-tools">
+    <input
+      class="shops-tools__search"
+      type="search"
+      name="shopQuery"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+      [placeholder]="'shops.searchPh' | t"
+      [attr.aria-label]="'shops.searchPh' | t"
+    />
+    <label class="shops-tools__sort">
+      <span>{{ 'shops.sortLabel' | t }}</span>
+      <select name="shopSort" [ngModel]="sort()" (ngModelChange)="sort.set($event)">
+        @for (s of sorts; track s) {
+          @if (s !== 'revenue' || hasRevenue()) {
+            <option [value]="s">{{ ('shops.sort.' + s) | t }}</option>
+          }
+        }
+      </select>
+    </label>
+    <label class="shops-tools__check">
+      <input type="checkbox" name="verifiedOnly" [ngModel]="verifiedOnly()" (ngModelChange)="verifiedOnly.set($event)" />
+      <span>{{ 'shops.verifiedOnly' | t }}</span>
+    </label>
+  </div>
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <div class="shops-grid" aria-busy="true">
+        @for (i of skeletonSlots; track i) {
+          <div class="shop-card shop-card--skel"></div>
+        }
+      </div>
+    }
+    @case ('error') {
+      <div class="shops-state">
+        <p>{{ 'shops.error' | t }}</p>
+        <button type="button" class="shops-state__btn" (click)="load()">{{ 'shops.retry' | t }}</button>
+      </div>
+    }
+    @default {
+      <p class="shops-count">{{ 'shops.count' | t: { n: visible().length } }}</p>
+      @if (visible().length) {
+        <div class="shops-grid">
+          @for (shop of visible(); track shop.id) {
+            <a [routerLink]="['/store', shop.slug]" class="shop-card">
+              <div
+                class="shop-card__cover"
+                [style.background-image]="shop.coverUrl ? 'url(' + shop.coverUrl + '), ' + coverFallback : null"
+              >
+                @if (hasRevenue()) {
+                  <span class="shop-card__rank">#{{ rankById().get(shop.id) }}</span>
+                }
+                @if (shop.avatarUrl && !brokenAvatars().has(shop.id)) {
+                  <img
+                    class="shop-card__avatar"
+                    [src]="shop.avatarUrl"
+                    [alt]="shop.name"
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    (error)="markAvatarBroken(shop.id)"
+                  />
+                } @else {
+                  <span class="shop-card__avatar shop-card__avatar--letter">{{ shopInitial(shop) }}</span>
+                }
+              </div>
+              <div class="shop-card__body">
+                <h2 class="shop-card__name">
+                  <span class="shop-card__name-text">{{ shop.name }}</span>
+                  @if (shop.verified) {
+                    <span class="shop-card__verified" [attr.title]="'home.shopVerified' | t">✓</span>
+                  }
+                </h2>
+                @if (shop.bio) {
+                  <p class="shop-card__bio">{{ shop.bio }}</p>
+                }
+                <p class="shop-card__meta">
+                  <span>{{ 'home.shopListings' | t: { n: shop.productCount } }}</span>
+                  <span>{{ 'shops.sales' | t: { n: shop.totalSales || 0 } }}</span>
+                  @if (shop.rating) {
+                    <span>★ {{ shop.rating }}</span>
+                  }
+                </p>
+                @if (hasRevenue()) {
+                  <p class="shop-card__rev">{{ 'home.shopRevenue' | t: { amount: shopRevenue(shop) } }}</p>
+                }
+              </div>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="shops-state">
+          <p>{{ 'shops.empty' | t }}</p>
+        </div>
+      }
+    }
+  }
+</section>

@@ -199,7 +199,7 @@
             @if (shops().length > 5) {
               <ng-container *ngTemplateOutlet="railNav; context: { $implicit: shopRail }" />
             }
-            <a routerLink="/marketplace" class="lux-more">{{ 'home.seeMore' | t }}</a>
+            <a routerLink="/shops" class="lux-more">{{ 'home.seeMore' | t }}</a>
           </div>
         </div>
         <div class="lux-rail lux-rail--shops" #shopRail>

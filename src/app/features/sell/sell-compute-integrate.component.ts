@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
-import { Product } from '../../models/marketplace.models';
+import { Product, StreamDevice } from '../../models/marketplace.models';
 import { isComputeStreamCategory } from '../../models/categories';
 import { environment } from '../../../environments/environment';
 
@@ -48,12 +48,21 @@ export class SellComputeIntegrateComponent implements OnInit {
   useWebhook = true;
   hostingMode: 'external' | 'aimarkets' = 'external';
   gpuType = 'NVIDIA GeForce RTX 4090';
+  devicePc = true;
+  deviceMobile = true;
+  mobileIframeUrl = '';
+  mobileStreamHost = '';
+  mobileStreamPort = 0;
+  mobileStreamPath = '';
 
-  readonly flowDiagram = `Buyer → POST /v1/game-sessions { productSlug }
-  → (1) External seller webhook OR
-  → (2) AI Markets hosted GPU pod via AI API (ai.aimarkets.vn)
-  → Proxied player on aimarkets.vn
-Stop → bill usage (wallet)`;
+  readonly flowDiagram = `PC (web/desktop)        → POST /v1/game-sessions { productSlug, client: "pc" }
+Mobile (Android/iOS app) → POST /v1/game-sessions { productSlug, client: "android" | "ios" }
+  → seller node serving that device: (1) your machine (webhook / static stream)
+                                     (2) AI Markets hosted GPU pod
+  → webhook session.start receives { device, profile } (PC 1080p60 · mobile 720p, touch)
+  → proxied player on aimarkets.vn / in the app
+Every minute → wallet debit, you receive net after platform fee
+No heartbeat / no balance → auto stop (session.stop)`;
 
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('sellCompute.title') });
@@ -73,9 +82,20 @@ Stop → bill usage (wallet)`;
     });
   }
 
+  devices(): StreamDevice[] {
+    const out: StreamDevice[] = [];
+    if (this.devicePc) out.push('pc');
+    if (this.deviceMobile) out.push('mobile');
+    return out;
+  }
+
   submit(): void {
     if (!this.productSlug.trim()) {
       this.err.set(this.i18n.t('sellCompute.err.product'));
+      return;
+    }
+    if (!this.devices().length) {
+      this.err.set(this.i18n.t('sellCompute.err.devices'));
       return;
     }
     this.busy.set(true);
@@ -88,6 +108,7 @@ Stop → bill usage (wallet)`;
       kind: this.kind,
       region: this.region.trim() || undefined,
       maxConcurrent: this.maxConcurrent,
+      devices: this.devices(),
     };
     if (this.hostingMode === 'aimarkets') {
       body['gpuType'] = this.gpuType.trim() || undefined;
@@ -105,6 +126,16 @@ Stop → bill usage (wallet)`;
         body['streamTls'] = this.streamTls;
       }
       if (this.iframeUrl.trim()) body['iframeUrl'] = this.iframeUrl.trim();
+      if (this.deviceMobile && (this.mobileIframeUrl.trim() || this.mobileStreamHost.trim())) {
+        body['mobileStream'] = {
+          iframeUrl: this.mobileIframeUrl.trim() || undefined,
+          host: this.mobileStreamHost.trim() || undefined,
+          port: Number(this.mobileStreamPort) || undefined,
+          path: this.mobileStreamPath.trim() || undefined,
+          kind: this.streamKind.trim() || undefined,
+          tls: this.streamTls,
+        };
+      }
     }
 
     this.computeApi.registerNode(body as Parameters<SellerComputeService['registerNode']>[0]).subscribe({

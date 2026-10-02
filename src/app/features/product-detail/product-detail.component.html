@@ -508,14 +508,32 @@
       <div class="panel stream-launch">
         <h2 class="font-display text-2xl">{{ (isGpuCompute(p.category) ? 'compute.stream.titleGpu' : 'compute.stream.title') | t }}</h2>
         <p class="text-muted">{{ (isGpuCompute(p.category) ? 'compute.stream.descGpu' : 'compute.stream.desc') | t }}</p>
+        <div class="stream-devices">
+          <span class="stream-devices__chip stream-devices__chip--supply">
+            {{ (p.soldByPlatform ? 'compute.supply.platform' : 'compute.supply.seller') | t }}
+          </span>
+          @for (d of streamDevices(p); track d) {
+            <span class="stream-devices__chip">{{ 'compute.device.' + d | t }}</span>
+          }
+        </div>
+        @if (p.streaming?.platformRental) {
+          <p class="text-sm text-muted">{{ 'compute.stream.platformRental' | t }}</p>
+        } @else {
+          <p class="text-sm text-muted">{{ 'compute.device.webHint' | t }}</p>
+        }
         <p class="cost-hint">{{ priceHint() }}</p>
         @if (auth.user()) {
           <p class="text-sm">{{ 'pd.walletBalance' | t }} {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
         }
+        @if (!streamOnPc(p)) {
+          <p class="stream-devices__warn">{{ 'compute.device.mobileOnly' | t }}</p>
+        }
         <div class="pg-actions mt-4">
-          <button type="button" class="btn btn-run" (click)="launchComputeStream()">
-            {{ (isGpuCompute(p.category) ? 'compute.cta.launchGpu' : 'compute.cta.launch') | t }}
-          </button>
+          @if (streamOnPc(p)) {
+            <button type="button" class="btn btn-run" (click)="launchComputeStream()">
+              {{ (p.streaming?.platformRental ? 'compute.cta.rentGpu' : isGpuCompute(p.category) ? 'compute.cta.launchGpu' : 'compute.cta.launch') | t }}
+            </button>
+          }
           <a routerLink="/wallet" class="btn btn-outline">{{ 'cart.topUp' | t }}</a>
         </div>
       </div>
