@@ -1037,7 +1037,7 @@
       ],
       "pricing": {
         "model": "one-time",
-        "price": 18000,
+        "price": 8,
         "currency": "USD"
       },
       "rating": 4.7,
@@ -1074,7 +1074,7 @@
       ],
       "pricing": {
         "model": "one-time",
-        "price": 9500,
+        "price": 5,
         "currency": "USD"
       },
       "rating": 4.6,
