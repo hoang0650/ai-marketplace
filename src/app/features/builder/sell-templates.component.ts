@@ -12,11 +12,14 @@ import {
   BuilderKind,
   BuilderProject,
   BuilderService,
+  TemplateGitPick,
   TemplateListing,
   TemplateUploadResult,
 } from './builder.service';
+import { TemplateGitSourceComponent } from './template-git-source.component';
 
 type Picked = Array<{ file: File; path: string }>;
+type DraftSource = 'upload' | 'project' | 'git';
 
 const TEXT_ACCEPT = '.zip,.html,.css,.js,.mjs,.jsx,.ts,.tsx,.json,.svg,.txt,.md';
 
@@ -30,7 +33,7 @@ function pickFiles(input: HTMLInputElement): Picked {
 @Component({
   selector: 'app-sell-templates',
   standalone: true,
-  imports: [FormsModule, RouterLink, DecimalPipe, TPipe],
+  imports: [FormsModule, RouterLink, DecimalPipe, TPipe, TemplateGitSourceComponent],
   template: `
     <section class="tpl">
       <div class="head">
@@ -99,31 +102,50 @@ function pickFiles(input: HTMLInputElement): Picked {
 
           <fieldset class="wide source">
             <legend>{{ 'builder.tpl.f.source' | t }}</legend>
-            <div class="row">
-              <label class="pick">
-                {{ 'builder.tpl.pick.zip' | t }}
-                <input type="file" [accept]="textAccept" multiple (change)="onDraftFiles($event)" />
-              </label>
-              <label class="pick">
-                {{ 'builder.tpl.pick.folder' | t }}
-                <input type="file" webkitdirectory multiple (change)="onDraftFiles($event)" />
-              </label>
-              <select class="input" name="fromProject" [(ngModel)]="draft.fromProject" (ngModelChange)="draftFiles.set([])">
-                <option value="">{{ 'builder.tpl.pick.project' | t }}</option>
-                @for (p of draftProjects(); track p.id) {
-                  <option [value]="p.id">{{ p.name }} (v{{ p.version }})</option>
-                }
-              </select>
+            <div class="tabs" role="tablist">
+              @for (s of sources; track s) {
+                <button type="button" role="tab" class="tab" [class.tab--on]="draftSource() === s" [attr.aria-selected]="draftSource() === s" (click)="draftSource.set(s)">
+                  {{ 'builder.tpl.src.' + s | t }}
+                </button>
+              }
             </div>
-            @if (draftFiles().length) {
-              <p class="hint">{{ 'builder.tpl.pick.count' | t: { n: draftFiles().length } }}</p>
+            @switch (draftSource()) {
+              @case ('upload') {
+                <div class="row">
+                  <label class="pick">
+                    {{ 'builder.tpl.pick.zip' | t }}
+                    <input type="file" [accept]="textAccept" multiple (change)="onDraftFiles($event)" />
+                  </label>
+                  <label class="pick">
+                    {{ 'builder.tpl.pick.folder' | t }}
+                    <input type="file" webkitdirectory multiple (change)="onDraftFiles($event)" />
+                  </label>
+                </div>
+                @if (draftFiles().length) {
+                  <p class="hint">{{ 'builder.tpl.pick.count' | t: { n: draftFiles().length } }}</p>
+                }
+                <p class="hint">{{ 'builder.tpl.pick.hint' | t }}</p>
+              }
+              @case ('project') {
+                <select class="input" name="fromProject" [ngModel]="draftProject()" (ngModelChange)="draftProject.set($event)">
+                  <option value="">{{ 'builder.tpl.pick.project' | t }}</option>
+                  @for (p of draftProjects(); track p.id) {
+                    <option [value]="p.id">{{ p.name }} (v{{ p.version }})</option>
+                  }
+                </select>
+                @if (!draftProjects().length) {
+                  <p class="hint">{{ 'builder.tpl.pick.noProjects' | t }}</p>
+                }
+              }
+              @case ('git') {
+                <app-template-git-source returnKey="new" (changed)="draftGit.set($event)" />
+              }
             }
-            <p class="hint">{{ 'builder.tpl.pick.hint' | t }}</p>
           </fieldset>
 
           <div class="wide actions">
             <p class="hint">{{ 'builder.tpl.sell.review' | t }}</p>
-            <button class="btn" type="submit" [disabled]="busy() || !draft.name.trim() || (!draftFiles().length && !draft.fromProject)">
+            <button class="btn" type="submit" [disabled]="busy() || !draft.name.trim() || !draftReady()">
               {{ busy() ? ('builder.tpl.sell.saving' | t) : ('builder.tpl.sell.publish' | t) }}
             </button>
           </div>
@@ -173,6 +195,7 @@ function pickFiles(input: HTMLInputElement): Picked {
                     <option [value]="p.id">{{ p.name }} (v{{ p.version }})</option>
                   }
                 </select>
+                <button type="button" class="ghost" [class.ghost--on]="gitRow() === row.product.id" (click)="toggleGitRow(row)">GitHub</button>
                 @if (row.template.ready) {
                   <label class="toggle">
                     <input type="checkbox" [checked]="row.template.demoEnabled" (change)="toggleDemo(row, $event)" />
@@ -184,6 +207,32 @@ function pickFiles(input: HTMLInputElement): Picked {
                   <button type="button" class="ghost" (click)="tryInBuilder(row)">{{ 'builder.tpl.try' | t }}</button>
                 }
               </div>
+              @if (row.template.git; as g) {
+                <div class="linked">
+                  <span>
+                    {{ 'builder.tpl.git.linked' | t }}
+                    <a [href]="g.repoUrl" target="_blank" rel="noopener noreferrer"><code>{{ g.repo }}</code></a>
+                    · <code>{{ g.branch }}</code>
+                    @if (g.path) { · <code>/{{ g.path }}</code> }
+                    @if (g.commitSha) {
+                      · <a [href]="g.repoUrl + '/commit/' + g.commitSha" target="_blank" rel="noopener noreferrer"><code>{{ g.commitSha.slice(0, 7) }}</code></a>
+                    }
+                  </span>
+                  <button type="button" class="ghost" [disabled]="rowBusy() === row.product.id" (click)="syncGit(row)">↻ {{ 'builder.tpl.git.sync' | t }}</button>
+                  <button type="button" class="link-btn" [disabled]="rowBusy() === row.product.id" (click)="unlinkGit(row)">{{ 'builder.tpl.git.unlink' | t }}</button>
+                </div>
+              }
+              @if (gitRow() === row.product.id) {
+                <div class="gitbox">
+                  <app-template-git-source
+                    [returnKey]="row.product.id"
+                    [initial]="row.template.git ? { repo: row.template.git.repo, branch: row.template.git.branch, path: row.template.git.path } : null"
+                    [submitLabel]="'builder.tpl.git.import' | t"
+                    [busy]="rowBusy() === row.product.id"
+                    (submitted)="importGit(row, $event)"
+                  />
+                </div>
+              }
               @if (rowBusy() === row.product.id) {
                 <p class="hint">{{ 'builder.tpl.sell.saving' | t }}</p>
               }
@@ -242,6 +291,16 @@ function pickFiles(input: HTMLInputElement): Picked {
     .warn { color: #c62828; font-weight: 700; }
     .ghost { border: 1px solid #ddd; border-radius: 10px; padding: .35rem .7rem; text-decoration: none; color: #333; font-weight: 700; font-size: .8rem; background: #fff; cursor: pointer; }
     .toggle { display: inline-flex; gap: .35rem; align-items: center; font-size: .8rem; color: #555; }
+    .ghost--on { border-color: #24292f; box-shadow: 0 0 0 2px rgba(36,41,47,.15); }
+    .ghost:disabled, .link-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .tabs { display: flex; gap: .25rem; flex-wrap: wrap; border: 1px solid #ececec; border-radius: 10px; padding: .2rem; width: fit-content; max-width: 100%; }
+    .tab { border: 0; border-radius: 8px; padding: .4rem .8rem; background: transparent; font: inherit; font-size: .82rem; font-weight: 700; color: #555; cursor: pointer; }
+    .tab--on { background: #e53935; color: #fff; }
+    .linked { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; font-size: .8rem; color: #555; }
+    .linked a { color: inherit; }
+    .linked code { font-size: .78rem; word-break: break-all; }
+    .link-btn { border: 0; background: none; padding: 0; color: #c62828; font: inherit; font-size: .8rem; text-decoration: underline; cursor: pointer; }
+    .gitbox { border: 1px dashed #ddd; border-radius: 12px; padding: .7rem .9rem; }
     .empty p { margin: 0; color: #777; }
     @media (max-width: 720px) { .form { grid-template-columns: 1fr; } .item { flex-direction: column; } }
   `,
@@ -256,20 +315,35 @@ export class SellTemplatesComponent implements OnInit {
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly kinds: BuilderKind[] = ['web', 'app'];
+  readonly sources: DraftSource[] = ['upload', 'project', 'git'];
   readonly textAccept = TEXT_ACCEPT;
   readonly rows = signal<TemplateListing[]>([]);
   readonly projects = signal<BuilderProject[]>([]);
   readonly showCreate = signal(false);
   readonly draftKind = signal<BuilderKind>('web');
+  readonly draftSource = signal<DraftSource>('upload');
   readonly draftFiles = signal<Picked>([]);
+  readonly draftProject = signal('');
+  readonly draftGit = signal<TemplateGitPick | null>(null);
   readonly draftProjects = computed(() => this.projectsOf(this.draftKind()));
+  readonly draftReady = computed(() => {
+    switch (this.draftSource()) {
+      case 'upload':
+        return this.draftFiles().length > 0;
+      case 'project':
+        return !!this.draftProject();
+      default:
+        return !!this.draftGit();
+    }
+  });
   readonly busy = signal(false);
   readonly rowBusy = signal('');
+  readonly gitRow = signal('');
   readonly error = signal('');
   readonly notice = signal('');
   readonly skipped = signal<TemplateUploadResult['skipped']>([]);
 
-  draft = { name: '', tagline: '', description: '', price: 19, coverUrl: '', tags: '', fromProject: '' };
+  draft = { name: '', tagline: '', description: '', price: 19, coverUrl: '', tags: '' };
 
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('builder.tpl.sell.title') });
@@ -279,8 +353,16 @@ export class SellTemplatesComponent implements OnInit {
     if (kind === 'web' || kind === 'app') this.draftKind.set(kind);
     const fromProject = q.get('fromProject') || '';
     if (fromProject) {
-      this.draft.fromProject = fromProject;
+      this.draftProject.set(fromProject);
+      this.draftSource.set('project');
       this.showCreate.set(true);
+    }
+    const tplgit = q.get('tplgit') || '';
+    if (tplgit === 'new') {
+      this.draftSource.set('git');
+      this.showCreate.set(true);
+    } else if (/^[a-f0-9]{24}$/.test(tplgit)) {
+      this.gitRow.set(tplgit);
     }
     this.load();
     this.api.list().subscribe({
@@ -290,6 +372,8 @@ export class SellTemplatesComponent implements OnInit {
         if (p) {
           this.draftKind.set(p.kind);
           if (!this.draft.name) this.draft.name = p.name;
+        } else if (fromProject) {
+          this.draftProject.set('');
         }
       },
       error: () => this.projects.set([]),
@@ -308,12 +392,11 @@ export class SellTemplatesComponent implements OnInit {
 
   setDraftKind(kind: BuilderKind): void {
     this.draftKind.set(kind);
-    this.draft.fromProject = '';
+    this.draftProject.set('');
   }
 
   onDraftFiles(event: Event): void {
     this.draftFiles.set(pickFiles(event.target as HTMLInputElement));
-    this.draft.fromProject = '';
   }
 
   create(): void {
@@ -343,8 +426,11 @@ export class SellTemplatesComponent implements OnInit {
           this.upload(product.id, () => {
             this.busy.set(false);
             this.showCreate.set(false);
-            this.draft = { name: '', tagline: '', description: '', price: 19, coverUrl: '', tags: '', fromProject: '' };
+            this.draft = { name: '', tagline: '', description: '', price: 19, coverUrl: '', tags: '' };
             this.draftFiles.set([]);
+            this.draftProject.set('');
+            this.draftGit.set(null);
+            this.draftSource.set('upload');
             this.notice.set(this.i18n.t('builder.tpl.sell.created', { name }));
           }, () => {
             this.busy.set(false);
@@ -386,6 +472,32 @@ export class SellTemplatesComponent implements OnInit {
     });
   }
 
+  toggleGitRow(row: TemplateListing): void {
+    this.gitRow.set(this.gitRow() === row.product.id ? '' : row.product.id);
+  }
+
+  importGit(row: TemplateListing, pick: TemplateGitPick): void {
+    if (this.rowBusy()) return;
+    this.reset();
+    this.rowBusy.set(row.product.id);
+    this.send(this.api.templateFromGit(row.product.id, pick), row.product.name, () => this.gitRow.set(''));
+  }
+
+  syncGit(row: TemplateListing): void {
+    if (this.rowBusy()) return;
+    this.reset();
+    this.rowBusy.set(row.product.id);
+    this.send(this.api.templateFromGit(row.product.id, { sync: true }), row.product.name);
+  }
+
+  unlinkGit(row: TemplateListing): void {
+    if (!confirm(this.i18n.t('builder.tpl.git.confirmUnlink'))) return;
+    this.api.updateTemplate(row.product.id, { unlinkGit: true }).subscribe({
+      next: (r) => this.patchRow(row.product.id, r.template),
+      error: (e) => this.error.set(e?.error?.message || this.i18n.t('builder.err.generic')),
+    });
+  }
+
   tryInBuilder(row: TemplateListing): void {
     this.reset();
     this.api.useTemplate(row.product.id).subscribe({
@@ -395,9 +507,14 @@ export class SellTemplatesComponent implements OnInit {
   }
 
   private upload(productId: string, done: () => void, failed: () => void): void {
-    const req = this.draft.fromProject
-      ? this.api.templateFromProject(productId, this.draft.fromProject)
-      : this.api.uploadTemplate(productId, this.draftFiles());
+    const git = this.draftGit();
+    const source = this.draftSource();
+    const req =
+      source === 'project'
+        ? this.api.templateFromProject(productId, this.draftProject())
+        : source === 'git' && git
+          ? this.api.templateFromGit(productId, git)
+          : this.api.uploadTemplate(productId, this.draftFiles());
     req.subscribe({
       next: (r) => {
         this.skipped.set(r.skipped || []);
@@ -413,13 +530,14 @@ export class SellTemplatesComponent implements OnInit {
     });
   }
 
-  private send(req: Observable<TemplateUploadResult>, name: string): void {
+  private send(req: Observable<TemplateUploadResult>, name: string, done?: () => void): void {
     req.subscribe({
       next: (r) => {
         this.rowBusy.set('');
         this.skipped.set(r.skipped || []);
         this.patchRow(r.template.productId, r.template);
         this.notice.set(this.i18n.t('builder.tpl.sell.updated', { name, v: r.template.version }));
+        done?.();
       },
       error: (e) => {
         this.rowBusy.set('');

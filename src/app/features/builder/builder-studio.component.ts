@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  HostListener,
   OnInit,
   PLATFORM_ID,
   computed,
@@ -52,7 +53,8 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
   styles: [
     `
       :host { display: block; }
-      .studio { height: calc(100vh - 4rem); min-height: 640px; }
+      .studio { min-height: calc(100vh - 4rem); }
+      .preview-full { position: fixed; inset: 0; z-index: 60; height: auto !important; min-height: 0 !important; border-radius: 0; }
       .bubble-user { background: rgb(99 102 241 / 0.15); }
       .selected-row { background: rgb(255 255 255 / 0.1); }
       .device { border: 10px solid #111827; border-radius: 42px; box-shadow: 0 20px 60px rgb(0 0 0 / 0.45); overflow: hidden; background: #fff; transform-origin: top center; }
@@ -67,7 +69,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
         <header class="flex flex-wrap items-center gap-2">
           <a routerLink="/build" class="btn btn-outline text-xs">← {{ 'builder.back' | t }}</a>
           <input
-            class="input min-w-0 max-w-xs flex-1 py-1 font-semibold"
+            class="input min-w-[10rem] flex-1 py-1 font-semibold sm:max-w-xs"
             [ngModel]="p.name"
             (change)="rename($any($event.target).value)"
             maxlength="80"
@@ -76,29 +78,38 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           <span class="rounded-full border border-line px-2 py-0.5 text-xs">{{ 'builder.kind.' + p.kind | t }}</span>
           <span class="text-xs text-muted">v{{ p.version }}</span>
           @if (p.template) {
-            <span class="truncate text-xs text-muted">{{ 'builder.tpl.from' | t: { name: p.template.name } }}</span>
+            <span class="max-w-full truncate text-xs text-muted">{{ 'builder.tpl.from' | t: { name: p.template.name } }}</span>
           }
-          <div class="ml-auto flex flex-wrap items-center gap-2">
-            <select class="input py-1 text-xs" [ngModel]="provider()" (ngModelChange)="pickProvider($event)" [attr.aria-label]="'builder.provider' | t">
-              @for (k of activeKeys(); track k.provider) {
-                <option [value]="k.provider">{{ providerLabel(k.provider) }}</option>
-              }
-            </select>
-            <input
-              class="input w-48 py-1 text-xs"
-              list="builder-models"
-              [ngModel]="model()"
-              (ngModelChange)="model.set($event)"
-              (change)="saveModel()"
-              [placeholder]="defaultModel()"
-              [attr.aria-label]="'builder.model' | t"
-            />
-            <datalist id="builder-models">
-              @for (m of models(); track m) {
-                <option [value]="m"></option>
-              }
-            </datalist>
-            <button type="button" class="btn btn-outline text-xs" (click)="showKeys.set(!showKeys())">{{ 'builder.keys.manage' | t }}</button>
+          <div class="flex w-full flex-wrap items-center gap-2 lg:ml-auto lg:w-auto">
+            @if (activeKeys().length) {
+              <label class="flex min-w-0 flex-1 items-center gap-1 text-xs text-muted sm:flex-none" [title]="'builder.modelHint' | t">
+                {{ 'builder.provider' | t }}
+                <select class="input min-w-0 flex-1 py-1 text-xs text-ink" [ngModel]="provider()" (ngModelChange)="pickProvider($event)">
+                  @for (k of activeKeys(); track k.provider) {
+                    <option [value]="k.provider">{{ providerLabel(k.provider) }}</option>
+                  }
+                </select>
+              </label>
+              <label class="flex min-w-0 flex-1 items-center gap-1 text-xs text-muted sm:flex-none" [title]="'builder.modelHint' | t">
+                {{ 'builder.model' | t }}
+                <input
+                  class="input min-w-0 flex-1 py-1 text-xs text-ink sm:w-44 sm:flex-none"
+                  list="builder-models"
+                  [ngModel]="model()"
+                  (ngModelChange)="model.set($event)"
+                  (change)="saveModel()"
+                  [placeholder]="defaultModel() || ('builder.modelDefault' | t)"
+                />
+              </label>
+              <datalist id="builder-models">
+                @for (m of models(); track m) {
+                  <option [value]="m"></option>
+                }
+              </datalist>
+              <button type="button" class="btn btn-outline text-xs" (click)="showKeys.set(!showKeys())">{{ 'builder.keys.manage' | t }}</button>
+            } @else {
+              <button type="button" class="btn btn-fill text-xs" (click)="showKeys.set(true)">{{ 'builder.keys.setup' | t }}</button>
+            }
             <button type="button" class="btn btn-outline text-xs" (click)="exportZip()">{{ 'builder.export' | t }}</button>
             <a class="btn btn-outline text-xs" [href]="p.previewUrl" target="_blank" rel="noopener noreferrer">{{ 'builder.openTab' | t }}</a>
             <button type="button" class="btn btn-outline text-xs" [class.border-accent]="showGit()" (click)="showGit.set(!showGit())">
@@ -122,10 +133,10 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           <p class="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-400">{{ error() }}</p>
         }
 
-        <div class="grid min-h-0 flex-1 gap-3 lg:grid-cols-[380px_1fr]">
+        <div class="grid gap-3 lg:h-[calc(100vh-7rem)] lg:min-h-[560px] lg:grid-cols-[380px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
           <!-- chat -->
-          <div class="panel flex min-h-0 flex-col gap-3 p-3">
-            <div #chatScroll class="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+          <div class="panel flex min-h-0 min-w-0 flex-col gap-3 p-3">
+            <div #chatScroll class="max-h-[45vh] min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 lg:max-h-none">
               @for (m of p.messages || []; track m.id) {
                 <div class="rounded-xl px-3 py-2 text-sm" [class.bubble-user]="m.role === 'user'" [class.border]="m.role === 'assistant'" [class.border-line]="m.role === 'assistant'">
                   <p class="whitespace-pre-wrap">{{ m.content }}</p>
@@ -195,7 +206,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           </div>
 
           <!-- preview / code -->
-          <div class="panel flex min-h-0 flex-col gap-2 p-3">
+          <div class="panel flex h-[75vh] min-h-[480px] min-w-0 flex-col gap-2 p-3 lg:h-auto lg:min-h-0" [class.preview-full]="expanded()">
             <div class="flex flex-wrap items-center gap-2">
               <div class="flex rounded-lg border border-line p-0.5" role="tablist">
                 @for (tab of tabs; track tab) {
@@ -223,6 +234,15 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 <button type="button" class="btn btn-outline ml-auto text-xs" (click)="reload()">↻ {{ 'builder.reload' | t }}</button>
                 <button type="button" class="btn btn-outline text-xs" (click)="copyLink()">{{ copied() ? ('builder.copied' | t) : ('builder.copyLink' | t) }}</button>
               }
+              <button
+                type="button"
+                class="btn btn-outline text-xs"
+                [class.ml-auto]="view() !== 'preview'"
+                [attr.aria-pressed]="expanded()"
+                (click)="expanded.set(!expanded())"
+              >
+                {{ expanded() ? ('builder.collapse' | t) : ('builder.expand' | t) }}
+              </button>
             </div>
 
             @if (view() === 'preview') {
@@ -260,9 +280,9 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
               </div>
               <p class="text-[11px] text-muted">{{ 'builder.phoneHint.' + p.kind | t }}</p>
             } @else {
-              <div class="grid min-h-0 flex-1 gap-2 md:grid-cols-[220px_1fr]">
+              <div class="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-2 md:grid-cols-[220px_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)]">
                 <div class="flex min-h-0 flex-col gap-2">
-                  <ul class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-line text-xs">
+                  <ul class="max-h-36 min-h-0 flex-1 overflow-y-auto rounded-lg border border-line text-xs md:max-h-none">
                     @for (f of p.files || []; track f.path) {
                       <li>
                         <button
@@ -385,6 +405,7 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   /** Opens itself when GitHub OAuth sends the browser back here (?git_connect / ?git_error). */
   readonly showGit = signal(false);
   readonly copied = signal(false);
+  readonly expanded = signal(false);
 
   prompt = '';
   newPath = '';
@@ -397,6 +418,17 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
       this.device();
       if (this.browser) setTimeout(() => this.observeStage());
     });
+    effect(() => {
+      if (this.browser) document.body.style.overflow = this.expanded() ? 'hidden' : '';
+    });
+    this.destroyRef.onDestroy(() => {
+      if (this.browser) document.body.style.overflow = '';
+    });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.expanded.set(false);
   }
 
   ngOnInit(): void {

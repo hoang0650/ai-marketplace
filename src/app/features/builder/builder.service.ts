@@ -105,6 +105,24 @@ export interface TemplateMeta {
   updatedAt: string | null;
   access: boolean;
   paths?: string[];
+  /** Seller only: GitHub repo the files were imported from. */
+  git?: TemplateGitSource | null;
+}
+
+export interface TemplateGitSource {
+  provider: 'github';
+  repo: string;
+  branch: string;
+  path: string;
+  commitSha: string;
+  repoUrl: string;
+  syncedAt: string | null;
+}
+
+export interface TemplateGitPick {
+  repo: string;
+  branch?: string;
+  path?: string;
 }
 
 export interface TemplateListing {
@@ -281,7 +299,12 @@ export class BuilderService {
     return this.http.put<TemplateUploadResult>(`${this.base}/templates/${productId}/files`, { fromProject: projectId });
   }
 
-  updateTemplate(productId: string, body: { demoEnabled: boolean }): Observable<{ template: TemplateMeta }> {
+  /** Imports from the seller's linked GitHub; `{ sync: true }` re-imports the saved repo/branch/folder. */
+  templateFromGit(productId: string, fromGit: TemplateGitPick | { sync: true }): Observable<TemplateUploadResult> {
+    return this.http.put<TemplateUploadResult>(`${this.base}/templates/${productId}/files`, { fromGit });
+  }
+
+  updateTemplate(productId: string, body: { demoEnabled?: boolean; unlinkGit?: boolean }): Observable<{ template: TemplateMeta }> {
     return this.http.patch<{ template: TemplateMeta }>(`${this.base}/templates/${productId}`, body);
   }
 

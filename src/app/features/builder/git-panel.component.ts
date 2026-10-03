@@ -33,7 +33,7 @@ function slug(name: string): string {
         <p class="text-sm font-semibold">{{ 'builder.git.title' | t }}</p>
         @if (conn(); as c) {
           @if (c.status === 'active') {
-            <div class="flex items-center gap-2 text-xs">
+            <div class="flex flex-wrap items-center gap-2 text-xs">
               @if (c.avatarUrl) {
                 <img [src]="c.avatarUrl" alt="" class="h-5 w-5 rounded-full" />
               }
@@ -90,7 +90,7 @@ function slug(name: string): string {
         @if (project().git; as g) {
           <div class="space-y-1 rounded-xl border border-line p-3 text-xs">
             <p class="flex flex-wrap items-center gap-2">
-              <a class="font-mono font-semibold underline" [href]="g.repoUrl" target="_blank" rel="noopener noreferrer">{{ g.fullName }}</a>
+              <a class="break-all font-mono font-semibold underline" [href]="g.repoUrl" target="_blank" rel="noopener noreferrer">{{ g.fullName }}</a>
               <span class="rounded-full border border-line px-2 py-0.5 text-[11px]">{{ (g.private ? 'builder.git.private' : 'builder.git.public') | t }}</span>
               <span class="font-mono text-muted">{{ g.branch }}</span>
             </p>
