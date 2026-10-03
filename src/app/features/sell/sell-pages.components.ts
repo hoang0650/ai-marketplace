@@ -594,7 +594,7 @@ export class SellProductsComponent implements OnInit {
     this.seo.set({ title: this.i18n.t('sell.nav.products') });
     const slug = this.auth.user()?.creatorSlug;
     if (!slug) return;
-    this.productsApi.list({ creatorSlug: slug }).subscribe((items) => this.products.set(items));
+    this.productsApi.list({ creatorSlug: slug, includeHidden: true }).subscribe((items) => this.products.set(items));
   }
 }
 

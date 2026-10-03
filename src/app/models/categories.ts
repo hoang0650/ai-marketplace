@@ -285,13 +285,30 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   },
 ];
 
+/**
+ * Paused until the licence exists: film distribution (Luật Điện ảnh), e-publication distribution
+ * (Luật Xuất bản), data intermediary (Luật Dữ liệu). Hidden from browsing and new listings;
+ * owners and admins can still open existing listings.
+ */
+export const HIDDEN_CATEGORIES: ReadonlySet<ProductCategory> = new Set<ProductCategory>([
+  'ai-film-series',
+  'story-book',
+  'dataset',
+]);
+
+export function isHiddenCategory(id?: ProductCategory | string | null): boolean {
+  return HIDDEN_CATEGORIES.has(String(id || '') as ProductCategory);
+}
+
 function catLink(id: ProductCategory): NavLink {
   const cat = AI_CATEGORIES.find((c) => c.id === id);
   return { path: cat?.hubPath || `/${id}`, labelKey: `cat.${id}.label` };
 }
 
+const HIDDEN_PATHS = new Set(AI_CATEGORIES.filter((c) => isHiddenCategory(c.id)).map((c) => c.hubPath));
+
 /** Header "Categories" menu and footer category columns — one list so both stay in sync. */
-export const NAV_SECTIONS: NavSection[] = [
+export const NAV_SECTIONS: NavSection[] = ([
   {
     id: 'generate',
     titleKey: 'group.generate',
@@ -345,7 +362,7 @@ export const NAV_SECTIONS: NavSection[] = [
       ['hire-build-web', 'hire-build-app', 'hire-marketing', 'hire-seo', 'hire-creator', 'hire-workflow'] as ProductCategory[]
     ).map(catLink),
   },
-];
+] as NavSection[]).map((s) => ({ ...s, links: s.links.filter((l) => !HIDDEN_PATHS.has(l.path)) }));
 
 const TEMPLATE_KIND: Partial<Record<ProductCategory, 'web' | 'app'>> = {
   'template-web': 'web',
@@ -366,6 +383,13 @@ export const DIGITAL_CATEGORIES: CategoryMeta[] = [];
 
 export const CATEGORY_META: CategoryMeta[] = [...AI_CATEGORIES];
 
+/** Categories buyers can browse and sellers can list in right now. */
+export const VISIBLE_CATEGORIES: CategoryMeta[] = CATEGORY_META.filter((c) => !isHiddenCategory(c.id));
+
+export function withoutHiddenProducts<T extends { category?: string }>(items: T[] | null | undefined): T[] {
+  return (items || []).filter((p) => !isHiddenCategory(p.category));
+}
+
 export function categoryLabel(id: ProductCategory | string): string {
   if (id === 'openrouter' || id === 'featherless' || id === 'runpod-public') return 'Inference';
   return CATEGORY_META.find((c) => c.id === id)?.label ?? id;
@@ -380,7 +404,7 @@ export function categoriesByGroup(group: CategoryGroup): CategoryMeta[] {
 }
 
 export function categoriesByNavGroup(navGroup: NavGroup): CategoryMeta[] {
-  return CATEGORY_META.filter((c) => c.navGroup === navGroup);
+  return VISIBLE_CATEGORIES.filter((c) => c.navGroup === navGroup);
 }
 
 export function isHireCategory(id: ProductCategory): boolean {

@@ -1,8 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { isHiddenCategory, withoutHiddenProducts } from '../models/categories';
 import { AuthService } from './auth.service';
 import {
   AffiliateStats,
@@ -114,6 +115,8 @@ export class ProductService {
     creatorSlug?: string;
     limit?: number;
     offset?: number;
+    /** Seller back-office: keep listings in paused categories so owners can still manage them. */
+    includeHidden?: boolean;
   } = {}): Observable<Product[]> {
     let params = new HttpParams();
     if (filter.category) params = params.set('category', filter.category);
@@ -122,7 +125,8 @@ export class ProductService {
     if (filter.creatorSlug) params = params.set('creatorSlug', filter.creatorSlug);
     if (filter.limit != null) params = params.set('limit', String(filter.limit));
     if (filter.offset != null) params = params.set('offset', String(filter.offset));
-    return this.http.get<Product[]>(`${this.base}/products`, { params });
+    const req = this.http.get<Product[]>(`${this.base}/products`, { params });
+    return filter.includeHidden ? req : req.pipe(map(withoutHiddenProducts));
   }
 
   bySlug(slug: string): Observable<Product> {
@@ -142,11 +146,20 @@ export class ProductService {
   }
 
   categories(): Observable<CategoryMeta[]> {
-    return this.http.get<CategoryMeta[]>(`${this.base}/categories`);
+    return this.http
+      .get<CategoryMeta[]>(`${this.base}/categories`)
+      .pipe(map((list) => (list || []).filter((c) => !isHiddenCategory(c?.id))));
   }
 
   home(): Observable<HomeFeed> {
-    return this.http.get<HomeFeed>(`${this.base}/home`);
+    return this.http.get<HomeFeed>(`${this.base}/home`).pipe(
+      map((feed) => ({
+        ...feed,
+        newArrivals: withoutHiddenProducts(feed?.newArrivals),
+        promoted: withoutHiddenProducts(feed?.promoted),
+        bestsellers: withoutHiddenProducts(feed?.bestsellers),
+      })),
+    );
   }
 }
 

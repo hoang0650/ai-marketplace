@@ -18,9 +18,10 @@ import {
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
+import { switchMap } from 'rxjs';
 import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, CouponPreview, StreamDevice } from '../../models/marketplace.models';
 import { HireService } from '../../services/hire.service';
-import { isHireCategory, isHireRequestCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
+import { isHiddenCategory, isHireCategory, isHireRequestCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { TemplatePanelComponent } from '../builder/template-panel.component';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
@@ -331,12 +332,25 @@ export class ProductDetailComponent implements OnInit {
     return `One-time purchase ${pr.price} ${pr.currency}.`;
   }
 
+  /** Paused categories stay visible to the listing owner and admins only. */
+  private canSeeHidden(p: Product): boolean {
+    const user = this.auth.user();
+    if (!user) return false;
+    if (this.auth.isAdmin()) return true;
+    const ids = [p.sellerId, p.creatorId].filter(Boolean);
+    return ids.includes(user.id) || (!!user.creatorSlug && user.creatorSlug === p.creatorSlug);
+  }
+
   ngOnInit(): void {
     this.displayCurrency = this.currencySvc.currency();
     this.loadWallet();
     this.route.paramMap.subscribe((params) => {
       const slug = params.get('slug') || '';
-      this.productsApi.bySlug(slug).subscribe((p) => {
+      this.auth.ensureReady().pipe(switchMap(() => this.productsApi.bySlug(slug))).subscribe((p) => {
+        if (isHiddenCategory(p.category) && !this.canSeeHidden(p)) {
+          this.router.navigateByUrl('/marketplace', { replaceUrl: true });
+          return;
+        }
         if (p.slug && p.slug !== slug) this.location.replaceState(`/product/${p.slug}`);
         this.product.set(p);
         this.issuedLicense.set(null);

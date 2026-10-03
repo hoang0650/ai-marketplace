@@ -122,6 +122,7 @@
         <a routerLink="/hire-agent/marketplace" routerLinkActive="active" class="nav-link">{{ 'nav.agent' | t }}</a>
         <a routerLink="/models" routerLinkActive="active" class="nav-link">{{ 'nav.model' | t }}</a>
 
+        @if (workEnabled) {
         <div class="nav-dd work-dd" [class.open]="workOpen()">
           <button type="button" class="nav-dd__btn" [attr.aria-expanded]="workOpen()" aria-haspopup="menu" (click)="toggleWork($event)">
             {{ 'work.nav.label' | t }}
@@ -143,6 +144,7 @@
             </div>
           }
         </div>
+        }
 
         <div class="nav-dd docs-dd" [class.open]="docsOpen()">
           <button type="button" class="nav-dd__btn" [attr.aria-expanded]="docsOpen()" aria-haspopup="menu" (click)="toggleDocs($event)">
@@ -248,11 +250,13 @@
                   } @else if (auth.isTalent() || auth.isFreelancer() || auth.isEmployer()) {
                     <li><a routerLink="/sell" (click)="closeUserMenu()">{{ ('sell.ws.' + auth.user()?.role + '.title') | t }}</a></li>
                   }
-                  @if (auth.isTalent()) {
+                  @if (workEnabled && auth.isTalent()) {
                     <li><a routerLink="/work/talents" (click)="closeUserMenu()">{{ 'signup.role.talent' | t }}</a></li>
                   }
-                  @if (auth.isFreelancer() || auth.isEmployer()) {
+                  @if (workEnabled && (auth.isFreelancer() || auth.isEmployer())) {
                     <li><a routerLink="/work/manage" (click)="closeUserMenu()">{{ 'work.title' | t }}</a></li>
+                  } @else if (auth.isFreelancer() || auth.isEmployer()) {
+                    <li><a routerLink="/work/manage/contracts" (click)="closeUserMenu()">{{ 'sell.nav.contracts' | t }}</a></li>
                   }
                   <li><a routerLink="/settings" (click)="closeUserMenu()">{{ 'nav.settings' | t }}</a></li>
                 </ul>

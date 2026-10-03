@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, creatorGuard, sellerGuard, adminGuard, listingGuard } from './guards/auth.guards';
+import { visibleCategoryGuard, workBoardGuard } from './guards/feature.guards';
 
 export const routes: Routes = [
   {
@@ -10,45 +11,53 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        canActivate: [workBoardGuard],
         loadComponent: () =>
           import('./features/work/work-dashboard.component').then((m) => m.WorkDashboardComponent),
       },
       {
         path: 'profile',
+        canActivate: [workBoardGuard],
         loadComponent: () =>
           import('./features/work/work-talent-profile.component').then((m) => m.WorkTalentProfileComponent),
       },
       {
         path: 'saved',
+        canActivate: [workBoardGuard],
         data: { page: 'saved' },
         loadComponent: () =>
           import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
       },
       {
         path: 'job-profile',
+        canActivate: [workBoardGuard],
         loadComponent: () =>
           import('./features/work/work-talent-profile.component').then((m) => m.WorkTalentProfileComponent),
       },
       {
         path: 'post',
+        canActivate: [workBoardGuard],
         data: { page: 'post' },
         loadComponent: () =>
           import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
       },
       {
         path: 'org',
+        canActivate: [workBoardGuard],
         data: { page: 'org' },
         loadComponent: () =>
           import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
       },
       {
         path: 'services',
+        canActivate: [workBoardGuard],
         data: { page: 'services' },
         loadComponent: () =>
           import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
       },
       {
         path: 'contests',
+        canActivate: [workBoardGuard],
         data: { page: 'contests' },
         loadComponent: () =>
           import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
@@ -66,6 +75,7 @@ export const routes: Routes = [
       },
       {
         path: 'withdraw',
+        canActivate: [workBoardGuard],
         data: { page: 'withdraw' },
         loadComponent: () =>
           import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
@@ -222,6 +232,7 @@ export const routes: Routes = [
       },
       {
         path: 'marketplace/:category',
+        canActivate: [visibleCategoryGuard],
         loadComponent: () =>
           import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
       },
@@ -292,12 +303,14 @@ export const routes: Routes = [
       },
       {
         path: 'ai-film-series',
+        canActivate: [visibleCategoryGuard],
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'ai-film-series', title: 'Watch AI films' },
       },
       {
         path: 'story-book',
+        canActivate: [visibleCategoryGuard],
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'story-book', title: 'Stories & books' },
@@ -322,6 +335,7 @@ export const routes: Routes = [
       },
       {
         path: 'dataset',
+        canActivate: [visibleCategoryGuard],
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'dataset', title: 'Dataset' },
@@ -700,32 +714,37 @@ export const routes: Routes = [
       },
       {
         path: 'work',
+        canActivate: [workBoardGuard],
         loadComponent: () =>
           import('./features/work/public/work-public.components').then((m) => m.WorkOverviewComponent),
       },
       {
         path: 'work/jobs',
+        canActivate: [workBoardGuard],
         loadComponent: () =>
           import('./features/work/public/work-public.components').then((m) => m.WorkJobsComponent),
       },
       {
         path: 'work/jobs/:slug',
+        canActivate: [workBoardGuard],
         loadComponent: () =>
           import('./features/work/public/work-public.components').then((m) => m.WorkJobDetailComponent),
       },
       {
         path: 'work/talents',
+        canActivate: [workBoardGuard],
         loadComponent: () =>
           import('./features/work/public/work-public.components').then((m) => m.WorkTalentsComponent),
       },
       {
         path: 'work/talents/:slug',
+        canActivate: [workBoardGuard],
         loadComponent: () =>
           import('./features/work/public/work-public.components').then((m) => m.WorkTalentDetailComponent),
       },
       {
         path: 'work/post',
-        canActivate: [authGuard],
+        canActivate: [workBoardGuard, authGuard],
         loadComponent: () =>
           import('./features/work/public/work-public.components').then((m) => m.WorkPostJobComponent),
       },

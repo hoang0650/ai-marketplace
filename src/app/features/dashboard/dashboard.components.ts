@@ -16,8 +16,9 @@ import {
   WalletTx,
   IssuedLicense,
   ContentEpisode,
+  CategoryMeta,
 } from '../../models/marketplace.models';
-import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isHireRequestCategory, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy, isTemplateCategory, templateKind } from '../../models/categories';
+import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isHiddenCategory, isHireRequestCategory, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy, isTemplateCategory, templateKind } from '../../models/categories';
 import { BuilderService, TemplateBuild } from '../builder/builder.service';
 import { TemplateGitBuildComponent } from '../builder/template-git-build.component';
 import {
@@ -172,7 +173,7 @@ export class DashboardHomeComponent implements OnInit {
     this.seo.set({ title: 'Dashboard' });
     this.api.summary().subscribe((s) => this.summary.set(s));
     const slug = this.auth.user()?.creatorSlug || '';
-    this.productsApi.list(slug ? { creatorSlug: slug } : {}).subscribe((items) => this.products.set(items));
+    this.productsApi.list(slug ? { creatorSlug: slug, includeHidden: true } : {}).subscribe((items) => this.products.set(items));
   }
 }
 
@@ -705,11 +706,17 @@ export class DashboardProductsComponent implements OnInit {
   /** Talent may only offer custom work (quote + milestones); sellers list everything. */
   readonly isTalentOnly = computed(() => this.auth.user()?.role === 'talent');
   /** Seller đăng giọng clone (MP3). Giọng sàn VieNeu do AI Markets seed, không hiện ở form này. */
-  readonly aiCategories = computed(() =>
+  private readonly listableCategories = computed(() =>
     this.isTalentOnly()
       ? AI_CATEGORIES.filter((c) => isHireRequestCategory(c.id))
       : AI_CATEGORIES.filter((c) => c.id !== 'voice-preset'),
   );
+
+  /** Danh mục tạm ẩn chỉ còn hiện khi đang sửa sản phẩm cũ thuộc danh mục đó. */
+  aiCategories(): CategoryMeta[] {
+    const current = this.draft?.category;
+    return this.listableCategories().filter((c) => !isHiddenCategory(c.id) || c.id === current);
+  }
   publishNotice = '';
   readonly categoryLabel = categoryLabel;
   readonly workspaceKind = sellerWorkspaceKind;
@@ -932,7 +939,7 @@ export class DashboardProductsComponent implements OnInit {
       this.products.set([]);
       return;
     }
-    this.productsApi.list({ creatorSlug: slug }).subscribe((items) => this.products.set(items));
+    this.productsApi.list({ creatorSlug: slug, includeHidden: true }).subscribe((items) => this.products.set(items));
   }
 
   create(): void {

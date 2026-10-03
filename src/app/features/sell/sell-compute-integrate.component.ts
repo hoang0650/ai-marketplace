@@ -69,7 +69,7 @@ No heartbeat / no balance → auto stop (session.stop)`;
     this.loadNodes();
     const slug = this.auth.user()?.creatorSlug;
     if (slug) {
-      this.productsApi.list({ creatorSlug: slug }).subscribe((items) => {
+      this.productsApi.list({ creatorSlug: slug, includeHidden: true }).subscribe((items) => {
         this.products.set(items.filter((p) => isComputeStreamCategory(p.category)));
       });
     }

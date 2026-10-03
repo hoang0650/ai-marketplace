@@ -156,7 +156,7 @@ export class SellCouponsComponent implements OnInit {
     this.reload();
     const slug = this.auth.user()?.creatorSlug;
     if (slug) {
-      this.productsApi.list({ creatorSlug: slug }).subscribe((items) => this.products.set(items));
+      this.productsApi.list({ creatorSlug: slug, includeHidden: true }).subscribe((items) => this.products.set(items));
     }
   }
 

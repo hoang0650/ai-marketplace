@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { DashboardService } from '../services/api.services';
 import { environment } from '../../environments/environment';
 import { NAV_SECTIONS } from '../models/categories';
+import { WORK_BOARD_ENABLED } from '../models/feature-flags';
 import { CatalogLane, NotificationItem } from '../models/marketplace.models';
 import { I18nService } from '../i18n/i18n.service';
 import { TPipe } from '../i18n/t.pipe';
@@ -36,12 +37,13 @@ export class ShellComponent {
   readonly brand = environment.brandName;
   readonly year = new Date().getFullYear();
   readonly navSections = NAV_SECTIONS;
+  readonly workEnabled = WORK_BOARD_ENABLED;
   readonly footerNav = [
     { path: '/', key: 'footer.nav.about' },
     { path: '/marketplace', key: 'nav.marketplace' },
     { path: '/hire-agent/marketplace', key: 'nav.agent' },
     { path: '/models', key: 'nav.model' },
-    { path: '/work', key: 'work.nav.label' },
+    ...(WORK_BOARD_ENABLED ? [{ path: '/work', key: 'work.nav.label' }] : []),
     { path: '/docs', key: 'nav.docs' },
     { path: '/support', key: 'nav.support' },
     { path: '/sell', key: 'footer.nav.sell' },

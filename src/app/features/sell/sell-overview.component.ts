@@ -9,6 +9,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { ShopProfileService } from './shop-profile.service';
 import { SellWorkspace, sellWorkspaceOf } from './sell-workspace';
+import { WORK_BOARD_ENABLED } from '../../models/feature-flags';
 
 @Component({
   selector: 'app-sell-overview',
@@ -36,10 +37,12 @@ import { SellWorkspace, sellWorkspaceOf } from './sell-workspace';
           </div>
 
           <div class="ov-cards">
-            <a routerLink="/work/manage" class="card">
-              <strong>{{ 'sell.nav.work' | t }}</strong>
-              <span>{{ ('sell.partner.workDesc.' + workspace()) | t }}</span>
-            </a>
+            @if (workEnabled) {
+              <a routerLink="/work/manage" class="card">
+                <strong>{{ 'sell.nav.work' | t }}</strong>
+                <span>{{ ('sell.partner.workDesc.' + workspace()) | t }}</span>
+              </a>
+            }
             <a routerLink="/work/manage/contracts" class="card">
               <strong>{{ 'sell.nav.contracts' | t }}</strong>
               <span>{{ 'sell.partner.contractsDesc' | t }}</span>
@@ -309,6 +312,7 @@ import { SellWorkspace, sellWorkspaceOf } from './sell-workspace';
 export class SellOverviewComponent {
   readonly shop = inject(ShopProfileService);
   readonly brand = environment.brandName;
+  readonly workEnabled = WORK_BOARD_ENABLED;
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
   private readonly auth = inject(AuthService);

@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/marketplace.models';
+import { WORK_BOARD_ENABLED } from '../../models/feature-flags';
 
 function afterAuthRoute(user: User, next: string): string {
   const pathOnly = String(next || '').split('?')[0];
@@ -14,9 +15,9 @@ function afterAuthRoute(user: User, next: string): string {
   if (!skip && next.startsWith('/')) return next;
   if (user.role === 'admin') return '/admin';
   if (user.role === 'seller') return '/dashboard';
-  if (user.role === 'talent') return '/work/talents';
+  if (user.role === 'talent') return WORK_BOARD_ENABLED ? '/work/talents' : '/sell';
   if (user.role === 'freelancer') return '/work/manage/contracts';
-  if (user.role === 'employer') return '/work/manage';
+  if (user.role === 'employer') return WORK_BOARD_ENABLED ? '/work/manage' : '/work/manage/contracts';
   return '/marketplace';
 }
 

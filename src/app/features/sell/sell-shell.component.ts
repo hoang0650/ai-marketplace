@@ -7,6 +7,7 @@ import { ShopProfileService } from './shop-profile.service';
 import { ProductService } from '../../services/api.services';
 import { TPipe } from '../../i18n/t.pipe';
 import { SellWorkspace, sellWorkspaceOf } from './sell-workspace';
+import { WORK_BOARD_ENABLED } from '../../models/feature-flags';
 
 interface NavItem {
   labelKey: string;
@@ -80,11 +81,11 @@ function partnerGroups(ws: Exclude<SellWorkspace, 'seller'>): NavGroup[] {
       ? [
           { labelKey: 'sell.nav.products', path: '/sell/products' },
           { labelKey: 'sell.nav.hireProjects', path: '/hire/projects' },
-          { labelKey: 'sell.nav.workProfile', path: '/work/manage/profile' },
+          ...(WORK_BOARD_ENABLED ? [{ labelKey: 'sell.nav.workProfile', path: '/work/manage/profile' }] : []),
           { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
         ]
       : [
-          { labelKey: 'sell.nav.workBoard', path: '/work/manage' },
+          ...(WORK_BOARD_ENABLED ? [{ labelKey: 'sell.nav.workBoard', path: '/work/manage' }] : []),
           { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
         ];
   return [
@@ -137,6 +138,7 @@ function partnerGroups(ws: Exclude<SellWorkspace, 'seller'>): NavGroup[] {
 export class SellShellComponent {
   readonly auth = inject(AuthService);
   readonly theme = inject(ThemeService);
+  readonly workEnabled = WORK_BOARD_ENABLED;
   readonly shop = inject(ShopProfileService);
   private readonly productsApi = inject(ProductService);
 
@@ -168,7 +170,7 @@ export class SellShellComponent {
     this.shop.reload();
     const slug = this.auth.user()?.creatorSlug;
     if (slug && this.workspace() === 'seller') {
-      this.productsApi.list({ creatorSlug: slug }).subscribe((items) => this.productCount.set(items.length));
+      this.productsApi.list({ creatorSlug: slug, includeHidden: true }).subscribe((items) => this.productCount.set(items.length));
     }
   }
 

@@ -8,14 +8,15 @@ import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { GoogleSignInComponent } from './google-sign-in.component';
 import { environment } from '../../../environments/environment';
+import { WORK_BOARD_ENABLED } from '../../models/feature-flags';
 
 function afterAuthRoute(user: User, returnUrl?: string | null): string {
   if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) return returnUrl;
   if (user.role === 'admin') return '/admin';
   if (user.role === 'seller') return '/dashboard';
-  if (user.role === 'talent') return '/work/talents';
+  if (user.role === 'talent') return WORK_BOARD_ENABLED ? '/work/talents' : '/sell';
   if (user.role === 'freelancer') return '/work/manage/contracts';
-  if (user.role === 'employer') return '/work/manage';
+  if (user.role === 'employer') return WORK_BOARD_ENABLED ? '/work/manage' : '/work/manage/contracts';
   return '/marketplace';
 }
 
@@ -88,7 +89,9 @@ export class RegisterComponent implements OnInit {
   private readonly i18n = inject(I18nService);
 
   readonly brand = environment.brandName;
-  readonly roles: SignupRole[] = ['buyer', 'seller', 'talent', 'freelancer', 'employer'];
+  readonly roles: SignupRole[] = WORK_BOARD_ENABLED
+    ? ['buyer', 'seller', 'talent', 'freelancer', 'employer']
+    : ['buyer', 'seller', 'talent'];
   readonly role = signal<SignupRole>('buyer');
   name = '';
   email = '';

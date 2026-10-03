@@ -63,7 +63,9 @@
           <p class="sell-side__meta">{{ 'sell.shopStatus' | t: { status: shop.statusLabel() } }}</p>
           <p class="sell-side__meta">{{ 'sell.productCount' | t: { n: productCount() } }}</p>
         } @else {
-          <a class="sell-side__shop" routerLink="/work/manage">{{ 'sell.openWork' | t }} ›</a>
+          @if (workEnabled) {
+            <a class="sell-side__shop" routerLink="/work/manage">{{ 'sell.openWork' | t }} ›</a>
+          }
           <p class="sell-side__meta">{{ ('signup.role.' + workspace()) | t }}</p>
         }
       }

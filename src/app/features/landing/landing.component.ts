@@ -9,7 +9,7 @@ import { SeoService } from '../../services/seo.service';
 import { CategoryMeta, Creator, HomeFeed, Product } from '../../models/marketplace.models';
 import { ProductCardComponent } from '../../shared/components/product-card.component';
 import { environment } from '../../../environments/environment';
-import { AI_CATEGORIES, categoriesByNavGroup } from '../../models/categories';
+import { VISIBLE_CATEGORIES, categoriesByNavGroup } from '../../models/categories';
 import { CategoryIconComponent, CategoryIconId } from '../../shared/components/category-icon.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
@@ -219,7 +219,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   private readonly reload$ = new Subject<void>();
 
   readonly brand = environment.brandName;
-  readonly aiCategories = AI_CATEGORIES;
+  readonly aiCategories = VISIBLE_CATEGORIES;
   readonly slides = HERO_SLIDES;
   readonly skeletonSlots = Array.from({ length: 8 }, (_, i) => i);
 
