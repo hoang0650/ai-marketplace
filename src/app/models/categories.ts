@@ -28,16 +28,16 @@ export const NAV_GROUP_LABEL: Record<NavGroup, string> = {
   talent: 'Hire talent',
 };
 
-/** Extra hub links shown under Platform. */
-export const NAV_PLATFORM_LINKS: ReadonlyArray<{
-  labelKey: string;
-  descKey: string;
+export interface NavLink {
   path: string;
-}> = [
-  { labelKey: 'hub.models', descKey: 'hub.modelsDesc', path: '/models' },
-  { labelKey: 'hub.console', descKey: 'hub.consoleDesc', path: '/account/console' },
-  { labelKey: 'hub.gpu', descKey: 'hub.gpuDesc', path: '/dashboard/gpu' },
-];
+  labelKey: string;
+}
+
+export interface NavSection {
+  id: 'generate' | 'build' | 'apis' | 'platform' | 'talent';
+  titleKey: string;
+  links: NavLink[];
+}
 
 export const AI_CATEGORIES: CategoryMeta[] = [
   {
@@ -285,6 +285,68 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   },
 ];
 
+function catLink(id: ProductCategory): NavLink {
+  const cat = AI_CATEGORIES.find((c) => c.id === id);
+  return { path: cat?.hubPath || `/${id}`, labelKey: `cat.${id}.label` };
+}
+
+/** Header "Categories" menu and footer category columns — one list so both stay in sync. */
+export const NAV_SECTIONS: NavSection[] = [
+  {
+    id: 'generate',
+    titleKey: 'group.generate',
+    links: (
+      [
+        'text-to-text',
+        'text-to-image',
+        'image-to-image',
+        'text-to-video',
+        'image-to-video',
+        'voice-clone',
+        'voice-preset',
+        'ai-film-series',
+        'story-book',
+      ] as ProductCategory[]
+    ).map(catLink),
+  },
+  {
+    id: 'build',
+    titleKey: 'group.build',
+    links: [
+      { path: '/build', labelKey: 'nav.builder' },
+      ...(['template-web', 'template-app', 'skill-pack', 'dataset'] as ProductCategory[]).map(catLink),
+    ],
+  },
+  {
+    id: 'apis',
+    titleKey: 'group.apis',
+    links: [
+      { path: '/models', labelKey: 'hub.models' },
+      ...(['api-endpoint', 'inference', 'fine-tune', 'training-service'] as ProductCategory[]).map(catLink),
+    ],
+  },
+  {
+    id: 'platform',
+    titleKey: 'group.platform',
+    links: [
+      { path: '/hire-agent/marketplace', labelKey: 'cat.hire-agent.label' },
+      catLink('agent-runtime'),
+      catLink('gpu-compute'),
+      catLink('game-server'),
+      { path: '/gpu', labelKey: 'nav.gpuRent' },
+      { path: '/training', labelKey: 'nav.training' },
+      { path: '/account/console', labelKey: 'hub.console' },
+    ],
+  },
+  {
+    id: 'talent',
+    titleKey: 'group.talent',
+    links: (
+      ['hire-build-web', 'hire-build-app', 'hire-marketing', 'hire-seo', 'hire-creator', 'hire-workflow'] as ProductCategory[]
+    ).map(catLink),
+  },
+];
+
 const TEMPLATE_KIND: Partial<Record<ProductCategory, 'web' | 'app'>> = {
   'template-web': 'web',
   'template-app': 'app',
@@ -323,6 +385,20 @@ export function categoriesByNavGroup(navGroup: NavGroup): CategoryMeta[] {
 
 export function isHireCategory(id: ProductCategory): boolean {
   return CATEGORY_META.find((c) => c.id === id)?.group === 'hire';
+}
+
+/** Custom work ordered via quote + milestones (no direct checkout). Talent may list only these. */
+export const HIRE_REQUEST_CATEGORIES: readonly ProductCategory[] = [
+  'hire-build-web',
+  'hire-build-app',
+  'hire-marketing',
+  'hire-seo',
+  'hire-creator',
+  'hire-workflow',
+];
+
+export function isHireRequestCategory(id?: ProductCategory | string): boolean {
+  return HIRE_REQUEST_CATEGORIES.includes(id as ProductCategory);
 }
 
 export function isSkillCategory(id: ProductCategory): boolean {

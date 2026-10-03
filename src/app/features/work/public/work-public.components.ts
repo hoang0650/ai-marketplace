@@ -9,11 +9,12 @@ import { TPipe } from '../../../i18n/t.pipe';
 import { JobPosting, JobPostPayload, JobBid, TalentProfile, WorkField } from '../../../models/work.models';
 import { ChatService } from '../../../services/api.services';
 import { environment } from '../../../../environments/environment';
+import { WorkDisclaimerComponent } from '../work-disclaimer.component';
 
 @Component({
   selector: 'app-work-overview',
   standalone: true,
-  imports: [RouterLink, TPipe],
+  imports: [RouterLink, TPipe, WorkDisclaimerComponent],
   template: `
     <section class="work-public page route-enter">
       <div class="work-hero">
@@ -45,6 +46,7 @@ import { environment } from '../../../../environments/environment';
           </a>
         </div>
       </div>
+      <app-work-disclaimer />
     </section>
   `,
   styleUrl: './work-public.scss',
@@ -308,16 +310,20 @@ export class WorkTalentsComponent implements OnInit {
 @Component({
   selector: 'app-work-post-job',
   standalone: true,
-  imports: [RouterLink, FormsModule, TPipe],
+  imports: [RouterLink, FormsModule, TPipe, WorkDisclaimerComponent],
   template: `
     <section class="work-public page route-enter">
       <h1>{{ 'work.postJob' | t }}</h1>
       <p class="text-muted">{{ 'work.postJobDesc' | t }}</p>
+      <app-work-disclaimer />
       @if (msg()) {
         <p class="msg ok">{{ msg() }}</p>
       }
       @if (err()) {
-        <p class="msg err">{{ err() }}</p>
+        <p class="msg err">
+          {{ err() }}
+          @if (needTopUp()) { · <a routerLink="/wallet">{{ 'cart.topUp' | t }}</a> }
+        </p>
       }
       <form class="work-form panel" (ngSubmit)="submit()">
         <label>{{ 'work.form.title' | t }}<input [(ngModel)]="form.title" name="title" required /></label>
@@ -354,7 +360,7 @@ export class WorkTalentsComponent implements OnInit {
           <input type="checkbox" [(ngModel)]="form.remote" name="remote" />
           {{ 'work.form.remote' | t }}
         </label>
-        <button class="btn btn-fill" type="submit" [disabled]="busy()">{{ 'work.form.submit' | t }}</button>
+        <button class="btn btn-fill" type="submit" [disabled]="busy()">{{ 'work.form.submitPaid' | t: { fee: feeLabel() } }}</button>
       </form>
     </section>
   `,
@@ -370,6 +376,8 @@ export class WorkPostJobComponent implements OnInit {
   readonly busy = signal(false);
   readonly msg = signal('');
   readonly err = signal('');
+  readonly needTopUp = signal(false);
+  readonly feeLabel = signal('20.000đ');
   skillsText = '';
   form: JobPostPayload & { remote: boolean } = {
     title: '',
@@ -390,11 +398,13 @@ export class WorkPostJobComponent implements OnInit {
     if (this.auth.user()?.name && !this.form.company) {
       this.form.company = this.auth.user()!.name;
     }
+    this.api.listingFee().subscribe((f) => this.feeLabel.set(`${f.vnd.toLocaleString('vi-VN')}đ`));
   }
 
   submit(): void {
     this.msg.set('');
     this.err.set('');
+    this.needTopUp.set(false);
     this.busy.set(true);
     const payload: JobPostPayload = {
       ...this.form,
@@ -408,6 +418,7 @@ export class WorkPostJobComponent implements OnInit {
       },
       error: (e) => {
         this.busy.set(false);
+        this.needTopUp.set(e?.status === 402);
         this.err.set(e?.error?.message || this.i18n.t('work.postFail'));
       },
     });

@@ -43,6 +43,15 @@ export const employerGuard: CanActivateFn = () => {
   );
 };
 
+/** Sellers list every category; talent only custom-work (hire) listings — the API enforces the split. */
+export const listingGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.ensureReady().pipe(
+    map(() => (auth.isSeller() || auth.isTalent() ? true : router.createUrlTree(['/auth/login']))),
+  );
+};
+
 /** @deprecated use sellerGuard — kept for existing routes. */
 export const creatorGuard = sellerGuard;
 

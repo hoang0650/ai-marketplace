@@ -5,7 +5,7 @@ import { ThemeService } from '../services/theme.service';
 import { AuthService } from '../services/auth.service';
 import { DashboardService } from '../services/api.services';
 import { environment } from '../../environments/environment';
-import { AI_CATEGORIES, NAV_PLATFORM_LINKS, categoriesByNavGroup } from '../models/categories';
+import { NAV_SECTIONS } from '../models/categories';
 import { CatalogLane, NotificationItem } from '../models/marketplace.models';
 import { I18nService } from '../i18n/i18n.service';
 import { TPipe } from '../i18n/t.pipe';
@@ -35,13 +35,7 @@ export class ShellComponent {
   readonly i18n = inject(I18nService);
   readonly brand = environment.brandName;
   readonly year = new Date().getFullYear();
-  readonly platformLinks = NAV_PLATFORM_LINKS;
-  readonly generateCats = categoriesByNavGroup('generate');
-  readonly apiCats = categoriesByNavGroup('apis');
-  readonly headerCategoryExtras = [
-    { path: '/hire-agent/marketplace', key: 'nav.agent' },
-    { path: '/models', key: 'nav.model' },
-  ];
+  readonly navSections = NAV_SECTIONS;
   readonly footerNav = [
     { path: '/', key: 'footer.nav.about' },
     { path: '/marketplace', key: 'nav.marketplace' },
@@ -50,14 +44,7 @@ export class ShellComponent {
     { path: '/work', key: 'work.nav.label' },
     { path: '/docs', key: 'nav.docs' },
     { path: '/support', key: 'nav.support' },
-  ];
-  readonly footerFeatures = [
-    ...this.headerCategoryExtras,
-    ...this.generateCats.map((c) => ({ path: c.hubPath, key: `cat.${c.id}.label` })),
-    ...this.apiCats.map((c) => ({ path: c.hubPath, key: `cat.${c.id}.label` })),
-    ...this.platformLinks
-      .filter((link) => !this.headerCategoryExtras.some((item) => item.path === link.path))
-      .map((link) => ({ path: link.path, key: link.labelKey })),
+    { path: '/sell', key: 'footer.nav.sell' },
   ];
   readonly footerLegal = [
     { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.privacy' },
@@ -68,9 +55,6 @@ export class ShellComponent {
   ];
   readonly appStoreUrl = 'https://apps.apple.com/vn/app/phhotel/id6778220852?l=vi';
   readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=app.rork.phhotel_pms_interface';
-  readonly platformCats = categoriesByNavGroup('platform');
-  readonly talentCats = categoriesByNavGroup('talent');
-  readonly aiCategories = AI_CATEGORIES;
   readonly categoryOpen = signal(false);
   readonly workOpen = signal(false);
   readonly docsOpen = signal(false);

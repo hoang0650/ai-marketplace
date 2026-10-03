@@ -98,50 +98,21 @@
           </button>
           @if (categoryOpen()) {
             <div class="nav-dd__panel nav-dd__panel--lux" role="menu">
-              <div class="nav-dd__cols nav-dd__cols--3">
-                <div>
-                  <p class="nav-dd__group">{{ 'group.generate' | t }}</p>
-                  <ul>
-                    @for (item of headerCategoryExtras; track item.path) {
-                      <li>
-                        <a [routerLink]="item.path" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
-                          <span class="nav-dd__item-title">{{ item.key | t }}</span>
-                        </a>
-                      </li>
-                    }
-                    @for (c of generateCats; track c.id) {
-                      <li>
-                        <a [routerLink]="c.hubPath" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
-                          <span class="nav-dd__item-title">{{ ('cat.' + c.id + '.label') | t }}</span>
-                        </a>
-                      </li>
-                    }
-                  </ul>
-                </div>
-                <div>
-                  <p class="nav-dd__group">{{ 'group.apis' | t }}</p>
-                  <ul>
-                    @for (c of apiCats; track c.id) {
-                      <li>
-                        <a [routerLink]="c.hubPath" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
-                          <span class="nav-dd__item-title">{{ ('cat.' + c.id + '.label') | t }}</span>
-                        </a>
-                      </li>
-                    }
-                  </ul>
-                </div>
-                <div>
-                  <p class="nav-dd__group">{{ 'group.platform' | t }}</p>
-                  <ul>
-                    @for (link of platformLinks; track link.path) {
-                      <li>
-                        <a [routerLink]="link.path" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
-                          <span class="nav-dd__item-title">{{ link.labelKey | t }}</span>
-                        </a>
-                      </li>
-                    }
-                  </ul>
-                </div>
+              <div class="nav-dd__cols nav-dd__cols--sections">
+                @for (section of navSections; track section.id) {
+                  <div>
+                    <p class="nav-dd__group">{{ section.titleKey | t }}</p>
+                    <ul>
+                      @for (link of section.links; track link.path) {
+                        <li>
+                          <a [routerLink]="link.path" role="menuitem" class="nav-dd__item" (click)="closeCategories()">
+                            <span class="nav-dd__item-title">{{ link.labelKey | t }}</span>
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
               </div>
               <a routerLink="/marketplace" class="nav-dd__all" (click)="closeCategories()">{{ 'nav.browseAll' | t }}</a>
             </div>
@@ -266,6 +237,7 @@
                   <li><a routerLink="/training" (click)="closeUserMenu()">{{ 'nav.training' | t }}</a></li>
                   <li><a routerLink="/build" (click)="closeUserMenu()">{{ 'nav.builder' | t }}</a></li>
                   <li><a routerLink="/messages" (click)="closeUserMenu()">{{ 'nav.messages' | t }}</a></li>
+                  <li><a routerLink="/hire/projects" (click)="closeUserMenu()">{{ 'hire.list.title' | t }}</a></li>
                   @if (auth.isAdmin()) {
                     <li><a routerLink="/admin" (click)="closeUserMenu()">{{ 'nav.admin' | t }}</a></li>
                     <li><a routerLink="/admin/finance" (click)="closeUserMenu()">{{ 'admin.finance.title' | t }}</a></li>
@@ -358,20 +330,27 @@
         </div>
       </div>
       <div>
-        <p class="footer-col-title">{{ 'footer.col.categories' | t }}</p>
+        <p class="footer-col-title">{{ 'footer.col.explore' | t }}</p>
         <ul>
           @for (item of footerNav; track item.path) {
             <li><a [routerLink]="item.path" class="footer-link">{{ item.key | t }}</a></li>
           }
         </ul>
       </div>
-      <div>
-        <p class="footer-col-title">{{ 'footer.col.features' | t }}</p>
-        <ul class="footer-feature-list">
-          @for (item of footerFeatures; track item.path) {
-            <li><a [routerLink]="item.path" class="footer-link">{{ item.key | t }}</a></li>
+      <div class="footer-categories">
+        <p class="footer-col-title">{{ 'footer.col.categories' | t }}</p>
+        <div class="footer-categories__grid">
+          @for (section of navSections; track section.id) {
+            <div>
+              <p class="footer-group-title">{{ section.titleKey | t }}</p>
+              <ul class="footer-feature-list">
+                @for (link of section.links; track link.path) {
+                  <li><a [routerLink]="link.path" class="footer-link">{{ link.labelKey | t }}</a></li>
+                }
+              </ul>
+            </div>
           }
-        </ul>
+        </div>
       </div>
       <div>
         <p class="footer-col-title">{{ 'footer.col.terms' | t }}</p>

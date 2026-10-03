@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, creatorGuard, sellerGuard, adminGuard } from './guards/auth.guards';
+import { authGuard, creatorGuard, sellerGuard, adminGuard, listingGuard } from './guards/auth.guards';
 
 export const routes: Routes = [
   {
@@ -15,9 +15,8 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
-        data: { page: 'profile' },
         loadComponent: () =>
-          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+          import('./features/work/work-talent-profile.component').then((m) => m.WorkTalentProfileComponent),
       },
       {
         path: 'saved',
@@ -27,9 +26,8 @@ export const routes: Routes = [
       },
       {
         path: 'job-profile',
-        data: { page: 'job-profile' },
         loadComponent: () =>
-          import('./features/work/work-pages.components').then((m) => m.WorkPlaceholderComponent),
+          import('./features/work/work-talent-profile.component').then((m) => m.WorkTalentProfileComponent),
       },
       {
         path: 'post',
@@ -101,8 +99,14 @@ export const routes: Routes = [
           import('./features/sell/sell-pages.components').then((m) => m.SellImagesComponent),
       },
       {
+        path: 'products/new',
+        canActivate: [listingGuard],
+        loadComponent: () =>
+          import('./features/dashboard/dashboard.components').then((m) => m.DashboardProductsComponent),
+      },
+      {
         path: 'products',
-        canActivate: [sellerGuard],
+        canActivate: [listingGuard],
         loadComponent: () =>
           import('./features/sell/sell-pages.components').then((m) => m.SellProductsComponent),
       },
@@ -570,6 +574,18 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () =>
           import('./features/wallet/wallet.component').then((m) => m.WalletComponent),
+      },
+      {
+        path: 'hire/projects/:id',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/hire/hire-project-detail.component').then((m) => m.HireProjectDetailComponent),
+      },
+      {
+        path: 'hire/projects',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/hire/hire-projects.component').then((m) => m.HireProjectsComponent),
       },
       {
         path: 'usage',

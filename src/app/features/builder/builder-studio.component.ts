@@ -342,7 +342,10 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   private readonly i18n = inject(I18nService);
   private readonly seo = inject(SeoService);
   private readonly auth = inject(AuthService);
-  readonly canSellTemplate = computed(() => ['seller', 'admin'].includes(this.auth.user()?.role || ''));
+  readonly canSellTemplate = computed(() => {
+    const tpl = this.project()?.template;
+    return ['seller', 'admin'].includes(this.auth.user()?.role || '') && (!tpl || !!tpl.own);
+  });
   private readonly route = inject(ActivatedRoute);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);

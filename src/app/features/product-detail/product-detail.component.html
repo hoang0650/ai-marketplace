@@ -180,6 +180,8 @@
             {{ 'compute.cta.terminal' | t }}
           } @else if (isComputeStream(p.category)) {
             {{ 'compute.cta.play' | t }}
+          } @else if (isHireRequest(p.category)) {
+            {{ 'hire.req.cta' | t }}
           } @else if (isHire(p.category)) {
             {{ isOpenClawHire() ? 'Launch ' + hireBrand() : 'Hire / Request' }}
           } @else if (isFilm(p.category)) {
@@ -205,6 +207,12 @@
             {{ 'chat.withSeller' | t }}
           </button>
         }
+        @if (isHireRequest(p.category)) {
+          <p class="pd-hire-note">
+            {{ 'hire.req.priceNote' | t: { price: displayPrice(p, 1) } }}
+            @if (p.pricing.negotiable !== false) { · {{ 'hire.req.negotiable' | t }} }
+          </p>
+        } @else {
         <button type="button" class="pd-buy__cart" (click)="addToCart()">
           🛒 {{ 'lux.addToCart' | t }}
         </button>
@@ -250,6 +258,7 @@
             </select>
           </div>
         </div>
+        }
 
         @if (checkoutMsg()) {
           <p class="checkout-msg">{{ checkoutMsg() }}</p>
@@ -422,7 +431,58 @@
       </div>
     }
 
-    @if (workspaceTab() === 'hire') {
+    @if (workspaceTab() === 'hire' && isHireRequest(p.category)) {
+      <div class="hire-layout">
+        <section class="pg-pane">
+          <div class="pg-pane__head"><h2>{{ 'hire.req.title' | t }}</h2></div>
+          <ol class="hire-steps">
+            <li>{{ 'hire.req.step1' | t }}</li>
+            <li>{{ 'hire.req.step2' | t }}</li>
+            <li>{{ 'hire.req.step3' | t }}</li>
+            <li>{{ 'hire.req.step4' | t }}</li>
+          </ol>
+          @if (isContentOwner()) {
+            <p class="cost-hint">{{ 'hire.req.own' | t }}</p>
+            <a class="btn btn-outline" routerLink="/hire/projects" [queryParams]="{ as: 'seller' }">{{ 'hire.list.title' | t }}</a>
+          } @else {
+            <div class="field">
+              <label class="field-label" for="hireBrief">{{ 'hire.req.brief' | t }}</label>
+              <textarea id="hireBrief" class="input textarea" rows="6" [(ngModel)]="hireBrief" name="hireBrief" [placeholder]="'hire.req.briefPh' | t"></textarea>
+            </div>
+            <div class="hire-req-grid">
+              <div class="field">
+                <label class="field-label" for="hireBudget">{{ 'hire.req.budget' | t }} (USD)</label>
+                <input id="hireBudget" class="input" type="number" min="0" step="1" [(ngModel)]="hireBudget" name="hireBudget" />
+              </div>
+              <div class="field">
+                <label class="field-label" for="hireDeadline">{{ 'hire.req.deadline' | t }}</label>
+                <input id="hireDeadline" class="input" type="date" [(ngModel)]="hireDeadline" name="hireDeadline" />
+              </div>
+            </div>
+            <div class="pg-actions">
+              <button type="button" class="btn btn-run" (click)="submitHireRequest()" [disabled]="hireBusy()">
+                {{ (hireBusy() ? 'hire.req.sending' : 'hire.req.send') | t }}
+              </button>
+            </div>
+            @if (hireError()) {
+              <p class="cost-hint" style="color:#c62828">{{ hireError() }}</p>
+            }
+          }
+        </section>
+        <aside class="pg-pane">
+          <div class="pg-pane__head"><h2>{{ 'hire.req.listPrice' | t }}</h2></div>
+          <p class="hire-price">{{ displayPrice(p, 1) }}</p>
+          <p class="cost-hint">{{ (p.pricing.negotiable !== false ? 'hire.req.negotiableHint' : 'hire.req.fixedHint') | t }}</p>
+          <p class="cost-hint">{{ 'hire.req.escrowHint' | t }}</p>
+          @if (p.apiDocsMarkdown) {
+            <div class="mt-6">
+              <div class="pg-pane__head"><h2>What you get</h2></div>
+              <pre class="result-text">{{ p.apiDocsMarkdown }}</pre>
+            </div>
+          }
+        </aside>
+      </div>
+    } @else if (workspaceTab() === 'hire') {
       <div class="hire-layout">
         <section class="pg-pane agent-chat-pane">
           <div class="pg-pane__head">
@@ -491,22 +551,10 @@
               <p class="cost-hint mt-3 font-mono text-xs">{{ openclawStatus() }}</p>
             }
           } @else {
-            <div class="pg-pane__head"><h2>Request to hire</h2></div>
-            <div class="field">
-              <label class="field-label" for="brief">Project brief</label>
-              <textarea id="brief" class="input textarea" rows="4" [(ngModel)]="hireBrief" placeholder="Goals, channels…"></textarea>
-            </div>
-            <div class="field">
-              <label class="field-label" for="contact">Contact</label>
-              <input id="contact" class="input" [(ngModel)]="hireContact" placeholder="you@company.com" />
-            </div>
+            <div class="pg-pane__head"><h2>Agent</h2></div>
             <div class="pg-actions">
               <button type="button" class="btn btn-outline" (click)="checkout()">Subscribe</button>
-              <button type="button" class="btn btn-run" (click)="submitHireRequest()">Send request</button>
             </div>
-            @if (hireSent()) {
-              <p class="cost-hint">Request queued.</p>
-            }
           }
           <div class="mt-6">
             <div class="pg-pane__head"><h2>What you get</h2></div>

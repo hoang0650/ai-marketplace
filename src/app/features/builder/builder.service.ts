@@ -32,7 +32,7 @@ export interface BuilderProject {
   fileCount: number;
   previewUrl: string;
   lastGeneratedAt: string | null;
-  template: { productId: string; name: string; version: number } | null;
+  template: { productId: string; name: string; version: number; own?: boolean } | null;
   git?: ProjectGit | null;
   createdAt: string;
   updatedAt: string;

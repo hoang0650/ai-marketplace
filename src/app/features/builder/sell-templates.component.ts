@@ -375,7 +375,7 @@ export class SellTemplatesComponent implements OnInit {
     this.api.list().subscribe({
       next: (r) => {
         this.projects.set(r.projects || []);
-        const p = r.projects.find((x) => x.id === fromProject);
+        const p = r.projects.find((x) => x.id === fromProject && (!x.template || x.template.own));
         if (p) {
           this.draftKind.set(p.kind);
           if (!this.draft.name) this.draft.name = p.name;
@@ -388,7 +388,7 @@ export class SellTemplatesComponent implements OnInit {
   }
 
   projectsOf(kind: BuilderKind): BuilderProject[] {
-    return this.projects().filter((p) => p.kind === kind);
+    return this.projects().filter((p) => p.kind === kind && (!p.template || p.template.own));
   }
 
   priceLabel(row: TemplateListing): string {

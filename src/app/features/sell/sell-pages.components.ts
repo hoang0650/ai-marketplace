@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DashboardService, KycService, ProductService } from '../../services/api.services';
@@ -520,8 +520,11 @@ export class SellWithdrawComponent implements OnInit {
           <p class="crumb">{{ 'sell.nav.sales' | t }} / {{ 'sell.nav.products' | t }}</p>
           <h1>{{ 'sell.nav.products' | t }}</h1>
         </div>
-        <a routerLink="/dashboard/products" class="btn">+ {{ 'sell.prod.add' | t }}</a>
+        <a [routerLink]="addLink()" class="btn">+ {{ 'sell.prod.add' | t }}</a>
       </div>
+      @if (isTalent()) {
+        <p class="note">{{ 'sell.prod.talentNote' | t }}</p>
+      }
       <div class="list">
         @for (p of products(); track p.id) {
           <article class="card">
@@ -535,7 +538,7 @@ export class SellWithdrawComponent implements OnInit {
         } @empty {
           <div class="card empty">
             <p>{{ 'sell.prod.empty' | t }}</p>
-            <a routerLink="/dashboard/products" class="btn">{{ 'sell.prod.add' | t }}</a>
+            <a [routerLink]="addLink()" class="btn">{{ 'sell.prod.add' | t }}</a>
           </div>
         }
       </div>
@@ -553,6 +556,7 @@ export class SellWithdrawComponent implements OnInit {
     .meta { margin: .25rem 0 0; color: #777; font-size: .85rem; }
     .ghost { border: 1px solid #ddd; border-radius: 10px; padding: .45rem .8rem; text-decoration: none; color: #333; font-weight: 700; font-size: .85rem; }
     .empty { flex-direction: column; align-items: flex-start; }
+    .note { margin: 0 0 1rem; padding: .65rem .85rem; border-radius: 10px; background: #fff7ed; color: #9a3412; font-size: .85rem; }
   `,
 })
 export class SellProductsComponent implements OnInit {
@@ -562,6 +566,8 @@ export class SellProductsComponent implements OnInit {
   private readonly i18n = inject(I18nService);
   readonly products = signal<Product[]>([]);
   readonly label = categoryLabel;
+  readonly isTalent = computed(() => this.auth.user()?.role === 'talent');
+  readonly addLink = computed(() => (this.isTalent() ? '/sell/products/new' : '/dashboard/products'));
 
   actionLabel(p: Product): string {
     if (isTemplateCategory(p.category)) return this.i18n.t('sell.nav.templates');

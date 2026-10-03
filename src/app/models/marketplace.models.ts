@@ -202,6 +202,8 @@ export interface ProductPricing {
   usageUnit?: string;
   usageRate?: number;
   compareAtPrice?: number;
+  /** Hire listings: `price` is the starting quote; buyer may counter-offer. */
+  negotiable?: boolean;
 }
 
 export interface ProductContentMeta {

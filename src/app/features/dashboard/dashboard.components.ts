@@ -17,7 +17,7 @@ import {
   IssuedLicense,
   ContentEpisode,
 } from '../../models/marketplace.models';
-import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy, isTemplateCategory, templateKind } from '../../models/categories';
+import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isHireRequestCategory, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy, isTemplateCategory, templateKind } from '../../models/categories';
 import { BuilderService, TemplateBuild } from '../builder/builder.service';
 import { TemplateGitBuildComponent } from '../builder/template-git-build.component';
 import {
@@ -389,12 +389,30 @@ export class DashboardAnalyticsComponent implements OnInit {
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">AI category</label>
           <select class="input" [(ngModel)]="draft.category" name="category" required (ngModelChange)="onCategoryChange()">
             <optgroup label="AI">
-              @for (c of aiCategories; track c.id) {
+              @for (c of aiCategories(); track c.id) {
                 <option [ngValue]="c.id">{{ c.label }}</option>
               }
             </optgroup>
           </select>
+          @if (isTalentOnly()) {
+            <p class="mt-1 text-xs text-muted">Talent chỉ tạo được listing thuê theo yêu cầu: Làm web, Làm app, Marketing, SEO, Creator, Tự động hóa.</p>
+          }
         </div>
+        @if (isHireDraft()) {
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Giá khởi điểm (USD)</label>
+            <input class="input" type="number" min="0" step="1" [(ngModel)]="draft.price" name="hirePrice" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="flex items-center gap-2 text-sm">
+              <input type="checkbox" [(ngModel)]="draft.negotiable" name="negotiable" /> Cho phép khách thương lượng giá
+            </label>
+            <p class="mt-1 text-xs text-muted">
+              Khách gửi yêu cầu → bạn báo giá (mặc định theo giá khởi điểm) → khách chấp nhận và chia giai đoạn giải ngân.
+              Mỗi giai đoạn bạn demo trực tiếp trên AI Markets; khách nghiệm thu thì ví khách bị trừ, bạn được ghi có và tạm giữ 48h trước khi rút.
+            </p>
+          </div>
+        } @else {
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Pricing model</label>
           <select class="input" [(ngModel)]="draft.pricingModel" name="pricingModel">
@@ -438,6 +456,7 @@ export class DashboardAnalyticsComponent implements OnInit {
             <input class="input" type="number" min="0" step="0.01" [(ngModel)]="draft.compareAtPrice" name="compareAtPrice" />
             <p class="mt-1 text-xs text-muted">Giá gốc gạch ngang khi cao hơn giá bán. 0 = không giảm giá listing. Voucher mã giảm giá tạo ở Bán hàng → Mã giảm giá.</p>
           </div>
+        }
         }
         @if (isVoiceDraft()) {
           <div class="md:col-span-2 rounded-lg border border-line p-3">
@@ -516,7 +535,7 @@ export class DashboardAnalyticsComponent implements OnInit {
             />
           </div>
         }
-        @if (!isVoiceDraft() && !isLicenseDraft() && !isTemplateDraft()) {
+        @if (!isVoiceDraft() && !isLicenseDraft() && !isTemplateDraft() && !isHireDraft()) {
         <div class="md:col-span-2 border-t border-line pt-3">
           <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">AI Markets endpoints (optional — editable later in Deployments)</p>
         </div>
@@ -566,6 +585,9 @@ export class DashboardAnalyticsComponent implements OnInit {
           }
         </div>
       </form>
+    }
+    @if (publishNotice) {
+      <p class="panel mb-4 text-sm">{{ publishNotice }}</p>
     }
     <div class="grid gap-3">
       @for (p of products(); track p.id) {
@@ -680,8 +702,15 @@ export class DashboardProductsComponent implements OnInit {
   readonly products = signal<Product[]>([]);
   readonly chapters = signal<ContentEpisode[]>([]);
   readonly categories = CATEGORY_META;
+  /** Talent may only offer custom work (quote + milestones); sellers list everything. */
+  readonly isTalentOnly = computed(() => this.auth.user()?.role === 'talent');
   /** Seller đăng giọng clone (MP3). Giọng sàn VieNeu do AI Markets seed, không hiện ở form này. */
-  readonly aiCategories = AI_CATEGORIES.filter((c) => c.id !== 'voice-preset');
+  readonly aiCategories = computed(() =>
+    this.isTalentOnly()
+      ? AI_CATEGORIES.filter((c) => isHireRequestCategory(c.id))
+      : AI_CATEGORIES.filter((c) => c.id !== 'voice-preset'),
+  );
+  publishNotice = '';
   readonly categoryLabel = categoryLabel;
   readonly workspaceKind = sellerWorkspaceKind;
   readonly needsEndpointDeploy = needsEndpointDeploy;
@@ -703,6 +732,11 @@ export class DashboardProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.reload();
+    if (this.isTalentOnly()) {
+      this.draft.category = 'hire-build-web';
+      this.onCategoryChange();
+      this.showForm = true;
+    }
     if (!this.browser) return;
     const tplgit = this.route.snapshot.queryParamMap.get('tplgit') || '';
     if (tplgit === 'dash-web' || tplgit === 'dash-app') {
@@ -771,7 +805,12 @@ export class DashboardProductsComponent implements OnInit {
       priceMonth: 9,
       priceYear: 79,
       compareAtPrice: 0,
+      negotiable: true,
     };
+  }
+
+  isHireDraft(): boolean {
+    return isHireRequestCategory(this.draft.category);
   }
 
   /** Seller đăng giọng clone (MP3). Giọng sàn VieNeu do AI Markets seed, không hiện ở form này. */
@@ -866,7 +905,10 @@ export class DashboardProductsComponent implements OnInit {
   onCategoryChange(): void {
     this.publishError = '';
     this.templateBuild = null;
-    if (this.isTemplateDraft()) {
+    if (this.isHireDraft()) {
+      this.draft.pricingModel = 'one-time';
+      if (this.draft.price === 29) this.draft.price = 300;
+    } else if (this.isTemplateDraft()) {
       if (this.draft.pricingModel !== 'free') this.draft.pricingModel = 'one-time';
       if (this.draft.price === 29) this.draft.price = 19;
     } else if (this.isVoiceDraft()) {
@@ -885,7 +927,11 @@ export class DashboardProductsComponent implements OnInit {
   }
 
   reload(): void {
-    const slug = this.auth.user()?.creatorSlug || 'nova-labs';
+    const slug = this.auth.user()?.creatorSlug || (this.isTalentOnly() ? '' : 'nova-labs');
+    if (!slug) {
+      this.products.set([]);
+      return;
+    }
     this.productsApi.list({ creatorSlug: slug }).subscribe((items) => this.products.set(items));
   }
 
@@ -909,7 +955,14 @@ export class DashboardProductsComponent implements OnInit {
       return;
     }
     const pricing =
-      this.isVoiceDraft()
+      this.isHireDraft()
+        ? {
+            model: 'one-time' as const,
+            price: Math.max(0, Number(this.draft.price) || 0),
+            currency: 'USD',
+            negotiable: !!this.draft.negotiable,
+          }
+        : this.isVoiceDraft()
         ? {
             model: 'usage' as const,
             price: Number(this.draft.priceMonth) || Number(this.draft.price) || 0,
@@ -1017,7 +1070,9 @@ export class DashboardProductsComponent implements OnInit {
         coverUrl: this.draft.coverUrl || undefined,
         gallery: this.draft.coverUrl ? [this.draft.coverUrl] : undefined,
         tags,
-        apiDocsMarkdown: `## ${this.draft.name}\n\nModality: \`${this.draft.category}\`\n\nPOST \`/v1/${this.draft.category}/run\``,
+        apiDocsMarkdown: this.isHireDraft()
+          ? `## ${this.draft.name}\n\n${this.draft.description}`
+          : `## ${this.draft.name}\n\nModality: \`${this.draft.category}\`\n\nPOST \`/v1/${this.draft.category}/run\``,
         changelog: [{ version: '1.0.0', date: new Date().toISOString().slice(0, 10), notes: 'Initial release.' }],
       })
       .subscribe({
@@ -1078,8 +1133,13 @@ export class DashboardProductsComponent implements OnInit {
     this.draft = this.emptyDraft();
     this.templateBuild = null;
     this.catalogSlug = '';
-    this.showForm = false;
-    this.reload();
+    this.showForm = this.isTalentOnly();
+    this.publishNotice = 'Đã gửi listing — listing hiển thị công khai sau khi sàn duyệt.';
+    if (this.isTalentOnly()) {
+      this.auth.refreshMe().subscribe(() => this.reload());
+    } else {
+      this.reload();
+    }
   }
 
   remove(id: string): void {

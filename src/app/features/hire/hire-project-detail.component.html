@@ -1,0 +1,285 @@
+<section class="hp mx-auto max-w-6xl px-4 py-8">
+  <a routerLink="/hire/projects" class="text-sm text-muted">← {{ 'hire.list.title' | t }}</a>
+
+  @if (loading()) {
+    <p class="mt-6 text-muted">{{ 'hire.loading' | t }}</p>
+  } @else if (loadError()) {
+    <p class="mt-6" style="color:#c62828">{{ loadError() }}</p>
+  } @else if (project(); as p) {
+    <header class="hp-head">
+      <div>
+        <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ 'cat.' + p.category + '.label' | t }}</p>
+        <h1 class="font-display text-3xl">
+          <a [routerLink]="['/product', p.productSlug]" class="no-underline">{{ p.productName }}</a>
+        </h1>
+        <p class="text-sm text-muted">
+          {{ 'hire.list.client' | t }}: <strong>{{ p.buyerName }}</strong> · {{ 'hire.list.provider' | t }}: <strong>{{ p.sellerName }}</strong>
+          · {{ 'hire.role.' + (p.role || 'admin') | t }}
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="hp-badge" [attr.data-status]="p.status">{{ 'hire.status.' + p.status | t }}</span>
+        @if (p.role === 'buyer') {
+          <button type="button" class="btn btn-outline" (click)="openChat()">{{ 'chat.withSeller' | t }}</button>
+        } @else {
+          <a class="btn btn-outline" routerLink="/messages">{{ 'hire.messages' | t }}</a>
+        }
+      </div>
+    </header>
+
+    @if (actionError()) {
+      <p class="hp-alert">
+        {{ actionError() }}
+        @if (p.role === 'buyer') { · <a routerLink="/wallet">{{ 'cart.topUp' | t }}</a> }
+      </p>
+    }
+
+    <div class="hp-grid">
+      <div class="grid gap-4">
+        <!-- Brief -->
+        <section class="panel">
+          <h2 class="hp-h2">{{ 'hire.req.brief' | t }}</h2>
+          <p class="whitespace-pre-line text-sm">{{ p.brief }}</p>
+          <p class="mt-2 text-xs text-muted">
+            @if (p.budget) { {{ 'hire.req.budget' | t }}: {{ p.budget | currency: p.currency : 'symbol-narrow' : '1.0-2' }} · }
+            @if (p.desiredDeadline) { {{ 'hire.req.deadline' | t }}: {{ p.desiredDeadline | date: 'mediumDate' }} · }
+            {{ 'hire.req.listPrice' | t }}: {{ p.listPrice | currency: p.currency : 'symbol-narrow' : '1.0-2' }}
+          </p>
+        </section>
+
+        <!-- Negotiation -->
+        @if (p.status === 'requested' || p.status === 'quoted') {
+          <section class="panel">
+            <h2 class="hp-h2">{{ 'hire.quote.title' | t }}</h2>
+            @if (p.quote.amount) {
+              <p class="hp-quote">
+                {{ (p.quote.by === 'buyer' ? 'hire.quote.byBuyer' : 'hire.quote.bySeller') | t }}:
+                <strong>{{ p.quote.amount | currency: p.currency : 'symbol-narrow' : '1.0-2' }}</strong>
+              </p>
+              @if (p.quote.note) { <p class="whitespace-pre-line text-sm text-muted">{{ p.quote.note }}</p> }
+            } @else {
+              <p class="text-sm text-muted">{{ 'hire.quote.none' | t }}</p>
+            }
+
+            @if (p.role === 'seller') {
+              <div class="hp-form">
+                <label class="hp-label">{{ (p.status === 'quoted' ? 'hire.quote.requote' : 'hire.quote.amount') | t }} ({{ p.currency }})</label>
+                <input class="input" type="number" min="1" step="1" [(ngModel)]="quoteAmount" name="quoteAmount" />
+                <label class="hp-label">{{ 'hire.quote.note' | t }}</label>
+                <textarea class="input min-h-20" [(ngModel)]="quoteNote" name="quoteNote" [placeholder]="'hire.quote.notePh' | t"></textarea>
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-fill" (click)="sendQuote()" [disabled]="busy() || !(quoteAmount && quoteAmount > 0)">{{ 'hire.quote.send' | t }}</button>
+                  <button type="button" class="btn btn-outline" (click)="decline()" [disabled]="busy()">{{ 'hire.quote.decline' | t }}</button>
+                </div>
+              </div>
+            }
+
+            @if (p.role === 'buyer' && p.status === 'requested') {
+              <p class="mt-3 text-sm text-muted">{{ 'hire.quote.waiting' | t }}</p>
+              <button type="button" class="btn btn-outline mt-2" (click)="cancel()" [disabled]="busy()">{{ 'hire.quote.cancel' | t }}</button>
+            }
+
+            @if (p.role === 'buyer' && p.status === 'quoted') {
+              <div class="hp-form">
+                <h3 class="hp-h3">{{ 'hire.accept.title' | t }}</h3>
+                <p class="text-xs text-muted">{{ 'hire.accept.lead' | t }}</p>
+                <div class="hp-ms-edit">
+                  @for (r of rows(); track $index; let i = $index) {
+                    <div class="hp-ms-row">
+                      <span class="hp-ms-n">{{ i + 1 }}</span>
+                      <input class="input" [(ngModel)]="r.title" [name]="'msTitle' + i" [placeholder]="'hire.ms.title.ph' | t" />
+                      <input class="input" type="number" min="0.01" step="0.01" [(ngModel)]="r.amount" (ngModelChange)="touchRows()" [name]="'msAmount' + i" />
+                      <input class="input" type="date" [min]="minDue" [(ngModel)]="r.due" [name]="'msDue' + i" />
+                    </div>
+                  }
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-sm">
+                  <button type="button" class="btn btn-outline" (click)="addRow()" [disabled]="rows().length >= 10">+ {{ 'hire.accept.addPhase' | t }}</button>
+                  <button type="button" class="btn btn-outline" (click)="removeRow()" [disabled]="rows().length <= 1">− {{ 'hire.accept.removePhase' | t }}</button>
+                  <span [style.color]="rowsMatch() ? '' : '#c62828'">
+                    {{ 'hire.accept.sum' | t: { sum: rowsTotal(), total: p.quote.amount } }} {{ p.currency }}
+                  </span>
+                </div>
+                @if (walletAvailable() !== null) {
+                  <p class="text-xs text-muted">{{ 'hire.accept.wallet' | t: { amount: walletAvailable()! } }} {{ p.currency }}</p>
+                }
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-fill" (click)="accept()" [disabled]="busy() || !rowsMatch()">{{ 'hire.accept.submit' | t }}</button>
+                  <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="busy()">{{ 'hire.quote.cancel' | t }}</button>
+                </div>
+
+                <h3 class="hp-h3 mt-4">{{ 'hire.counter.title' | t }}</h3>
+                <div class="hp-counter">
+                  <input class="input" type="number" min="1" step="1" [(ngModel)]="counterAmount" name="counterAmount" />
+                  <input class="input" [(ngModel)]="counterNote" name="counterNote" [placeholder]="'hire.quote.notePh' | t" />
+                  <button type="button" class="btn btn-outline" (click)="sendCounter()" [disabled]="busy() || !(counterAmount && counterAmount > 0)">{{ 'hire.counter.send' | t }}</button>
+                </div>
+              </div>
+            }
+          </section>
+        }
+
+        <!-- Milestones -->
+        @if (p.milestones.length) {
+          <section class="panel">
+            <h2 class="hp-h2">{{ 'hire.ms.title' | t }}</h2>
+            <p class="mb-3 text-xs text-muted">
+              {{ 'hire.ms.paid' | t: { paid: p.paidTotal, total: p.quote.amount } }} {{ p.currency }} · {{ 'hire.ms.holdNote' | t }}
+            </p>
+            <ol class="hp-ms">
+              @for (m of p.milestones; track m.id) {
+                <li class="hp-ms-item" [attr.data-status]="m.status" [class.hp-ms-item--current]="m.id === p.currentMilestoneId">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <strong>{{ m.index + 1 }}. {{ m.title }}</strong>
+                    <span class="text-sm">{{ m.amount | currency: p.currency : 'symbol-narrow' : '1.0-2' }}</span>
+                  </div>
+                  <p class="text-xs text-muted">
+                    {{ 'hire.ms.status.' + m.status | t }} · {{ 'hire.ms.due' | t }} {{ m.dueAt | date: 'mediumDate' }}
+                    @if (m.overdue) { · <span style="color:#c62828">{{ 'hire.ms.overdue' | t }}</span> }
+                    @if (m.approvedAt) { · {{ 'hire.ms.approvedAt' | t }} {{ m.approvedAt | date: 'short' }} }
+                    @if (m.revisionCount) { · {{ 'hire.ms.revisions' | t: { n: m.revisionCount } }} }
+                  </p>
+                  @if (m.revisionNote && m.status === 'in_progress') {
+                    <p class="hp-note">{{ 'hire.ms.revisionAsked' | t }}: {{ m.revisionNote }}</p>
+                  }
+                  @if (m.demoNote || m.demoUrl) {
+                    <p class="mt-1 whitespace-pre-line text-sm">{{ m.demoNote }}</p>
+                    @if (m.demoUrl) { <a [href]="m.demoUrl" target="_blank" rel="noopener" class="text-sm">{{ m.demoUrl }}</a> }
+                  }
+                  @if (m.previewUrl) {
+                    <a [href]="m.previewUrl" target="_blank" rel="noopener" class="text-sm">{{ 'hire.demo.openTab' | t }}</a>
+                  }
+                </li>
+              }
+            </ol>
+
+            @if (p.status === 'active' && current(); as m) {
+              <!-- Seller: submit the demo of the current phase -->
+              @if (p.role === 'seller' && m.status === 'in_progress') {
+                <div class="hp-form">
+                  <h3 class="hp-h3">{{ 'hire.demo.title' | t: { n: m.index + 1 } }}</h3>
+                  @if (p.demoKind) {
+                    <p class="text-xs text-muted">{{ 'hire.demo.builderLead' | t }}</p>
+                    @if (builderProjects().length) {
+                      <select class="input" [(ngModel)]="demoBuilderId" name="demoBuilderId">
+                        @for (b of builderProjects(); track b.id) {
+                          <option [value]="b.id">{{ b.name }}</option>
+                        }
+                      </select>
+                    } @else {
+                      <p class="text-sm">
+                        {{ 'hire.demo.noBuilder' | t }}
+                        <a routerLink="/build">{{ 'nav.builder' | t }}</a>
+                      </p>
+                    }
+                  } @else {
+                    <label class="hp-label">{{ 'hire.demo.url' | t }}</label>
+                    <input class="input" [(ngModel)]="demoUrl" name="demoUrl" placeholder="https://…" />
+                  }
+                  <label class="hp-label">{{ 'hire.demo.note' | t }}</label>
+                  <textarea class="input min-h-20" [(ngModel)]="demoNote" name="demoNote" [placeholder]="'hire.demo.notePh' | t"></textarea>
+                  <button type="button" class="btn btn-fill" (click)="submitDemo()" [disabled]="busy() || (!!p.demoKind && !demoBuilderId)">{{ 'hire.demo.submit' | t }}</button>
+                </div>
+              }
+              @if (p.role === 'seller' && m.status === 'submitted') {
+                <p class="mt-3 text-sm text-muted">{{ 'hire.demo.waitingBuyer' | t }}</p>
+              }
+              @if (p.role === 'buyer' && m.status === 'in_progress') {
+                <p class="mt-3 text-sm text-muted">{{ 'hire.demo.waitingSeller' | t: { n: m.index + 1 } }}</p>
+              }
+
+              <!-- Buyer: accept or ask for changes -->
+              @if (p.role === 'buyer' && m.status === 'submitted') {
+                <div class="hp-form">
+                  <h3 class="hp-h3">{{ 'hire.review.title' | t: { n: m.index + 1 } }}</h3>
+                  <p class="text-xs text-muted">{{ 'hire.review.lead' | t: { amount: m.amount, currency: p.currency } }}</p>
+                  @if (walletAvailable() !== null) {
+                    <p class="text-xs text-muted">{{ 'hire.accept.wallet' | t: { amount: walletAvailable()! } }} {{ p.currency }}</p>
+                  }
+                  <div class="flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-fill" (click)="approve()" [disabled]="busy()">
+                      {{ 'hire.review.approve' | t: { amount: m.amount, currency: p.currency } }}
+                    </button>
+                    <button type="button" class="btn btn-outline" (click)="showRevision = !showRevision">{{ 'hire.review.revision' | t }}</button>
+                  </div>
+                  @if (showRevision) {
+                    <textarea class="input min-h-20" [(ngModel)]="revisionNote" name="revisionNote" [placeholder]="'hire.review.revisionPh' | t"></textarea>
+                    <button type="button" class="btn btn-outline" (click)="requestRevision()" [disabled]="busy() || revisionNote.trim().length < 8">{{ 'hire.review.sendRevision' | t }}</button>
+                  }
+                </div>
+              }
+            }
+
+            @if (p.role === 'buyer' && p.status === 'active') {
+              <div class="hp-terminate">
+                <button type="button" class="hp-link-danger" (click)="showTerminate = !showTerminate">{{ 'hire.term.open' | t }}</button>
+                @if (showTerminate) {
+                  <div class="hp-form">
+                    <p class="text-xs text-muted">{{ 'hire.term.lead' | t }}</p>
+                    <select class="input" [(ngModel)]="terminateReason" name="terminateReason">
+                      <option value="late" [disabled]="!current()?.overdue">{{ 'hire.term.reason.late' | t }}</option>
+                      <option value="not_as_requested">{{ 'hire.term.reason.not_as_requested' | t }}</option>
+                      <option value="other">{{ 'hire.term.reason.other' | t }}</option>
+                    </select>
+                    <textarea class="input min-h-20" [(ngModel)]="terminateNote" name="terminateNote" [placeholder]="'hire.term.notePh' | t"></textarea>
+                    <button type="button" class="btn btn-outline hp-danger" (click)="terminate()" [disabled]="busy() || terminateNote.trim().length < 8">{{ 'hire.term.submit' | t }}</button>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        @if (p.status === 'terminated') {
+          <section class="panel">
+            <h2 class="hp-h2">{{ 'hire.status.terminated' | t }}</h2>
+            <p class="text-sm">{{ 'hire.term.reason.' + (p.terminationReason || 'other') | t }} · {{ p.terminatedAt | date: 'short' }}</p>
+            <p class="whitespace-pre-line text-sm text-muted">{{ p.terminationNote }}</p>
+            @if (p.complaintId) {
+              <a class="btn btn-outline mt-2" [routerLink]="[p.role === 'seller' ? '/sell/complaints' : '/complaints', p.complaintId]">{{ 'hire.term.complaint' | t }}</a>
+            } @else {
+              <p class="text-xs text-muted">{{ 'hire.term.noCharge' | t }}</p>
+            }
+          </section>
+        }
+        @if (p.status === 'completed') {
+          <section class="panel">
+            <h2 class="hp-h2">{{ 'hire.status.completed' | t }}</h2>
+            <p class="text-sm text-muted">{{ 'hire.done.lead' | t }}</p>
+          </section>
+        }
+      </div>
+
+      <!-- Live demo + timeline -->
+      <aside class="grid content-start gap-4">
+        @if (previewSrc(); as src) {
+          <section class="panel">
+            <h2 class="hp-h2">{{ 'hire.demo.live' | t }}</h2>
+            @if (previewKind() === 'app') {
+              <div class="hp-device">
+                <app-device-frame model="iphone" [width]="300" [height]="620">
+                  <iframe class="absolute inset-0 h-full w-full border-0 bg-white" [src]="src" sandbox="allow-scripts allow-forms allow-modals allow-popups" title="demo"></iframe>
+                </app-device-frame>
+              </div>
+            } @else {
+              <iframe class="hp-web" [src]="src" sandbox="allow-scripts allow-forms allow-modals allow-popups" title="demo"></iframe>
+            }
+          </section>
+        }
+        <section class="panel">
+          <h2 class="hp-h2">{{ 'hire.timeline' | t }}</h2>
+          <ul class="hp-events">
+            @for (e of p.events; track $index) {
+              <li>
+                <span class="text-xs text-muted">{{ e.at | date: 'short' }}</span>
+                {{ 'hire.event.' + e.action | t }}
+                @if (e.note) { <span class="text-xs text-muted">· {{ e.note }}</span> }
+              </li>
+            }
+          </ul>
+        </section>
+        <p class="text-xs text-muted">{{ 'hire.escrowFooter' | t }}</p>
+      </aside>
+    </div>
+  }
+</section>

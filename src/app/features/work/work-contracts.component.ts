@@ -8,16 +8,18 @@ import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { JobBid } from '../../models/work.models';
 import { SeoService } from '../../services/seo.service';
+import { WorkDisclaimerComponent } from './work-disclaimer.component';
 
 @Component({
   selector: 'app-work-contracts',
   standalone: true,
-  imports: [RouterLink, FormsModule, TPipe, DecimalPipe],
+  imports: [RouterLink, FormsModule, TPipe, DecimalPipe, WorkDisclaimerComponent],
   template: `
     <section class="work-contracts page route-enter">
       <a routerLink="/work/manage" class="work-detail__back">← {{ 'work.nav.dashboard' | t }}</a>
       <h1>{{ 'work.contracts' | t }}</h1>
       <p class="lede">{{ 'work.contractsLede' | t }}</p>
+      <app-work-disclaimer />
 
       <div class="filters">
         <button type="button" [class.active]="roleFilter() === 'all'" (click)="setAs('all')">{{ 'work.filter.all' | t }}</button>

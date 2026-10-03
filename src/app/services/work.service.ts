@@ -152,4 +152,43 @@ export class WorkService {
     }
     return this.http.get<TalentProfile>(`${this.base}/talents/${slug}`).pipe(catchError(() => of(null)));
   }
+
+  /** Flat fee per HR job post / talent profile, charged from the wallet. */
+  listingFee(): Observable<WorkListingFee> {
+    return this.http
+      .get<WorkListingFee>(`${this.base}/listing-fee`)
+      .pipe(catchError(() => of({ vnd: 20000, amount: 0.77, currency: 'USD' })));
+  }
+
+  myTalents(): Observable<TalentProfile[]> {
+    return this.http.get<TalentProfile[]>(`${this.base}/my/talents`).pipe(catchError(() => of([])));
+  }
+
+  createTalent(payload: TalentProfilePayload): Observable<TalentProfile> {
+    return this.http.post<TalentProfile>(`${this.base}/talents`, payload);
+  }
+
+  updateTalent(slug: string, payload: TalentProfilePayload): Observable<TalentProfile> {
+    return this.http.put<TalentProfile>(`${this.base}/talents/${slug}`, payload);
+  }
+}
+
+export interface WorkListingFee {
+  vnd: number;
+  amount: number;
+  currency: string;
+}
+
+export interface TalentProfilePayload {
+  name: string;
+  title: string;
+  bio?: string;
+  fieldIds?: string[];
+  skills?: string[];
+  experienceYears?: number;
+  hoursPerWeek?: number;
+  rateAmount?: number;
+  rateCurrency?: string;
+  rateNegotiable?: boolean;
+  available?: boolean;
 }

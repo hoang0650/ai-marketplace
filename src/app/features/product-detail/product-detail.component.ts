@@ -19,7 +19,8 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, CouponPreview, StreamDevice } from '../../models/marketplace.models';
-import { isHireCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
+import { HireService } from '../../services/hire.service';
+import { isHireCategory, isHireRequestCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { TemplatePanelComponent } from '../builder/template-panel.component';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
@@ -83,6 +84,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly uploadApi = inject(UploadService);
   private readonly contentApi = inject(ContentService);
   private readonly chatApi = inject(ChatService);
+  private readonly hireService = inject(HireService);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   readonly auth = inject(AuthService);
@@ -210,10 +212,11 @@ export class ProductDetailComponent implements OnInit {
   previewRows = 20;
 
   hireBrief = '';
-  hireBudget = '';
-  hireTimeline = '2 weeks';
-  hireContact = '';
+  hireBudget: number | null = null;
+  hireDeadline = '';
   hireSent = signal(false);
+  readonly hireBusy = signal(false);
+  readonly hireError = signal('');
 
   /** Persistent-memory agent chat (hire-agent) */
   agentDraft = '';
@@ -377,6 +380,10 @@ export class ProductDetailComponent implements OnInit {
         this.couponCode = '';
         this.useCoupon = false;
         this.hireSent.set(false);
+        this.hireError.set('');
+        this.hireBrief = '';
+        this.hireDeadline = '';
+        this.hireBudget = isHireRequestCategory(p.category) && p.pricing?.price ? p.pricing.price : null;
         this.skillInstalled.set(false);
         this.sessionLogs.set([]);
         this.selectedLog.set(null);
@@ -503,6 +510,10 @@ export class ProductDetailComponent implements OnInit {
 
   isHire(cat: ProductCategory): boolean {
     return isHireCategory(cat);
+  }
+
+  isHireRequest(cat: ProductCategory): boolean {
+    return isHireRequestCategory(cat);
   }
 
   isSkill(cat: ProductCategory): boolean {
@@ -810,9 +821,42 @@ export class ProductDetailComponent implements OnInit {
   }
 
   submitHireRequest(): void {
-    if (!this.hireBrief.trim() || !this.hireContact.trim()) return;
-    this.hireSent.set(true);
-    this.checkoutMsg.set('Hire request sent — seller will reply in-app (mock).');
+    const p = this.product();
+    if (!p || this.hireBusy()) return;
+    if (!this.auth.user()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+    const brief = this.hireBrief.trim();
+    if (brief.length < 20) {
+      this.hireError.set(this.i18n.t('hire.req.briefShort'));
+      return;
+    }
+    this.hireBusy.set(true);
+    this.hireError.set('');
+    this.hireService
+      .request({
+        productId: p.id,
+        brief,
+        budget: Number(this.hireBudget) > 0 ? Number(this.hireBudget) : undefined,
+        desiredDeadline: this.hireDeadline || undefined,
+      })
+      .subscribe({
+        next: (project) => {
+          this.hireBusy.set(false);
+          this.hireSent.set(true);
+          void this.router.navigate(['/hire/projects', project.id]);
+        },
+        error: (err) => {
+          this.hireBusy.set(false);
+          const existing = err?.error?.projectId;
+          if (existing) {
+            void this.router.navigate(['/hire/projects', existing]);
+            return;
+          }
+          this.hireError.set(err?.error?.message || this.i18n.t('hire.err.generic'));
+        },
+      });
   }
 
   sendAgentMessage(): void {

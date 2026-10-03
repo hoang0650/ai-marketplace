@@ -46,6 +46,7 @@ const SELLER_GROUPS: NavGroup[] = [
     items: [
       { labelKey: 'sell.nav.products', path: '/sell/products' },
       { labelKey: 'sell.nav.templates', path: '/sell/templates' },
+      { labelKey: 'sell.nav.hireProjects', path: '/hire/projects' },
       { labelKey: 'sell.nav.orders', path: '/sell/orders' },
       { labelKey: 'sell.nav.messages', path: '/sell/messages' },
       { labelKey: 'sell.nav.complaints', path: '/sell/complaints' },
@@ -77,6 +78,8 @@ function partnerGroups(ws: Exclude<SellWorkspace, 'seller'>): NavGroup[] {
   const work: NavItem[] =
     ws === 'talent'
       ? [
+          { labelKey: 'sell.nav.products', path: '/sell/products' },
+          { labelKey: 'sell.nav.hireProjects', path: '/hire/projects' },
           { labelKey: 'sell.nav.workProfile', path: '/work/manage/profile' },
           { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
         ]
@@ -94,7 +97,13 @@ function partnerGroups(ws: Exclude<SellWorkspace, 'seller'>): NavGroup[] {
       titleKey: 'sell.nav.identity',
       key: 'setup',
       collapsible: true,
-      items: [{ labelKey: 'sell.nav.kyc', path: '/sell/kyc' }],
+      items:
+        ws === 'talent'
+          ? [
+              { labelKey: 'sell.nav.kyc', path: '/sell/kyc' },
+              { labelKey: 'sell.nav.verification', path: '/sell/verification' },
+            ]
+          : [{ labelKey: 'sell.nav.kyc', path: '/sell/kyc' }],
     },
     {
       titleKey: 'sell.nav.work',
