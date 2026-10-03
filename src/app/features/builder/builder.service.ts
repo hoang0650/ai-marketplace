@@ -133,6 +133,30 @@ export interface TemplateListing {
 export interface TemplateUploadResult {
   template: TemplateMeta;
   skipped: Array<{ path: string; reason: 'type' | 'binary' | 'size' }>;
+  build?: TemplateBuild;
+}
+
+export interface TemplateBuildLine {
+  /** ms since the build started */
+  t: number;
+  level: 'info' | 'warn' | 'error' | 'success';
+  msg: string;
+}
+
+/** A GitHub → checks run; only successful builds can be published onto a listing. */
+export interface TemplateBuild {
+  id: string;
+  kind: BuilderKind;
+  status: 'success' | 'failed';
+  source: (Omit<TemplateGitSource, 'syncedAt'> & { commitMessage?: string }) | null;
+  log: TemplateBuildLine[];
+  fileCount: number;
+  paths: string[];
+  skipped: TemplateUploadResult['skipped'];
+  durationMs: number;
+  createdAt: string | null;
+  previewUrl: string;
+  productId: string | null;
 }
 
 export interface ByokProvider {
@@ -302,6 +326,15 @@ export class BuilderService {
   /** Imports from the seller's linked GitHub; `{ sync: true }` re-imports the saved repo/branch/folder. */
   templateFromGit(productId: string, fromGit: TemplateGitPick | { sync: true }): Observable<TemplateUploadResult> {
     return this.http.put<TemplateUploadResult>(`${this.base}/templates/${productId}/files`, { fromGit });
+  }
+
+  /** Fetches the repo and runs the template checks. Always resolves with a build (status + log). */
+  templateBuild(body: { kind: BuilderKind; fromGit: TemplateGitPick } | { productId: string; fromGit?: TemplateGitPick }): Observable<{ build: TemplateBuild }> {
+    return this.http.post<{ build: TemplateBuild }>(`${this.base}/templates/builds`, body);
+  }
+
+  templateFromBuild(productId: string, buildId: string): Observable<TemplateUploadResult> {
+    return this.http.put<TemplateUploadResult>(`${this.base}/templates/${productId}/files`, { fromBuild: buildId });
   }
 
   updateTemplate(productId: string, body: { demoEnabled?: boolean; unlinkGit?: boolean }): Observable<{ template: TemplateMeta }> {

@@ -1,6 +1,6 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { CurrencyPipe, DecimalPipe, DatePipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardService, ProductService, UploadService, ContentService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
@@ -17,7 +17,9 @@ import {
   IssuedLicense,
   ContentEpisode,
 } from '../../models/marketplace.models';
-import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy } from '../../models/categories';
+import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy, isTemplateCategory, templateKind } from '../../models/categories';
+import { BuilderService, TemplateBuild } from '../builder/builder.service';
+import { TemplateGitBuildComponent } from '../builder/template-git-build.component';
 import {
   RUNPOD_PUBLIC_ENDPOINTS,
   RunpodPublicEndpoint,
@@ -363,7 +365,7 @@ export class DashboardAnalyticsComponent implements OnInit {
 @Component({
   selector: 'app-dashboard-products',
   standalone: true,
-  imports: [FormsModule, RouterLink, DecimalPipe],
+  imports: [FormsModule, RouterLink, DecimalPipe, TemplateGitBuildComponent],
   template: `
     <div class="mb-4 flex justify-between gap-3">
       <h2 class="font-display text-2xl">Your products</h2>
@@ -396,8 +398,10 @@ export class DashboardAnalyticsComponent implements OnInit {
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Pricing model</label>
           <select class="input" [(ngModel)]="draft.pricingModel" name="pricingModel">
-            <option value="usage">Usage</option>
-            <option value="subscription">Subscription</option>
+            @if (!isTemplateDraft()) {
+              <option value="usage">Usage</option>
+              <option value="subscription">Subscription</option>
+            }
             <option value="one-time">One-time</option>
             <option value="free">Free</option>
           </select>
@@ -497,7 +501,22 @@ export class DashboardAnalyticsComponent implements OnInit {
           <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Tags (comma-separated)</label>
           <input class="input" [(ngModel)]="draft.tags" name="tags" placeholder="llm, vietnamese, text-to-text" />
         </div>
-        @if (!isVoiceDraft() && !isLicenseDraft()) {
+        @if (isTemplateDraft()) {
+          <div class="md:col-span-2 border-t border-line pt-3">
+            <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-muted">Source code — GitHub</p>
+            <p class="mb-3 text-xs text-muted">
+              Chọn repo/branch/thư mục chứa template ({{ draftTemplateKind() === 'app' ? 'App.tsx / App.js (React Native · Expo)' : 'index.html' }}), bấm Build.
+              Build thành công mới được Publish. Build lỗi → xem log, sửa trong repo rồi Build lại.
+              Muốn tải ZIP? Dùng <a routerLink="/sell/templates" class="underline">Web / app templates</a>.
+            </p>
+            <app-template-git-build
+              [kind]="draftTemplateKind()"
+              [returnKey]="'dash-' + draftTemplateKind()"
+              (built)="templateBuild = $event"
+            />
+          </div>
+        }
+        @if (!isVoiceDraft() && !isLicenseDraft() && !isTemplateDraft()) {
         <div class="md:col-span-2 border-t border-line pt-3">
           <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">AI Markets endpoints (optional — editable later in Deployments)</p>
         </div>
@@ -535,8 +554,16 @@ export class DashboardAnalyticsComponent implements OnInit {
           <input class="input" [(ngModel)]="draft.skillsText" name="skillsText" placeholder="web-search, code-exec, memory" />
         </div>
         }
-        <div class="md:col-span-2">
-          <button class="btn btn-fill" type="submit">Publish</button>
+        <div class="md:col-span-2 flex flex-wrap items-center gap-3">
+          <button class="btn btn-fill" type="submit" [disabled]="publishing || (isTemplateDraft() && !templateBuild)">
+            {{ publishing ? 'Publishing…' : 'Publish' }}
+          </button>
+          @if (isTemplateDraft() && !templateBuild) {
+            <span class="text-xs text-muted">Cần Build thành công trước khi Publish.</span>
+          }
+          @if (publishError) {
+            <span class="text-xs text-red-600">{{ publishError }}</span>
+          }
         </div>
       </form>
     }
@@ -571,6 +598,9 @@ export class DashboardAnalyticsComponent implements OnInit {
             }
           </div>
           <div class="flex gap-2">
+            @if (isTemplate(p.category)) {
+              <a class="btn btn-outline" routerLink="/sell/templates">Template</a>
+            } @else {
             @switch (workspaceKind(p.category)) {
               @case ('watch') {
                 <button type="button" class="btn btn-outline" (click)="toggleChapters(p)">Tập / chương</button>
@@ -590,6 +620,7 @@ export class DashboardAnalyticsComponent implements OnInit {
               @default {
                 <a class="btn btn-outline" [routerLink]="['/deploy', p.slug]">Deploy</a>
               }
+            }
             }
             <button type="button" class="btn btn-outline" (click)="remove(p.id)">Delete</button>
           </div>
@@ -643,6 +674,9 @@ export class DashboardProductsComponent implements OnInit {
   private readonly uploads = inject(UploadService);
   private readonly contentApi = inject(ContentService);
   private readonly auth = inject(AuthService);
+  private readonly builder = inject(BuilderService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
   readonly products = signal<Product[]>([]);
   readonly chapters = signal<ContentEpisode[]>([]);
   readonly categories = CATEGORY_META;
@@ -651,9 +685,14 @@ export class DashboardProductsComponent implements OnInit {
   readonly categoryLabel = categoryLabel;
   readonly workspaceKind = sellerWorkspaceKind;
   readonly needsEndpointDeploy = needsEndpointDeploy;
+  readonly isTemplate = isTemplateCategory;
   readonly runpodCatalog: RunpodPublicEndpoint[] = RUNPOD_PUBLIC_ENDPOINTS;
   catalogSlug = '';
   showForm = false;
+  publishing = false;
+  publishError = '';
+  /** Last successful GitHub build for a template draft — required before Publish. */
+  templateBuild: TemplateBuild | null = null;
   voiceUploading = false;
   voiceUploadError = '';
   managingId = '';
@@ -664,6 +703,13 @@ export class DashboardProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.reload();
+    if (!this.browser) return;
+    const tplgit = this.route.snapshot.queryParamMap.get('tplgit') || '';
+    if (tplgit === 'dash-web' || tplgit === 'dash-app') {
+      this.draft.category = `template-${tplgit.slice(5)}` as ProductCategory;
+      this.onCategoryChange();
+      this.showForm = true;
+    }
   }
 
   catalogForCategory(): RunpodPublicEndpoint[] {
@@ -735,6 +781,14 @@ export class DashboardProductsComponent implements OnInit {
 
   isLicenseDraft(): boolean {
     return isLicenseCategory(this.draft.category);
+  }
+
+  isTemplateDraft(): boolean {
+    return isTemplateCategory(this.draft.category);
+  }
+
+  draftTemplateKind(): 'web' | 'app' {
+    return templateKind(this.draft.category) || 'web';
   }
 
   isWatchProduct(p: Product): boolean {
@@ -810,7 +864,12 @@ export class DashboardProductsComponent implements OnInit {
   }
 
   onCategoryChange(): void {
-    if (this.isVoiceDraft()) {
+    this.publishError = '';
+    this.templateBuild = null;
+    if (this.isTemplateDraft()) {
+      if (this.draft.pricingModel !== 'free') this.draft.pricingModel = 'one-time';
+      if (this.draft.price === 29) this.draft.price = 19;
+    } else if (this.isVoiceDraft()) {
       this.draft.pricingModel = 'usage';
       this.draft.usageUnit = '1K characters';
       this.draft.usageRate = 0.02;
@@ -831,6 +890,8 @@ export class DashboardProductsComponent implements OnInit {
   }
 
   create(): void {
+    if (this.publishing) return;
+    this.publishError = '';
     if (this.isVoiceDraft() && !String(this.draft.voiceSampleUrl || '').trim()) {
       this.voiceUploadError = 'Upload MP3 giọng của bạn trước — hệ thống sẽ tự clone.';
       return;
@@ -842,6 +903,10 @@ export class DashboardProductsComponent implements OnInit {
       .filter(Boolean);
     if (!tags.includes(this.draft.category)) {
       tags.push(this.draft.category);
+    }
+    if (this.isTemplateDraft()) {
+      this.createTemplate(tags);
+      return;
     }
     const pricing =
       this.isVoiceDraft()
@@ -955,12 +1020,66 @@ export class DashboardProductsComponent implements OnInit {
         apiDocsMarkdown: `## ${this.draft.name}\n\nModality: \`${this.draft.category}\`\n\nPOST \`/v1/${this.draft.category}/run\``,
         changelog: [{ version: '1.0.0', date: new Date().toISOString().slice(0, 10), notes: 'Initial release.' }],
       })
-      .subscribe(() => {
-        this.draft = this.emptyDraft();
-        this.catalogSlug = '';
-        this.showForm = false;
-        this.reload();
+      .subscribe({
+        next: () => this.created(),
+        error: (err) => (this.publishError = err?.error?.message || 'Publish thất bại.'),
       });
+  }
+
+  /** Template listing: create the product, then attach the files of the successful build (undo on failure). */
+  private createTemplate(tags: string[]): void {
+    const build = this.templateBuild;
+    if (!build || build.kind !== this.draftTemplateKind()) {
+      this.publishError = 'Cần Build thành công trước khi Publish.';
+      return;
+    }
+    const user = this.auth.user();
+    const price = Math.max(0, Number(this.draft.price) || 0);
+    const pricing =
+      this.draft.pricingModel !== 'free' && price > 0
+        ? { model: 'one-time' as const, price, currency: 'USD', ...(Number(this.draft.compareAtPrice) > price ? { compareAtPrice: Number(this.draft.compareAtPrice) } : {}) }
+        : { model: 'free' as const, price: 0, currency: 'USD' };
+    this.publishing = true;
+    this.productsApi
+      .create({
+        name: this.draft.name,
+        tagline: this.draft.tagline,
+        description: this.draft.description,
+        creatorSlug: user?.creatorSlug || 'nova-labs',
+        creatorName: user?.name || 'Creator',
+        category: this.draft.category,
+        pricing,
+        coverUrl: this.draft.coverUrl || undefined,
+        gallery: this.draft.coverUrl ? [this.draft.coverUrl] : undefined,
+        tags,
+      } as Parameters<ProductService['create']>[0])
+      .subscribe({
+        next: (product) => {
+          this.builder.templateFromBuild(product.id, build.id).subscribe({
+            next: () => {
+              this.publishing = false;
+              this.created();
+            },
+            error: (err) => {
+              this.publishing = false;
+              this.publishError = err?.error?.message || 'Không gắn được bản build vào sản phẩm.';
+              this.productsApi.remove(product.id).subscribe({ error: () => this.reload() });
+            },
+          });
+        },
+        error: (err) => {
+          this.publishing = false;
+          this.publishError = err?.error?.message || 'Publish thất bại.';
+        },
+      });
+  }
+
+  private created(): void {
+    this.draft = this.emptyDraft();
+    this.templateBuild = null;
+    this.catalogSlug = '';
+    this.showForm = false;
+    this.reload();
   }
 
   remove(id: string): void {

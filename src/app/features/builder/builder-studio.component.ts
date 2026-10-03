@@ -10,6 +10,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
@@ -25,31 +26,33 @@ import { BuilderProject, BuilderService, BuilderStreamError, ByokKey, ByokProvid
 import { ByokKeysComponent } from './byok-keys.component';
 import { GitPanelComponent } from './git-panel.component';
 import { buildZip, expoScaffold } from './zip';
+import { DEFAULT_CHROME, DeviceChrome, DeviceFrameComponent, DeviceModel, deviceOuter } from './device-frame.component';
 
 interface Device {
   id: string;
   width: number;
   height: number;
-  frame: boolean;
+  /** Emulator shell; none = full-width desktop preview. */
+  model: DeviceModel | null;
 }
 
 const DEVICES: Record<'web' | 'app', Device[]> = {
   web: [
-    { id: 'desktop', width: 0, height: 0, frame: false },
-    { id: 'tablet', width: 820, height: 1180, frame: true },
-    { id: 'mobile', width: 390, height: 844, frame: true },
+    { id: 'desktop', width: 0, height: 0, model: null },
+    { id: 'tablet', width: 820, height: 1180, model: 'tablet' },
+    { id: 'mobile', width: 390, height: 844, model: 'iphone' },
   ],
   app: [
-    { id: 'iphone', width: 390, height: 844, frame: true },
-    { id: 'android', width: 412, height: 915, frame: true },
-    { id: 'tablet', width: 820, height: 1180, frame: true },
+    { id: 'iphone', width: 390, height: 844, model: 'iphone' },
+    { id: 'android', width: 412, height: 915, model: 'android' },
+    { id: 'tablet', width: 820, height: 1180, model: 'tablet' },
   ],
 };
 
 @Component({
   selector: 'app-builder-studio',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, GitPanelComponent],
+  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, GitPanelComponent, DeviceFrameComponent],
   styles: [
     `
       :host { display: block; }
@@ -57,9 +60,6 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
       .preview-full { position: fixed; inset: 0; z-index: 60; height: auto !important; min-height: 0 !important; border-radius: 0; }
       .bubble-user { background: rgb(99 102 241 / 0.15); }
       .selected-row { background: rgb(255 255 255 / 0.1); }
-      .device { border: 10px solid #111827; border-radius: 42px; box-shadow: 0 20px 60px rgb(0 0 0 / 0.45); overflow: hidden; background: #fff; transform-origin: top center; }
-      .device.tablet { border-radius: 28px; }
-      .notch { position: absolute; top: 0; left: 50%; width: 120px; height: 24px; transform: translateX(-50%); background: #111827; border-radius: 0 0 16px 16px; z-index: 2; }
     `,
   ],
   template: `
@@ -246,26 +246,24 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
             </div>
 
             @if (view() === 'preview') {
-              <div #stage class="relative flex min-h-0 flex-1 justify-center overflow-hidden rounded-xl bg-black/30" [class.items-center]="!device().frame">
-                @if (device().frame) {
-                  <div class="relative mt-4" [style.width.px]="device().width * scale()" [style.height.px]="device().height * scale()">
-                    <div
-                      class="device absolute left-1/2 top-0"
-                      [class.tablet]="device().id === 'tablet'"
-                      [style.width.px]="device().width + 20"
-                      [style.height.px]="device().height + 20"
-                      [style.transform]="'translateX(-50%) scale(' + scale() + ')'"
-                    >
-                      @if (device().id !== 'tablet') {
-                        <div class="notch"></div>
-                      }
-                      <iframe
-                        #frame
-                        class="h-full w-full border-0 bg-white"
-                        [src]="frameSrc()"
-                        sandbox="allow-scripts allow-forms allow-modals allow-popups"
-                        [title]="p.name"
-                      ></iframe>
+              <div
+                #stage
+                class="relative flex min-h-0 flex-1 justify-center overflow-hidden rounded-xl"
+                [class.items-center]="!device().model"
+                [style.background]="device().model ? 'radial-gradient(ellipse at 50% 30%, #3a3f4b 0%, #1b1e25 60%, #111317 100%)' : 'rgb(0 0 0 / 0.3)'"
+              >
+                @if (device().model; as model) {
+                  <div class="relative self-center" [style.width.px]="outer().width * scale()" [style.height.px]="outer().height * scale()">
+                    <div class="absolute left-1/2 top-0 origin-top" [style.transform]="'translateX(-50%) scale(' + scale() + ')'">
+                      <app-device-frame [model]="model" [width]="device().width" [height]="device().height" [chrome]="chrome()">
+                        <iframe
+                          #frame
+                          class="absolute inset-0 h-full w-full border-0 bg-white"
+                          [src]="frameSrc()"
+                          sandbox="allow-scripts allow-forms allow-modals allow-popups"
+                          [title]="p.name"
+                        ></iframe>
+                      </app-device-frame>
                     </div>
                   </div>
                 } @else {
@@ -369,17 +367,24 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   readonly devices = computed(() => DEVICES[this.project()?.kind || 'web']);
   readonly device = computed(() => this.devices().find((d) => d.id === this.deviceId()) || this.devices()[0]);
   readonly stageSize = signal({ width: 0, height: 0 });
-  readonly scale = computed(() => {
+  readonly outer = computed(() => {
     const d = this.device();
+    return d.model ? deviceOuter(d.model, d.width, d.height) : { width: 0, height: 0 };
+  });
+  readonly scale = computed(() => {
+    const { width: w, height: h } = this.outer();
     const { width, height } = this.stageSize();
-    if (!d.frame || !width || !height) return 1;
-    return Math.min(1, (width - 32) / (d.width + 20), (height - 32) / (d.height + 20));
+    if (!w || !width || !height) return 1;
+    return Math.min(1, (width - 40) / w, (height - 40) / h);
   });
   readonly nonce = signal(0);
+  readonly chrome = signal<DeviceChrome>(DEFAULT_CHROME);
   readonly frameSrc = computed<SafeResourceUrl | null>(() => {
     const p = this.project();
     if (!p) return null;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(`${p.previewUrl}?v=${p.version}-${this.nonce()}`);
+    const model = this.device().model;
+    const device = model ? `&device=${model}` : '';
+    return this.sanitizer.bypassSecurityTrustResourceUrl(`${p.previewUrl}?v=${p.version}-${this.nonce()}${device}`);
   });
   readonly generating = signal(false);
   readonly pendingPrompt = signal('');
@@ -421,6 +426,10 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
     effect(() => {
       if (this.browser) document.body.style.overflow = this.expanded() ? 'hidden' : '';
     });
+    effect(() => {
+      this.frameSrc();
+      untracked(() => this.chrome.set(DEFAULT_CHROME));
+    });
     this.destroyRef.onDestroy(() => {
       if (this.browser) document.body.style.overflow = '';
     });
@@ -440,10 +449,25 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
     if (initialPrompt) history.replaceState({ ...history.state, prompt: undefined }, '');
 
     const onMessage = (event: MessageEvent) => {
-      const data = event.data as { source?: string; type?: string; message?: string } | null;
+      const data = event.data as {
+        source?: string;
+        type?: string;
+        message?: string;
+        top?: string;
+        bottom?: string;
+        style?: string;
+        background?: string;
+      } | null;
       if (!data || data.source !== 'aim-preview') return;
       if (event.source !== this.frame()?.nativeElement.contentWindow) return;
       if (data.type === 'error' && data.message) this.previewError.set(data.message);
+      const color = (v?: string) => (typeof v === 'string' && /^(#[0-9a-f]{3,8}|rgba?\([\d.,\s%/]+\)|[a-z]{3,20})$/i.test(v.trim()) ? v.trim() : '');
+      if (data.type === 'chrome') {
+        this.chrome.update((c) => ({ ...c, top: color(data.top) || c.top, bottom: color(data.bottom) || c.bottom }));
+      } else if (data.type === 'statusbar') {
+        const bar = data.style === 'light' || data.style === 'dark' ? data.style : 'auto';
+        this.chrome.update((c) => ({ ...c, bar, barBackground: color(data.background) }));
+      }
     };
     window.addEventListener('message', onMessage);
     this.destroyRef.onDestroy(() => {

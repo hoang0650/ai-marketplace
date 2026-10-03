@@ -12,11 +12,14 @@ import {
   BuilderKind,
   BuilderProject,
   BuilderService,
+  TemplateBuild,
   TemplateGitPick,
   TemplateListing,
   TemplateUploadResult,
 } from './builder.service';
 import { TemplateGitSourceComponent } from './template-git-source.component';
+import { TemplateGitBuildComponent } from './template-git-build.component';
+import { TemplateBuildLogComponent } from './template-build-log.component';
 
 type Picked = Array<{ file: File; path: string }>;
 type DraftSource = 'upload' | 'project' | 'git';
@@ -33,7 +36,7 @@ function pickFiles(input: HTMLInputElement): Picked {
 @Component({
   selector: 'app-sell-templates',
   standalone: true,
-  imports: [FormsModule, RouterLink, DecimalPipe, TPipe, TemplateGitSourceComponent],
+  imports: [FormsModule, RouterLink, DecimalPipe, TPipe, TemplateGitSourceComponent, TemplateGitBuildComponent, TemplateBuildLogComponent],
   template: `
     <section class="tpl">
       <div class="head">
@@ -138,13 +141,13 @@ function pickFiles(input: HTMLInputElement): Picked {
                 }
               }
               @case ('git') {
-                <app-template-git-source returnKey="new" (changed)="draftGit.set($event)" />
+                <app-template-git-build [kind]="draftKind()" returnKey="new" (built)="draftBuild.set($event)" />
               }
             }
           </fieldset>
 
           <div class="wide actions">
-            <p class="hint">{{ 'builder.tpl.sell.review' | t }}</p>
+            <p class="hint">{{ (draftSource() === 'git' && !draftBuild() ? 'builder.build.needBuild' : 'builder.tpl.sell.review') | t }}</p>
             <button class="btn" type="submit" [disabled]="busy() || !draft.name.trim() || !draftReady()">
               {{ busy() ? ('builder.tpl.sell.saving' | t) : ('builder.tpl.sell.publish' | t) }}
             </button>
@@ -236,6 +239,9 @@ function pickFiles(input: HTMLInputElement): Picked {
               @if (rowBusy() === row.product.id) {
                 <p class="hint">{{ 'builder.tpl.sell.saving' | t }}</p>
               }
+              @if (rowBuild()?.productId === row.product.id) {
+                <app-template-build-log [build]="rowBuild()!.build" />
+              }
             </div>
           </article>
         } @empty {
@@ -324,7 +330,8 @@ export class SellTemplatesComponent implements OnInit {
   readonly draftSource = signal<DraftSource>('upload');
   readonly draftFiles = signal<Picked>([]);
   readonly draftProject = signal('');
-  readonly draftGit = signal<TemplateGitPick | null>(null);
+  readonly draftBuild = signal<TemplateBuild | null>(null);
+  readonly rowBuild = signal<{ productId: string; build: TemplateBuild } | null>(null);
   readonly draftProjects = computed(() => this.projectsOf(this.draftKind()));
   readonly draftReady = computed(() => {
     switch (this.draftSource()) {
@@ -333,7 +340,7 @@ export class SellTemplatesComponent implements OnInit {
       case 'project':
         return !!this.draftProject();
       default:
-        return !!this.draftGit();
+        return this.draftBuild()?.kind === this.draftKind();
     }
   });
   readonly busy = signal(false);
@@ -393,6 +400,7 @@ export class SellTemplatesComponent implements OnInit {
   setDraftKind(kind: BuilderKind): void {
     this.draftKind.set(kind);
     this.draftProject.set('');
+    this.draftBuild.set(null);
   }
 
   onDraftFiles(event: Event): void {
@@ -429,7 +437,7 @@ export class SellTemplatesComponent implements OnInit {
             this.draft = { name: '', tagline: '', description: '', price: 19, coverUrl: '', tags: '' };
             this.draftFiles.set([]);
             this.draftProject.set('');
-            this.draftGit.set(null);
+            this.draftBuild.set(null);
             this.draftSource.set('upload');
             this.notice.set(this.i18n.t('builder.tpl.sell.created', { name }));
           }, () => {
@@ -507,13 +515,13 @@ export class SellTemplatesComponent implements OnInit {
   }
 
   private upload(productId: string, done: () => void, failed: () => void): void {
-    const git = this.draftGit();
+    const build = this.draftBuild();
     const source = this.draftSource();
     const req =
       source === 'project'
         ? this.api.templateFromProject(productId, this.draftProject())
-        : source === 'git' && git
-          ? this.api.templateFromGit(productId, git)
+        : source === 'git' && build
+          ? this.api.templateFromBuild(productId, build.id)
           : this.api.uploadTemplate(productId, this.draftFiles());
     req.subscribe({
       next: (r) => {
@@ -531,16 +539,20 @@ export class SellTemplatesComponent implements OnInit {
   }
 
   private send(req: Observable<TemplateUploadResult>, name: string, done?: () => void): void {
+    const productId = this.rowBusy();
     req.subscribe({
       next: (r) => {
         this.rowBusy.set('');
         this.skipped.set(r.skipped || []);
         this.patchRow(r.template.productId, r.template);
+        this.rowBuild.set(r.build ? { productId: r.template.productId, build: r.build } : null);
         this.notice.set(this.i18n.t('builder.tpl.sell.updated', { name, v: r.template.version }));
         done?.();
       },
       error: (e) => {
         this.rowBusy.set('');
+        const build = e?.error?.build as TemplateBuild | undefined;
+        if (build && productId) this.rowBuild.set({ productId, build });
         this.error.set(e?.error?.message || this.i18n.t('builder.err.generic'));
       },
     });
@@ -561,5 +573,6 @@ export class SellTemplatesComponent implements OnInit {
     this.error.set('');
     this.notice.set('');
     this.skipped.set([]);
+    this.rowBuild.set(null);
   }
 }
