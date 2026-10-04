@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HireProject, HireService } from '../../services/hire.service';
 import { TPipe } from '../../i18n/t.pipe';
+import { CATEGORY_META, HIRE_REQUEST_CATEGORIES } from '../../models/categories';
 
 type Tab = '' | 'buyer' | 'seller';
 
@@ -35,9 +36,9 @@ type Tab = '' | 'buyer' | 'seller';
         <div class="panel">
           <p class="text-muted">{{ 'hire.list.empty' | t }}</p>
           <div class="mt-3 flex flex-wrap gap-2">
-            <a class="btn btn-outline" routerLink="/hire-build-web">{{ 'cat.hire-build-web.label' | t }}</a>
-            <a class="btn btn-outline" routerLink="/hire-build-app">{{ 'cat.hire-build-app.label' | t }}</a>
-            <a class="btn btn-outline" routerLink="/hire-marketing">{{ 'cat.hire-marketing.label' | t }}</a>
+            @for (s of services; track s.id) {
+              <a class="btn btn-outline" [routerLink]="s.path">{{ 'cat.' + s.id + '.label' | t }}</a>
+            }
           </div>
         </div>
       } @else {
@@ -96,6 +97,10 @@ export class HireProjectsComponent implements OnInit {
     { id: 'buyer', label: 'hire.list.asBuyer' },
     { id: 'seller', label: 'hire.list.asSeller' },
   ];
+  readonly services = HIRE_REQUEST_CATEGORIES.map((id) => ({
+    id,
+    path: CATEGORY_META.find((c) => c.id === id)?.hubPath || `/${id}`,
+  }));
   readonly tab = signal<Tab>('');
   readonly items = signal<HireProject[]>([]);
   readonly loading = signal(true);

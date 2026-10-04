@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { DashboardService, ReviewService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
@@ -10,6 +10,8 @@ import {
   Order,
   Review,
 } from '../../models/marketplace.models';
+
+type AdminTab = 'overview' | 'shops' | 'people' | 'ops' | 'disputes';
 
 @Component({
   selector: 'app-billing',
@@ -86,8 +88,21 @@ export class AffiliateComponent implements OnInit {
         GMV, phí sàn 20%, thuế 10% trên 80% doanh thu seller (8% đơn), phí CHPlay/App Store (IAP) và seller payable theo snapshot đơn.
       </p>
 
+      <div class="admin-tabs mt-6" role="tablist">
+        @for (x of tabs; track x.id) {
+          <button type="button" role="tab" [attr.aria-selected]="tab() === x.id" [class.active]="tab() === x.id" (click)="setTab(x.id)">
+            {{ x.label }}
+            @if (x.id === 'disputes' && openDisputes()) {
+              <span class="admin-tabs__count">{{ openDisputes() }}</span>
+            }
+          </button>
+        }
+      </div>
+
       @if (data(); as d) {
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        @switch (tab()) {
+        @case ('overview') {
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Tổng doanh thu sàn (GMV)</p>
             <p class="mt-2 font-display text-3xl">{{ d.totalGrossRevenue | currency: d.currency }}</p>
@@ -143,8 +158,10 @@ export class AffiliateComponent implements OnInit {
             <p class="font-display text-3xl">{{ d.orders | number }}</p>
           </div>
         </div>
+        }
 
-        <div class="panel mt-8">
+        @case ('shops') {
+        <div class="panel mt-6">
           <h2 class="font-display text-2xl">Doanh thu từng shop</h2>
           <p class="mt-1 text-sm text-muted">Gross · phí sàn · phí CHPlay · phí App Store · tổng IAP · seller payable — không đồng nhất với 80%</p>
           <div class="mt-4 overflow-x-auto">
@@ -192,8 +209,10 @@ export class AffiliateComponent implements OnInit {
             </table>
           </div>
         </div>
+        }
 
-        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        @case ('people') {
+        <div class="mt-6 grid gap-6 lg:grid-cols-2">
           <div class="panel">
             <h2 class="font-display text-2xl">Recent users</h2>
             <ul class="mt-4 space-y-2 text-sm">
@@ -221,32 +240,38 @@ export class AffiliateComponent implements OnInit {
             </ul>
           </div>
         </div>
+        }
 
-        <div class="panel mt-8">
-          <h2 class="font-display text-2xl">Nạp / rút tiền</h2>
-          <p class="mt-1 text-sm text-muted">Duyệt yêu cầu nạp ví và rút tiền seller. Chỉ cộng/trừ số dư sau khi admin xác nhận.</p>
-          <p class="mt-2"><a class="text-accent underline" routerLink="/admin/finance">Mở quản lý nạp rút</a></p>
+        @case ('ops') {
+        <div class="mt-6 grid gap-4 md:grid-cols-2">
+          <div class="panel">
+            <h2 class="font-display text-2xl">Nạp / rút tiền</h2>
+            <p class="mt-1 text-sm text-muted">Duyệt yêu cầu nạp ví và rút tiền seller. Chỉ cộng/trừ số dư sau khi admin xác nhận.</p>
+            <p class="mt-2"><a class="text-accent underline" routerLink="/admin/finance">Mở quản lý nạp rút</a></p>
+          </div>
+
+          <div class="panel">
+            <h2 class="font-display text-2xl">Duyệt eKYC</h2>
+            <p class="mt-1 text-sm text-muted">Xác minh hồ sơ cá nhân và tổ chức (hộ kinh doanh / công ty). Chỉ tài khoản đã duyệt mới được rút tiền.</p>
+            <p class="mt-2"><a class="text-accent underline" routerLink="/admin/kyc">Mở hàng chờ duyệt eKYC</a></p>
+          </div>
+
+          <div class="panel">
+            <h2 class="font-display text-2xl">Xóa dữ liệu agent hết hạn</h2>
+            <p class="mt-1 text-sm text-muted">Workspace agent quá hạn lưu trữ nhưng runtime chưa có webhook xóa tự động (hoặc webhook lỗi) sẽ vào hàng chờ để vận hành xóa tay và xác nhận.</p>
+            <p class="mt-2"><a class="text-accent underline" routerLink="/admin/agent-purges">Mở hàng chờ xóa dữ liệu runtime</a></p>
+          </div>
+
+          <div class="panel">
+            <h2 class="font-display text-2xl">Complaints</h2>
+            <p class="mt-1 text-sm text-muted">Hồ sơ khiếu nại theo quy trình tiếp nhận → xác minh → quyết định.</p>
+            <p class="mt-2"><a class="text-accent underline" routerLink="/admin/complaints">Mở danh sách khiếu nại</a></p>
+          </div>
         </div>
+        }
 
-        <div class="panel mt-8">
-          <h2 class="font-display text-2xl">Duyệt eKYC</h2>
-          <p class="mt-1 text-sm text-muted">Xác minh hồ sơ cá nhân và tổ chức (hộ kinh doanh / công ty). Chỉ tài khoản đã duyệt mới được rút tiền.</p>
-          <p class="mt-2"><a class="text-accent underline" routerLink="/admin/kyc">Mở hàng chờ duyệt eKYC</a></p>
-        </div>
-
-        <div class="panel mt-8">
-          <h2 class="font-display text-2xl">Xóa dữ liệu agent hết hạn</h2>
-          <p class="mt-1 text-sm text-muted">Workspace agent quá hạn lưu trữ nhưng runtime chưa có webhook xóa tự động (hoặc webhook lỗi) sẽ vào hàng chờ để vận hành xóa tay và xác nhận.</p>
-          <p class="mt-2"><a class="text-accent underline" routerLink="/admin/agent-purges">Mở hàng chờ xóa dữ liệu runtime</a></p>
-        </div>
-
-        <div class="panel mt-8">
-          <h2 class="font-display text-2xl">Complaints</h2>
-          <p class="mt-1 text-sm text-muted">Hồ sơ khiếu nại theo quy trình tiếp nhận → xác minh → quyết định.</p>
-          <p class="mt-2"><a class="text-accent underline" routerLink="/admin/complaints">Mở danh sách khiếu nại</a></p>
-        </div>
-
-        <div class="panel mt-8">
+        @case ('disputes') {
+        <div class="panel mt-6">
           <h2 class="font-display text-2xl">Disputes</h2>
           <p class="mt-1 text-sm text-muted">Chỉ đóng băng seller net của đơn bị khiếu nại, không khóa cả ví.</p>
           <ul class="mt-4 space-y-3 text-sm">
@@ -273,19 +298,75 @@ export class AffiliateComponent implements OnInit {
             }
           </ul>
         </div>
+        }
+        }
       }
     </section>
   `,
+  styles: [
+    `
+      .admin-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .admin-tabs button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border: 1px solid var(--color-line);
+        background: var(--color-surface);
+        border-radius: 999px;
+        padding: 0.4rem 0.95rem;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .admin-tabs button.active {
+        background: var(--color-ink);
+        color: #fff;
+        border-color: var(--color-ink);
+      }
+      .admin-tabs__count {
+        min-width: 1.3rem;
+        padding: 0 0.35rem;
+        border-radius: 999px;
+        background: #fee2e2;
+        color: #b91c1c;
+        font-size: 0.72rem;
+        text-align: center;
+      }
+    `,
+  ],
 })
 export class AdminComponent implements OnInit {
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  readonly tabs: { id: AdminTab; label: string }[] = [
+    { id: 'overview', label: 'Tổng quan' },
+    { id: 'shops', label: 'Doanh thu shop' },
+    { id: 'people', label: 'Người dùng & sản phẩm' },
+    { id: 'ops', label: 'Vận hành' },
+    { id: 'disputes', label: 'Tranh chấp' },
+  ];
+  readonly tab = signal<AdminTab>('overview');
   readonly data = signal<AdminOverview | null>(null);
   readonly disputes = signal<Order[]>([]);
+  readonly openDisputes = computed(() => this.disputes().filter((o) => o.disputeStatus === 'open').length);
   ngOnInit(): void {
     this.seo.set({ title: 'Admin' });
+    this.route.queryParamMap.subscribe((q) => {
+      const t = q.get('tab') as AdminTab | null;
+      this.tab.set(t && this.tabs.some((x) => x.id === t) ? t : 'overview');
+    });
     this.api.adminOverview().subscribe((d) => this.data.set(d));
     this.api.adminDisputes().subscribe((list) => this.disputes.set(list));
+  }
+
+  setTab(id: AdminTab): void {
+    void this.router.navigate([], { queryParams: { tab: id === 'overview' ? null : id }, replaceUrl: true });
   }
 
   resolve(o: Order, resolution: 'seller' | 'buyer'): void {
