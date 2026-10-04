@@ -35,6 +35,8 @@ import {
   KycSubjectType,
   KycReviewStatus,
   KycQueueResponse,
+  AdminDailyPoint,
+  AdminGranularity,
   AgentPurgeItem,
   AgentPurgeQueueResponse,
   AgentPurgeTab,
@@ -481,6 +483,12 @@ export class DashboardService {
 
   adminOverview(): Observable<AdminOverview> {
     return this.http.get<AdminOverview>(`${this.base}/admin/overview`);
+  }
+
+  adminRevenueSeries(granularity: AdminGranularity): Observable<{ granularity: AdminGranularity; series: AdminDailyPoint[] }> {
+    return this.http.get<{ granularity: AdminGranularity; series: AdminDailyPoint[] }>(`${this.base}/admin/revenue-series`, {
+      params: { granularity },
+    });
   }
 
   licenses(): Observable<IssuedLicense[]> {

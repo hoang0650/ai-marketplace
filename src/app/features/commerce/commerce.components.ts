@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { DashboardService, ReviewService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
+import { AdminOverviewChartsComponent } from '../admin/admin-overview-charts.component';
 import {
   AdminOverview,
   AffiliateStats,
@@ -80,7 +81,7 @@ export class AffiliateComponent implements OnInit {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CurrencyPipe, DecimalPipe, PercentPipe, DatePipe, RouterLink],
+  imports: [CurrencyPipe, DecimalPipe, PercentPipe, DatePipe, RouterLink, AdminOverviewChartsComponent],
   template: `
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
@@ -158,6 +159,8 @@ export class AffiliateComponent implements OnInit {
             <p class="font-display text-3xl">{{ d.orders | number }}</p>
           </div>
         </div>
+
+        <app-admin-overview-charts [overview]="d" />
         }
 
         @case ('shops') {

@@ -806,6 +806,19 @@ export interface AdminShopRevenue {
   sellerNet: number;
 }
 
+export type AdminGranularity = 'day' | 'week' | 'month';
+
+/** One period bucket; `date` is its first day (YYYY-MM-DD, Vietnam time). */
+export interface AdminDailyPoint {
+  date: string;
+  gross: number;
+  platformFee: number;
+  sellerNet: number;
+  orders: number;
+  deposits: number;
+  users: number;
+}
+
 export interface AdminOverview {
   users: number;
   products: number;
@@ -825,6 +838,8 @@ export interface AdminOverview {
   buyerDeposits: number;
   buyerDepositCount: number;
   shops: AdminShopRevenue[];
+  /** Last 30 days, oldest first (Vietnam time). */
+  series?: AdminDailyPoint[];
   usersList: Array<{
     id: string;
     name: string;
