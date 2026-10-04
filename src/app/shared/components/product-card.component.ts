@@ -7,6 +7,7 @@ import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { AuthService } from '../../services/auth.service';
 import { WishlistService } from '../../services/api.services';
+import { CartService } from '../../features/cart/cart.service';
 
 @Component({
   selector: 'app-product-card',
@@ -73,8 +74,8 @@ import { WishlistService } from '../../services/api.services';
             <span class="lux-card__sale">Sale</span>
           }
           <div class="lux-card__actions">
-            <button type="button" class="lux-card__btn" [attr.aria-label]="'card.addCart' | t" (click)="onCart($event)">
-              {{ 'card.addCart' | t }}
+            <button type="button" class="lux-card__btn" [attr.aria-label]="(inCart ? 'cart.view' : 'card.addCart') | t" (click)="onCart($event)">
+              {{ (inCart ? 'cart.view' : 'card.addCart') | t }}
             </button>
             <button
               type="button"
@@ -122,7 +123,7 @@ import { WishlistService } from '../../services/api.services';
             <span class="shop-card__stars">★ {{ product.rating | number: '1.1-1' }}</span>
             <span>{{ 'card.stock' | t: { n: stockLabel } }}</span>
             <span>{{ 'card.sold' | t: { n: (product.salesCount || 0) } }}</span>
-            <button type="button" class="shop-card__cart" [class.saved]="saved" [attr.aria-label]="'card.add' | t" (click)="onCart($event)">🛒</button>
+            <button type="button" class="shop-card__cart" [class.saved]="inCart" [attr.aria-label]="(inCart ? 'cart.view' : 'card.add') | t" (click)="onCart($event)">🛒</button>
           </div>
         </div>
       </a>
@@ -712,6 +713,7 @@ export class ProductCardComponent {
   private readonly i18n = inject(I18nService);
   private readonly currencySvc = inject(CurrencyService);
   private readonly wishlist = inject(WishlistService);
+  private readonly cart = inject(CartService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   @Input({ required: true }) product!: Product;
@@ -813,6 +815,10 @@ export class ProductCardComponent {
     return this.wishlist.saved(this.product.id);
   }
 
+  get inCart(): boolean {
+    return this.cart.has(this.product.id);
+  }
+
   private requireAuth(): boolean {
     if (this.auth.isAuthenticated()) return true;
     void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
@@ -830,12 +836,10 @@ export class ProductCardComponent {
     event.preventDefault();
     event.stopPropagation();
     if (!this.requireAuth()) return;
-    if (this.saved) {
+    if (this.inCart) {
       void this.router.navigate(['/cart']);
       return;
     }
-    this.wishlist.toggle(this.product.id).subscribe({
-      next: () => void this.router.navigate(['/cart']),
-    });
+    this.cart.add(this.product.id).subscribe();
   }
 }

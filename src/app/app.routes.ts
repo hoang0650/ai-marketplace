@@ -505,8 +505,8 @@ export const routes: Routes = [
       },
       {
         path: 'wishlist',
-        redirectTo: 'cart',
-        pathMatch: 'full',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/wishlist/wishlist.component').then((m) => m.WishlistComponent),
       },
       {
         path: 'notifications',

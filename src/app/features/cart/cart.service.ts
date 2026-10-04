@@ -1,7 +1,9 @@
-import { Injectable, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { concatMap, from } from 'rxjs';
-import { WishlistService } from '../../services/api.services';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/marketplace.models';
 
 export interface CartLine {
@@ -10,47 +12,46 @@ export interface CartLine {
   selected: boolean;
 }
 
+interface CartResponse {
+  items: Array<{ product: Product; qty: number }>;
+  count: number;
+}
+
+/** Server-side cart (`/v1/cart`), shared with the mobile app; independent of the wishlist. */
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private readonly wishlist = inject(WishlistService);
-  private readonly platformId = inject(PLATFORM_ID);
+  private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
+  private readonly base = `${environment.apiUrl}/cart`;
   private readonly linesSignal = signal<CartLine[]>([]);
-  private readonly qtyMap = signal<Record<string, number>>({});
+  private readonly unselected = new Set<string>();
 
   readonly lines = this.linesSignal.asReadonly();
   readonly count = computed(() => this.linesSignal().reduce((s, l) => s + l.qty, 0));
+  readonly ids = computed(() => new Set(this.linesSignal().map((l) => l.product.id)));
   readonly selectedLines = computed(() => this.linesSignal().filter((l) => l.selected));
   readonly subtotal = computed(() =>
     this.selectedLines().reduce((s, l) => s + this.unitPrice(l.product) * l.qty, 0),
   );
   readonly currency = computed(() => this.linesSignal()[0]?.product.pricing.currency || 'USD');
 
-  constructor() {
-    effect(() => {
-      const products = this.wishlist.items();
-      untracked(() => this.syncFromProducts(products));
-    });
-  }
-
-  private qtyKey(): string {
-    return 'phai.cartQty';
+  has(productId?: string | null): boolean {
+    return !!productId && this.ids().has(productId);
   }
 
   load(): void {
-    this.readQty();
-    this.wishlist.load();
+    if (!this.auth.isAuthenticated()) {
+      this.linesSignal.set([]);
+      return;
+    }
+    this.http
+      .get<CartResponse>(this.base)
+      .pipe(catchError(() => of(null)))
+      .subscribe((res) => res && this.apply(res));
   }
 
-  private syncFromProducts(products: Product[]): void {
-    const qty = this.qtyMap();
-    const prev = new Map(this.linesSignal().map((l) => [l.product.id, l]));
-    this.linesSignal.set(
-      products.map((product) => ({
-        product,
-        qty: qty[product.id] || prev.get(product.id)?.qty || 1,
-        selected: prev.get(product.id)?.selected ?? true,
-      })),
-    );
+  add(productId: string, qty = 1): Observable<CartLine[]> {
+    return this.sync(this.http.post<CartResponse>(`${this.base}/items`, { productId, qty }));
   }
 
   unitPrice(p: Product): number {
@@ -63,44 +64,55 @@ export class CartService {
     this.linesSignal.update((list) =>
       list.map((l) => (l.product.id === productId ? { ...l, qty: nextQty } : l)),
     );
-    this.qtyMap.update((m) => ({ ...m, [productId]: nextQty }));
-    this.persistQty();
+    this.sync(
+      this.http.patch<CartResponse>(`${this.base}/items/${encodeURIComponent(productId)}`, { qty: nextQty }),
+    ).subscribe({ error: () => this.load() });
   }
 
   toggleSelected(productId: string): void {
+    if (this.unselected.has(productId)) this.unselected.delete(productId);
+    else this.unselected.add(productId);
     this.linesSignal.update((list) =>
       list.map((l) => (l.product.id === productId ? { ...l, selected: !l.selected } : l)),
     );
   }
 
   toggleAll(selected: boolean): void {
+    this.unselected.clear();
+    if (!selected) this.linesSignal().forEach((l) => this.unselected.add(l.product.id));
     this.linesSignal.update((list) => list.map((l) => ({ ...l, selected })));
   }
 
   remove(productId: string): void {
-    this.wishlist.toggle(productId).subscribe();
+    this.linesSignal.update((list) => list.filter((l) => l.product.id !== productId));
+    this.sync(this.http.delete<CartResponse>(`${this.base}/items/${encodeURIComponent(productId)}`)).subscribe({
+      error: () => this.load(),
+    });
   }
 
   removeSelected(): void {
-    const ids = this.selectedLines().map((l) => l.product.id);
-    if (!ids.length) return;
-    from(ids)
-      .pipe(concatMap((id) => this.wishlist.toggle(id)))
-      .subscribe();
+    const productIds = this.selectedLines().map((l) => l.product.id);
+    if (!productIds.length) return;
+    this.linesSignal.update((list) => list.filter((l) => !l.selected));
+    this.sync(this.http.post<CartResponse>(`${this.base}/remove`, { productIds })).subscribe({
+      error: () => this.load(),
+    });
   }
 
-  private readQty(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    try {
-      const raw = localStorage.getItem(this.qtyKey());
-      this.qtyMap.set(raw ? JSON.parse(raw) : {});
-    } catch {
-      this.qtyMap.set({});
-    }
+  private sync(req: Observable<CartResponse>): Observable<CartLine[]> {
+    return req.pipe(
+      tap((res) => this.apply(res)),
+      map(() => this.linesSignal()),
+    );
   }
 
-  private persistQty(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    localStorage.setItem(this.qtyKey(), JSON.stringify(this.qtyMap()));
+  private apply(res: CartResponse): void {
+    this.linesSignal.set(
+      (res.items || []).map((it) => ({
+        product: it.product,
+        qty: it.qty,
+        selected: !this.unselected.has(it.product.id),
+      })),
+    );
   }
 }

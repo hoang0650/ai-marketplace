@@ -1,97 +1,90 @@
-# CHÍNH SÁCH BẢO MẬT VÀ DỮ LIỆU CÁ NHÂN
+# CHÍNH SÁCH BẢO MẬT VÀ BẢO VỆ DỮ LIỆU CÁ NHÂN
 
 **Nền tảng:** AI Markets  
-**Website:** https://aimarkets.vn  
-**Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
+**Website:** https://aimarkets.vn · Ứng dụng di động “AI Markets” (iOS, Android)  
+**Bên kiểm soát và xử lý dữ liệu:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Điện thoại:** 1900 6159  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 04/10/2026  
+**Phiên bản:** 2.0
 
 ---
 
-## Điều 1. Phạm vi
+## Điều 1. Căn cứ và phạm vi
 
-Chính sách này mô tả cách AI Markets xử lý dữ liệu khi người dùng sử dụng marketplace.
+Chính sách được xây dựng theo Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15, Nghị định số 356/2025/NĐ-CP, Luật Thương mại điện tử số 122/2025/QH15 và quy định liên quan; áp dụng cho dữ liệu cá nhân của người dùng website và ứng dụng AI Markets.
 
-## Điều 2. Nhóm dữ liệu
+## Điều 2. Dữ liệu được xử lý
 
-Tùy dịch vụ, có thể xử lý:
-- thông tin tài khoản;
-- thông tin liên hệ;
-- thông tin xác minh seller;
-- dữ liệu giao dịch;
-- dữ liệu usage;
-- dữ liệu thiết bị/log;
-- dữ liệu hỗ trợ/khiếu nại;
-- dữ liệu kỹ thuật deployment.
+| Nhóm | Dữ liệu | Nguồn |
+|---|---|---|
+| Tài khoản | Email, họ tên, mật khẩu (lưu dạng băm), liên kết Google (nếu dùng), ngôn ngữ | Người dùng, Google |
+| Hồ sơ công khai | Ảnh đại diện, ảnh bìa, giới thiệu, khu vực, website, liên kết mạng xã hội — chỉ khi người dùng tự nhập | Người dùng |
+| Xác minh người bán | Họ tên, loại và số giấy tờ tùy thân, ảnh hai mặt giấy tờ (có ảnh chân dung), mã số thuế, thông tin tổ chức, người đại diện, tài khoản nhận tiền | Người bán |
+| Giao dịch | Đơn hàng, giỏ hàng, danh sách yêu thích, thanh toán, số dư ví, hoàn tiền, khiếu nại, đánh giá | Hệ thống |
+| Sử dụng dịch vụ | Lượt gọi API, số token, thời gian GPU/máy chủ trò chơi, thuê bao agent, khóa API (BYOK) đã mã hóa, khóa SSH công khai | Hệ thống, người dùng |
+| Kỹ thuật, bảo mật | Địa chỉ IP, thời điểm đăng nhập, nhật ký hoạt động tài khoản, nhật ký máy chủ và lỗi | Hệ thống |
+| Nội dung gửi tới AI | Văn bản, tệp, hình ảnh người dùng gửi vào API, agent, AI App Builder | Người dùng |
 
-## Điều 3. Mục đích
+Nền tảng không lưu thông tin thẻ thanh toán; dữ liệu thẻ do cổng thanh toán, Apple, Google xử lý. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm: lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập và hiển thị dạng che một phần.
 
-Dữ liệu được xử lý để:
-- cung cấp dịch vụ;
-- xác thực;
-- bảo mật;
-- xử lý đơn hàng;
-- thanh toán/đối soát;
-- hỗ trợ;
-- xử lý khiếu nại;
-- phòng chống gian lận;
-- tuân thủ nghĩa vụ pháp lý.
+## Điều 3. Mục đích xử lý
 
-## Điều 4. Nguyên tắc
+Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; xác minh người bán theo pháp luật thương mại điện tử; xử lý đơn hàng, thanh toán, đối soát, khấu trừ thuế; tính phí theo mức sử dụng; gửi thông báo giao dịch (xác nhận đơn, nhắc gia hạn, cảnh báo số dư); hỗ trợ và giải quyết khiếu nại; phòng chống gian lận, lạm dụng; thống kê truy cập ở dạng tổng hợp; thực hiện nghĩa vụ với cơ quan nhà nước có thẩm quyền.
 
-Áp dụng nguyên tắc:
-- minh bạch;
-- đúng mục đích;
-- tối thiểu cần thiết;
-- bảo mật;
-- kiểm soát truy cập;
-- lưu trữ phù hợp;
-- tôn trọng quyền của chủ thể dữ liệu.
+## Điều 4. Cơ sở xử lý và sự đồng ý
 
-## Điều 5. Chia sẻ dữ liệu
+1. Dữ liệu được xử lý trên cơ sở sự đồng ý của người dùng khi đăng ký, thực hiện hợp đồng với người dùng, hoặc nghĩa vụ theo quy định pháp luật.
+2. Người dùng có thể rút lại sự đồng ý đối với xử lý không bắt buộc; việc rút lại không ảnh hưởng tới xử lý đã thực hiện trước đó và có thể khiến một số dịch vụ không còn cung cấp được.
 
-Có thể chia sẻ dữ liệu cần thiết với:
-- payment provider;
-- infrastructure provider;
-- cloud provider;
-- đơn vị hỗ trợ kỹ thuật;
-- cơ quan có thẩm quyền khi pháp luật yêu cầu.
+## Điều 5. Nội dung gửi tới AI
 
-Không bán dữ liệu cá nhân trái phép.
+1. Nền tảng **không** dùng nội dung người dùng gửi vào API, agent để huấn luyện mô hình.
+2. Để trả kết quả, nội dung được chuyển tới nhà cung cấp mô hình AI tương ứng (có thể ở nước ngoài) và xử lý theo điều khoản của nhà cung cấp đó. Khi dùng BYOK, nội dung đi trực tiếp tới nhà cung cấp theo tài khoản của người dùng.
+3. Người dùng chỉ đưa dữ liệu cá nhân của người khác vào AI khi có cơ sở pháp lý phù hợp.
 
-## Điều 6. API/AI data
+## Điều 6. Chia sẻ dữ liệu
 
-Đối với dữ liệu gửi vào AI API, product page phải nêu rõ phạm vi xử lý nếu có điều kiện đặc thù.
+Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
+- **Người bán:** thông tin cần để thực hiện đơn hàng, dự án thuê talent với người mua;
+- **Đối tác thanh toán:** GPay, Apple, Google;
+- **Nhà cung cấp hạ tầng:** máy chủ, lưu trữ, GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
+- **Cơ quan nhà nước có thẩm quyền:** khi có yêu cầu theo quy định pháp luật.
 
-Không mặc định sử dụng nội dung của buyer để huấn luyện model.
+Nền tảng **không mua bán dữ liệu cá nhân**.
 
-Nếu có xử lý cho mục đích training/analytics khác, phải công bố và có cơ sở pháp lý phù hợp.
+## Điều 7. Chuyển dữ liệu ra nước ngoài
 
-## Điều 7. Bảo mật
+Máy chủ ứng dụng và một số nhà cung cấp hạ tầng (máy chủ, GPU, API mô hình AI) đặt tại nước ngoài, do đó dữ liệu có thể được chuyển, lưu trữ ngoài lãnh thổ Việt Nam. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài, lựa chọn nhà cung cấp có cam kết bảo mật và thực hiện lưu trữ dữ liệu tại Việt Nam theo quy định về an ninh mạng.
 
-Áp dụng:
-- encryption khi truyền;
-- access control;
-- audit logs;
-- secret management;
-- backup;
-- monitoring;
-- incident response.
+## Điều 8. Biện pháp bảo vệ
 
-## Điều 8. Quyền của chủ thể dữ liệu
+Mã hóa đường truyền HTTPS/TLS; mật khẩu băm; khóa API của người dùng được mã hóa khi lưu; phân quyền theo vai trò; giới hạn tần suất truy cập; khóa bí mật hệ thống lưu trong biến môi trường; cơ sở dữ liệu không mở ra Internet; nhật ký thao tác quản trị; phiên đăng nhập có thể thu hồi từ xa.
 
-Người dùng có thể gửi yêu cầu liên quan đến dữ liệu cá nhân qua support@aimarkets.vn.
+## Điều 9. Quyền của chủ thể dữ liệu
 
-Yêu cầu sẽ được xử lý theo pháp luật hiện hành và khả năng xác minh danh tính cần thiết.
+Người dùng có quyền: được biết; đồng ý hoặc rút lại sự đồng ý; truy cập, xem, chỉnh sửa; yêu cầu cung cấp; yêu cầu xóa; hạn chế xử lý; phản đối xử lý; khiếu nại, tố cáo, khởi kiện và yêu cầu bồi thường theo quy định.
 
-## Điều 9. Thời hạn lưu trữ
+Cách thực hiện:
+- **Tự thực hiện tại trang Cài đặt:** chỉnh sửa hồ sơ, đổi mật khẩu, đăng xuất khỏi mọi thiết bị, ngắt liên kết Google, chọn ngôn ngữ thông báo, xem lịch sử hoạt động.
+- **Gửi yêu cầu tới support@aimarkets.vn:** cung cấp bản sao dữ liệu, xóa tài khoản và dữ liệu, hạn chế hoặc phản đối xử lý. Nền tảng xác minh danh tính trước khi thực hiện và phản hồi trong thời hạn pháp luật quy định.
 
-Dữ liệu được lưu trong thời gian cần thiết cho mục đích xử lý, giao dịch, an toàn hệ thống và nghĩa vụ pháp luật.
+Dữ liệu mà pháp luật buộc phải lưu (đơn hàng, hợp đồng, chứng từ thuế, hồ sơ khiếu nại) được giữ đến hết thời hạn bắt buộc rồi mới xóa.
 
-Các nhóm dữ liệu có thể áp dụng retention policy riêng.
+## Điều 10. Thời hạn lưu trữ
 
-## Điều 10. Sự cố dữ liệu
+Theo [Chính sách lưu trữ và cung cấp dữ liệu](17-chinh-sach-luu-tru-va-cung-cap-du-lieu.md). Dữ liệu trong không gian AI agent được giữ 30 ngày sau khi thuê bao hết hạn; dữ liệu trên máy GPU bị xóa 24 giờ sau khi máy dừng do hết số dư.
 
-Khi phát hiện sự cố, nền tảng thực hiện đánh giá, cô lập, khắc phục và thông báo cho chủ thể/cơ quan liên quan khi pháp luật yêu cầu.
+## Điều 11. Cookie và công nghệ tương tự
+
+Theo [Chính sách cookies](16-chinh-sach-cookies.md).
+
+## Điều 12. Sự cố dữ liệu
+
+Khi phát hiện vi phạm dữ liệu cá nhân, nền tảng cô lập, khắc phục, thông báo cho cơ quan chuyên trách bảo vệ dữ liệu cá nhân và người dùng bị ảnh hưởng trong thời hạn pháp luật quy định.
+
+## Điều 13. Liên hệ
+
+Mọi yêu cầu về dữ liệu cá nhân gửi tới **support@aimarkets.vn** hoặc hotline **1900 6159**.

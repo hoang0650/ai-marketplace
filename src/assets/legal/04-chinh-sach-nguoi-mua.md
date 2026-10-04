@@ -5,48 +5,70 @@
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Điện thoại:** 1900 6159  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 04/10/2026  
+**Phiên bản:** 2.0
 
 ---
 
 ## Điều 1. Quyền của người mua
 
-**Người mua có quyền:**
-- xem thông tin sản phẩm được công bố;
-- biết giá và điều kiện sử dụng trước giao dịch;
-- nhận thông tin về seller theo phạm vi nền tảng công bố;
-- yêu cầu hỗ trợ;
-- gửi khiếu nại;
-- yêu cầu hoàn tiền theo chính sách áp dụng;
-- sử dụng sản phẩm theo license đã mua.
+- Được cung cấp đầy đủ thông tin sản phẩm, giá, đơn vị tính, phí, điều kiện sử dụng, giấy phép và thông tin người bán trước khi mua;
+- Phân biệt rõ sản phẩm “Bán bởi sàn” và “Bán bởi Seller – tên cửa hàng”;
+- Nhận email xác nhận đơn hàng; xem lịch sử đơn hàng, mức sử dụng, số dư ví và chứng từ giao dịch;
+- Được hoàn tiền theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md), được khiếu nại theo [Chính sách khiếu nại và tranh chấp](07-chinh-sach-khieu-nai-tranh-chap.md);
+- Được bảo vệ dữ liệu cá nhân theo [Chính sách bảo mật](08-chinh-sach-bao-mat-va-du-lieu.md);
+- Đánh giá sản phẩm đã mua một cách trung thực.
 
-## Điều 2. Nghĩa vụ
+## Điều 2. Nghĩa vụ của người mua
 
-Người mua phải:
-- cung cấp thông tin chính xác;
-- thanh toán đầy đủ;
-- sử dụng sản phẩm hợp pháp;
-- không chia sẻ API key trái phép;
-- không reverse engineer nhằm vượt qua cơ chế bảo mật;
-- không lạm dụng GPU/API;
-- không sử dụng dịch vụ cho hành vi bị cấm.
+- Cung cấp thông tin đăng ký chính xác và thanh toán đầy đủ;
+- Sử dụng sản phẩm đúng giấy phép và [Chính sách sử dụng chấp nhận được](10-chinh-sach-su-dung-chap-nhan-duoc.md);
+- Không chia sẻ khóa API, tài khoản trái phép; không dịch ngược nhằm vượt qua cơ chế bảo mật; không lạm dụng GPU, API;
+- Duy trì đủ số dư ví với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
-## Điều 3. Usage billing
+## Điều 3. Đặt hàng và thanh toán
 
-Đối với sản phẩm usage-based, số liệu usage được hệ thống ghi nhận làm cơ sở tính phí, trừ trường hợp có sai lệch được xác minh.
+1. Người mua có thể lưu sản phẩm vào giỏ hàng, danh sách yêu thích (đồng bộ giữa website và ứng dụng), kiểm tra tổng giá rồi xác nhận thanh toán.
+2. Thanh toán bằng số dư ví, cổng GPay trên website hoặc Apple In-App Purchase / Google Play Billing trên ứng dụng.
+3. Số dư ví chỉ dùng trên nền tảng và **không rút về tài khoản ngân hàng**. Chi tiết tại [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
 
-## Điều 4. API key
+## Điều 4. Dịch vụ theo mức sử dụng (API, token)
 
-API key là thông tin bí mật. Nếu bị lộ, người mua phải thu hồi/revoke ngay.
+1. Phí được tính theo số liệu hệ thống ghi nhận (lượt gọi, token đầu vào/đầu ra, ký tự…) và trừ dần vào số dư ví.
+2. Người mua xem chi tiết từng lượt và tổng (số lượt, token, số tiền) tại trang Lịch sử sử dụng hoặc qua API `GET /v1/usage/me`.
+3. Số liệu hệ thống là căn cứ tính phí, trừ trường hợp sai lệch được xác minh.
 
-## Điều 5. Khiếu nại
+## Điều 5. Thuê GPU và máy chủ trò chơi
 
-Người mua nên cung cấp:
-- order ID;
-- product ID;
-- thời gian;
-- mô tả vấn đề;
-- log/evidence cần thiết.
+1. **Thuê GPU:** người mua nạp tiền trước, chọn cấu hình và khởi tạo máy; số dư phải đủ tối thiểu 01 giờ theo giá đang chạy. Phí tính theo **phút sử dụng**; phí lưu trữ ổ đĩa khi máy dừng (nếu có) được niêm yết trước. Hệ thống cảnh báo khi số dư sắp hết, **tự động dừng máy khi hết số dư** và **xóa máy sau 24 giờ** nếu người mua không nạp thêm; dữ liệu trên máy bị xóa sẽ không khôi phục được.
+2. **Máy chủ trò chơi / GPU streaming:** số dư phải đủ tối thiểu 01 phút; phí trừ **mỗi phút** trong khi phiên chạy, phút lẻ cuối được làm tròn lên. Phiên tự dừng khi hết số dư hoặc khi không còn tín hiệu từ thiết bị trong 5 phút. Mỗi người mua có một phiên cho mỗi sản phẩm; chuyển thiết bị (PC ↔ điện thoại) sẽ dừng phiên cũ để không bị tính tiền hai lần.
+3. Người mua tự chịu trách nhiệm về phần mềm, trò chơi tự cài đặt trên máy thuê và phải có quyền sử dụng hợp pháp.
 
-Không gửi secret, password hoặc private key vào ticket.
+## Điều 6. Dịch vụ AI agent (Bán bởi sàn)
+
+1. **Thuê bao:** 199.000 đồng/agent cho mỗi chu kỳ 30 ngày, trả trước từ số dư ví; thời gian gia hạn được cộng tiếp vào ngày hết hạn hiện tại. Mỗi agent có không gian làm việc riêng và đăng nhập bằng tài khoản AI Markets.
+2. **Tự động gia hạn** được bật mặc định và có thể tắt bất cứ lúc nào tại trang agent. Nền tảng nhắc trước ngày hết hạn 3 ngày (thông báo và email), trừ phí trước ngày hết hạn 1 ngày; nếu số dư không đủ, hệ thống thông báo và thử lại sau mỗi 6 giờ.
+3. **Phí token:** khi dùng mô hình do nền tảng cung cấp, sau mỗi lượt chạy hệ thống trừ phí bằng giá gốc của nhà cung cấp mô hình **cộng 25%** và ghi nhận số token; mô hình miễn phí không phát sinh phí token. Khi dùng khóa API của mình (**BYOK**), nền tảng không thu phí token; khóa được mã hóa khi lưu và chỉ dùng cho agent của chính người mua.
+4. **Hết hạn:** agent bị khóa (không khởi chạy, đăng nhập, cấp khóa SSH, gọi mô hình), khóa SSH đang hiệu lực bị thu hồi. Dữ liệu trong không gian agent được giữ **30 ngày** kể từ ngày hết hạn, sau đó bị xóa và người mua được thông báo.
+5. Người mua chịu trách nhiệm về nội dung agent gửi qua kênh nhắn tin đã kết nối và về khóa SSH tạm thời mình tạo.
+
+## Điều 7. Mẫu website/ứng dụng
+
+Người mua xem demo trực tiếp trước khi mua. Sau khi thanh toán, người mua nhận quyền sử dụng theo giấy phép, được tạo bản sao riêng trong AI App Builder để chỉnh sửa (dùng khóa AI của người mua) và đẩy mã nguồn lên kho GitHub của mình; không được đăng bán lại thành mẫu mới.
+
+## Điều 8. Thuê talent (dịch vụ theo yêu cầu)
+
+1. Người mua gửi yêu cầu (mô tả, ngân sách, thời hạn); người bán báo giá; hai bên thống nhất các giai đoạn trên nền tảng.
+2. Người mua xem demo từng giai đoạn và duyệt hoặc yêu cầu chỉnh sửa. **Chỉ khi duyệt** hệ thống mới trừ tiền giai đoạn đó; khoản này được tạm giữ 48 giờ để người mua khiếu nại nếu cần.
+3. Người mua có thể chấm dứt dự án (trễ hạn, không đúng yêu cầu, lý do khác): giai đoạn chưa duyệt bị hủy, hệ thống tự tạo hồ sơ khiếu nại và tạm giữ khoản đã thanh toán gần nhất (nếu còn trong 48 giờ) để xem xét hoàn tiền.
+4. Báo giá, giai đoạn, demo và lịch sử thao tác được lưu cùng dự án.
+
+## Điều 9. Khóa API và bảo mật
+
+Khóa API, khóa SSH là thông tin bí mật. Nếu bị lộ, người mua phải thu hồi ngay và báo cho nền tảng. Người mua chịu phí phát sinh từ khóa của mình cho đến khi khóa bị thu hồi.
+
+## Điều 10. Khiếu nại
+
+Khi gửi khiếu nại, người mua nên cung cấp: mã đơn hàng, sản phẩm, thời gian, mô tả vấn đề và bằng chứng. Khiếu nại gửi trong **48 giờ** kể từ khi giao dịch giúp khoản tiền của người bán được tạm giữ trong lúc xem xét. Không gửi mật khẩu, khóa API hoặc khóa bí mật trong hồ sơ khiếu nại.

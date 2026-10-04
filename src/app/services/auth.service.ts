@@ -4,7 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, ReplaySubject, tap, map, of, catchError, shareReplay, switchMap, filter, take } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { User, UserRole, SignupRole } from '../models/marketplace.models';
+import { User, UserRole, SignupRole, UserPreferences, UserProfileExtras } from '../models/marketplace.models';
 
 interface AuthResponse {
   token: string;
@@ -228,9 +228,24 @@ export class AuthService {
     bio?: string;
     avatarUrl?: string;
     coverUrl?: string;
+    profile?: Partial<UserProfileExtras>;
+    preferences?: Partial<UserPreferences>;
   }): Observable<User> {
     return this.http
       .patch<User>(`${environment.apiUrl}/auth/me`, patch)
+      .pipe(tap((user) => this.setUser(user)));
+  }
+
+  /** Endpoints that rotate the refresh token (password change, sign out everywhere). */
+  rotateSession(path: 'password' | 'sessions/revoke-all', body: Record<string, string> = {}): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/${path}`, body, { withCredentials: true })
+      .pipe(tap((res) => this.persist(res)));
+  }
+
+  unlinkGoogle(): Observable<User> {
+    return this.http
+      .post<User>(`${environment.apiUrl}/auth/google/unlink`, {})
       .pipe(tap((user) => this.setUser(user)));
   }
 

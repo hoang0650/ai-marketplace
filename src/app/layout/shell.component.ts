@@ -3,7 +3,7 @@ import { Component, ElementRef, HostListener, PLATFORM_ID, computed, effect, inj
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { AuthService } from '../services/auth.service';
-import { DashboardService } from '../services/api.services';
+import { DashboardService, WishlistService } from '../services/api.services';
 import { environment } from '../../environments/environment';
 import { NAV_SECTIONS } from '../models/categories';
 import { WORK_BOARD_ENABLED } from '../models/feature-flags';
@@ -29,6 +29,7 @@ export class ShellComponent {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly api = inject(DashboardService);
   readonly cart = inject(CartService);
+  private readonly wishlist = inject(WishlistService);
   readonly currencySvc = inject(CurrencyService);
   readonly currencies = CURRENCIES;
   readonly theme = inject(ThemeService);
@@ -103,6 +104,7 @@ export class ShellComponent {
         this.notifications.set([]);
       }
       this.cart.load();
+      this.wishlist.load();
     });
   }
 

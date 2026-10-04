@@ -26,10 +26,28 @@
     <h2>{{ 'docsCompute.register.title' | t }}</h2>
     <p>{{ 'docsCompute.register.p1' | t }}</p>
     <pre class="seller-docs__code">{{ registerExample }}</pre>
+    <h3>{{ 'docsCompute.register.manage' | t }}</h3>
+    <ul>
+      <li>{{ 'docsCompute.register.m1' | t }}</li>
+      <li>{{ 'docsCompute.register.m2' | t }}</li>
+      <li>{{ 'docsCompute.register.m3' | t }}</li>
+      <li>{{ 'docsCompute.register.m4' | t }}</li>
+    </ul>
     <div class="seller-docs__actions">
       <a routerLink="/sell/integrate" class="btn">{{ 'docsCompute.register.cta' | t }}</a>
       <a [href]="apiBase + '/seller/compute/schema'" target="_blank" rel="noopener" class="btn btn--ghost">JSON schema</a>
     </div>
+  </article>
+
+  <article id="devices" class="seller-docs__section">
+    <h2>{{ 'docsCompute.devices.title' | t }}</h2>
+    <p>{{ 'docsCompute.devices.p1' | t }}</p>
+    <ul>
+      <li>{{ 'docsCompute.devices.pc' | t }}</li>
+      <li>{{ 'docsCompute.devices.mobile' | t }}</li>
+      <li>{{ 'docsCompute.devices.stream' | t }}</li>
+    </ul>
+    <p class="seller-docs__hint">{{ 'docsCompute.devices.seat' | t }}</p>
   </article>
 
   <article id="hosted" class="seller-docs__section">
@@ -53,15 +71,26 @@
       <li><code>session.stop</code> — {{ 'docsCompute.webhook.e2' | t }}</li>
       <li><code>session.ping</code> — {{ 'docsCompute.webhook.e3' | t }}</li>
     </ul>
+    <h3>{{ 'docsCompute.webhook.payload' | t }}</h3>
+    <pre class="seller-docs__code">{{ webhookPayload }}</pre>
     <h3>{{ 'docsCompute.webhook.response' | t }}</h3>
     <pre class="seller-docs__code">{{ webhookResponse }}</pre>
+    <p class="seller-docs__hint">{{ 'docsCompute.webhook.fallback' | t }}</p>
   </article>
 
   <article id="buyer" class="seller-docs__section">
     <h2>{{ 'docsCompute.buyer.title' | t }}</h2>
     <p>{{ 'docsCompute.buyer.p1' | t }}</p>
     <pre class="seller-docs__code">{{ buyerExample }}</pre>
-    <p class="seller-docs__hint">{{ 'docsCompute.buyer.hint' | t }}</p>
+    <p class="seller-docs__hint">{{ 'docsCompute.buyer.heartbeat' | t }}</p>
+    <h3>{{ 'docsCompute.buyer.errors' | t }}</h3>
+    <ul>
+      <li><code>402</code> — {{ 'docsCompute.buyer.e402' | t }}</li>
+      <li><code>409</code> — {{ 'docsCompute.buyer.e409' | t }}</li>
+      <li><code>410</code> — {{ 'docsCompute.buyer.e410' | t }}</li>
+      <li><code>429</code> — {{ 'docsCompute.buyer.e429' | t }}</li>
+      <li><code>503</code> — {{ 'docsCompute.buyer.e503' | t }}</li>
+    </ul>
   </article>
 
   <article id="billing" class="seller-docs__section">
@@ -71,6 +100,8 @@
       <li>{{ 'docsCompute.billing.l1' | t }}</li>
       <li>{{ 'docsCompute.billing.l2' | t }}</li>
       <li>{{ 'docsCompute.billing.l3' | t }}</li>
+      <li>{{ 'docsCompute.billing.l4' | t }}</li>
+      <li>{{ 'docsCompute.billing.l5' | t }}</li>
     </ul>
   </article>
 

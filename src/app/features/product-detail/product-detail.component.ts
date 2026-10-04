@@ -23,6 +23,7 @@ import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, Coupon
 import { HireService } from '../../services/hire.service';
 import { isHiddenCategory, isHireCategory, isHireRequestCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { TemplatePanelComponent } from '../builder/template-panel.component';
+import { CartService } from '../cart/cart.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -73,6 +74,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly reviewsApi = inject(ReviewService);
   private readonly wishlistApi = inject(WishlistService);
+  private readonly cart = inject(CartService);
   private readonly billing = inject(BillingService);
   private readonly couponsApi = inject(CouponService);
   private readonly playgroundApi = inject(PlaygroundService);
@@ -92,6 +94,7 @@ export class ProductDetailComponent implements OnInit {
 
   readonly product = signal<Product | null>(null);
   readonly wishlisted = computed(() => this.wishlistApi.saved(this.product()?.id));
+  readonly inCart = computed(() => this.cart.has(this.product()?.id));
   readonly reviews = signal<Review[]>([]);
   readonly related = signal<Product[]>([]);
   readonly mediaIndex = signal(0);
@@ -1796,12 +1799,12 @@ export class ProductDetailComponent implements OnInit {
       void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
-    if (this.wishlistApi.saved(p.id)) {
+    if (this.inCart()) {
       void this.router.navigate(['/cart']);
       return;
     }
-    this.wishlistApi.toggle(p.id).subscribe({
-      next: () => void this.router.navigate(['/cart']),
+    this.cart.add(p.id).subscribe({
+      error: (err) => this.checkoutMsg.set(err?.error?.message || this.i18n.t('cart.err.addFail')),
     });
   }
 

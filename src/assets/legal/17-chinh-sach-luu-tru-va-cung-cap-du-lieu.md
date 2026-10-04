@@ -5,46 +5,44 @@
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Điện thoại:** 1900 6159  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 04/10/2026  
+**Phiên bản:** 2.0
 
 ---
+
 ## Điều 1. Mục đích
 
-Nền tảng duy trì hệ thống lưu trữ để:
-- vận hành giao dịch;
-- bảo mật;
-- xử lý khiếu nại;
-- audit;
-- thực hiện nghĩa vụ pháp lý.
+Nền tảng lưu trữ dữ liệu để vận hành giao dịch, bảo đảm an ninh, giải quyết khiếu nại, đối soát, kiểm tra và thực hiện nghĩa vụ theo Luật Thương mại điện tử số 122/2025/QH15, Nghị định số 248/2026/NĐ-CP và pháp luật về bảo vệ dữ liệu cá nhân.
 
-## Điều 2. Nhóm dữ liệu
+## Điều 2. Thời hạn lưu trữ
 
-- seller verification;
-- product/listing;
-- order;
-- payment;
-- refund;
-- usage;
-- complaint;
-- dispute;
-- audit;
-- deployment/security logs.
+| Nhóm dữ liệu | Thời hạn tối thiểu |
+|---|---|
+| Thông tin sản phẩm, dịch vụ đã đăng (kể cả đã gỡ) | 01 năm kể từ khi gỡ |
+| Hợp đồng, đơn hàng, giao dịch thanh toán, đối soát, hoàn tiền | 03 năm kể từ ngày phát sinh |
+| Hồ sơ xác minh người bán | Trong thời gian hoạt động và 03 năm sau khi chấm dứt |
+| Khiếu nại, tranh chấp, quyết định xử lý vi phạm | 03 năm kể từ khi đóng |
+| Chứng từ kế toán, thuế | Theo thời hạn của pháp luật kế toán, thuế |
+| Dữ liệu agent sau khi thuê bao hết hạn | 30 ngày, sau đó xóa |
+| Ổ đĩa máy GPU sau khi xóa máy | Tối đa 24 giờ, sau đó xóa |
+| Nhật ký an ninh, truy cập | Theo nhu cầu điều tra sự cố và yêu cầu pháp luật |
 
-## Điều 3. Retention
+Hết thời hạn, dữ liệu được xóa hoặc ẩn danh, trừ trường hợp tại Điều 3.
 
-Thời hạn lưu trữ phải được cấu hình theo loại dữ liệu và yêu cầu pháp luật hiện hành.
+## Điều 3. Tạm giữ dữ liệu
 
-Không hard-code một thời hạn duy nhất cho toàn hệ thống.
+Khi có tranh chấp, điều tra hoặc yêu cầu pháp lý, dữ liệu liên quan được tạm giữ và không bị xóa theo thời hạn thông thường cho đến khi vụ việc kết thúc.
 
-## Điều 4. Legal hold
+## Điều 4. Người bán trích xuất dữ liệu
 
-Khi có tranh chấp, điều tra hoặc yêu cầu pháp lý, dữ liệu liên quan có thể được đặt vào trạng thái legal hold và không bị xóa theo retention thông thường.
+Người bán có thể yêu cầu trích xuất thông tin sản phẩm đã đăng (trong 01 năm) và giao dịch của mình (trong 03 năm) qua support@aimarkets.vn hoặc hotline 1900 6159.
 
 ## Điều 5. Yêu cầu của cơ quan có thẩm quyền
 
-Nền tảng xử lý yêu cầu cung cấp dữ liệu theo thẩm quyền, phạm vi và thủ tục pháp luật áp dụng.
+Nền tảng cung cấp thông tin về người bán, giao dịch theo yêu cầu bằng văn bản của cơ quan nhà nước có thẩm quyền, đúng phạm vi và thủ tục pháp luật; thực hiện gỡ bỏ, tạm ngừng trong **24 giờ** theo [Quy trình xử lý vi phạm](14-quy-trinh-xu-ly-vi-pham.md). Nền tảng kết nối, báo cáo định kỳ với cơ quan quản lý khi được yêu cầu.
 
-## Điều 6. Bảo mật
+## Điều 6. Bảo mật khi cung cấp
 
-Dữ liệu cung cấp phải được giới hạn theo nguyên tắc cần thiết và bảo mật trong quá trình truyền/giao nhận.
+Dữ liệu cung cấp được giới hạn ở mức cần thiết, truyền qua kênh an toàn và ghi nhật ký: bên yêu cầu; căn cứ; phạm vi; thời điểm; người thực hiện.

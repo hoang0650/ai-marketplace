@@ -1,160 +1,292 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { AccountExtrasService } from './account-extras.service';
 import { environment } from '../../../environments/environment';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
+import { AccountActivityItem, CurrentSessionInfo } from '../../models/marketplace.models';
+
+const BASE_STYLES = `
+  h1 { margin: 0; font-size: 1.4rem; font-weight: 800; }
+  .lede { margin: .35rem 0 1.1rem; color: #777; }
+  h2 { margin: 0 0 .3rem; font-size: 1rem; display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+  p { margin: 0; color: #777; font-size: .88rem; line-height: 1.45; }
+  .block { padding: 1rem 0; border-top: 1px solid #f0f0f0; }
+  .block__head { display: flex; justify-content: space-between; gap: .75rem; align-items: flex-start; margin-bottom: .6rem; }
+  .pill { font-style: normal; font-size: .72rem; font-weight: 800; color: #888; background: #f3f4f6; border-radius: 999px; padding: .12rem .45rem; }
+  .pill.on { color: #15803d; background: #e8f8ef; }
+  .btn-dark, .btn-ghost, .link { font: inherit; font-weight: 800; cursor: pointer; border-radius: 10px; text-decoration: none; }
+  .btn-dark { border: 0; background: #171717; color: #fff; min-height: 2.4rem; padding: 0 1rem; }
+  .btn-ghost { border: 1px solid #ddd; background: #fff; color: #222; min-height: 2.35rem; padding: 0 .9rem; display: inline-flex; align-items: center; white-space: nowrap; font-size: .85rem; }
+  .btn-dark:disabled, .btn-ghost:disabled { opacity: .5; cursor: not-allowed; }
+  .link { border: 0; background: transparent; color: #666; font-size: .85rem; }
+  .toast { margin-top: 1rem; color: #15803d; font-size: .88rem; }
+  .toast.error { color: #c62828; }
+`;
+
+abstract class Flash {
+  readonly msg = signal('');
+  readonly error = signal(false);
+  protected flash(text: string, isError = false): void {
+    this.msg.set(text);
+    this.error.set(isError);
+  }
+}
 
 @Component({
   selector: 'app-settings-activity',
   standalone: true,
+  imports: [TPipe, DatePipe],
   template: `
-    <header class="head">
+    <header class="block__head">
       <div>
-        <h1>Lịch sử hoạt động</h1>
-        <p>Xem lại thay đổi hồ sơ, bảo mật và phiên đăng nhập</p>
+        <h1>{{ 'settings.activity' | t }}</h1>
+        <p class="lede">{{ 'set.activity.lede' | t }}</p>
       </div>
-      <button type="button" class="btn-ghost" (click)="reload()">Tải lại</button>
+      <button type="button" class="btn-ghost" (click)="reload()" [disabled]="loading()">{{ 'set.reload' | t }}</button>
     </header>
-    <div class="divider"></div>
-    <p class="empty">Chưa có hoạt động nào.</p>
+    <ul class="timeline">
+      @for (e of items(); track e.type + e.at) {
+        <li>
+          <strong>{{ 'set.activity.' + e.type | t }}</strong>
+          <span>{{ e.at | date: 'dd/MM/yyyy HH:mm' }}@if (e.ip) { · IP {{ e.ip }} }</span>
+        </li>
+      } @empty {
+        @if (!loading()) {
+          <li class="empty">{{ 'set.activity.empty' | t }}</li>
+        }
+      }
+    </ul>
   `,
   styles: `
-    .head { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
-    h1 { margin: 0; font-size: 1.4rem; font-weight: 800; }
-    p { margin: .35rem 0 0; color: #777; }
-    .btn-ghost { border: 1px solid #ddd; background: #fff; border-radius: 10px; min-height: 2.3rem; padding: 0 .9rem; font: inherit; font-weight: 700; cursor: pointer; }
-    .divider { height: 1px; background: #f0f0f0; margin: 1rem 0; }
-    .empty { color: #999; }
+    ${BASE_STYLES}
+    .timeline { list-style: none; margin: 0; padding: 0; border-top: 1px solid #f0f0f0; }
+    .timeline li { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid #f5f5f5; font-size: .9rem; }
+    .timeline span { color: #888; font-size: .82rem; white-space: nowrap; }
+    .timeline .empty { color: #999; border: 0; }
+    @media (max-width: 720px) { .timeline li { flex-direction: column; gap: .2rem; } }
   `,
 })
-export class SettingsActivityComponent {
-  constructor() {
-    inject(SeoService).set({ title: 'Lịch sử hoạt động' });
+export class SettingsActivityComponent implements OnInit {
+  private readonly api = inject(AccountExtrasService);
+  private readonly i18n = inject(I18nService);
+  private readonly seo = inject(SeoService);
+  readonly items = signal<AccountActivityItem[]>([]);
+  readonly loading = signal(false);
+
+  ngOnInit(): void {
+    this.seo.set({ title: this.i18n.t('settings.activity') });
+    this.reload();
   }
-  reload(): void {}
+
+  reload(): void {
+    this.loading.set(true);
+    this.api.activity().subscribe({
+      next: (res) => {
+        this.items.set(res.items || []);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
 }
 
 @Component({
   selector: 'app-settings-security',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TPipe, DatePipe],
   template: `
-    <h1>Bảo mật</h1>
-    <p class="lede">Quản lý mật khẩu, xác thực hai lớp và phiên đăng nhập.</p>
-
-    <section class="row">
-      <div>
-        <h2>Mật khẩu</h2>
-        <p>Tạo mật khẩu cho tài khoản này để bạn cũng có thể đăng nhập bằng email và mật khẩu.</p>
-      </div>
-      <button type="button" class="btn-dark" (click)="msg.set('Tính năng đổi mật khẩu sẽ sớm có.')">Tạo mật khẩu</button>
-    </section>
-
-    <section class="row">
-      <div>
-        <h2>Xác thực hai lớp</h2>
-        <p>Quản lý thiết bị mã đăng nhập bằng ứng dụng xác thực.</p>
-      </div>
-      <span class="status">Chưa bật</span>
-    </section>
+    <h1>{{ 'settings.security' | t }}</h1>
+    <p class="lede">{{ 'set.sec.lede' | t }}</p>
 
     <section class="block">
-      <div class="block__head">
+      <h2>{{ 'set.sec.password' | t }}</h2>
+      <p>{{ (hasPassword() ? 'set.sec.passwordChangeDesc' : 'set.sec.passwordSetDesc') | t }}</p>
+      <form class="pw" (ngSubmit)="savePassword()">
+        @if (hasPassword()) {
+          <label>
+            <span>{{ 'set.sec.current' | t }}</span>
+            <input type="password" [(ngModel)]="current" name="current" autocomplete="current-password" required />
+          </label>
+        }
+        <label>
+          <span>{{ 'set.sec.new' | t }}</span>
+          <input type="password" [(ngModel)]="next" name="next" autocomplete="new-password" minlength="8" maxlength="128" required />
+        </label>
+        <label>
+          <span>{{ 'set.sec.confirm' | t }}</span>
+          <input type="password" [(ngModel)]="confirm" name="confirm" autocomplete="new-password" required />
+        </label>
         <div>
-          <h2>Thiết bị xác thực</h2>
-          <p>Tài khoản có thể gắn tối đa 10 thiết bị TOTP.</p>
+          <button type="submit" class="btn-dark" [disabled]="busy()">
+            {{ busy() ? ('set.saving' | t) : ((hasPassword() ? 'set.sec.change' : 'set.sec.create') | t) }}
+          </button>
         </div>
-        <button type="button" class="link" (click)="msg.set('Đã tải lại.')">Tải lại</button>
+      </form>
+    </section>
+
+    <section class="block row">
+      <div>
+        <h2>{{ 'set.sec.2fa' | t }} <em class="pill">{{ 'set.soon' | t }}</em></h2>
+        <p>{{ 'set.sec.2faDesc' | t }}</p>
       </div>
-      <p class="muted">Chưa cấu hình thiết bị xác thực.</p>
-      <label>
-        <span>Tên thiết bị mới</span>
-        <div class="inline">
-          <input [(ngModel)]="deviceName" name="deviceName" placeholder="Ứng dụng xác thực" />
-          <button type="button" class="btn-dark" (click)="addDevice()">Thêm thiết bị</button>
-        </div>
-      </label>
     </section>
 
     <section class="block">
       <div class="block__head">
-        <h2>Phiên đăng nhập <small>1 đang hoạt động</small></h2>
-        <button type="button" class="link">Tải lại</button>
+        <h2>{{ 'set.sec.sessions' | t }}</h2>
+        <button type="button" class="link" (click)="loadSession()">{{ 'set.reload' | t }}</button>
       </div>
       <div class="session">
         <div>
-          <strong>Chrome · Windows · Máy tính</strong>
-          <p>Không rõ vị trí · Phiên hiện tại</p>
+          <strong>{{ deviceLabel() }} · {{ 'set.sec.thisDevice' | t }}</strong>
+          @if (session()?.lastLogin) {
+            <p>
+              {{ 'set.sec.lastLogin' | t: { date: (session()!.lastLogin | date: 'dd/MM/yyyy HH:mm') || '' } }}
+              @if (session()?.lastLoginIp) { · IP {{ session()?.lastLoginIp }} }
+            </p>
+          }
         </div>
-        <button type="button" class="btn-ghost" (click)="msg.set('Không thể thu hồi phiên hiện tại.')">Thu hồi</button>
+        <button type="button" class="btn-ghost" [disabled]="busy()" (click)="revokeAll()">{{ 'set.sec.revokeAll' | t }}</button>
       </div>
     </section>
 
     @if (msg()) {
-      <p class="toast">{{ msg() }}</p>
+      <p class="toast" [class.error]="error()" role="status">{{ msg() }}</p>
     }
   `,
   styles: `
-    h1 { margin: 0; font-size: 1.4rem; font-weight: 800; }
-    .lede { margin: .35rem 0 1.1rem; color: #777; }
-    .row, .block { padding: 1rem 0; border-top: 1px solid #f0f0f0; }
+    ${BASE_STYLES}
     .row { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
-    h2 { margin: 0 0 .3rem; font-size: 1rem; }
-    h2 small { margin-left: .45rem; color: #888; font-size: .8rem; font-weight: 600; }
-    p { margin: 0; color: #777; font-size: .88rem; line-height: 1.45; }
-    .status { color: #888; font-weight: 700; font-size: .88rem; }
-    .block__head { display: flex; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
-    .muted { color: #999; margin-bottom: .85rem !important; }
+    .pw { display: grid; gap: .7rem; max-width: 26rem; margin-top: .85rem; }
     label { display: grid; gap: .35rem; font-size: .85rem; font-weight: 700; }
-    .inline { display: grid; grid-template-columns: 1fr auto; gap: .5rem; }
     input { border: 1px solid #e5e5e5; border-radius: 10px; padding: .7rem .8rem; font: inherit; font-weight: 500; }
-    .btn-dark, .btn-ghost, .link { font: inherit; font-weight: 800; cursor: pointer; border-radius: 10px; }
-    .btn-dark { border: 0; background: #171717; color: #fff; min-height: 2.4rem; padding: 0 1rem; }
-    .btn-ghost { border: 1px solid #ddd; background: #fff; min-height: 2.3rem; padding: 0 .9rem; }
-    .link { border: 0; background: transparent; color: #666; font-size: .85rem; }
     .session { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .85rem; border: 1px solid #ececec; border-radius: 12px; }
     .session strong { display: block; font-size: .92rem; }
     .session p { margin-top: .2rem; }
-    .toast { margin-top: 1rem; color: #15803d; font-size: .88rem; }
-    @media (max-width: 720px) { .row, .session, .inline { grid-template-columns: 1fr; display: grid; } }
+    @media (max-width: 720px) { .row, .session { flex-direction: column; align-items: flex-start; } }
   `,
 })
-export class SettingsSecurityComponent {
-  readonly msg = signal('');
-  deviceName = '';
-  constructor() {
-    inject(SeoService).set({ title: 'Bảo mật' });
+export class SettingsSecurityComponent extends Flash implements OnInit {
+  private readonly auth = inject(AuthService);
+  private readonly api = inject(AccountExtrasService);
+  private readonly i18n = inject(I18nService);
+  private readonly seo = inject(SeoService);
+
+  readonly busy = signal(false);
+  readonly session = signal<CurrentSessionInfo | null>(null);
+  readonly hasPassword = computed(() => !!this.auth.user()?.hasPassword);
+  readonly deviceLabel = computed(() => describeAgent(this.session()?.userAgent || globalThis.navigator?.userAgent || ''));
+  current = '';
+  next = '';
+  confirm = '';
+
+  ngOnInit(): void {
+    this.seo.set({ title: this.i18n.t('settings.security') });
+    this.loadSession();
   }
-  addDevice(): void {
-    if (!this.deviceName.trim()) {
-      this.msg.set('Nhập tên thiết bị.');
-      return;
-    }
-    this.msg.set(`Đã ghi nhận thiết bị "${this.deviceName.trim()}" (demo).`);
-    this.deviceName = '';
+
+  loadSession(): void {
+    this.api.currentSession().subscribe({ next: (s) => this.session.set(s), error: () => undefined });
   }
+
+  savePassword(): void {
+    if (this.next.length < 8 || this.next.length > 128) return this.flash(this.i18n.t('set.sec.length'), true);
+    if (this.next !== this.confirm) return this.flash(this.i18n.t('set.sec.mismatch'), true);
+    this.busy.set(true);
+    const body: Record<string, string> = { newPassword: this.next, confirmPassword: this.confirm };
+    if (this.hasPassword()) body['currentPassword'] = this.current;
+    this.auth.rotateSession('password', body).subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.current = this.next = this.confirm = '';
+        this.flash(this.i18n.t('set.sec.changed'));
+      },
+      error: (err) => {
+        this.busy.set(false);
+        this.flash(err?.error?.message || this.i18n.t('set.saveFail'), true);
+      },
+    });
+  }
+
+  revokeAll(): void {
+    if (!globalThis.confirm?.(this.i18n.t('set.sec.revokeConfirm'))) return;
+    this.busy.set(true);
+    this.auth.rotateSession('sessions/revoke-all').subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.flash(this.i18n.t('set.sec.revoked'));
+        this.loadSession();
+      },
+      error: (err) => {
+        this.busy.set(false);
+        this.flash(err?.error?.message || this.i18n.t('set.saveFail'), true);
+      },
+    });
+  }
+}
+
+function describeAgent(ua: string): string {
+  const browser = /Edg\//.test(ua)
+    ? 'Edge'
+    : /OPR\//.test(ua)
+      ? 'Opera'
+      : /Chrome\//.test(ua)
+        ? 'Chrome'
+        : /Firefox\//.test(ua)
+          ? 'Firefox'
+          : /Safari\//.test(ua)
+            ? 'Safari'
+            : 'Browser';
+  const os = /Windows/.test(ua)
+    ? 'Windows'
+    : /Android/.test(ua)
+      ? 'Android'
+      : /iPhone|iPad/.test(ua)
+        ? 'iOS'
+        : /Mac OS X/.test(ua)
+          ? 'macOS'
+          : /Linux/.test(ua)
+            ? 'Linux'
+            : '';
+  return os ? `${browser} · ${os}` : browser;
 }
 
 @Component({
   selector: 'app-settings-notifications',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TPipe],
   template: `
-    <h1>Kênh nhận thông báo</h1>
-    <p class="lede">Xem nơi nhận các cập nhật quan trọng về tài khoản, đơn hàng, tranh chấp và cộng đồng.</p>
+    <h1>{{ 'settings.noti' | t }}</h1>
+    <p class="lede">{{ 'set.noti.lede' | t }}</p>
 
     <article class="card">
       <div class="left">
         <span class="icon">📬</span>
         <div>
-          <strong>Hộp thư {{ brand }}</strong>
-          <em>Luôn hoạt động</em>
-          <p>Thông báo trong ứng dụng luôn được gửi vào hộp thư của bạn.</p>
+          <strong>{{ 'set.noti.inbox' | t: { brand: brand } }}</strong>
+          <em class="pill on">{{ 'set.noti.always' | t }}</em>
+          <p>{{ 'set.noti.inboxDesc' | t }}</p>
         </div>
       </div>
-      <a routerLink="/notifications" class="btn-ghost">Xem hộp thư thông báo</a>
+      <a routerLink="/notifications" class="btn-ghost">{{ 'set.noti.inboxOpen' | t }}</a>
+    </article>
+
+    <article class="card">
+      <div class="left">
+        <span class="icon">✉️</span>
+        <div>
+          <strong>{{ 'set.noti.email' | t }}</strong>
+          <em class="pill on">{{ 'set.noti.always' | t }}</em>
+          <p>{{ 'set.noti.emailDesc' | t: { email: auth.user()?.email || '' } }}</p>
+          <p>{{ 'set.noti.lang' | t: { lang: langLabel() } }}</p>
+        </div>
+      </div>
+      <a routerLink="/settings/profile" class="btn-ghost">{{ 'set.noti.langEdit' | t }}</a>
     </article>
 
     <article class="card">
@@ -162,188 +294,192 @@ export class SettingsSecurityComponent {
         <span class="icon">✈️</span>
         <div>
           <strong>Telegram</strong>
-          <em class="off">Chưa kết nối</em>
-          <p>Liên kết Telegram để nhận cập nhật đơn hàng và bảo mật nhanh hơn.</p>
+          <em class="pill">{{ 'set.soon' | t }}</em>
+          <p>{{ 'set.noti.telegramDesc' | t }}</p>
         </div>
       </div>
-      <a routerLink="/settings/connections" class="btn-ghost">Quản lý liên kết</a>
     </article>
   `,
   styles: `
-    h1 { margin: 0; font-size: 1.4rem; font-weight: 800; }
-    .lede { margin: .35rem 0 1.1rem; color: #777; }
+    ${BASE_STYLES}
     .card { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: 1rem 0; border-top: 1px solid #f0f0f0; }
     .left { display: flex; gap: .8rem; }
-    .icon { width: 2.4rem; height: 2.4rem; border-radius: 10px; background: #f5f5f5; display: grid; place-items: center; }
+    .icon { flex: none; width: 2.4rem; height: 2.4rem; border-radius: 10px; background: #f5f5f5; display: grid; place-items: center; }
     strong { display: block; font-size: .95rem; }
-    em { display: inline-block; margin-top: .2rem; font-style: normal; font-size: .75rem; font-weight: 800; color: #15803d; background: #e8f8ef; border-radius: 999px; padding: .12rem .45rem; }
-    em.off { color: #888; background: #f3f4f6; }
-    p { margin: .35rem 0 0; color: #777; font-size: .85rem; }
-    .btn-ghost { border: 1px solid #ddd; background: #fff; border-radius: 10px; min-height: 2.35rem; padding: 0 .9rem; text-decoration: none; color: #222; font-weight: 800; font-size: .85rem; display: inline-flex; align-items: center; white-space: nowrap; }
+    .pill { display: inline-block; margin-top: .2rem; }
+    p { margin-top: .35rem; font-size: .85rem; }
     @media (max-width: 720px) { .card { flex-direction: column; align-items: flex-start; } }
   `,
 })
-export class SettingsNotificationsComponent {
+export class SettingsNotificationsComponent implements OnInit {
+  readonly auth = inject(AuthService);
+  private readonly i18n = inject(I18nService);
+  private readonly seo = inject(SeoService);
   readonly brand = environment.brandName;
-  constructor() {
-    inject(SeoService).set({ title: 'Kênh thông báo' });
+  readonly langLabel = computed(() => {
+    const lang = this.auth.user()?.profile?.notifyLang || 'vi';
+    return lang === 'en' ? 'English' : lang === 'zh' ? '中文' : 'Tiếng Việt';
+  });
+
+  ngOnInit(): void {
+    this.seo.set({ title: this.i18n.t('settings.noti') });
   }
 }
 
 @Component({
   selector: 'app-settings-connections',
   standalone: true,
+  imports: [RouterLink, TPipe],
   template: `
-    <h1>Liên kết tài khoản</h1>
-    <p class="lede">Kết nối Google, Telegram và các nền tảng khác.</p>
+    <h1>{{ 'settings.conn' | t }}</h1>
+    <p class="lede">{{ 'set.conn.lede' | t }}</p>
 
     <section class="block">
       <div class="block__head">
-        <h2>Đăng nhập bằng Google <em [class.on]="extras.googleLinked">{{ extras.googleLinked ? 'Đã kết nối' : 'Chưa kết nối' }}</em></h2>
-        <button type="button" class="link" (click)="reload()">Tải lại</button>
+        <h2>
+          {{ 'set.conn.google' | t }}
+          <em class="pill" [class.on]="googleLinked()">{{ (googleLinked() ? 'set.connected' : 'set.notConnected') | t }}</em>
+        </h2>
+        <button type="button" class="link" (click)="reload()">{{ 'set.reload' | t }}</button>
       </div>
-      @if (extras.googleLinked) {
-        <p>{{ auth.user()?.email }} · Liên kết gần đây</p>
-        <p class="warn">Hãy tạo mật khẩu trước khi ngắt kết nối Google.</p>
-        <button type="button" class="btn-ghost" (click)="toggleGoogle(false)">Ngắt Google</button>
+      @if (googleLinked()) {
+        <p>{{ 'set.conn.googleOn' | t: { email: auth.user()?.email || '' } }}</p>
+        @if (auth.user()?.hasPassword) {
+          <button type="button" class="btn-ghost mt" [disabled]="busy()" (click)="unlinkGoogle()">{{ 'set.conn.unlink' | t }}</button>
+        } @else {
+          <p class="warn">{{ 'set.conn.needPassword' | t }}</p>
+          <a routerLink="/settings/security" class="btn-ghost mt">{{ 'set.conn.toSecurity' | t }}</a>
+        }
       } @else {
-        <button type="button" class="btn-dark" (click)="toggleGoogle(true)">Liên kết Google</button>
+        <p>{{ 'set.conn.googleOff' | t: { email: auth.user()?.email || '' } }}</p>
       }
     </section>
 
     <section class="block">
-      <div class="block__head">
-        <h2>Thông báo Telegram <em [class.on]="extras.telegramLinked">{{ extras.telegramLinked ? 'Đã kết nối' : 'Chưa kết nối' }}</em></h2>
-        <button type="button" class="link" (click)="reload()">Tải lại</button>
-      </div>
-      <p>Liên kết bot Telegram để nhận thông báo đơn hàng và bảo mật.</p>
-      <button type="button" class="btn-dark" (click)="toggleTelegram(!extras.telegramLinked)">
-        {{ extras.telegramLinked ? 'Ngắt Telegram' : 'Liên kết Telegram' }}
-      </button>
+      <h2>{{ 'set.conn.telegram' | t }} <em class="pill">{{ 'set.soon' | t }}</em></h2>
+      <p>{{ 'set.noti.telegramDesc' | t }}</p>
     </section>
+
+    @if (msg()) {
+      <p class="toast" [class.error]="error()" role="status">{{ msg() }}</p>
+    }
   `,
   styles: `
-    h1 { margin: 0; font-size: 1.4rem; font-weight: 800; }
-    .lede { margin: .35rem 0 1rem; color: #777; }
-    .block { padding: 1rem 0; border-top: 1px solid #f0f0f0; }
-    .block__head { display: flex; justify-content: space-between; gap: .75rem; margin-bottom: .55rem; }
-    h2 { margin: 0; font-size: 1rem; display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
-    em { font-style: normal; font-size: .72rem; font-weight: 800; color: #888; background: #f3f4f6; border-radius: 999px; padding: .12rem .45rem; }
-    em.on { color: #15803d; background: #e8f8ef; }
-    p { margin: 0 0 .55rem; color: #777; font-size: .88rem; }
-    .warn { color: #b45309; }
-    .btn-dark, .btn-ghost, .link { font: inherit; font-weight: 800; cursor: pointer; border-radius: 10px; }
-    .btn-dark { border: 0; background: #171717; color: #fff; min-height: 2.4rem; padding: 0 1rem; }
-    .btn-ghost { border: 1px solid #ddd; background: #fff; min-height: 2.35rem; padding: 0 .9rem; }
-    .link { border: 0; background: transparent; color: #666; font-size: .85rem; }
+    ${BASE_STYLES}
+    .warn { color: #b45309; margin-top: .4rem; }
+    .mt { margin-top: .7rem; }
   `,
 })
-export class SettingsConnectionsComponent implements OnInit {
+export class SettingsConnectionsComponent extends Flash implements OnInit {
   readonly auth = inject(AuthService);
-  private readonly extrasApi = inject(AccountExtrasService);
-  extras = this.extrasApi.load();
+  private readonly i18n = inject(I18nService);
+  private readonly seo = inject(SeoService);
+  readonly busy = signal(false);
+  readonly googleLinked = computed(() => !!this.auth.user()?.googleLinked);
 
   ngOnInit(): void {
-    inject(SeoService).set({ title: 'Liên kết tài khoản' });
+    this.seo.set({ title: this.i18n.t('settings.conn') });
     this.reload();
   }
 
   reload(): void {
-    this.extras = this.extrasApi.load();
+    this.auth.refreshMe().subscribe();
   }
 
-  toggleGoogle(on: boolean): void {
-    this.extras = this.extrasApi.save({ googleLinked: on });
-  }
-
-  toggleTelegram(on: boolean): void {
-    this.extras = this.extrasApi.save({ telegramLinked: on });
+  unlinkGoogle(): void {
+    if (!globalThis.confirm?.(this.i18n.t('set.conn.unlinkConfirm'))) return;
+    this.busy.set(true);
+    this.auth.unlinkGoogle().subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.flash(this.i18n.t('set.conn.unlinked'));
+      },
+      error: (err) => {
+        this.busy.set(false);
+        this.flash(err?.error?.message || this.i18n.t('set.saveFail'), true);
+      },
+    });
   }
 }
 
 @Component({
   selector: 'app-settings-feed',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TPipe],
   template: `
-    <h1>Cá nhân hóa Feed</h1>
-    <p class="lede">Điều chỉnh gợi ý nội dung và quảng cáo theo sở thích của bạn.</p>
+    <h1>{{ 'set.feed.title' | t }}</h1>
+    <p class="lede">{{ 'set.feed.lede' | t }}</p>
 
     <section class="card">
       <div class="row">
         <div>
-          <strong>Cá nhân hóa nội dung</strong>
-          <p>Dùng hoạt động của bạn để đề xuất sản phẩm và bài viết phù hợp hơn.</p>
+          <strong>{{ 'set.feed.content' | t }}</strong>
+          <p>{{ 'set.feed.contentDesc' | t }}</p>
         </div>
         <label class="switch">
-          <input type="checkbox" [(ngModel)]="personalizeContent" name="pc" (ngModelChange)="persist()" />
+          <input type="checkbox" [(ngModel)]="personalizeContent" name="pc" [disabled]="busy()" (ngModelChange)="persist()" />
         </label>
       </div>
       <div class="row">
         <div>
-          <strong>Cá nhân hóa quảng cáo</strong>
-          <p>Cho phép hiển thị quảng cáo phù hợp hơn với sở thích của bạn.</p>
+          <strong>{{ 'set.feed.ads' | t }}</strong>
+          <p>{{ 'set.feed.adsDesc' | t }}</p>
         </div>
         <label class="switch">
-          <input type="checkbox" [(ngModel)]="personalizeAds" name="pa" (ngModelChange)="persist()" />
+          <input type="checkbox" [(ngModel)]="personalizeAds" name="pa" [disabled]="busy()" (ngModelChange)="persist()" />
         </label>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="row">
-        <div>
-          <strong>Đặt lại hồ sơ gợi ý</strong>
-          <p>Xóa dữ liệu hành vi dùng để gợi ý. Không ảnh hưởng tài khoản hay bookmark.</p>
-        </div>
-        <button type="button" class="btn-ghost" [disabled]="!personalizeContent && !personalizeAds" (click)="reset()">
-          Đặt lại cá nhân hóa
-        </button>
       </div>
     </section>
     @if (msg()) {
-      <p class="toast">{{ msg() }}</p>
+      <p class="toast" [class.error]="error()" role="status">{{ msg() }}</p>
     }
   `,
   styles: `
-    h1 { margin: 0; font-size: 1.4rem; font-weight: 800; }
-    .lede { margin: .35rem 0 1rem; color: #777; }
+    ${BASE_STYLES}
     .card { border: 1px solid #ececec; border-radius: 14px; padding: .35rem 1rem; margin-bottom: .85rem; }
     .row { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .9rem 0; }
     .row + .row { border-top: 1px solid #f0f0f0; }
     strong { display: block; font-size: .95rem; }
-    p { margin: .25rem 0 0; color: #777; font-size: .85rem; }
+    p { margin-top: .25rem; font-size: .85rem; }
     .switch input { width: 2.6rem; height: 1.35rem; accent-color: #e53935; }
-    .btn-ghost { border: 1px solid #ddd; background: #fff; border-radius: 10px; min-height: 2.35rem; padding: 0 .9rem; font: inherit; font-weight: 800; cursor: pointer; }
-    .btn-ghost:disabled { opacity: .45; cursor: not-allowed; }
-    .toast { color: #15803d; font-size: .88rem; }
     @media (max-width: 720px) { .row { flex-direction: column; align-items: flex-start; } }
   `,
 })
-export class SettingsFeedComponent implements OnInit {
-  private readonly extrasApi = inject(AccountExtrasService);
-  readonly msg = signal('');
+export class SettingsFeedComponent extends Flash implements OnInit {
+  private readonly auth = inject(AuthService);
+  private readonly i18n = inject(I18nService);
+  private readonly seo = inject(SeoService);
+  readonly busy = signal(false);
   personalizeContent = false;
   personalizeAds = false;
 
   ngOnInit(): void {
-    inject(SeoService).set({ title: 'Cá nhân hóa Feed' });
-    const ex = this.extrasApi.load();
-    this.personalizeContent = ex.personalizeContent;
-    this.personalizeAds = ex.personalizeAds;
+    this.seo.set({ title: this.i18n.t('set.feed.title') });
+    this.sync();
   }
 
   persist(): void {
-    this.extrasApi.save({
-      personalizeContent: this.personalizeContent,
-      personalizeAds: this.personalizeAds,
-    });
+    this.busy.set(true);
+    this.auth
+      .updateProfile({
+        preferences: { personalizeContent: this.personalizeContent, personalizeAds: this.personalizeAds },
+      })
+      .subscribe({
+        next: () => {
+          this.busy.set(false);
+          this.flash(this.i18n.t('set.feed.saved'));
+        },
+        error: (err) => {
+          this.busy.set(false);
+          this.sync();
+          this.flash(err?.error?.message || this.i18n.t('set.saveFail'), true);
+        },
+      });
   }
 
-  reset(): void {
-    this.personalizeContent = false;
-    this.personalizeAds = false;
-    this.persist();
-    this.msg.set('Đã đặt lại cá nhân hóa.');
+  private sync(): void {
+    const prefs = this.auth.user()?.preferences;
+    this.personalizeContent = !!prefs?.personalizeContent;
+    this.personalizeAds = !!prefs?.personalizeAds;
   }
 }

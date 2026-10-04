@@ -5,51 +5,43 @@
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Điện thoại:** 1900 6159  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 07/09/2026  
+**Ngày hiệu lực:** 04/10/2026  
+**Phiên bản:** 2.0
 
 ---
 
-## Điều 1. Phí sàn không phải thuế
+## Điều 1. Căn cứ
 
-AI Markets thu **platform commission** (mặc định **20%** đối với seller bên thứ ba) trên giá trị giao dịch thuộc diện tính phí.
+Chính sách áp dụng theo pháp luật về quản lý thuế, thuế giá trị gia tăng, thuế thu nhập cá nhân và Nghị định số 252/2026/NĐ-CP về trách nhiệm khấu trừ, khai, nộp thuế thay của tổ chức quản lý nền tảng thương mại điện tử.
 
-**20% phí sàn không phải thuế seller**, không phải VAT, không phải thuế TNCN.
+## Điều 2. Phí sàn không phải thuế
 
-Khách hàng thanh toán **giá niêm yết**. Seller chịu phí sàn, trừ khi có cấu hình giá khác được công bố.
+Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, **không phải** thuế giá trị gia tăng hay thuế thu nhập của người bán. Phí của Google Play / App Store đối với giao dịch trong ứng dụng cũng không phải thuế và không phải phí sàn.
 
-Phí **Google Play / App Store** trên IAP không phải thuế và không phải phí sàn.
+## Điều 3. Khấu trừ, nộp thay đối với hộ, cá nhân kinh doanh
 
-## Điều 2. Tách khoản trên đối soát
+1. Nền tảng khấu trừ, khai và nộp thay thuế giá trị gia tăng, thuế thu nhập cá nhân đối với người bán là **hộ kinh doanh, cá nhân kinh doanh** theo Nghị định số 252/2026/NĐ-CP.
+2. Tỷ lệ khấu trừ áp dụng theo nhóm hàng hóa, dịch vụ và tình trạng cư trú của người bán do pháp luật quy định tại thời điểm giao dịch; căn cứ tính và ngưỡng doanh thu (nếu có) theo quy định hiện hành.
+3. Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng tại Kênh người bán; nền tảng cung cấp chứng từ khấu trừ thuế theo quy định.
 
-Mỗi giao dịch ghi nhận riêng:
+## Điều 4. Người bán là doanh nghiệp, tổ chức
 
-- Doanh thu gộp (GMV)
-- Phí sàn / platform commission
-- Phí Google Play (CHPlay) / App Store nếu IAP
-- Thuế khấu trừ (nếu Tax Engine áp dụng)
-- Phí thanh toán (nếu seller chịu)
-- Hoàn tiền / chargeback
-- Seller net payable
+Nền tảng không khấu trừ thuế đối với người bán là doanh nghiệp, tổ chức có đăng ký kinh doanh và mã số thuế đã được xác minh. Người bán tự kê khai, nộp thuế và xuất hóa đơn theo quy định.
 
-Không được hiểu “còn lại 80%” là đã gồm toàn bộ nghĩa vụ thuế.
+## Điều 5. Hồ sơ thuế của người bán
 
-## Điều 3. Nghĩa vụ của Seller
+Người bán khai báo loại hình (cá nhân, hộ kinh doanh, doanh nghiệp/tổ chức), mã số thuế và tình trạng cư trú tại Kênh người bán. Hồ sơ được xác minh và lưu theo phiên bản; người bán phải cập nhật khi có thay đổi. Thông tin sai lệch có thể dẫn đến việc áp dụng mức khấu trừ không phù hợp và người bán chịu trách nhiệm về hậu quả.
 
-Seller chịu trách nhiệm kê khai và nộp thuế theo loại hình (cá nhân, hộ kinh doanh, công ty, seller nước ngoài) và pháp luật áp dụng.
+## Điều 6. Tách khoản trên đối soát
 
-## Điều 4. Khấu trừ tại nguồn
+Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; phí kho ứng dụng (nếu có); thuế khấu trừ (nếu có); hoàn tiền, điều chỉnh; doanh thu người bán.
 
-Khi hồ sơ thuế / Tax Rule yêu cầu, sàn có thể khấu trừ tại nguồn. **Tỷ lệ thuế không cố định trong chính sách** vì có thể thay đổi theo pháp luật.
+## Điều 7. Sản phẩm Bán bởi sàn
 
-## Điều 5. Sản phẩm do sàn bán
+Doanh thu từ sản phẩm “Bán bởi sàn” (API, GPU, máy chủ trò chơi, dịch vụ AI agent) thuộc Công ty và được kê khai, nộp thuế theo chế độ của Công ty.
 
-Hàng **Platform Direct** không chia 80/20. Doanh thu thuộc đơn vị vận hành theo chế độ kế toán/thuế tương ứng.
+## Điều 8. Thay đổi quy định
 
-## Điều 6. Seller nước ngoài
-
-Không mặc định áp dụng cùng rule với seller Việt Nam. Hồ sơ cư trú thuế được version hóa.
-
-## Điều 7. Snapshot
-
-Order lưu snapshot commission, phí cửa hàng (nếu IAP) và thuế tại thời điểm giao dịch. Thay đổi rule sau này không tính lại lịch sử.
+Khi pháp luật về thuế thay đổi, mức khấu trừ mới áp dụng cho giao dịch phát sinh từ ngày quy định mới có hiệu lực. Đơn hàng đã giao kết giữ nguyên bản chụp thuế tại thời điểm giao kết.

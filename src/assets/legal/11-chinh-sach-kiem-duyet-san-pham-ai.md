@@ -5,72 +5,52 @@
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Điện thoại:** 1900 6159  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 04/10/2026  
+**Phiên bản:** 2.0
 
 ---
+
 ## Điều 1. Quy trình
 
 ```text
-DRAFT
-→ SUBMITTED
-→ COMPLIANCE REVIEW
-→ SECURITY REVIEW (nếu cần)
-→ APPROVED
-→ PUBLISHED
+Bản nháp
+→ Gửi duyệt
+→ Kiểm tra tuân thủ
+→ Kiểm tra an ninh (nếu cần)
+→ Duyệt
+→ Hiển thị
 ```
 
-## Điều 2. Kiểm tra seller
+Sản phẩm mới hoặc sửa đổi nội dung quan trọng (tên, mô tả, giá, giấy phép, mã nguồn) chuyển về trạng thái chờ duyệt. Chỉ sản phẩm của người bán đã xác minh mới được hiển thị.
 
-- trạng thái xác minh;
-- quyền cung cấp;
-- thông tin liên hệ;
-- lịch sử vi phạm.
+## Điều 2. Kiểm tra người bán
 
-## Điều 3. Kiểm tra model
+Trạng thái xác minh; quyền cung cấp; thông tin liên hệ; lịch sử vi phạm.
 
-- repository;
-- license;
-- base model;
-- redistribution rights;
-- commercial rights.
+## Điều 3. Kiểm tra chung mọi sản phẩm
 
-## Điều 4. Kiểm tra dataset
+Mô tả, giá, đơn vị tính trung thực; giấy phép và quyền thương mại; đối chiếu [danh mục cấm kinh doanh](10-chinh-sach-su-dung-chap-nhan-duoc.md); giấy phép ngành, nghề kinh doanh có điều kiện (nếu có); nhãn nội dung do AI tạo.
 
-- nguồn dữ liệu;
-- license;
-- quyền sử dụng;
-- personal data flag;
-- mục đích sử dụng.
+## Điều 4. Theo loại sản phẩm
 
-## Điều 5. Kiểm tra agent/container
+| Loại | Nội dung kiểm tra |
+|---|---|
+| Mô hình AI | Nguồn, giấy phép, mô hình gốc, quyền phân phối lại, quyền thương mại |
+| Agent, container | Image, thư viện phụ thuộc, mạng, hệ thống tệp, quyền truy cập, khóa bí mật cần thiết, quét mã độc |
+| API | Nguồn API, xác thực, giới hạn tần suất, điều khoản nhà cung cấp, đơn giá, cách xử lý dữ liệu |
+| Mẫu website/ứng dụng | Mã nguồn phải build thành công trên hệ thống (bản build lỗi không được cập nhật); demo chạy trong môi trường cách ly; quyền sở hữu mã nguồn |
+| Giọng đọc AI | Văn bản đồng ý của người có giọng nói đối với giọng nhân bản |
+| Dịch vụ thuê talent | Lĩnh vực, phạm vi công việc, năng lực, bảng giá tham khảo; không chứa nội dung tuyển dụng, cung ứng lao động |
+| Máy chủ trò chơi, GPU | Chỉ cho thuê máy; không phát hành, vận hành trò chơi điện tử trên mạng |
 
-- image;
-- dependencies;
-- network;
-- filesystem;
-- privileges;
-- secret requirements;
-- malware/security scan.
+Nền tảng hiện chưa nhận phim, truyện/sách điện tử, dataset và tin tuyển dụng.
 
-## Điều 6. Kiểm tra API
+## Điều 5. Quyền của nền tảng
 
-- nguồn API;
-- authorization;
-- rate limits;
-- terms;
-- pricing;
-- data handling.
+Yêu cầu chỉnh sửa, bổ sung hồ sơ hoặc từ chối sản phẩm khi thông tin chưa đầy đủ hoặc có rủi ro pháp lý, an ninh; người bán được thông báo lý do.
 
-## Điều 7. Quyền của platform
+## Điều 6. Kiểm duyệt lại
 
-Platform có quyền yêu cầu chỉnh sửa hoặc từ chối listing khi hồ sơ chưa đầy đủ hoặc có rủi ro pháp lý/an ninh.
-
-## Điều 8. Re-review
-
-Platform có thể kiểm duyệt lại sản phẩm khi:
-- version thay đổi;
-- license thay đổi;
-- seller thay đổi;
-- có complaint;
-- có security incident.
+Nền tảng có thể kiểm duyệt lại khi: phiên bản, giấy phép hoặc người bán thay đổi; có khiếu nại; có sự cố an ninh; có yêu cầu của cơ quan có thẩm quyền.

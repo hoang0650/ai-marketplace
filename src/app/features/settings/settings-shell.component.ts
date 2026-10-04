@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
+import { SETTINGS_MESSAGES } from './settings.messages';
 
 @Component({
   selector: 'app-settings-shell',
@@ -16,6 +17,10 @@ export class SettingsShellComponent {
   readonly auth = inject(AuthService);
   readonly i18n = inject(I18nService);
   readonly brand = environment.brandName;
+
+  constructor() {
+    this.i18n.extend(SETTINGS_MESSAGES);
+  }
 
   readonly initials = computed(() => {
     const name = this.auth.user()?.name?.trim() || 'U';
@@ -37,12 +42,12 @@ export class SettingsShellComponent {
     this.i18n.lang();
     return [
       { path: '/settings/profile', title: this.i18n.t('settings.profile'), desc: this.i18n.t('settings.profileDesc'), icon: '👤' },
-      { path: '/settings/kyc', title: this.i18n.t('settings.kyc'), desc: this.i18n.t('settings.kycDesc'), icon: '🪪' },
+      { path: '/settings/kyc', title: this.i18n.t('settings.kyc'), desc: this.i18n.t('settings.kycDesc'), icon: '🆔' },
       { path: '/settings/activity', title: this.i18n.t('settings.activity'), desc: this.i18n.t('settings.activityDesc'), icon: '🕒' },
-      { path: '/settings/security', title: this.i18n.t('settings.security'), desc: this.i18n.t('settings.securityDesc'), icon: '🛡' },
-      { path: '/settings/notifications', title: this.i18n.t('settings.noti'), desc: this.i18n.t('settings.notiDesc'), icon: '📣' },
+      { path: '/settings/security', title: this.i18n.t('settings.security'), desc: this.i18n.t('settings.securityDesc'), icon: '🔒' },
+      { path: '/settings/notifications', title: this.i18n.t('settings.noti'), desc: this.i18n.t('settings.notiDesc'), icon: '🔔' },
       { path: '/settings/connections', title: this.i18n.t('settings.conn'), desc: this.i18n.t('settings.connDesc'), icon: '🔗' },
-      { path: '/settings/feed', title: this.i18n.t('settings.feed'), desc: this.i18n.t('settings.feedDesc'), icon: '▦' },
+      { path: '/settings/feed', title: this.i18n.t('settings.feed'), desc: this.i18n.t('settings.feedDesc'), icon: '📰' },
     ];
   });
 }

@@ -214,7 +214,7 @@
           </p>
         } @else {
         <button type="button" class="pd-buy__cart" (click)="addToCart()">
-          🛒 {{ 'lux.addToCart' | t }}
+          🛒 {{ (inCart() ? 'cart.view' : 'lux.addToCart') | t }}
         </button>
 
         <div class="pd-coupon">

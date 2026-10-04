@@ -1,67 +1,52 @@
-# CHÍNH SÁCH SỞ HỮU TRÍ TUỆ, BẢN QUYỀN VÀ LICENSE
+# CHÍNH SÁCH SỞ HỮU TRÍ TUỆ, BẢN QUYỀN VÀ GIẤY PHÉP SỬ DỤNG
 
 **Nền tảng:** AI Markets  
 **Website:** https://aimarkets.vn  
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Điện thoại:** 1900 6159  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 04/10/2026  
+**Phiên bản:** 2.0
 
 ---
-## Điều 1. Trách nhiệm của seller
 
-Seller cam kết có quyền cung cấp sản phẩm/dịch vụ.
+## Điều 1. Trách nhiệm của người bán
 
-Đối với model, dataset, agent, Docker image, software hoặc API, seller phải khai báo license và quyền thương mại phù hợp.
+Người bán cam kết có quyền hợp pháp (sở hữu, giấy phép, quyền phân phối) đối với sản phẩm và khai báo giấy phép, quyền thương mại phù hợp cho mô hình, agent, gói kỹ năng, phần mềm, mẫu website/ứng dụng, API, giọng đọc AI.
 
-## Điều 2. Không mặc định open-source = được bán
+## Điều 2. Mã nguồn mở không đồng nghĩa với được bán
 
-Open-source không đồng nghĩa với:
-- được bán mọi hình thức;
-- được cung cấp API;
-- được phân phối model weights;
-- được thương mại hóa dataset.
+Mã nguồn mở không mặc nhiên cho phép bán dưới mọi hình thức, cung cấp dưới dạng API, phân phối trọng số mô hình hay thương mại hóa. Người bán phải kiểm tra điều kiện của từng giấy phép.
 
-Seller phải kiểm tra license cụ thể.
+## Điều 3. Giọng nói, hình ảnh và nội dung do AI tạo
 
-## Điều 3. Nội dung vi phạm
+1. Giọng nhân bản, hình ảnh hoặc video mô phỏng người thật chỉ được đăng bán khi có văn bản đồng ý của người đó.
+2. Nội dung do AI tạo phải được gắn nhãn theo Luật Trí tuệ nhân tạo số 134/2025/QH15 khi pháp luật yêu cầu.
 
-Không được đăng:
-- model không có quyền phân phối;
-- dataset vi phạm quyền riêng tư/bản quyền;
-- software sao chép trái phép;
-- Docker image chứa mã độc;
-- nội dung giả mạo quyền sở hữu.
+## Điều 4. Nội dung không được đăng
 
-## Điều 4. Thông báo vi phạm
+- Mô hình, phần mềm, mẫu website/ứng dụng không có quyền phân phối hoặc sao chép trái phép;
+- Nội dung xâm phạm quyền riêng tư, quyền tác giả, nhãn hiệu;
+- Phần mềm, image chứa mã độc;
+- Nội dung giả mạo quyền sở hữu.
 
-Chủ thể quyền có thể gửi thông báo tới:
+## Điều 5. Thông báo vi phạm
 
-support@aimarkets.vn
+Chủ thể quyền gửi thông báo tới **support@aimarkets.vn**, gồm: thông tin người yêu cầu; đối tượng được bảo hộ và căn cứ quyền; đường dẫn hoặc mã sản phẩm; mô tả hành vi vi phạm; bằng chứng; thông tin liên hệ.
 
-Thông báo nên có:
-- thông tin người yêu cầu;
-- xác định tác phẩm/quyền;
-- URL/product ID;
-- căn cứ cho rằng có vi phạm;
-- bằng chứng;
-- thông tin liên hệ.
+## Điều 6. Xử lý
 
-## Điều 5. Xử lý
+Nền tảng có thể yêu cầu người bán giải trình, tạm ẩn sản phẩm, yêu cầu sửa thông tin, gỡ nội dung, hạn chế tài khoản và phối hợp với cơ quan có thẩm quyền. Người bán được thông báo và có quyền phản hồi, yêu cầu xem xét lại theo [Quy trình xử lý vi phạm](14-quy-trinh-xu-ly-vi-pham.md). Gỡ bỏ trong **24 giờ** khi có yêu cầu của cơ quan nhà nước có thẩm quyền.
 
-Nền tảng có thể:
-- yêu cầu seller giải trình;
-- tạm ẩn listing;
-- yêu cầu sửa thông tin;
-- gỡ nội dung;
-- hạn chế tài khoản;
-- phối hợp với cơ quan có thẩm quyền.
+## Điều 7. Giấy phép của người mua
 
-## Điều 6. License của buyer
+1. Người mua chỉ nhận quyền sử dụng theo giấy phép của **từng sản phẩm**. Mỗi sản phẩm cấp một khóa giấy phép riêng; khóa của sản phẩm này không dùng cho sản phẩm khác, kể cả cùng cửa hàng.
+2. **Mẫu website/ứng dụng:** người mua được tạo bản sao riêng để chỉnh sửa và triển khai cho mục đích của mình; bản sao lưu thông tin mẫu gốc và người bán; không được đăng bán lại thành mẫu mới.
+3. **Kết quả thuê talent:** quyền đối với sản phẩm bàn giao theo thỏa thuận giữa người mua và người bán trong dự án; nếu không có thỏa thuận khác, người mua được quyền sử dụng kết quả của giai đoạn đã thanh toán.
+4. Việc thanh toán không tự động chuyển quyền sở hữu trí tuệ, trừ khi có thỏa thuận chuyển nhượng rõ ràng.
 
-Buyer chỉ nhận quyền theo license/terms của **từng sản phẩm (listing)**.
+## Điều 8. Tài sản của nền tảng
 
-Mỗi sản phẩm cấp **một license key riêng** (`AIM-xxxx`). Mua hai phim/truyện của cùng một shop vẫn là hai key — key của sản phẩm A không mở sản phẩm B.
-
-Việc thanh toán không tự động chuyển quyền sở hữu trí tuệ.
+Tên, logo AI Markets, giao diện, mã nguồn nền tảng thuộc quyền của Công ty. Không được sao chép, sử dụng khi chưa được chấp thuận bằng văn bản.

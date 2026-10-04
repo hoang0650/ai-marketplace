@@ -1,41 +1,49 @@
-# CHÍNH SÁCH COOKIES
+# CHÍNH SÁCH COOKIES VÀ LƯU TRỮ TRÊN TRÌNH DUYỆT
 
 **Nền tảng:** AI Markets  
 **Website:** https://aimarkets.vn  
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Điện thoại:** 1900 6159  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 06/09/2026  
+**Ngày hiệu lực:** 04/10/2026  
+**Phiên bản:** 2.0
 
 ---
-## Điều 1. Cookies cần thiết
 
-Sử dụng để:
-- đăng nhập;
-- bảo mật;
-- duy trì phiên;
-- CSRF protection;
-- lưu lựa chọn cần thiết.
+## Điều 1. Phạm vi
 
-## Điều 2. Cookies phân tích
+Chính sách này giải thích cách website aimarkets.vn dùng cookie và bộ nhớ của trình duyệt (localStorage). Ứng dụng di động lưu dữ liệu tương tự trong bộ nhớ bảo mật của thiết bị.
 
-Có thể sử dụng công cụ analytics để đo:
-- traffic;
-- lỗi;
-- hiệu suất;
-- hành vi sử dụng ở mức phù hợp.
+## Điều 2. Cookie và dữ liệu cần thiết
 
-Danh sách công cụ thực tế phải được cập nhật trước khi công bố.
+| Dữ liệu | Mục đích |
+|---|---|
+| Cookie làm mới phiên đăng nhập (HttpOnly, Secure) | Duy trì đăng nhập an toàn, không đọc được bằng mã JavaScript |
+| Mã truy cập và thông tin tài khoản cơ bản (localStorage) | Gọi API khi đã đăng nhập; bị xóa khi đăng xuất |
+| Cookie phiên không gian làm việc agent, máy GPU, phiên trò chơi | Xác thực người mua khi mở không gian làm việc, màn hình máy thuê; mỗi người chỉ truy cập tài nguyên của mình |
+| Giao diện sáng/tối, ngôn ngữ, danh sách yêu thích khi chưa đăng nhập (localStorage) | Ghi nhớ lựa chọn của người dùng |
 
-## Điều 3. Cookies marketing
+Các dữ liệu này cần thiết để nền tảng hoạt động và không dùng cho quảng cáo.
 
-Chỉ bật khi nền tảng có cơ sở và cơ chế đồng ý/opt-out phù hợp với pháp luật áp dụng.
+## Điều 3. Phân tích
 
-## Điều 4. Quản lý
+Nền tảng dùng công cụ phân tích truy cập do PHGroup tự vận hành (analytics.phgrouptechs.com) để đo lượt truy cập, trang được xem, lỗi và hiệu suất ở mức tổng hợp. Dữ liệu không được bán hay chia sẻ cho bên quảng cáo.
 
-Người dùng có thể quản lý cookies trong trình duyệt hoặc công cụ consent của nền tảng.
+## Điều 4. Bên thứ ba
 
-## Điều 5. Third-party
+Khi người dùng chủ động sử dụng, các dịch vụ sau có thể đặt cookie hoặc dữ liệu riêng theo chính sách của họ:
+- **Google** (đăng nhập bằng Google);
+- **GPay** (trang thanh toán);
+- **Apple, Google Play** (thanh toán trong ứng dụng di động).
 
-Nếu dùng Google Analytics, Meta Pixel, payment SDK hoặc dịch vụ tương tự, phải cập nhật danh sách third-party thực tế trước khi công bố.
+## Điều 5. Quảng cáo
+
+Nền tảng hiện không dùng cookie quảng cáo hay theo dõi chéo trang. Nếu áp dụng trong tương lai, nền tảng sẽ cập nhật chính sách này và xin đồng ý của người dùng trước khi bật.
+
+## Điều 6. Quản lý
+
+Người dùng có thể xóa hoặc chặn cookie, dữ liệu trang web trong cài đặt trình duyệt. Chặn cookie, dữ liệu cần thiết có thể khiến người dùng bị đăng xuất hoặc không mở được không gian làm việc, máy thuê.
+
+Xem thêm [Chính sách bảo mật và dữ liệu](08-chinh-sach-bao-mat-va-du-lieu.md).

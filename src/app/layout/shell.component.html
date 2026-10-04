@@ -4,7 +4,7 @@
 <div class="lux-topbar">
   <div class="lux-topbar__inner">
     <ul class="lux-topbar__links">
-      <li><a routerLink="/cart">{{ 'lux.wishlist' | t }}</a></li>
+      <li><a routerLink="/wishlist">{{ 'lux.wishlist' | t }}</a></li>
       <li><a routerLink="/cart">{{ 'lux.checkout' | t }}</a></li>
       @if (!auth.isAuthenticated()) {
         <li><a routerLink="/auth/login">{{ 'nav.login' | t }}</a></li>
@@ -69,7 +69,7 @@
                 }
               </ul>
               <div class="lux-cart-dd__foot">
-                <a routerLink="/cart" class="btn btn-outline" (click)="closeCart()">{{ 'lux.addToCart' | t }}</a>
+                <a routerLink="/cart" class="btn btn-outline" (click)="closeCart()">{{ 'cart.view' | t }}</a>
                 <a routerLink="/cart" class="btn btn-fill" (click)="closeCart()">{{ 'lux.checkout' | t }}</a>
               </div>
             }

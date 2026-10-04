@@ -1,7 +1,7 @@
 <header class="sp-head">
   <div>
-    <h1>Thông tin hồ sơ</h1>
-    <p>Cập nhật ảnh, tên hiển thị và thông tin công khai của bạn.</p>
+    <h1>{{ 'settings.profile' | t }}</h1>
+    <p>{{ 'set.profile.lede' | t }}</p>
   </div>
 </header>
 
@@ -12,104 +12,115 @@
         @if (!avatarUrl) {
           {{ initials() }}
         }
-        <label class="change">
-          Thay đổi
-          <input type="file" accept="image/*" hidden (change)="onAvatarFile($event)" />
+        <label class="change" [class.busy]="uploading() === 'avatarUrl'">
+          {{ uploading() === 'avatarUrl' ? ('set.profile.uploading' | t) : ('set.profile.change' | t) }}
+          <input type="file" accept="image/jpeg,image/png,image/webp" hidden [disabled]="!!uploading()" (change)="onFile($event, 'avatarUrl')" />
         </label>
       </div>
       <div>
-        <strong>Ảnh đại diện</strong>
-        <p>JPG, PNG, tối đa 2MB. Kích thước đề xuất 512×512px.</p>
+        <strong>{{ 'set.profile.avatar' | t }}</strong>
+        <p>{{ 'set.profile.avatarHint' | t }}</p>
+        @if (avatarUrl) {
+          <button type="button" class="link-btn" (click)="clearMedia('avatarUrl')">{{ 'set.profile.remove' | t }}</button>
+        }
       </div>
     </div>
     <div class="media__cover">
       <div class="preview cover-prev" [style.backgroundImage]="coverUrl ? 'url(' + coverUrl + ')' : null">
         @if (!coverUrl) {
-          <span>Ảnh bìa</span>
+          <span>{{ 'set.profile.coverPh' | t }}</span>
         }
-        <label class="change">
-          Thay đổi
-          <input type="file" accept="image/*" hidden (change)="onCoverFile($event)" />
+        <label class="change" [class.busy]="uploading() === 'coverUrl'">
+          {{ uploading() === 'coverUrl' ? ('set.profile.uploading' | t) : ('set.profile.change' | t) }}
+          <input type="file" accept="image/jpeg,image/png,image/webp" hidden [disabled]="!!uploading()" (change)="onFile($event, 'coverUrl')" />
         </label>
       </div>
       <div>
-        <strong>Ảnh bìa (tùy chọn)</strong>
-        <p>JPG, PNG, tối đa 5MB. Kích thước đề xuất 1200×400px.</p>
+        <strong>{{ 'set.profile.cover' | t }}</strong>
+        <p>{{ 'set.profile.coverHint' | t }}</p>
+        @if (coverUrl) {
+          <button type="button" class="link-btn" (click)="clearMedia('coverUrl')">{{ 'set.profile.remove' | t }}</button>
+        }
       </div>
     </div>
   </div>
 
   <div class="grid">
     <label>
-      <span>Email</span>
-      <div class="input-wrap">
+      <span>{{ 'set.profile.email' | t }}</span>
+      <div class="input-wrap" [class.has-badge]="auth.user()?.googleLinked">
         <input [value]="auth.user()?.email || ''" readonly />
-        <em class="verified">Đã xác minh</em>
+        @if (auth.user()?.googleLinked) {
+          <em class="verified">{{ 'set.profile.emailVerified' | t }}</em>
+        }
       </div>
     </label>
 
     <label>
-      <span>Tên hiển thị</span>
-      <input [(ngModel)]="name" name="name" required />
-      <small>Tên này hiển thị trên hồ sơ và bình luận.</small>
+      <span>{{ 'set.profile.name' | t }}</span>
+      <input [(ngModel)]="name" name="name" required maxlength="120" />
+      <small>{{ 'set.profile.nameHint' | t }}</small>
     </label>
 
     <label>
-      <span>Dòng giới thiệu</span>
+      <span>{{ 'set.profile.intro' | t }}</span>
       <select [(ngModel)]="introLine" name="introLine">
-        <option value="">Chọn dòng giới thiệu</option>
-        <option value="buyer">Người mua trên marketplace</option>
-        <option value="seller">Người bán / creator</option>
-        <option value="builder">Xây dựng agent & workflow</option>
-        <option value="learner">Đang học AI</option>
+        <option value="">{{ 'set.profile.intro.none' | t }}</option>
+        <option value="buyer">{{ 'set.profile.intro.buyer' | t }}</option>
+        <option value="seller">{{ 'set.profile.intro.seller' | t }}</option>
+        <option value="builder">{{ 'set.profile.intro.builder' | t }}</option>
+        <option value="learner">{{ 'set.profile.intro.learner' | t }}</option>
       </select>
     </label>
 
     <label>
-      <span>Khu vực</span>
-      <input [(ngModel)]="region" name="region" placeholder="VD: Hồ Chí Minh City" />
+      <span>{{ 'set.profile.region' | t }}</span>
+      <input [(ngModel)]="region" name="region" maxlength="120" [placeholder]="'set.profile.regionPh' | t" />
     </label>
 
     <label>
-      <span>Ngôn ngữ thông báo</span>
+      <span>{{ 'set.profile.notifyLang' | t }}</span>
       <select [(ngModel)]="notifyLang" name="notifyLang">
         <option value="vi">Tiếng Việt</option>
         <option value="en">English</option>
+        <option value="zh">中文</option>
       </select>
     </label>
 
-    <label class="full">
-      <span>Giới thiệu</span>
-      <textarea [(ngModel)]="bio" name="bio" rows="4" maxlength="200" placeholder="Viết ngắn gọn về bạn."></textarea>
-      <small class="counter">{{ bio.length }} / 200</small>
+    <label>
+      <span>{{ 'set.profile.website' | t }}</span>
+      <input [(ngModel)]="website" name="website" type="url" maxlength="300" placeholder="https://" />
     </label>
 
     <label class="full">
-      <span>Website (tùy chọn)</span>
-      <input [(ngModel)]="website" name="website" placeholder="https://" />
+      <span>{{ 'set.profile.bio' | t }}</span>
+      <textarea [(ngModel)]="bio" name="bio" rows="4" maxlength="200" [placeholder]="'set.profile.bioPh' | t"></textarea>
+      <small class="counter">{{ bio.length }} / 200</small>
     </label>
   </div>
 
   <div class="social">
-    <h2>Liên kết mạng xã hội</h2>
-    <p>Thêm liên kết công khai để cộng đồng dễ tìm thấy bạn.</p>
-    @for (s of socials; track s.id) {
+    <h2>{{ 'set.profile.socials' | t }}</h2>
+    <p>{{ 'set.profile.socialsLede' | t: { n: maxSocials } }}</p>
+    @for (s of socials; track s.key) {
       <div class="social__row">
-        <input [(ngModel)]="s.label" [name]="'sl' + s.id" placeholder="Nhãn" />
-        <input [(ngModel)]="s.url" [name]="'su' + s.id" placeholder="https://" />
-        <button type="button" (click)="removeSocial(s.id)">Xóa</button>
+        <input [(ngModel)]="s.label" [name]="'sl' + s.key" maxlength="40" [placeholder]="'set.profile.socialLabel' | t" />
+        <input [(ngModel)]="s.url" [name]="'su' + s.key" type="url" maxlength="300" placeholder="https://" />
+        <button type="button" (click)="removeSocial(s.key)">{{ 'set.profile.socialRemove' | t }}</button>
       </div>
     }
-    <button type="button" class="add-link" (click)="addSocial()">+ Thêm liên kết khác</button>
+    @if (socials.length < maxSocials) {
+      <button type="button" class="add-link" (click)="addSocial()">{{ 'set.profile.socialAdd' | t }}</button>
+    }
   </div>
 
   <div class="actions">
-    <button type="button" class="btn-ghost" (click)="reset()">Đặt lại</button>
-    <button type="submit" class="btn-primary" [disabled]="saving()">
-      {{ saving() ? 'Đang lưu…' : 'Lưu hồ sơ' }}
+    <button type="button" class="btn-ghost" (click)="reset()">{{ 'set.profile.reset' | t }}</button>
+    <button type="submit" class="btn-primary" [disabled]="saving() || !!uploading()">
+      {{ saving() ? ('set.saving' | t) : ('set.profile.save' | t) }}
     </button>
   </div>
   @if (msg()) {
-    <p class="msg">{{ msg() }}</p>
+    <p class="msg" [class.error]="error()" role="status">{{ msg() }}</p>
   }
 </form>

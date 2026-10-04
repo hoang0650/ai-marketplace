@@ -117,7 +117,48 @@ export interface User {
   bio?: string;
   /** none | draft | pending | verified | rejected */
   kycStatus?: string;
+  hasPassword?: boolean;
+  googleLinked?: boolean;
+  profile?: UserProfileExtras;
+  preferences?: UserPreferences;
   createdAt: string;
+}
+
+export interface SocialLink {
+  label: string;
+  url: string;
+}
+
+export interface UserProfileExtras {
+  introLine: '' | 'buyer' | 'seller' | 'builder' | 'learner';
+  region: string;
+  website: string;
+  notifyLang: 'vi' | 'en' | 'zh';
+  socials: SocialLink[];
+}
+
+export interface UserPreferences {
+  personalizeContent: boolean;
+  personalizeAds: boolean;
+}
+
+export interface AccountActivityItem {
+  type:
+    | 'account_created'
+    | 'profile_updated'
+    | 'password_changed'
+    | 'kyc_submitted'
+    | 'kyc_verified'
+    | 'kyc_rejected'
+    | 'last_login';
+  at: string;
+  ip?: string | null;
+}
+
+export interface CurrentSessionInfo {
+  lastLogin: string | null;
+  lastLoginIp: string | null;
+  userAgent: string;
 }
 
 export type KycStatus = 'none' | 'draft' | 'pending' | 'verified' | 'rejected';
