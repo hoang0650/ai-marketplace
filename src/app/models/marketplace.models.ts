@@ -178,6 +178,41 @@ export interface KycQueueResponse {
   items: KycQueueItem[];
 }
 
+export type AgentPurgeTab = 'manual' | 'failed' | 'upcoming' | 'done';
+
+export interface AgentPurgeItem {
+  id: string;
+  agentId: string;
+  label: string;
+  user: { id: string; email: string; name: string };
+  workspaceUrl: string;
+  /** Session / Hermes profile on the runtime host (`market-<userId>`). */
+  workspace: string;
+  paidUntil: string;
+  purgeDueAt: string | null;
+  purgeStatus: '' | 'done' | 'manual_required' | 'failed';
+  purgeAttemptedAt: string | null;
+  purgeError: string;
+  purgedAt: string | null;
+  purgedBy: { id: string; email: string; name: string } | null;
+  purgeNote: string;
+  webhookConfigured: boolean;
+}
+
+export interface AgentPurgeRuntime {
+  agentId: string;
+  label: string;
+  webhookConfigured: boolean;
+  webhookEnv: string;
+}
+
+export interface AgentPurgeQueueResponse {
+  tab: AgentPurgeTab;
+  items: AgentPurgeItem[];
+  counts: Record<AgentPurgeTab, number>;
+  runtimes: AgentPurgeRuntime[];
+}
+
 export interface Creator {
   id: string;
   slug: string;

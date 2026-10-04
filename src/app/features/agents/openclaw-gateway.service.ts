@@ -2,11 +2,14 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, catchError, map, tap } from 'rxjs';
+import { Observable, of, catchError, map, shareReplay, switchMap, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import {
+  AGENT_SUBSCRIPTION_REQUIRED,
+  AgentPricing,
   AgentRuntimeKind,
+  AgentSubscriptionStatus,
   HiredAgent,
   MarketplaceAgent,
   OpenClawLaunchResult,
@@ -349,6 +352,111 @@ export class OpenClawGatewayService {
       .subscribe();
   }
 
+  private pricing$?: Observable<AgentPricing[]>;
+
+  /** Public monthly price + token policy per hosted agent (cached for the session). */
+  loadPricing(): Observable<AgentPricing[]> {
+    this.pricing$ ??= this.http.get<AgentPricing[]>(`${environment.apiUrl}/agents/pricing`).pipe(
+      catchError(() => {
+        this.pricing$ = undefined;
+        return of([] as AgentPricing[]);
+      }),
+      shareReplay(1),
+    );
+    return this.pricing$;
+  }
+
+  loadSubscriptions(): Observable<AgentSubscriptionStatus[]> {
+    if (!this.auth.isAuthenticated()) return of([]);
+    return this.http
+      .get<AgentSubscriptionStatus[]>(`${environment.apiUrl}/agents/subscriptions`, { headers: this.authHeaders() })
+      .pipe(catchError(() => of([] as AgentSubscriptionStatus[])));
+  }
+
+  getSubscription(agent?: Partial<MarketplaceAgent> | null): Observable<AgentSubscriptionStatus | null> {
+    const kind = this.runtimeKind(agent);
+    if (!kind || !this.auth.isAuthenticated()) return of(null);
+    return this.http
+      .get<AgentSubscriptionStatus>(`${environment.apiUrl}/agents/subscriptions/${kind}`, {
+        headers: this.authHeaders(),
+      })
+      .pipe(catchError(() => of(null)));
+  }
+
+  /** Pay one monthly period from the wallet (new plan or renewal). */
+  subscribe(
+    agent?: Partial<MarketplaceAgent> | null,
+  ): Observable<{ ok: boolean; status?: AgentSubscriptionStatus; code?: string; message?: string }> {
+    const kind = this.runtimeKind(agent);
+    if (!kind) return of({ ok: false, message: 'This agent has no monthly plan.' });
+    return this.http
+      .post<AgentSubscriptionStatus>(`${environment.apiUrl}/agents/subscriptions/${kind}`, {}, {
+        headers: this.authHeaders(),
+      })
+      .pipe(
+        map((status) => ({ ok: true, status })),
+        catchError((err) => {
+          const code = err?.error?.code as string | undefined;
+          const message =
+            code === 'INSUFFICIENT_WALLET' || code === 'PAYOUT_HELD'
+              ? 'Not enough wallet balance for the monthly plan — top up your wallet and try again.'
+              : err?.error?.message || err?.message || 'Payment failed';
+          return of({ ok: false, code, message });
+        }),
+      );
+  }
+
+  setAutoRenew(
+    agent: Partial<MarketplaceAgent> | null | undefined,
+    autoRenew: boolean,
+  ): Observable<AgentSubscriptionStatus | null> {
+    const kind = this.runtimeKind(agent);
+    if (!kind) return of(null);
+    return this.http
+      .patch<AgentSubscriptionStatus>(
+        `${environment.apiUrl}/agents/subscriptions/${kind}`,
+        { autoRenew },
+        { headers: this.authHeaders() },
+      )
+      .pipe(catchError(() => of(null)));
+  }
+
+  formatVnd(vnd: number): string {
+    return `${new Intl.NumberFormat('vi-VN').format(Math.round(vnd || 0))} ₫`;
+  }
+
+  /**
+   * Launch; when the monthly plan is missing or expired, offer to pay one period
+   * from the wallet and launch again.
+   */
+  launchWithPlan(agent: MarketplaceAgent): Observable<OpenClawLaunchResult> {
+    return this.launchGateway({ agent }).pipe(
+      switchMap((res) => {
+        if (res.code !== AGENT_SUBSCRIPTION_REQUIRED || !isPlatformBrowser(this.platformId)) return of(res);
+        return this.getSubscription(agent).pipe(
+          switchMap((plan) => {
+            const label = this.runtimeInfo(agent).label;
+            const price = plan ? `${this.formatVnd(plan.fee.vnd)} / ${plan.fee.periodDays} days` : 'the monthly fee';
+            const ok = window.confirm(
+              `${res.message || `${label} needs a monthly plan.`}\n\n` +
+                `Rent ${label} for ${price}, paid from your wallet?\n` +
+                'Auto-renew from the wallet is on by default — you can turn it off anytime on the agent page.\n' +
+                'Token usage on AI Markets models is billed at provider price + 25%; your own API keys (BYOK) carry no token fee.',
+            );
+            if (!ok) return of(res);
+            return this.subscribe(agent).pipe(
+              switchMap((sub) =>
+                sub.ok
+                  ? this.launchGateway({ agent })
+                  : of<OpenClawLaunchResult>({ success: false, code: sub.code, message: sub.message }),
+              ),
+            );
+          }),
+        );
+      }),
+    );
+  }
+
   /**
    * Same flow as hotelapp ai-chatbox `openOpenClawGateway`:
    * open blank tab → fetch direct-url → navigate → auto-approve pairing.
@@ -534,6 +642,13 @@ export class OpenClawGatewayService {
       )
       .pipe(
         catchError((err) => {
+          if (err?.status === 402) {
+            return of<OpenClawLaunchResult>({
+              success: false,
+              code: err?.error?.code || AGENT_SUBSCRIPTION_REQUIRED,
+              message: err?.error?.message || 'This agent needs an active monthly plan.',
+            });
+          }
           if (sso) return of(this.fallbackSsoUrl(agent, err?.error?.message));
           if (hermes) return of(this.fallbackHermesUrl(userId));
           if (nanoclaw) return of(this.fallbackNanoclawUrl(userId));
@@ -542,6 +657,7 @@ export class OpenClawGatewayService {
         }),
         map((res) => {
           if (res?.success && res.url) return res;
+          if (res?.code === AGENT_SUBSCRIPTION_REQUIRED) return res;
           if (sso) return res?.message ? res : this.fallbackSsoUrl(agent);
           if (hermes) return this.fallbackHermesUrl(userId);
           if (nanoclaw) return this.fallbackNanoclawUrl(userId);

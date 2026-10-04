@@ -35,6 +35,9 @@ import {
   KycSubjectType,
   KycReviewStatus,
   KycQueueResponse,
+  AgentPurgeItem,
+  AgentPurgeQueueResponse,
+  AgentPurgeTab,
   GpayConfig,
   GpayCheckoutResponse,
   GpayOrder,
@@ -1307,6 +1310,27 @@ export class KycService {
       decision,
       rejectReason,
     });
+  }
+}
+
+/** Admin queue for deleting expired agent workspaces on the runtime hosts. */
+@Injectable({ providedIn: 'root' })
+export class AgentPurgeService {
+  private readonly http = inject(HttpClient);
+  private readonly base = `${environment.apiUrl}/admin/agent-purges`;
+
+  queue(tab: AgentPurgeTab, q = ''): Observable<AgentPurgeQueueResponse> {
+    let params = new HttpParams().set('tab', tab);
+    if (q) params = params.set('q', q);
+    return this.http.get<AgentPurgeQueueResponse>(this.base, { params });
+  }
+
+  retry(id: string): Observable<{ status: AgentPurgeItem['purgeStatus']; item: AgentPurgeItem }> {
+    return this.http.post<{ status: AgentPurgeItem['purgeStatus']; item: AgentPurgeItem }>(`${this.base}/${id}/retry`, {});
+  }
+
+  markDone(id: string, note: string): Observable<{ status: 'done'; item: AgentPurgeItem }> {
+    return this.http.post<{ status: 'done'; item: AgentPurgeItem }>(`${this.base}/${id}/done`, { note });
   }
 }
 

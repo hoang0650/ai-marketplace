@@ -931,7 +931,8 @@ export class ProductDetailComponent implements OnInit {
     const agent = this.openclaw.getAgent(this.hireAgentId());
     const brand = agent?.name || 'agent';
     this.openclawStatus.set(`Opening ${brand} at ${this.openclaw.aimarketsHost(undefined, agent)}…`);
-    this.openclaw.launchGateway({ agent: agent || undefined }).subscribe((res) => {
+    const launch$ = agent ? this.openclaw.launchWithPlan(agent) : this.openclaw.launchGateway();
+    launch$.subscribe((res) => {
       this.openclawBusy.set(false);
       this.openclawStatus.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
       if (res.success) {

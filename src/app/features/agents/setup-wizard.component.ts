@@ -714,7 +714,7 @@ export class OpenClawSetupWizardComponent implements OnInit {
     this.busy.set(true);
     this.launchError.set('');
     this.status.set(`Opening ${agent.name} at ${this.host()}…`);
-    this.gateway.launchGateway({ agent }).subscribe((res) => {
+    this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busy.set(false);
       if (res.success) {
         this.launched.set(true);

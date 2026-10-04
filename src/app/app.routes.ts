@@ -673,6 +673,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/admin-kyc.component').then((m) => m.AdminKycComponent),
       },
       {
+        path: 'admin/agent-purges',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/admin-agent-purges.component').then((m) => m.AdminAgentPurgesComponent),
+      },
+      {
         path: 'admin/complaints/:id',
         canActivate: [adminGuard],
         loadComponent: () =>

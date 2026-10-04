@@ -21,6 +21,13 @@ export class I18nService {
     return text;
   }
 
+  /** Merge strings shipped with a lazy-loaded page so they stay out of the initial bundle. */
+  extend(messages: Partial<Record<AppLang, Record<string, string>>>): void {
+    for (const lang of Object.keys(messages) as AppLang[]) {
+      Object.assign(MESSAGES[lang], messages[lang]);
+    }
+  }
+
   /** Title/body of a notification in the current language; falls back to the stored text. */
   notif(n: { title: string; body: string; key?: string; params?: Record<string, string | number> }): {
     title: string;

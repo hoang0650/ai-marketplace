@@ -3,7 +3,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../services/seo.service';
-import { HiredAgent, MarketplaceAgent, OpenClawSshAccess } from './agents.models';
+import {
+  AgentPricing,
+  AgentSubscriptionStatus,
+  HiredAgent,
+  MarketplaceAgent,
+  OpenClawSshAccess,
+} from './agents.models';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
 
 @Component({
@@ -40,6 +46,17 @@ import { OpenClawGatewayService } from './openclaw-gateway.service';
                   <span aria-hidden="true">📅</span>
                   {{ a.launchedAt | date: 'MMM d, y' }}
                 </span>
+                @if (planFor(a); as p) {
+                  @if (p.exempt) {
+                    <span class="badge badge--ghost">Plan included</span>
+                  } @else if (p.active) {
+                    <span class="badge badge--ok">Paid until {{ p.paidUntil | date: 'MMM d, y' }}</span>
+                  } @else if (p.paidUntil) {
+                    <span class="badge badge--muted">Plan expired {{ p.paidUntil | date: 'MMM d, y' }}</span>
+                  } @else {
+                    <span class="badge badge--muted">No monthly plan</span>
+                  }
+                }
               </div>
             </div>
             <div class="agent-row__actions">
@@ -70,6 +87,7 @@ export class MyAgentsComponent implements OnInit {
   private readonly gateway = inject(OpenClawGatewayService);
   private readonly seo = inject(SeoService);
   readonly hired = signal<HiredAgent[]>([]);
+  readonly plans = signal<AgentSubscriptionStatus[]>([]);
   readonly status = signal('');
 
   ngOnInit(): void {
@@ -80,6 +98,12 @@ export class MyAgentsComponent implements OnInit {
   reload(): void {
     this.hired.set(this.gateway.listHired());
     this.gateway.loadHired().subscribe((rows) => this.hired.set(rows));
+    this.gateway.loadSubscriptions().subscribe((rows) => this.plans.set(rows));
+  }
+
+  planFor(row: HiredAgent): AgentSubscriptionStatus | undefined {
+    const kind = this.gateway.runtimeKind(this.gateway.getAgent(row.agentId) || { id: row.agentId, slug: row.slug });
+    return this.plans().find((p) => p.agentId === kind);
   }
 
   isOpenClawHired(row: HiredAgent): boolean {
@@ -97,7 +121,7 @@ export class MyAgentsComponent implements OnInit {
       return;
     }
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
-    this.gateway.launchGateway({ agent }).subscribe((res) => {
+    this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
       if (!res.success && typeof window !== 'undefined' && res.message) {
         window.alert(res.message);
@@ -139,6 +163,12 @@ export class MyAgentsComponent implements OnInit {
               <h2>{{ agent.name }}</h2>
             </div>
             <p class="agent-card__desc">{{ agent.description }}</p>
+            @if (priceFor(agent); as p) {
+              <p class="agent-card__hint">
+                <strong>{{ gateway.formatVnd(p.fee.vnd) }}</strong> / {{ p.fee.periodDays }} days ·
+                {{ p.byokOnly ? 'your own API keys (BYOK), no token fee' : 'tokens at provider price +' + markupPct(p) + '% or BYOK free' }}
+              </p>
+            }
             <div class="agent-card__actions">
               <button
                 type="button"
@@ -176,11 +206,21 @@ export class AgentMarketplaceComponent implements OnInit {
   readonly busyId = signal('');
   readonly status = signal('');
   readonly hostExample = '{userId}.openclaw.aimarkets.vn';
+  readonly pricing = signal<AgentPricing[]>([]);
   publicCount = 0;
   internalCount = 0;
 
   canLaunch(agent: MarketplaceAgent): boolean {
     return this.gateway.isLaunchableAgent(agent);
+  }
+
+  priceFor(agent: MarketplaceAgent): AgentPricing | undefined {
+    const kind = this.gateway.runtimeKind(agent);
+    return this.pricing().find((p) => p.agentId === kind);
+  }
+
+  markupPct(p: AgentPricing): number {
+    return Math.round((p.tokenMarkup || 0) * 100);
   }
 
   hostFor(agent: MarketplaceAgent): string {
@@ -192,6 +232,7 @@ export class AgentMarketplaceComponent implements OnInit {
     this.publicCount = this.gateway.listMarketplaceAgents('public').length;
     this.internalCount = this.gateway.listMarketplaceAgents('internal').length;
     this.refresh();
+    this.gateway.loadPricing().subscribe((rows) => this.pricing.set(rows));
   }
 
   setTab(tab: 'public' | 'internal'): void {
@@ -210,7 +251,7 @@ export class AgentMarketplaceComponent implements OnInit {
     }
     this.busyId.set(agent.id);
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
-    this.gateway.launchGateway({ agent }).subscribe((res) => {
+    this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busyId.set('');
       this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
       if (!res.success && typeof window !== 'undefined' && res.message) {
@@ -262,6 +303,70 @@ export class AgentMarketplaceComponent implements OnInit {
                 }
               </div>
             </div>
+
+            @if (isLaunchable()) {
+              <div class="panel agents-panel mt-4">
+                <h2 class="font-display text-xl">Monthly plan</h2>
+                @if (pricing(); as pr) {
+                  <p class="mt-2 text-sm">
+                    <strong>{{ gateway.formatVnd(pr.fee.vnd) }}</strong> / {{ pr.fee.periodDays }} days per agent,
+                    prepaid from your wallet.
+                  </p>
+                }
+                @if (plan(); as p) {
+                  <p class="mt-1 text-sm text-muted">
+                    @if (p.exempt) {
+                      Included for your account.
+                    } @else if (p.active) {
+                      Active until {{ p.paidUntil | date: 'MMM d, y' }} ({{ p.daysLeft }} days left). Renewing adds
+                      {{ p.fee.periodDays }} days on top.
+                    } @else if (p.purgedAt) {
+                      Expired — the workspace data was deleted on {{ p.purgedAt | date: 'MMM d, y' }}. Renting
+                      again starts a fresh workspace.
+                    } @else if (p.paidUntil) {
+                      Expired on {{ p.paidUntil | date: 'MMM d, y' }} — renew to launch this agent again.
+                      @if (p.purgeDueAt) {
+                        Your data is kept until {{ p.purgeDueAt | date: 'MMM d, y' }}, then deleted.
+                      }
+                    } @else {
+                      Not rented yet — rent the agent to launch it.
+                    }
+                  </p>
+                  @if (!p.exempt) {
+                    <button
+                      type="button"
+                      class="agents-btn agents-btn--primary mt-3"
+                      (click)="subscribe()"
+                      [disabled]="planBusy()"
+                    >
+                      {{ planBusy() ? 'Processing…' : p.active ? 'Renew 1 month' : 'Rent 1 month' }}
+                    </button>
+                    @if (p.paidUntil) {
+                      <label class="mt-3 flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          [checked]="p.autoRenew"
+                          [disabled]="planBusy()"
+                          (change)="toggleAutoRenew($any($event.target).checked)"
+                        />
+                        Auto-renew from wallet (charged 1 day before expiry; reminder 3 days before)
+                      </label>
+                    }
+                  }
+                } @else {
+                  <p class="mt-1 text-sm text-muted">Sign in to rent this agent.</p>
+                }
+                <p class="mt-3 text-sm text-muted">
+                  @if (pricing()?.byokOnly) {
+                    Runs on your own API keys (BYOK) — no token fee is charged by AI Markets.
+                  } @else {
+                    Token usage: AI Markets-provided models are billed per call at the provider price +{{
+                      markupPct()
+                    }}%. Use your own API key (BYOK) and no token fee is charged.
+                  }
+                </p>
+              </div>
+            }
 
             <div class="panel agents-panel mt-4">
               <h2 class="font-display text-xl">Web Endpoints</h2>
@@ -460,6 +565,9 @@ export class AgentDetailComponent implements OnInit {
   readonly now = new Date().toISOString();
   readonly ssh = signal<OpenClawSshAccess | null>(null);
   readonly sshBusy = signal(false);
+  readonly plan = signal<AgentSubscriptionStatus | null>(null);
+  readonly pricing = signal<AgentPricing | null>(null);
+  readonly planBusy = signal(false);
   sshHost = '';
   sshPlaceholder = '{userId}.openclaw.aimarkets.vn';
 
@@ -555,6 +663,7 @@ export class AgentDetailComponent implements OnInit {
           this.gateway.upsertHired(agent, 'running');
         }
         this.hired.set(this.gateway.getHired(agent.id) || null);
+        this.loadPlan(agent);
         if (this.gateway.supportsSsh(agent)) {
           this.gateway.getActiveSsh(agent.id).subscribe((res) => {
             if (res.active && res.session) {
@@ -574,12 +683,66 @@ export class AgentDetailComponent implements OnInit {
     }
     this.busy.set(true);
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
-    this.gateway.launchGateway({ agent }).subscribe((res) => {
+    this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busy.set(false);
       this.hired.set(this.gateway.getHired(agent.id) || null);
+      this.loadPlan(agent);
       this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
       if (!res.success && typeof window !== 'undefined' && res.message) {
         window.alert(res.message);
+      }
+    });
+  }
+
+  markupPct(): number {
+    return Math.round((this.pricing()?.tokenMarkup || 0) * 100);
+  }
+
+  private loadPlan(agent: MarketplaceAgent): void {
+    this.plan.set(null);
+    this.pricing.set(null);
+    if (!this.gateway.isLaunchableAgent(agent)) return;
+    const kind = this.gateway.runtimeKind(agent);
+    this.gateway.loadPricing().subscribe((rows) => this.pricing.set(rows.find((r) => r.agentId === kind) || null));
+    this.gateway.getSubscription(agent).subscribe((p) => this.plan.set(p));
+  }
+
+  subscribe(): void {
+    const agent = this.agent();
+    const p = this.plan();
+    if (!agent || !p) return;
+    const label = this.brandName();
+    const ok =
+      typeof window === 'undefined' ||
+      window.confirm(
+        `${p.active ? 'Renew' : 'Rent'} ${label} for ${this.gateway.formatVnd(p.fee.vnd)} / ${p.fee.periodDays} days, paid from your wallet?` +
+          (p.paidUntil ? '' : '\nAuto-renew from the wallet is on by default — you can turn it off anytime.'),
+      );
+    if (!ok) return;
+    this.planBusy.set(true);
+    this.gateway.subscribe(agent).subscribe((res) => {
+      this.planBusy.set(false);
+      if (res.ok && res.status) {
+        this.plan.set(res.status);
+        this.status.set(`${label} plan active until ${String(res.status.paidUntil || '').slice(0, 10)}.`);
+      } else {
+        this.status.set(res.message || 'Payment failed');
+        if (typeof window !== 'undefined' && res.message) window.alert(res.message);
+      }
+    });
+  }
+
+  toggleAutoRenew(on: boolean): void {
+    const agent = this.agent();
+    if (!agent) return;
+    this.planBusy.set(true);
+    this.gateway.setAutoRenew(agent, on).subscribe((next) => {
+      this.planBusy.set(false);
+      if (next) {
+        this.plan.set(next);
+        this.status.set(on ? 'Auto-renew is on.' : 'Auto-renew is off — the plan ends on its expiry date.');
+      } else {
+        this.status.set('Could not update auto-renew.');
       }
     });
   }

@@ -235,6 +235,12 @@ export class AffiliateComponent implements OnInit {
         </div>
 
         <div class="panel mt-8">
+          <h2 class="font-display text-2xl">Xóa dữ liệu agent hết hạn</h2>
+          <p class="mt-1 text-sm text-muted">Workspace agent quá hạn lưu trữ nhưng runtime chưa có webhook xóa tự động (hoặc webhook lỗi) sẽ vào hàng chờ để vận hành xóa tay và xác nhận.</p>
+          <p class="mt-2"><a class="text-accent underline" routerLink="/admin/agent-purges">Mở hàng chờ xóa dữ liệu runtime</a></p>
+        </div>
+
+        <div class="panel mt-8">
           <h2 class="font-display text-2xl">Complaints</h2>
           <p class="mt-1 text-sm text-muted">Hồ sơ khiếu nại theo quy trình tiếp nhận → xác minh → quyết định.</p>
           <p class="mt-2"><a class="text-accent underline" routerLink="/admin/complaints">Mở danh sách khiếu nại</a></p>

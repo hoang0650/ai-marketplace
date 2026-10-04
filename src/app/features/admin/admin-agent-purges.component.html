@@ -1,0 +1,159 @@
+<section class="admin-purge page route-enter">
+  <p class="admin-purge__crumb">
+    <a routerLink="/admin">{{ 'nav.admin' | t }}</a>
+  </p>
+  <h1>{{ 'admin.agentPurge.title' | t }}</h1>
+  <p class="admin-purge__lede">{{ 'admin.agentPurge.lede' | t }}</p>
+
+  @if (runtimes().length) {
+    <div class="admin-purge__runtimes">
+      <span class="admin-purge__runtimes-label">{{ 'admin.agentPurge.webhooks' | t }}</span>
+      @for (r of runtimes(); track r.agentId) {
+        <span class="admin-purge__chip" [class.on]="r.webhookConfigured" [title]="r.webhookEnv">
+          {{ r.label }} · {{ (r.webhookConfigured ? 'admin.agentPurge.webhookAuto' : 'admin.agentPurge.webhookManual') | t }}
+        </span>
+      }
+    </div>
+  }
+
+  <div class="admin-purge__tabs" role="tablist">
+    @for (s of tabs; track s) {
+      <button type="button" role="tab" [attr.aria-selected]="tab() === s" [class.active]="tab() === s" (click)="setTab(s)">
+        {{ ('admin.agentPurge.tab.' + s) | t }}
+        <span class="admin-purge__count">{{ counts()[s] }}</span>
+      </button>
+    }
+  </div>
+
+  <form class="admin-purge__filters" (ngSubmit)="reload()">
+    <input class="input" name="q" [(ngModel)]="q" [placeholder]="'admin.agentPurge.searchPh' | t" />
+    <button class="btn btn-outline" type="submit">{{ 'admin.kyc.search' | t }}</button>
+  </form>
+
+  @if (msg()) {
+    <p class="admin-purge__ok">{{ msg() }}</p>
+  }
+  @if (error()) {
+    <p class="admin-purge__err">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="text-muted">{{ 'admin.kyc.loading' | t }}</p>
+  } @else {
+    <div class="admin-purge__layout">
+      <ul class="admin-purge__list panel">
+        @for (item of items(); track item.id) {
+          <li>
+            <button type="button" [class.active]="item.id === selectedId()" (click)="select(item.id)">
+              <span class="admin-purge__row-top">
+                <strong>{{ item.label }}</strong>
+                <span class="admin-purge__pill" [attr.data-status]="statusAttr(item)">{{ statusKey(item) | t }}</span>
+              </span>
+              <span class="admin-purge__row-sub">{{ item.user.email || item.user.id }}</span>
+              <span class="admin-purge__row-sub">
+                @if (item.purgedAt) {
+                  {{ 'admin.agentPurge.purgedAt' | t }}: {{ item.purgedAt | date: 'short' }}
+                } @else {
+                  {{ 'admin.agentPurge.dueAt' | t }}: {{ item.purgeDueAt | date: 'short' }}
+                }
+              </span>
+            </button>
+          </li>
+        } @empty {
+          <li class="admin-purge__empty">{{ ('admin.agentPurge.empty.' + tab()) | t }}</li>
+        }
+      </ul>
+
+      @if (selected(); as item) {
+        <article class="admin-purge__detail panel">
+          <header class="admin-purge__detail-head">
+            <div>
+              <h2>{{ item.label }}</h2>
+              <p class="text-muted">
+                <a [routerLink]="['/admin/users', item.user.id]">{{ item.user.name || item.user.email }}</a>
+                @if (item.user.email) { · {{ item.user.email }} }
+              </p>
+            </div>
+            <span class="admin-purge__pill" [attr.data-status]="statusAttr(item)">{{ statusKey(item) | t }}</span>
+          </header>
+
+          <dl class="admin-purge__facts">
+            <dt>{{ 'admin.agentPurge.userId' | t }}</dt>
+            <dd class="mono">
+              {{ item.user.id }}
+              <button type="button" class="admin-purge__copy" (click)="copy(item.user.id)">
+                {{ (copied() === item.user.id ? 'admin.agentPurge.copied' : 'admin.agentPurge.copy') | t }}
+              </button>
+            </dd>
+            <dt>{{ 'admin.agentPurge.workspace' | t }}</dt>
+            <dd class="mono">
+              {{ item.workspace }}
+              <button type="button" class="admin-purge__copy" (click)="copy(item.workspace)">
+                {{ (copied() === item.workspace ? 'admin.agentPurge.copied' : 'admin.agentPurge.copy') | t }}
+              </button>
+            </dd>
+            <dt>{{ 'admin.agentPurge.workspaceUrl' | t }}</dt>
+            <dd class="mono">{{ item.workspaceUrl }}</dd>
+            <dt>{{ 'admin.agentPurge.paidUntil' | t }}</dt>
+            <dd>{{ item.paidUntil | date: 'medium' }}</dd>
+            <dt>{{ 'admin.agentPurge.dueAt' | t }}</dt>
+            <dd>{{ item.purgeDueAt | date: 'medium' }}</dd>
+            <dt>{{ 'admin.agentPurge.webhook' | t }}</dt>
+            <dd>{{ (item.webhookConfigured ? 'admin.agentPurge.webhookAuto' : 'admin.agentPurge.webhookManual') | t }}</dd>
+            @if (item.purgeAttemptedAt) {
+              <dt>{{ 'admin.agentPurge.attemptedAt' | t }}</dt>
+              <dd>{{ item.purgeAttemptedAt | date: 'medium' }}</dd>
+            }
+            @if (item.purgeError) {
+              <dt>{{ 'admin.agentPurge.error' | t }}</dt>
+              <dd class="admin-purge__error-text mono">{{ item.purgeError }}</dd>
+            }
+            @if (item.purgedAt) {
+              <dt>{{ 'admin.agentPurge.purgedAt' | t }}</dt>
+              <dd>
+                {{ item.purgedAt | date: 'medium' }}
+                · {{ item.purgedBy ? (item.purgedBy.name || item.purgedBy.email) : ('admin.agentPurge.byWebhook' | t) }}
+              </dd>
+            }
+            @if (item.purgeNote) {
+              <dt>{{ 'admin.agentPurge.note' | t }}</dt>
+              <dd>{{ item.purgeNote }}</dd>
+            }
+          </dl>
+
+          @if (item.purgeStatus === '' && !item.purgedAt) {
+            <p class="admin-purge__hint">{{ 'admin.agentPurge.upcomingHint' | t }}</p>
+          }
+
+          @if (actionable(item)) {
+            <div class="admin-purge__checklist">
+              <p>{{ 'admin.agentPurge.steps' | t }}</p>
+              <ol>
+                <li>{{ 'admin.agentPurge.step.host' | t: { label: item.label, url: item.workspaceUrl } }}</li>
+                <li>{{ 'admin.agentPurge.step.data' | t: { workspace: item.workspace, userId: item.user.id } }}</li>
+                <li>{{ 'admin.agentPurge.step.backup' | t }}</li>
+                <li>{{ 'admin.agentPurge.step.note' | t }}</li>
+              </ol>
+              <p class="admin-purge__api-note">{{ 'admin.agentPurge.apiDone' | t }}</p>
+            </div>
+
+            <label class="admin-purge__note">
+              <span>{{ 'admin.agentPurge.note' | t }}</span>
+              <textarea class="input" rows="2" name="note" [(ngModel)]="note" [placeholder]="'admin.agentPurge.notePh' | t"></textarea>
+            </label>
+            <div class="admin-purge__actions">
+              <button class="btn btn-fill" type="button" [disabled]="busy()" (click)="markDone(item)">
+                {{ 'admin.agentPurge.markDone' | t }}
+              </button>
+              @if (item.webhookConfigured) {
+                <button class="btn btn-outline" type="button" [disabled]="busy()" (click)="retry(item)">
+                  {{ 'admin.agentPurge.retry' | t }}
+                </button>
+              }
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

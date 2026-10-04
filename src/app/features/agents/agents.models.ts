@@ -37,8 +37,45 @@ export interface HiredAgent {
   archivedAt?: string;
 }
 
+export interface AgentFee {
+  vnd: number;
+  amount: number;
+  currency: string;
+  periodDays: number;
+}
+
+/** Public price row from GET /agents/pricing. */
+export interface AgentPricing {
+  agentId: AgentRuntimeKind;
+  fee: AgentFee;
+  /** Markup over the provider price on AI Markets-provided models (0.25 = +25%). */
+  tokenMarkup: number;
+  /** Runs only on the buyer's own provider keys — never billed per token. */
+  byokOnly: boolean;
+}
+
+/** Monthly plan of one hosted agent (GET/POST /agents/subscriptions/:agentId). */
+export interface AgentSubscriptionStatus {
+  agentId: AgentRuntimeKind;
+  active: boolean;
+  exempt: boolean;
+  paidUntil: string | null;
+  daysLeft: number;
+  /** Wallet auto-renewal (on by default; renews ~1 day before expiry). */
+  autoRenew: boolean;
+  /** Set once the plan expired: workspace data is deleted at this time unless renewed. */
+  purgeDueAt: string | null;
+  purgedAt: string | null;
+  retentionDays: number;
+  fee: AgentFee;
+  charged?: boolean;
+}
+
+export const AGENT_SUBSCRIPTION_REQUIRED = 'AGENT_SUBSCRIPTION_REQUIRED';
+
 export interface OpenClawLaunchResult {
   success: boolean;
+  code?: string;
   url?: string;
   message?: string;
   gatewayUrl?: string;
