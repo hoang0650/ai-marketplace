@@ -7,8 +7,8 @@
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
 **Điện thoại:** 1900 6159  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 04/10/2026  
-**Phiên bản:** 2.0
+**Ngày hiệu lực:** 05/10/2026  
+**Phiên bản:** 2.1
 
 ---
 
