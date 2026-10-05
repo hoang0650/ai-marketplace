@@ -11,6 +11,7 @@ import {
   OpenClawSshAccess,
 } from './agents.models';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
+import { NanoclawProviderComponent } from './nanoclaw-provider.component';
 
 @Component({
   selector: 'app-my-agents',
@@ -264,7 +265,7 @@ export class AgentMarketplaceComponent implements OnInit {
 @Component({
   selector: 'app-agent-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule],
+  imports: [RouterLink, DatePipe, FormsModule, NanoclawProviderComponent],
   styleUrl: './agents.styles.scss',
   template: `
     <section class="agents-page agents-detail route-enter">
@@ -366,6 +367,10 @@ export class AgentMarketplaceComponent implements OnInit {
                   }
                 </p>
               </div>
+            }
+
+            @if (isNanoclaw() && isLaunchable()) {
+              <app-nanoclaw-provider />
             }
 
             <div class="panel agents-panel mt-4">
