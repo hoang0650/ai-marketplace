@@ -40,8 +40,9 @@ Nền tảng không kinh doanh hàng hóa hữu hình. Sản phẩm, dịch vụ
 4. Dịch vụ AI agent do Công ty trực tiếp cung cấp (OpenClaw, Hermes Agent, SpaceBot, NanoClaw, Paperclip, Open WebUI), thu phí thuê bao theo chu kỳ 30 ngày.
 5. Cho thuê hạ tầng tính toán GPU theo thời gian, môi trường chạy agent, máy chủ trò chơi (chỉ cho thuê máy, người dùng tự cài đặt và vận hành trò chơi có quyền sử dụng hợp pháp), huấn luyện và tinh chỉnh mô hình.
 6. Thuê talent – dịch vụ theo yêu cầu do người bán cung cấp (xây dựng website, ứng dụng, tự động hóa quy trình, marketing, SEO, sáng tạo nội dung), thanh toán theo từng giai đoạn.
+7. Phim AI nhiều tập và truyện/sách AI do người bán đăng tải, cấp quyền xem/đọc theo thời hạn (license key ngày/tháng/năm). Người bán chịu trách nhiệm về quyền tác giả, phân loại phim, cảnh báo độ tuổi và các nghĩa vụ khác theo pháp luật về điện ảnh, xuất bản.
 
-Nền tảng **hiện chưa cung cấp** phim, truyện/sách điện tử, dataset và bảng tin tuyển dụng (Work). Trước khi cung cấp các nhóm này, Công ty sẽ hoàn tất thủ tục theo quy định và sửa đổi, bổ sung đăng ký với cơ quan có thẩm quyền.
+Nền tảng **hiện chưa cung cấp** dataset và bảng tin tuyển dụng (Work). Trước khi cung cấp các nhóm này, Công ty sẽ hoàn tất thủ tục theo quy định và sửa đổi, bổ sung đăng ký với cơ quan có thẩm quyền.
 
 Danh mục hàng hóa, dịch vụ cấm kinh doanh trên nền tảng được công bố tại [Chính sách sử dụng chấp nhận được](10-chinh-sach-su-dung-chap-nhan-duoc.md).
 

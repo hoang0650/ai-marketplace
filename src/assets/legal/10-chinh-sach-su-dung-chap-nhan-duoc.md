@@ -24,7 +24,8 @@ Chính sách áp dụng cho mọi người dùng, người bán và mọi dịch
 - Deepfake, giọng nhân bản, hình ảnh người thật khi không có sự đồng ý của người đó;
 - Sản phẩm vi phạm quyền sở hữu trí tuệ;
 - Hàng hóa, dịch vụ thuộc ngành, nghề kinh doanh có điều kiện khi chưa có giấy phép tương ứng;
-- Phim, truyện/sách điện tử, dataset và tin tuyển dụng trong thời gian nền tảng chưa cung cấp các nhóm này.
+- Phim, truyện/sách vi phạm Luật Điện ảnh, Luật Xuất bản (nội dung bị cấm, không phân loại phim, thiếu cảnh báo độ tuổi);
+- Dataset và tin tuyển dụng trong thời gian nền tảng chưa cung cấp các nhóm này.
 
 ## Điều 2. Tấn công và xâm nhập
 

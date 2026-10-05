@@ -286,15 +286,10 @@ export const AI_CATEGORIES: CategoryMeta[] = [
 ];
 
 /**
- * Paused until the licence exists: film distribution (Luật Điện ảnh), e-publication distribution
- * (Luật Xuất bản), data intermediary (Luật Dữ liệu). Hidden from browsing and new listings;
- * owners and admins can still open existing listings.
+ * Paused until the licence exists: data intermediary (Luật Dữ liệu). Hidden from browsing and
+ * new listings; owners and admins can still open existing listings.
  */
-export const HIDDEN_CATEGORIES: ReadonlySet<ProductCategory> = new Set<ProductCategory>([
-  'ai-film-series',
-  'story-book',
-  'dataset',
-]);
+export const HIDDEN_CATEGORIES: ReadonlySet<ProductCategory> = new Set<ProductCategory>(['dataset']);
 
 export function isHiddenCategory(id?: ProductCategory | string | null): boolean {
   return HIDDEN_CATEGORIES.has(String(id || '') as ProductCategory);

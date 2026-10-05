@@ -44,8 +44,9 @@ Mô tả, giá, đơn vị tính trung thực; giấy phép và quyền thương
 | Giọng đọc AI | Văn bản đồng ý của người có giọng nói đối với giọng nhân bản |
 | Dịch vụ thuê talent | Lĩnh vực, phạm vi công việc, năng lực, bảng giá tham khảo; không chứa nội dung tuyển dụng, cung ứng lao động |
 | Máy chủ trò chơi, GPU | Chỉ cho thuê máy; không phát hành, vận hành trò chơi điện tử trên mạng |
+| Phim AI, truyện/sách AI | Quyền tác giả, quyền phân phối; phân loại phim và cảnh báo độ tuổi; không chứa nội dung bị cấm theo Luật Điện ảnh, Luật Xuất bản |
 
-Nền tảng hiện chưa nhận phim, truyện/sách điện tử, dataset và tin tuyển dụng.
+Nền tảng hiện chưa nhận dataset và tin tuyển dụng.
 
 ## Điều 5. Quyền của nền tảng
 

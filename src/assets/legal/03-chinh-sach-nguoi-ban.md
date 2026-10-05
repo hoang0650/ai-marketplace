@@ -21,9 +21,9 @@
 
 ## Điều 2. Sản phẩm được phép đăng bán
 
-Mô hình AI, AI agent, gói kỹ năng, phần mềm, giọng đọc AI, mẫu website/ứng dụng, API, hạ tầng tính toán và dịch vụ theo yêu cầu (thuê talent) theo [Quy chế hoạt động](01-quy-che-hoat-dong-san-tmdt.md).
+Mô hình AI, AI agent, gói kỹ năng, phần mềm, giọng đọc AI, mẫu website/ứng dụng, phim AI, truyện/sách AI, API, hạ tầng tính toán và dịch vụ theo yêu cầu (thuê talent) theo [Quy chế hoạt động](01-quy-che-hoat-dong-san-tmdt.md).
 
-Nền tảng **hiện chưa nhận** đăng bán phim, truyện/sách điện tử, dataset và tin tuyển dụng (Work).
+Nền tảng **hiện chưa nhận** đăng bán dataset và tin tuyển dụng (Work).
 
 ## Điều 3. Hành vi bị cấm (người bán phải đọc trước khi mở cửa hàng)
 
