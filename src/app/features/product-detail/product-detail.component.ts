@@ -97,6 +97,8 @@ export class ProductDetailComponent implements OnInit {
   private readonly affiliateApi = inject(AffiliateService);
   readonly affiliateCopied = signal(false);
   readonly affiliateError = signal('');
+  /** The API refused a link because the user has not completed eKYC. */
+  readonly affiliateKyc = signal(false);
   readonly wishlisted = computed(() => this.wishlistApi.saved(this.product()?.id));
   readonly inCart = computed(() => this.cart.has(this.product()?.id));
   readonly reviews = signal<Review[]>([]);
@@ -466,13 +468,21 @@ export class ProductDetailComponent implements OnInit {
 
   shareAffiliate(p: Product): void {
     this.affiliateError.set('');
+    this.affiliateKyc.set(false);
     this.affiliateApi.link({ productSlug: p.slug }).subscribe({
       next: (l) => {
         const done = () => this.affiliateCopied.set(true);
         if (navigator.clipboard?.writeText) void navigator.clipboard.writeText(l.url).then(done, done);
         else done();
       },
-      error: (err) => this.affiliateError.set(err?.error?.message || this.i18n.t('aff.linkInvalid')),
+      error: (err) => {
+        if (err?.error?.code === 'KYC_REQUIRED') {
+          this.affiliateKyc.set(true);
+          this.affiliateError.set(this.i18n.t('aff.kycNotice'));
+          return;
+        }
+        this.affiliateError.set(err?.error?.message || this.i18n.t('aff.linkInvalid'));
+      },
     });
   }
 

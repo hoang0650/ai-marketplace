@@ -96,7 +96,12 @@
               <a class="pd-aff__btn" routerLink="/affiliate">{{ 'aff.join' | t }}</a>
             }
             @if (affiliateError()) {
-              <p class="pd-aff__err" role="alert">{{ affiliateError() }}</p>
+              <p class="pd-aff__err" role="alert">
+                {{ affiliateError() }}
+                @if (affiliateKyc()) {
+                  <a routerLink="/settings/kyc" class="underline">{{ 'aff.kycCta' | t }}</a>
+                }
+              </p>
             }
           </div>
         }

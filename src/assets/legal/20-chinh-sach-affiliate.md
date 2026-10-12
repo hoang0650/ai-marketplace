@@ -22,8 +22,8 @@
 
 ## Điều 2. Tham gia chương trình
 
-1. Mọi người dùng đã đăng nhập có thể lấy liên kết, mã giới thiệu cho từng sản phẩm hoặc gian hàng tại trang **Affiliate**. Liên kết có dạng `https://aimarkets.vn/product/<sản-phẩm>?ref=<mã>` hoặc `https://aimarkets.vn/store/<gian-hàng>?ref=<mã>`.
-2. Người giới thiệu phải hoàn tất xác minh danh tính (eKYC) trước khi rút tiền hoa hồng. Hoa hồng vẫn được ghi nhận khi chưa eKYC nhưng chỉ rút được sau khi eKYC thành công.
+1. Người dùng đã đăng nhập **và đã hoàn tất xác minh danh tính (eKYC)** mới được nhận mã giới thiệu và lấy liên kết, mã giới thiệu cho từng sản phẩm hoặc gian hàng tại trang **Affiliate**. Liên kết có dạng `https://aimarkets.vn/product/<sản-phẩm>?ref=<mã>` hoặc `https://aimarkets.vn/store/<gian-hàng>?ref=<mã>`.
+2. Tài khoản chưa xác minh eKYC không được cấp mã, không tạo được liên kết và lượt nhấp, đơn hàng qua mã của tài khoản chưa xác minh không được ghi nhận hoa hồng. Hoa hồng được rút về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh.
 3. Việc tham gia của người bán là tự nguyện. Mặc định tỷ lệ hoa hồng là 0%, nghĩa là sản phẩm không tham gia chương trình.
 
 ## Điều 3. Tỷ lệ hoa hồng và người chịu chi phí
@@ -50,12 +50,12 @@
 ## Điều 5. Ghi có, tạm giữ và rút tiền
 
 1. Hoa hồng được ghi có vào ví của người giới thiệu ngay khi đơn hàng hoàn tất và được **tạm giữ 48 giờ** như doanh thu của người bán; nếu đơn hàng phát sinh khiếu nại, khoản hoa hồng tiếp tục bị giữ đến khi khiếu nại được giải quyết.
-2. Sau thời gian tạm giữ, hoa hồng trở thành số dư khả dụng và được rút về tài khoản ngân hàng sau khi người giới thiệu hoàn tất eKYC, theo Chính sách thanh toán và đối soát.
+2. Sau thời gian tạm giữ, hoa hồng trở thành số dư khả dụng và được rút về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh eKYC, theo Chính sách thanh toán và đối soát.
 3. Trang Affiliate hiển thị: liên kết, số lượt nhấp, số đơn, hoa hồng đang tạm giữ, hoa hồng khả dụng và hoa hồng bị thu hồi.
 
 ## Điều 6. Thuế thu nhập cá nhân
 
-1. Đối với người giới thiệu là cá nhân, nền tảng áp dụng quy tắc khấu trừ thuế thu nhập cá nhân có thể cấu hình: **khấu trừ 10% trên khoản hoa hồng của mỗi lần chi trả có giá trị trên 2.000.000 đ**, theo quy định chung về thu nhập từ cung cấp dịch vụ của cá nhân. Khoản đã khấu trừ được ghi trên lịch sử ví và chứng từ khấu trừ được cung cấp theo yêu cầu.
+1. Đối với người giới thiệu là cá nhân, nền tảng áp dụng quy tắc khấu trừ thuế thu nhập cá nhân có thể cấu hình: **khấu trừ 10% trên mọi khoản hoa hồng, không áp dụng ngưỡng tối thiểu**, theo quy định chung về thu nhập từ cung cấp dịch vụ của cá nhân. Ví dụ: hoa hồng 250.000 đ thì khấu trừ 25.000 đ, người giới thiệu nhận 225.000 đ. Khoản đã khấu trừ được ghi trên lịch sử ví và chứng từ khấu trừ được cung cấp theo yêu cầu.
 2. Mức khấu trừ, ngưỡng áp dụng và cách xác định “mỗi lần chi trả” có thể được điều chỉnh để phù hợp quy định pháp luật về thuế; người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
 
 ## Điều 7. Hành vi bị cấm

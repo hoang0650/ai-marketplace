@@ -31,8 +31,8 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
       <p class="mt-2 max-w-3xl text-muted">{{ 'aff.lead' | t }}</p>
 
       @if (stats(); as s) {
-        @if (!s.payoutReady) {
-          <div class="panel mt-6" role="status">
+        @if (s.kycRequired || !s.payoutReady) {
+          <div class="panel mt-6 border-amber-400" role="status">
             <p>{{ 'aff.kycNotice' | t }} <a routerLink="/settings/kyc" class="underline">{{ 'aff.kycCta' | t }}</a></p>
           </div>
         }
@@ -40,7 +40,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div class="panel">
             <p class="text-xs text-muted">{{ 'aff.code' | t }}</p>
-            <p class="mt-2 font-mono text-xl">{{ s.code }}</p>
+            <p class="mt-2 font-mono text-xl">{{ s.code || '—' }}</p>
           </div>
           <div class="panel">
             <p class="text-xs text-muted">{{ 'aff.clicks' | t }}</p>
@@ -69,6 +69,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
           </div>
         </div>
 
+        @if (!s.kycRequired) {
         <form class="panel mt-6" (ngSubmit)="makeLink()">
           <h2 class="font-display text-xl">{{ 'aff.linkTitle' | t }}</h2>
           <p class="mt-1 text-sm text-muted">{{ 'aff.linkHint' | t }}</p>
@@ -89,6 +90,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
             </p>
           }
         </form>
+        }
 
         <div class="panel mt-6 overflow-x-auto">
           <h2 class="font-display text-xl">{{ 'aff.recent' | t }}</h2>
@@ -130,6 +132,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
         <div class="panel mt-6">
           <h2 class="font-display text-xl">{{ 'aff.rulesTitle' | t }}</h2>
           <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+            <li>{{ 'aff.rule.kyc' | t }}</li>
             <li>{{ 'aff.rule.rate' | t }}</li>
             <li>{{ 'aff.rule.window' | t: { days: s.config?.attributionDays || 30 } }}</li>
             <li>{{ 'aff.rule.self' | t }}</li>

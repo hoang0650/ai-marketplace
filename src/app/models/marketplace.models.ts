@@ -845,7 +845,10 @@ export interface AffiliateCommissionRow {
 }
 
 export interface AffiliateStats {
-  code: string;
+  /** null until the user is eKYC-verified. */
+  code: string | null;
+  kycRequired?: boolean;
+  linkReady?: boolean;
   clicks: number;
   conversions: number;
   earnings: number;
