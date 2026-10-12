@@ -5,7 +5,8 @@ import { visibleCategoryGuard, workBoardGuard } from './guards/feature.guards';
 export const routes: Routes = [
   {
     path: 'work/manage',
-    canActivate: [authGuard],
+    // Legacy Work is fully shut down (contracts, disputes, withdraw included) → redirects home.
+    canActivate: [workBoardGuard, authGuard],
     loadComponent: () =>
       import('./features/work/work-shell.component').then((m) => m.WorkShellComponent),
     children: [
@@ -188,6 +189,7 @@ export const routes: Routes = [
       },
       {
         path: 'issues',
+        canActivate: [workBoardGuard],
         data: { inbox: 'work' },
         loadComponent: () =>
           import('./features/complaints/complaint-list.component').then((m) => m.ComplaintListComponent),
@@ -591,13 +593,13 @@ export const routes: Routes = [
       },
       {
         path: 'hire/projects/:id',
-        canActivate: [authGuard],
+        canActivate: [workBoardGuard, authGuard],
         loadComponent: () =>
           import('./features/hire/hire-project-detail.component').then((m) => m.HireProjectDetailComponent),
       },
       {
         path: 'hire/projects',
-        canActivate: [authGuard],
+        canActivate: [workBoardGuard, authGuard],
         loadComponent: () =>
           import('./features/hire/hire-projects.component').then((m) => m.HireProjectsComponent),
       },

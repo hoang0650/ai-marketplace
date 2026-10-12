@@ -42,11 +42,11 @@ import { WORK_BOARD_ENABLED } from '../../models/feature-flags';
                 <strong>{{ 'sell.nav.work' | t }}</strong>
                 <span>{{ ('sell.partner.workDesc.' + workspace()) | t }}</span>
               </a>
+              <a routerLink="/work/manage/contracts" class="card">
+                <strong>{{ 'sell.nav.contracts' | t }}</strong>
+                <span>{{ 'sell.partner.contractsDesc' | t }}</span>
+              </a>
             }
-            <a routerLink="/work/manage/contracts" class="card">
-              <strong>{{ 'sell.nav.contracts' | t }}</strong>
-              <span>{{ 'sell.partner.contractsDesc' | t }}</span>
-            </a>
             <a routerLink="/sell/messages" class="card">
               <strong>{{ 'sell.nav.messages' | t }}</strong>
               <span>{{ 'sell.partner.messagesDesc' | t }}</span>

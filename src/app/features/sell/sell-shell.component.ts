@@ -79,12 +79,20 @@ function partnerGroups(ws: Exclude<SellWorkspace, 'seller'>): NavGroup[] {
     ws === 'talent'
       ? [
           { labelKey: 'sell.nav.products', path: '/sell/products' },
-          ...(WORK_BOARD_ENABLED ? [{ labelKey: 'sell.nav.workProfile', path: '/work/manage/profile' }] : []),
-          { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
+          ...(WORK_BOARD_ENABLED
+            ? [
+                { labelKey: 'sell.nav.workProfile', path: '/work/manage/profile' },
+                { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
+              ]
+            : []),
         ]
       : [
-          ...(WORK_BOARD_ENABLED ? [{ labelKey: 'sell.nav.workBoard', path: '/work/manage' }] : []),
-          { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
+          ...(WORK_BOARD_ENABLED
+            ? [
+                { labelKey: 'sell.nav.workBoard', path: '/work/manage' },
+                { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
+              ]
+            : []),
         ];
   return [
     {
@@ -111,7 +119,7 @@ function partnerGroups(ws: Exclude<SellWorkspace, 'seller'>): NavGroup[] {
       items: [
         ...work,
         { labelKey: 'sell.nav.messages', path: '/sell/messages' },
-        { labelKey: 'sell.nav.issues', path: '/sell/issues' },
+        ...(WORK_BOARD_ENABLED ? [{ labelKey: 'sell.nav.issues', path: '/sell/issues' }] : []),
       ],
     },
     {

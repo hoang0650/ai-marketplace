@@ -255,8 +255,6 @@
                   }
                   @if (workEnabled && (auth.isFreelancer() || auth.isEmployer())) {
                     <li><a routerLink="/work/manage" (click)="closeUserMenu()">{{ 'work.title' | t }}</a></li>
-                  } @else if (auth.isFreelancer() || auth.isEmployer()) {
-                    <li><a routerLink="/work/manage/contracts" (click)="closeUserMenu()">{{ 'sell.nav.contracts' | t }}</a></li>
                   }
                   <li><a routerLink="/settings" (click)="closeUserMenu()">{{ 'nav.settings' | t }}</a></li>
                 </ul>
