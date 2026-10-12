@@ -40,21 +40,21 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ## Điều 4. Thanh toán trong ứng dụng
 
-Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website. Phí kho ứng dụng (Google Play 15%, App Store 30%) do Apple/Google thu, không phải doanh thu của nền tảng và không phải thuế; khoản này được khấu trừ khi đối soát với người bán.
+Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website. Nền tảng không khấu trừ phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán.
 
 ## Điều 5. Đơn hàng
 
-1. Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, phí kho ứng dụng (nếu có), thuế khấu trừ 8%, người bán tại thời điểm giao kết.
+1. Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, thuế khấu trừ 8%, người bán tại thời điểm giao kết.
 2. Đơn hàng có các trạng thái: chờ thanh toán, đã thanh toán, đang cung cấp, hoàn tất, hoàn tiền, tranh chấp; mọi thay đổi được ghi nhật ký.
 3. Kết quả thanh toán được xác thực qua webhook có chữ ký; mỗi giao dịch, webhook, bút toán có khóa chống trùng để chỉ được ghi nhận một lần.
 
 ## Điều 6. Sổ cái và đối soát
 
-Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; doanh thu người bán; phí sàn; phí kho ứng dụng; chi phí nhà cung cấp hạ tầng; thuế khấu trừ; hoàn tiền; điều chỉnh. Đối soát định kỳ giữa đơn hàng, thanh toán, hoàn tiền, sổ cái, chi trả và số liệu sử dụng.
+Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; doanh thu người bán; phí sàn; chi phí nhà cung cấp hạ tầng; thuế khấu trừ; hoàn tiền; điều chỉnh. Đối soát định kỳ giữa đơn hàng, thanh toán, hoàn tiền, sổ cái, chi trả và số liệu sử dụng.
 
 ## Điều 7. Chi trả cho người bán
 
-1. Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − phí kho ứng dụng (nếu có) − hoàn tiền/điều chỉnh. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng.
+1. Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − hoàn tiền/điều chỉnh. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng.
 2. Doanh thu được **tạm giữ 48 giờ** kể từ khi ghi nhận; khoản liên quan khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ.
 3. Chi trả theo yêu cầu rút tiền của người bán đã xác minh (bao gồm eKYC), về tài khoản ngân hàng đứng tên người bán, khi khoản tiền đủ điều kiện và thông tin nhận tiền hợp lệ.
 

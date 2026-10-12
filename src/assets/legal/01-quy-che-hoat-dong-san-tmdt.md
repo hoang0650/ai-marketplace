@@ -183,13 +183,13 @@ Bước 3: Hoàn tất giao dịch. Hệ thống trừ số dư ví, tạo mã �
 
 ### 2. Thanh toán giữa Người bán - Ban Quản lý website
 
-Nền tảng (Ban quản lý website) thu tiền của người mua, khấu trừ phí sàn 20%, thuế khấu trừ 8%, phí kho ứng dụng (nếu có) và chi trả phần còn lại cho người bán theo Mục XI và Mục XII.
+Nền tảng (Ban quản lý website) thu tiền của người mua, khấu trừ phí sàn 20%, thuế khấu trừ 8% và chi trả phần còn lại cho người bán theo Mục XI và Mục XII.
 
-Bước 1: Theo dõi doanh thu và các khoản khấu trừ. Tại “Creator dashboard” → “Overview”, người bán xem doanh thu, số đơn hàng, số sản phẩm, lượng token sử dụng và các khoản: phí sàn (Commission) – giao diện ghi “Mặc định 20% — chưa gồm thuế 10% trên 80% seller”; phí CH Play/App Store – “IAP: Play 15% · App Store 30% — không phải phí sàn”; thuế khấu trừ – “10% trên 80% doanh thu seller (8% đơn)”; hoàn tiền; số thực nhận (Net payable).
+Bước 1: Theo dõi doanh thu và các khoản khấu trừ. Tại “Creator dashboard” → “Overview”, người bán xem doanh thu, số đơn hàng, số sản phẩm, lượng token sử dụng và các khoản: phí sàn (Commission) – giao diện ghi “Mặc định 20% — chưa gồm thuế 10% trên 80% seller”; thuế khấu trừ – “10% trên 80% doanh thu seller (8% đơn)”; hoàn tiền; số thực nhận (Net payable).
 
 Bước 2: Hoàn tất hồ sơ để sử dụng chức năng thanh toán. Mục “Payments” chỉ sử dụng được sau khi người bán tạo hồ sơ cửa hàng và gửi duyệt (“Create your seller profile”).
 
-Bước 3: Rút tiền. Tại “Finance” → “Withdraw”, giao diện hiển thị quy tắc áp dụng: phí sàn (Platform fee) 20%, thuế (Tax) 8%, tổng (Total fee) 28%; phí sàn 20% và thuế 8% đã được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị là số dư ròng; thời gian tạm giữ (Hold period) 48 giờ; số dư khả dụng và số đang tạm giữ theo đơn; lịch sử ví (ghi nợ, ghi có kèm bản chụp hoa hồng, phí kho ứng dụng, thuế). Khi người bán chưa xác minh danh tính, chức năng rút tiền bị khóa (“Identity not verified — withdrawals are locked”). Người bán nhập số tiền và chọn “Request withdrawal”; tiền được chuyển về tài khoản ngân hàng đứng tên người bán theo khoản 8 Mục XI.
+Bước 3: Rút tiền. Tại “Finance” → “Withdraw”, giao diện hiển thị quy tắc áp dụng: phí sàn (Platform fee) 20%, thuế (Tax) 8%, tổng (Total fee) 28%; phí sàn 20% và thuế 8% đã được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị là số dư ròng; thời gian tạm giữ (Hold period) 48 giờ; số dư khả dụng và số đang tạm giữ theo đơn; lịch sử ví (ghi nợ, ghi có kèm bản chụp hoa hồng, thuế). Khi người bán chưa xác minh danh tính, chức năng rút tiền bị khóa (“Identity not verified — withdrawals are locked”). Người bán nhập số tiền và chọn “Request withdrawal”; tiền được chuyển về tài khoản ngân hàng đứng tên người bán theo khoản 8 Mục XI.
 
 Bước 4: Đối soát. Tại “Ledger”, người bán xem sổ cái doanh thu, phí sàn và số dư để đối chiếu với lịch sử đơn hàng, rút tiền (khoản 7 Mục XI).
 
@@ -418,11 +418,11 @@ d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và
 
 ### 4. Thanh toán trong ứng dụng
 
-Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website (xem khoản 9 Mục XII). Phí kho ứng dụng (Google Play 15%, App Store 30%, theo hiển thị trên Kênh người bán) do Apple/Google thu, không phải doanh thu của nền tảng và không phải thuế; khoản này được khấu trừ khi đối soát với người bán. Giao dịch trên website không chịu phí này.
+Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website (xem khoản 9 Mục XII). Nền tảng không khấu trừ phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán.
 
 ### 5. Đơn hàng
 
-a) Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, phí kho ứng dụng (nếu có), thuế khấu trừ 8%, người bán tại thời điểm giao kết.
+a) Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, thuế khấu trừ 8%, người bán tại thời điểm giao kết.
 
 b) Đơn hàng có các trạng thái: chờ thanh toán, đã thanh toán, đang cung cấp, hoàn tất, hoàn tiền, tranh chấp; mọi thay đổi được ghi nhật ký.
 
@@ -436,18 +436,18 @@ c) Kết quả thanh toán được xác thực qua webhook có chữ ký; mỗi
 | Phí sàn với người bán bên thứ ba | Mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho người bán), lưu cố định tại thời điểm giao kết từng đơn. Phí sàn không phải là thuế |
 | Dịch vụ AI agent (Bán bởi sàn) | 199.000 VNĐ/agent/30 ngày (hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị); phí token khi dùng mô hình của nền tảng = giá gốc nhà cung cấp mô hình + 25%; dùng khóa API riêng (BYOK) không thu phí token |
 | Dịch vụ Bán bởi sàn khác (API, GPU, máy chủ trò chơi) | Giá niêm yết trên trang sản phẩm theo đơn vị sử dụng (token, ký tự, phút, giờ) |
-| Phí kho ứng dụng | Google Play 15%, App Store 30% (theo hiển thị trên Kênh người bán; do Google Play / App Store thu theo chính sách của họ) đối với giao dịch trong ứng dụng; không phải phí sàn; được khấu trừ khi đối soát; giao dịch trên website không chịu phí này |
+| Phí kho ứng dụng | Không áp dụng. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tiền vào ví; mọi đơn hàng (trên website và ứng dụng) được thanh toán bằng số dư ví nên không có phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán |
 | Thuế khấu trừ | Cố định 8% giá trị đơn hàng (10% trên phần 80% doanh thu của người bán), áp dụng cho mọi người bán, khấu trừ khi đơn hàng hoàn tất (chi tiết tại Mục XII). Tổng khấu trừ = phí sàn 20% + thuế 8% = 28%; người bán tự chịu trách nhiệm về nghĩa vụ thuế khác theo pháp luật |
 
 Thay đổi mức phí được thông báo ít nhất 30 ngày trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
 
 ### 7. Sổ cái và đối soát
 
-Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; doanh thu người bán; phí sàn; phí kho ứng dụng; chi phí nhà cung cấp hạ tầng; thuế khấu trừ; hoàn tiền; điều chỉnh. Đối soát định kỳ giữa đơn hàng, thanh toán, hoàn tiền, sổ cái, chi trả và số liệu sử dụng.
+Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; doanh thu người bán; phí sàn; chi phí nhà cung cấp hạ tầng; thuế khấu trừ; hoàn tiền; điều chỉnh. Đối soát định kỳ giữa đơn hàng, thanh toán, hoàn tiền, sổ cái, chi trả và số liệu sử dụng.
 
 ### 8. Doanh thu và chi trả cho người bán
 
-a) Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − phí kho ứng dụng (nếu có) − hoàn tiền/điều chỉnh. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng. Doanh thu được ghi nhận vào số dư người bán; mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
+a) Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − hoàn tiền/điều chỉnh. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng. Doanh thu được ghi nhận vào số dư người bán; mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
 
 b) Doanh thu được tạm giữ 48 giờ kể từ khi ghi nhận để giải quyết hoàn tiền, khiếu nại; khoản liên quan đến khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
 
@@ -477,13 +477,13 @@ Việc khấu trừ, khai, nộp thuế và lập hóa đơn, chứng từ áp d
 
 ### 2. Phí sàn không phải thuế
 
-Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, không phải thuế giá trị gia tăng hay thuế thu nhập của người bán. Phí của Google Play (15%) / App Store (30%) đối với giao dịch trong ứng dụng cũng không phải thuế và không phải phí sàn.
+Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, không phải thuế giá trị gia tăng hay thuế thu nhập của người bán. Nền tảng không khấu trừ phí Google Play / App Store trên đơn hàng (Apple IAP và Google Play Billing chỉ dùng để nạp ví).
 
 ### 3. Khấu trừ thuế
 
 a) Nền tảng khấu trừ thuế cố định 8% giá trị đơn hàng (tương đương 10% trên phần 80% doanh thu của người bán) đối với mọi người bán (cá nhân, hộ kinh doanh, doanh nghiệp, tổ chức) tại thời điểm đơn hàng hoàn tất. Đối với hộ kinh doanh, cá nhân kinh doanh, nền tảng khai và nộp thay theo Nghị định số 252/2026/NĐ-CP.
 
-b) Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = 28% giá trị đơn hàng (chưa gồm phí kho ứng dụng, nếu có). Số dư hiển thị của người bán là số dư ròng sau khấu trừ.
+b) Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = 28% giá trị đơn hàng (không có phí kho ứng dụng). Số dư hiển thị của người bán là số dư ròng sau khấu trừ.
 
 c) Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng tại Kênh người bán; nền tảng cung cấp chứng từ khấu trừ thuế theo quy định.
 
@@ -497,7 +497,7 @@ Người bán khai báo loại hình (cá nhân, hộ kinh doanh, doanh nghiệp
 
 ### 6. Tách khoản trên đối soát và sản phẩm Bán bởi sàn
 
-a) Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; phí kho ứng dụng (nếu có); giảm giá (nếu có); thuế khấu trừ 8%; hoàn tiền, điều chỉnh; doanh thu người bán (cách tính tại khoản 8 Mục XI).
+a) Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; giảm giá (nếu có); thuế khấu trừ 8%; hoàn tiền, điều chỉnh; doanh thu người bán (cách tính tại khoản 8 Mục XI).
 
 b) Doanh thu từ sản phẩm “Bán bởi sàn” (API, GPU, máy chủ trò chơi, dịch vụ AI agent) thuộc Công ty và được kê khai, nộp thuế theo chế độ của Công ty.
 

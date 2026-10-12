@@ -18,12 +18,12 @@ Chính sách áp dụng theo pháp luật về quản lý thuế, thuế giá tr
 
 ## Điều 2. Phí sàn không phải thuế
 
-Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, **không phải** thuế giá trị gia tăng hay thuế thu nhập của người bán. Phí của Google Play (15%) / App Store (30%) đối với giao dịch trong ứng dụng cũng không phải thuế và không phải phí sàn.
+Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, **không phải** thuế giá trị gia tăng hay thuế thu nhập của người bán. Nền tảng không khấu trừ phí Google Play / App Store trên đơn hàng (Apple IAP và Google Play Billing chỉ dùng để nạp ví).
 
 ## Điều 3. Khấu trừ thuế
 
 1. Nền tảng khấu trừ thuế cố định **8%** giá trị đơn hàng (tương đương 10% trên phần 80% doanh thu của người bán) đối với **mọi người bán** (cá nhân, hộ kinh doanh, doanh nghiệp, tổ chức) tại thời điểm đơn hàng hoàn tất. Đối với hộ kinh doanh, cá nhân kinh doanh, nền tảng khai và nộp thay theo Nghị định số 252/2026/NĐ-CP.
-2. Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = **28%** giá trị đơn hàng (chưa gồm phí kho ứng dụng, nếu có). Số dư hiển thị của người bán là số dư ròng sau khấu trừ.
+2. Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = **28%** giá trị đơn hàng (không có phí kho ứng dụng). Số dư hiển thị của người bán là số dư ròng sau khấu trừ.
 3. Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng tại Kênh người bán; nền tảng cung cấp chứng từ khấu trừ thuế theo quy định.
 
 ## Điều 4. Nghĩa vụ thuế khác của người bán
@@ -36,7 +36,7 @@ Người bán khai báo loại hình (cá nhân, hộ kinh doanh, doanh nghiệp
 
 ## Điều 6. Tách khoản trên đối soát
 
-Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; phí kho ứng dụng (nếu có); giảm giá (nếu có); thuế khấu trừ 8%; hoàn tiền, điều chỉnh; doanh thu người bán.
+Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; giảm giá (nếu có); thuế khấu trừ 8%; hoàn tiền, điều chỉnh; doanh thu người bán.
 
 ## Điều 7. Sản phẩm Bán bởi sàn
 

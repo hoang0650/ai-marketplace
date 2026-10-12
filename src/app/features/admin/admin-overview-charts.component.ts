@@ -354,8 +354,6 @@ export class AdminOverviewChartsComponent {
     const parts = [
       { label: 'Phí sàn', value: o.platformFee || 0, color: '#c08a2c' },
       { label: 'Seller payable', value: o.sellerNet || 0, color: '#0f766e' },
-      { label: 'Phí CHPlay', value: o.playStoreFees || 0, color: '#16a34a' },
-      { label: 'Phí App Store', value: o.appStoreFees || 0, color: '#2563eb' },
     ];
     const used = parts.reduce((s, p) => s + p.value, 0);
     parts.push({ label: 'Còn lại (thuế, điều chỉnh…)', value: Math.max(0, gross - used), color: '#9ca3af' });

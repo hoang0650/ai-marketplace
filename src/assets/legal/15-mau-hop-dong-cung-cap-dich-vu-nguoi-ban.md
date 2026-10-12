@@ -83,17 +83,17 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 2. Phí sàn: mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho Bên B), lưu cố định tại thời điểm giao kết từng đơn hàng.
 
-3. Thuế khấu trừ: Bên A khấu trừ thuế cố định 8% giá trị đơn hàng (tương đương 10% trên phần 80% doanh thu của Bên B) tại thời điểm đơn hàng hoàn tất. Đối với hộ kinh doanh, cá nhân kinh doanh, Bên A khai và nộp thay theo Nghị định số 252/2026/NĐ-CP. Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = 28% giá trị đơn hàng (chưa gồm phí kho ứng dụng, nếu có). Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng; Bên A cung cấp chứng từ khấu trừ thuế theo quy định.
+3. Thuế khấu trừ: Bên A khấu trừ thuế cố định 8% giá trị đơn hàng (tương đương 10% trên phần 80% doanh thu của Bên B) tại thời điểm đơn hàng hoàn tất. Đối với hộ kinh doanh, cá nhân kinh doanh, Bên A khai và nộp thay theo Nghị định số 252/2026/NĐ-CP. Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = 28% giá trị đơn hàng (không có phí kho ứng dụng). Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng; Bên A cung cấp chứng từ khấu trừ thuế theo quy định.
 
-4. Phí kho ứng dụng: đối với giao dịch trong ứng dụng, Google Play 15%, App Store 30% (theo hiển thị trên Kênh người bán), do Apple/Google thu theo chính sách của họ; không phải phí sàn, không phải thuế; được khấu trừ khi đối soát với Bên B. Giao dịch trên website không chịu phí này.
+4. Phí kho ứng dụng: Không áp dụng. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tiền vào ví; mọi đơn hàng (trên website và ứng dụng) được thanh toán bằng số dư ví nên không có phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán.
 
 5. Việc khấu trừ 8% không thay thế các nghĩa vụ thuế khác của Bên B. Bên B tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và xuất hóa đơn cho Người mua theo quy định; Bên A xuất hóa đơn phí dịch vụ sàn cho Bên B.
 
-6. Mỗi đơn hàng có mã duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, phí kho ứng dụng (nếu có), thuế khấu trừ, người bán tại thời điểm giao kết. Thay đổi mức phí được thông báo ít nhất 30 ngày trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
+6. Mỗi đơn hàng có mã duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, thuế khấu trừ, người bán tại thời điểm giao kết. Thay đổi mức phí được thông báo ít nhất 30 ngày trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
 
 ## Điều 7. Đối soát, tạm giữ và chi trả
 
-1. Doanh thu của Bên B = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − phí kho ứng dụng (nếu có) − hoàn tiền/điều chỉnh. Số dư hiển thị của Bên B là số dư ròng.
+1. Doanh thu của Bên B = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − hoàn tiền/điều chỉnh. Số dư hiển thị của Bên B là số dư ròng.
 
 2. Doanh thu được tạm giữ 48 giờ kể từ khi ghi nhận để giải quyết hoàn tiền, khiếu nại; khoản liên quan đến khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
 

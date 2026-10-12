@@ -102,16 +102,11 @@ export class DashboardShellComponent {
           }
         </div>
       }
-      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div class="panel">
           <p class="text-xs uppercase text-muted">Phí sàn (commission)</p>
           <p class="mt-2 font-display text-2xl">{{ (s.platformCommission || 0) | currency: s.currency }}</p>
           <p class="mt-1 text-xs text-muted">Mặc định 20% — chưa gồm thuế 10% trên 80% seller</p>
-        </div>
-        <div class="panel">
-          <p class="text-xs uppercase text-muted">Phí CHPlay / App Store</p>
-          <p class="mt-2 font-display text-2xl">{{ (s.storeFees || 0) | currency: s.currency }}</p>
-          <p class="mt-1 text-xs text-muted">IAP: Play 15% · App Store 30% — không phải phí sàn</p>
         </div>
         <div class="panel">
           <p class="text-xs uppercase text-muted">Thuế khấu trừ</p>
@@ -200,13 +195,6 @@ export class DashboardHomeComponent implements OnInit {
                   <span class="block text-xs text-muted">
                     {{ o.payoutHoldKind === 'dispute' ? 'Đóng băng khiếu nại' : 'Giữ 48h' }}
                     · {{ o.sellerNet | currency: o.currency }}
-                  </span>
-                }
-                @if (o.storeFeeAmount) {
-                  <span class="block text-xs text-muted">
-                    {{ o.salesChannel === 'APP_STORE' ? 'App Store' : o.salesChannel === 'GOOGLE_PLAY' ? 'CHPlay' : 'Phí cửa hàng' }}
-                    {{ o.storeFeeRate ? (o.storeFeeRate * 100) + '%' : '' }}
-                    · {{ o.storeFeeAmount | currency: o.currency }}
                   </span>
                 }
                 @if (o.canDispute) {

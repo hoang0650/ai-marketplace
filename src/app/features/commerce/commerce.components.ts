@@ -86,7 +86,7 @@ export class AffiliateComponent implements OnInit {
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
       <p class="mt-2 max-w-2xl text-muted">
-        GMV, phí sàn 20%, thuế 10% trên 80% doanh thu seller (8% đơn), phí CHPlay/App Store (IAP) và seller payable theo snapshot đơn.
+        GMV, phí sàn 20%, thuế 10% trên 80% doanh thu seller (8% đơn) và seller payable theo snapshot đơn. Không có phí CHPlay/App Store trên đơn hàng (IAP chỉ dùng để nạp ví).
       </p>
 
       <div class="admin-tabs mt-6" role="tablist">
@@ -117,22 +117,7 @@ export class AffiliateComponent implements OnInit {
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Seller payable (net)</p>
             <p class="mt-2 font-display text-3xl">{{ d.sellerNet | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">Sau phí sàn / cửa hàng / thuế / điều chỉnh</p>
-          </div>
-          <div class="panel">
-            <p class="text-xs uppercase tracking-wider text-muted">Phí CHPlay / App Store</p>
-            <p class="mt-2 font-display text-3xl">{{ (d.storeFees || 0) | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">Tổng phí IAP Google + Apple — không phải doanh thu sàn</p>
-          </div>
-          <div class="panel">
-            <p class="text-xs uppercase tracking-wider text-muted">Phí CHPlay</p>
-            <p class="mt-2 font-display text-3xl">{{ (d.playStoreFees || 0) | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">Google Play 15% trên IAP — Google thu</p>
-          </div>
-          <div class="panel">
-            <p class="text-xs uppercase tracking-wider text-muted">Phí App Store</p>
-            <p class="mt-2 font-display text-3xl">{{ (d.appStoreFees || 0) | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">App Store 30% trên IAP — Apple thu</p>
+            <p class="mt-1 text-xs text-muted">Sau phí sàn / thuế / điều chỉnh</p>
           </div>
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Buyer nạp tiền</p>
@@ -166,7 +151,7 @@ export class AffiliateComponent implements OnInit {
         @case ('shops') {
         <div class="panel mt-6">
           <h2 class="font-display text-2xl">Doanh thu từng shop</h2>
-          <p class="mt-1 text-sm text-muted">Gross · phí sàn · phí CHPlay · phí App Store · tổng IAP · seller payable — không đồng nhất với 80%</p>
+          <p class="mt-1 text-sm text-muted">Gross · phí sàn · seller payable — không đồng nhất với 80%</p>
           <div class="mt-4 overflow-x-auto">
             <table class="w-full min-w-[960px] text-left text-sm">
               <thead class="text-xs uppercase tracking-wider text-muted">
@@ -175,9 +160,6 @@ export class AffiliateComponent implements OnInit {
                   <th class="py-2 pr-3 font-medium">Orders</th>
                   <th class="py-2 pr-3 font-medium">Gross</th>
                   <th class="py-2 pr-3 font-medium">Phí sàn 20%</th>
-                  <th class="py-2 pr-3 font-medium">Phí CHPlay</th>
-                  <th class="py-2 pr-3 font-medium">Phí App Store</th>
-                  <th class="py-2 pr-3 font-medium">CHPlay / App Store</th>
                   <th class="py-2 font-medium">Seller payable</th>
                 </tr>
               </thead>
@@ -198,14 +180,11 @@ export class AffiliateComponent implements OnInit {
                     <td class="py-3 pr-3">{{ shop.orders | number }}</td>
                     <td class="py-3 pr-3">{{ shop.grossRevenue | currency: d.currency }}</td>
                     <td class="py-3 pr-3">{{ shop.platformFee | currency: d.currency }}</td>
-                    <td class="py-3 pr-3">{{ (shop.playStoreFeeAmount || 0) | currency: d.currency }}</td>
-                    <td class="py-3 pr-3">{{ (shop.appStoreFeeAmount || 0) | currency: d.currency }}</td>
-                    <td class="py-3 pr-3">{{ (shop.storeFeeAmount || 0) | currency: d.currency }}</td>
                     <td class="py-3">{{ shop.sellerNet | currency: d.currency }}</td>
                   </tr>
                 } @empty {
                   <tr>
-                    <td class="py-6 text-muted" colspan="8">No paid orders yet.</td>
+                    <td class="py-6 text-muted" colspan="5">No paid orders yet.</td>
                   </tr>
                 }
               </tbody>

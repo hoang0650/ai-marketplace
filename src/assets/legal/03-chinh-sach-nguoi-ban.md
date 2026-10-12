@@ -53,10 +53,10 @@ Nền tảng không nhận đăng tin tuyển dụng, vị trí việc làm, h�
 ## Điều 6. Phí, doanh thu và chi trả
 
 1. **Phí sàn mặc định 20%** giá trị đơn hàng sau giảm giá. Phí sàn không phải là thuế.
-2. **Phí kho ứng dụng** (Google Play 15%, App Store 30%) với giao dịch trong ứng dụng do Apple/Google thu theo chính sách của họ, không phải phí sàn, được khấu trừ khi đối soát; giao dịch trên website không chịu phí này.
+2. **Phí kho ứng dụng**: Không áp dụng. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tiền vào ví; mọi đơn hàng (trên website và ứng dụng) được thanh toán bằng số dư ví nên không có phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán.
 3. **Thuế:** khấu trừ cố định **8%** giá trị đơn hàng (10% trên phần 80% doanh thu của người bán) đối với mọi người bán khi đơn hàng hoàn tất. Tổng khấu trừ = phí sàn 20% + thuế 8% = **28%**. Xem [Chính sách thuế](18-chinh-sach-thue.md).
 4. **Mã giảm giá:** khoản giảm giá được áp dụng vào giá trị đơn hàng trước khi tính phí sàn; khoản giảm giá do người bán phát hành do người bán chịu.
-5. **Doanh thu người bán** = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − phí kho ứng dụng (nếu có) − hoàn tiền/điều chỉnh. Số dư hiển thị của người bán là số dư ròng. Mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
+5. **Doanh thu người bán** = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − hoàn tiền/điều chỉnh. Số dư hiển thị của người bán là số dư ròng. Mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
 6. Doanh thu được **tạm giữ 48 giờ** kể từ khi ghi nhận; khoản liên quan khiếu nại đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
 7. Người bán đã xác minh (bao gồm eKYC) gửi yêu cầu rút số dư khả dụng về tài khoản ngân hàng đứng tên mình. Số dư người bán là khoản phải trả theo đối soát, không phải tiền gửi.
 8. Thay đổi mức phí được thông báo ít nhất 30 ngày trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
