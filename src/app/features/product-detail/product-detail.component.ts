@@ -964,6 +964,11 @@ export class ProductDetailComponent implements OnInit {
       this.launchOpenClaw();
       return;
     }
+    // Professional services are fixed packages paid from the wallet (Quy chế 2.1) — no quote flow.
+    if (isHireRequestCategory(p.category)) {
+      this.checkout();
+      return;
+    }
     if (isHireCategory(p.category)) {
       this.setWorkspace('hire');
       return;

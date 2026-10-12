@@ -370,19 +370,19 @@ export const routes: Routes = [
         path: 'hire-marketing',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'hire-marketing', title: 'Hire Marketing' },
+        data: { category: 'hire-marketing', title: 'Marketing services' },
       },
       {
         path: 'hire-seo',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'hire-seo', title: 'Hire SEO' },
+        data: { category: 'hire-seo', title: 'SEO services' },
       },
       {
         path: 'hire-creator',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'hire-creator', title: 'Hire Creator' },
+        data: { category: 'hire-creator', title: 'Creator services' },
       },
       {
         path: 'hire-workflow',

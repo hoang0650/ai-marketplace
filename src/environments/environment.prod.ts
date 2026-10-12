@@ -12,7 +12,7 @@ export const environment = {
   /** Public Web OAuth client ID — must match GOOGLE_CLIENT_ID on api.aimarkets.vn */
   googleClientId: '',
   brandName: 'AI Markets',
-  brandTagline: 'AI models, skill packs, and hire talent.',
+  brandTagline: 'AI models, skill packs, and professional services.',
   openclaw: {
     audience: 'aimarkets',
     publicUrlTemplate: 'https://{userId}.openclaw.aimarkets.vn',

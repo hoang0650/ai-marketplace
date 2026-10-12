@@ -396,21 +396,18 @@ export class DashboardAnalyticsComponent implements OnInit {
             </optgroup>
           </select>
           @if (isTalentOnly()) {
-            <p class="mt-1 text-xs text-muted">Talent chỉ tạo được listing thuê theo yêu cầu: Làm web, Làm app, Marketing, SEO, Creator, Tự động hóa.</p>
+            <p class="mt-1 text-xs text-muted">Tài khoản dịch vụ chuyên môn chỉ đăng được gói dịch vụ giá cố định: Làm web, Làm app, Marketing, SEO, Creator, Tự động hóa.</p>
           }
         </div>
         @if (isHireDraft()) {
           <div>
-            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Giá khởi điểm (USD)</label>
-            <input class="input" type="number" min="0" step="1" [(ngModel)]="draft.price" name="hirePrice" />
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Giá trọn gói (USD)</label>
+            <input class="input" type="number" min="1" step="1" [(ngModel)]="draft.price" name="hirePrice" />
           </div>
           <div class="md:col-span-2">
-            <label class="flex items-center gap-2 text-sm">
-              <input type="checkbox" [(ngModel)]="draft.negotiable" name="negotiable" /> Cho phép khách thương lượng giá
-            </label>
             <p class="mt-1 text-xs text-muted">
-              Khách gửi yêu cầu → bạn báo giá (mặc định theo giá khởi điểm) → khách chấp nhận và chia giai đoạn giải ngân.
-              Mỗi giai đoạn bạn demo trực tiếp trên AI Markets; khách nghiệm thu thì ví khách bị trừ, bạn được ghi có và tạm giữ 48h trước khi rút.
+              Dịch vụ chuyên môn được bán theo gói giá cố định: mô tả rõ phạm vi, sản phẩm bàn giao và thời gian thực hiện.
+              Không báo giá, không tính theo giờ/tháng. Khách thanh toán bằng số dư ví khi mua; phí sàn 20% (trên giá sau giảm giá) và thuế 8% được khấu trừ khi đơn hoàn tất, tiền được tạm giữ 48 giờ trước khi rút.
             </p>
           </div>
         } @else {
@@ -967,7 +964,7 @@ export class DashboardProductsComponent implements OnInit {
             model: 'one-time' as const,
             price: Math.max(0, Number(this.draft.price) || 0),
             currency: 'USD',
-            negotiable: !!this.draft.negotiable,
+            negotiable: false,
           }
         : this.isVoiceDraft()
         ? {

@@ -239,7 +239,6 @@
                   <li><a routerLink="/training" (click)="closeUserMenu()">{{ 'nav.training' | t }}</a></li>
                   <li><a routerLink="/build" (click)="closeUserMenu()">{{ 'nav.builder' | t }}</a></li>
                   <li><a routerLink="/messages" (click)="closeUserMenu()">{{ 'nav.messages' | t }}</a></li>
-                  <li><a routerLink="/hire/projects" (click)="closeUserMenu()">{{ 'hire.list.title' | t }}</a></li>
                   @if (auth.isAdmin()) {
                     <li><a routerLink="/admin" (click)="closeUserMenu()">{{ 'nav.admin' | t }}</a></li>
                     <li><a routerLink="/admin/finance" (click)="closeUserMenu()">{{ 'admin.finance.title' | t }}</a></li>

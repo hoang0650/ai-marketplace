@@ -17,7 +17,7 @@ export const CATALOG_LANE_LABEL_VI: Record<CatalogLane, string> = {
 export const CATEGORY_GROUP_LABEL: Record<CategoryGroup, string> = {
   models: 'AI models',
   skills: 'Skill packs',
-  hire: 'Hire talent',
+  hire: 'Professional services',
   apis: 'APIs & inference',
 };
 
@@ -25,7 +25,7 @@ export const NAV_GROUP_LABEL: Record<NavGroup, string> = {
   generate: 'Generate',
   apis: 'APIs & inference',
   platform: 'Platform',
-  talent: 'Hire talent',
+  talent: 'Professional services',
 };
 
 export interface NavLink {
@@ -214,7 +214,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'hire-marketing',
     label: 'Marketing',
-    description: 'Campaigns, ads, and growth specialists.',
+    description: 'Fixed-package marketing: campaigns, ads and growth.',
     hubPath: '/hire-marketing',
     group: 'hire',
     navGroup: 'talent',
@@ -223,7 +223,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'hire-seo',
     label: 'SEO',
-    description: 'Search growth and on-page specialists.',
+    description: 'Fixed-package SEO: audits, on-page and content.',
     hubPath: '/hire-seo',
     group: 'hire',
     navGroup: 'talent',
@@ -232,7 +232,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'hire-creator',
     label: 'Creator',
-    description: 'Content creators, editors, and UGC talent.',
+    description: 'Fixed-package content: video, design and copy.',
     hubPath: '/hire-creator',
     group: 'hire',
     navGroup: 'talent',
@@ -241,7 +241,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'hire-workflow',
     label: 'Workflow automation',
-    description: 'Automate ops with n8n, Zapier, Make, OpenClaw.',
+    description: 'Fixed-package automation with n8n, Zapier, Make, OpenClaw.',
     hubPath: '/hire-workflow',
     group: 'hire',
     navGroup: 'talent',
@@ -250,7 +250,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'hire-build-web',
     label: 'Build web',
-    description: 'Marketing sites, dashboards, and web apps.',
+    description: 'Fixed-package websites, dashboards and web apps.',
     hubPath: '/hire-build-web',
     group: 'hire',
     navGroup: 'talent',
@@ -259,7 +259,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
   {
     id: 'hire-build-app',
     label: 'Build app',
-    description: 'Design and ship mobile / desktop apps.',
+    description: 'Fixed-package mobile / desktop app builds.',
     hubPath: '/hire-build-app',
     group: 'hire',
     navGroup: 'talent',
@@ -406,7 +406,11 @@ export function isHireCategory(id: ProductCategory): boolean {
   return CATEGORY_META.find((c) => c.id === id)?.group === 'hire';
 }
 
-/** Custom work ordered via quote + milestones (no direct checkout). Talent may list only these. */
+/**
+ * Professional services (làm web, làm app, marketing, SEO, creator, tự động hóa): fixed packages paid
+ * from the wallet at checkout like any product (Quy chế 2.1). Ids keep the legacy `hire-` prefix.
+ * Talent accounts may list only these.
+ */
 export const HIRE_REQUEST_CATEGORIES: readonly ProductCategory[] = [
   'hire-build-web',
   'hire-build-app',

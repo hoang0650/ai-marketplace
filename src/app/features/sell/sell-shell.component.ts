@@ -47,7 +47,6 @@ const SELLER_GROUPS: NavGroup[] = [
     items: [
       { labelKey: 'sell.nav.products', path: '/sell/products' },
       { labelKey: 'sell.nav.templates', path: '/sell/templates' },
-      { labelKey: 'sell.nav.hireProjects', path: '/hire/projects' },
       { labelKey: 'sell.nav.orders', path: '/sell/orders' },
       { labelKey: 'sell.nav.messages', path: '/sell/messages' },
       { labelKey: 'sell.nav.complaints', path: '/sell/complaints' },
@@ -80,7 +79,6 @@ function partnerGroups(ws: Exclude<SellWorkspace, 'seller'>): NavGroup[] {
     ws === 'talent'
       ? [
           { labelKey: 'sell.nav.products', path: '/sell/products' },
-          { labelKey: 'sell.nav.hireProjects', path: '/hire/projects' },
           ...(WORK_BOARD_ENABLED ? [{ labelKey: 'sell.nav.workProfile', path: '/work/manage/profile' }] : []),
           { labelKey: 'sell.nav.contracts', path: '/work/manage/contracts' },
         ]

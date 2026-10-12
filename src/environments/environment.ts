@@ -12,7 +12,7 @@ export const environment = {
   /** Optional fallback when /auth/google/config is unavailable (public Web client ID). */
   googleClientId: '',
   brandName: 'AI Markets',
-  brandTagline: 'AI models, skill packs, and hire talent.',
+  brandTagline: 'AI models, skill packs, and professional services.',
   openclaw: {
     audience: 'aimarkets',
     publicUrlTemplate: 'https://{userId}.openclaw.aimarkets.vn',

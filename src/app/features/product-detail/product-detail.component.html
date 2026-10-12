@@ -181,7 +181,7 @@
           } @else if (isComputeStream(p.category)) {
             {{ 'compute.cta.play' | t }}
           } @else if (isHireRequest(p.category)) {
-            {{ 'hire.req.cta' | t }}
+            {{ 'svc.cta' | t }}
           } @else if (isHire(p.category)) {
             {{ isOpenClawHire() ? 'Launch ' + hireBrand() : 'Hire / Request' }}
           } @else if (isFilm(p.category)) {
@@ -208,11 +208,8 @@
           </button>
         }
         @if (isHireRequest(p.category)) {
-          <p class="pd-hire-note">
-            {{ 'hire.req.priceNote' | t: { price: displayPrice(p, 1) } }}
-            @if (p.pricing.negotiable !== false) { · {{ 'hire.req.negotiable' | t }} }
-          </p>
-        } @else {
+          <p class="pd-hire-note">{{ 'svc.priceNote' | t: { price: displayPrice(p, 1) } }}</p>
+        }
         <button type="button" class="pd-buy__cart" (click)="addToCart()">
           🛒 {{ (inCart() ? 'cart.view' : 'lux.addToCart') | t }}
         </button>
@@ -258,7 +255,6 @@
             </select>
           </div>
         </div>
-        }
 
         @if (checkoutMsg()) {
           <p class="checkout-msg">{{ checkoutMsg() }}</p>
@@ -434,46 +430,23 @@
     @if (workspaceTab() === 'hire' && isHireRequest(p.category)) {
       <div class="hire-layout">
         <section class="pg-pane">
-          <div class="pg-pane__head"><h2>{{ 'hire.req.title' | t }}</h2></div>
+          <div class="pg-pane__head"><h2>{{ 'svc.title' | t }}</h2></div>
           <ol class="hire-steps">
-            <li>{{ 'hire.req.step1' | t }}</li>
-            <li>{{ 'hire.req.step2' | t }}</li>
-            <li>{{ 'hire.req.step3' | t }}</li>
-            <li>{{ 'hire.req.step4' | t }}</li>
+            <li>{{ 'svc.step1' | t }}</li>
+            <li>{{ 'svc.step2' | t }}</li>
+            <li>{{ 'svc.step3' | t }}</li>
           </ol>
-          @if (isContentOwner()) {
-            <p class="cost-hint">{{ 'hire.req.own' | t }}</p>
-            <a class="btn btn-outline" routerLink="/hire/projects" [queryParams]="{ as: 'seller' }">{{ 'hire.list.title' | t }}</a>
-          } @else {
-            <div class="field">
-              <label class="field-label" for="hireBrief">{{ 'hire.req.brief' | t }}</label>
-              <textarea id="hireBrief" class="input textarea" rows="6" [(ngModel)]="hireBrief" name="hireBrief" [placeholder]="'hire.req.briefPh' | t"></textarea>
-            </div>
-            <div class="hire-req-grid">
-              <div class="field">
-                <label class="field-label" for="hireBudget">{{ 'hire.req.budget' | t }} (USD)</label>
-                <input id="hireBudget" class="input" type="number" min="0" step="1" [(ngModel)]="hireBudget" name="hireBudget" />
-              </div>
-              <div class="field">
-                <label class="field-label" for="hireDeadline">{{ 'hire.req.deadline' | t }}</label>
-                <input id="hireDeadline" class="input" type="date" [(ngModel)]="hireDeadline" name="hireDeadline" />
-              </div>
-            </div>
+          @if (!isContentOwner()) {
             <div class="pg-actions">
-              <button type="button" class="btn btn-run" (click)="submitHireRequest()" [disabled]="hireBusy()">
-                {{ (hireBusy() ? 'hire.req.sending' : 'hire.req.send') | t }}
-              </button>
+              <button type="button" class="btn btn-run" (click)="checkout()">{{ 'svc.cta' | t }}</button>
             </div>
-            @if (hireError()) {
-              <p class="cost-hint" style="color:#c62828">{{ hireError() }}</p>
-            }
           }
         </section>
         <aside class="pg-pane">
-          <div class="pg-pane__head"><h2>{{ 'hire.req.listPrice' | t }}</h2></div>
+          <div class="pg-pane__head"><h2>{{ 'svc.price' | t }}</h2></div>
           <p class="hire-price">{{ displayPrice(p, 1) }}</p>
-          <p class="cost-hint">{{ (p.pricing.negotiable !== false ? 'hire.req.negotiableHint' : 'hire.req.fixedHint') | t }}</p>
-          <p class="cost-hint">{{ 'hire.req.escrowHint' | t }}</p>
+          <p class="cost-hint">{{ 'svc.fixedHint' | t }}</p>
+          <p class="cost-hint">{{ 'svc.walletHint' | t }}</p>
           @if (p.apiDocsMarkdown) {
             <div class="mt-6">
               <div class="pg-pane__head"><h2>What you get</h2></div>
