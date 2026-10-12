@@ -22,7 +22,7 @@ export class AdminKycComponent implements OnInit {
 
   readonly statuses: KycReviewStatus[] = ['pending', 'verified', 'rejected', 'all'];
   readonly subjectFilters: Array<KycSubjectType | ''> = ['', 'individual', 'organization'];
-  readonly sides: KycSide[] = ['front', 'back'];
+  readonly sides: KycSide[] = ['front', 'back', 'license'];
 
   readonly status = signal<KycReviewStatus>('pending');
   readonly subjectType = signal<KycSubjectType | ''>('');
@@ -81,7 +81,8 @@ export class AdminKycComponent implements OnInit {
     const item = this.items().find((i) => i.userId === userId);
     if (!item) return;
     for (const side of this.sides) {
-      if (!(side === 'front' ? item.kyc.hasFront : item.kyc.hasBack)) continue;
+      const has = side === 'front' ? item.kyc.hasFront : side === 'back' ? item.kyc.hasBack : !!item.kyc.hasLicense;
+      if (!has) continue;
       this.api.documentUrl(side, userId).subscribe({
         next: (r) => {
           if (this.selectedId() === userId) this.docs.update((m) => ({ ...m, [side]: r.url }));

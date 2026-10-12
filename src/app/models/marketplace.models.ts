@@ -163,7 +163,8 @@ export interface CurrentSessionInfo {
 
 export type KycStatus = 'none' | 'draft' | 'pending' | 'verified' | 'rejected';
 export type KycIdType = 'cccd' | 'cmnd' | 'passport' | 'other';
-export type KycSide = 'front' | 'back';
+/** `license`: business registration certificate (household business / company) — Quy chế 2.1 Mục VIII. */
+export type KycSide = 'front' | 'back' | 'license';
 export type KycSubjectType = 'individual' | 'organization';
 export type KycOrgType = 'household' | 'company';
 
@@ -183,6 +184,10 @@ export interface KycProfile {
   orgAddress: string;
   hasFront: boolean;
   hasBack: boolean;
+  /** Business registration certificate uploaded (organizations). */
+  hasLicense?: boolean;
+  /** True when subjectType is organization: the licence scan is required to submit. */
+  licenseRequired?: boolean;
   submittedAt: string | null;
   reviewedAt: string | null;
   rejectReason: string;

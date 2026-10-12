@@ -52,6 +52,10 @@ export class SettingsKycComponent implements OnInit {
   orgAddress = '';
 
   readonly sides: KycSide[] = ['front', 'back'];
+  /** Organizations (household business / company) also upload the business registration certificate. */
+  get visibleSides(): KycSide[] {
+    return this.isOrg ? [...this.sides, 'license'] : this.sides;
+  }
   readonly idTypes: KycIdType[] = ['cccd', 'cmnd', 'passport', 'other'];
   readonly subjectTypes: KycSubjectType[] = ['individual', 'organization'];
   readonly orgTypes: KycOrgType[] = ['household', 'company'];
@@ -77,8 +81,9 @@ export class SettingsKycComponent implements OnInit {
         this.orgTaxCode = k.orgTaxCode || '';
         this.orgAddress = k.orgAddress || '';
         this.loading.set(false);
-        for (const side of this.sides) {
-          if (side === 'front' ? k.hasFront : k.hasBack) this.loadPreview(side);
+        for (const side of ['front', 'back', 'license'] as KycSide[]) {
+          const has = side === 'front' ? k.hasFront : side === 'back' ? k.hasBack : !!k.hasLicense;
+          if (has) this.loadPreview(side);
         }
       },
       error: (err) => {

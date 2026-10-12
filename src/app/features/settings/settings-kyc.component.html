@@ -120,7 +120,7 @@
 
       <h2>{{ (isOrg ? 'kyc.docsRep' : 'kyc.docs') | t }}</h2>
       <div class="kyc-docs">
-        @for (side of sides; track side) {
+        @for (side of visibleSides; track side) {
           <label class="kyc-doc">
             <span>{{ sideKey(side) | t }}</span>
             @if (previews()[side]; as url) {
@@ -134,6 +134,10 @@
           </label>
         }
       </div>
+      @if (isOrg) {
+        <p class="text-sm text-muted">{{ (orgType === 'household' ? 'kyc.licenseHintHousehold' : 'kyc.licenseHintCompany') | t }}</p>
+      }
+      <p class="text-sm text-muted">{{ 'kyc.vneidNote' | t }}</p>
 
       @if (k.canEdit) {
         <button type="button" class="btn btn-fill" (click)="submit()" [disabled]="busy() || !k.canSubmit">
