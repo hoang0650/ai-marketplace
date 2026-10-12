@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Observable, of, catchError, map, shareReplay, switchMap, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
+import { CurrencyService } from '../../i18n/currency.service';
 import {
   AGENT_SUBSCRIPTION_REQUIRED,
   AgentPricing,
@@ -130,6 +131,7 @@ export class OpenClawGatewayService {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly fx = inject(CurrencyService);
 
   private approveTimer: ReturnType<typeof setTimeout> | null = null;
   private approveInterval: ReturnType<typeof setInterval> | null = null;
@@ -421,8 +423,12 @@ export class OpenClawGatewayService {
       .pipe(catchError(() => of(null)));
   }
 
+  /** Official VND price (e.g. 199.000 ₫ / 30 days) plus the equivalent in the user's display currency. */
   formatVnd(vnd: number): string {
-    return `${new Intl.NumberFormat('vi-VN').format(Math.round(vnd || 0))} ₫`;
+    const base = `${new Intl.NumberFormat('vi-VN').format(Math.round(vnd || 0))} ₫`;
+    const cur = this.fx.currency();
+    if (cur === 'VND' || !vnd) return base;
+    return `${base} (≈ ${this.fx.formatFromUsd(this.fx.vndToUsd(vnd), cur)})`;
   }
 
   /**

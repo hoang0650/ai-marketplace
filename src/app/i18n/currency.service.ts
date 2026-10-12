@@ -9,7 +9,11 @@ export const CURRENCIES: Array<{ id: AppCurrency; symbol: string }> = [
   { id: 'CNY', symbol: '¥' },
 ];
 
-/** Display conversion from USD list prices. */
+/**
+ * Display conversion from USD list prices (Quy chế 2.1: prices/balances shown in VND, USD or CNY).
+ * VND is refreshed from the API top-up rate (`/v1/payments/gpay/config` → vndPerUsd) when known,
+ * so the displayed VND matches what a GPay top-up credits.
+ */
 const RATE_FROM_USD: Record<AppCurrency, number> = {
   USD: 1,
   VND: 25_000,
@@ -34,6 +38,12 @@ export class CurrencyService {
     }
   }
 
+  /** Align the VND display rate with the API top-up rate. Ignores invalid values. */
+  setVndPerUsd(rate: number): void {
+    const r = Number(rate);
+    if (Number.isFinite(r) && r > 1000 && r < 100_000) RATE_FROM_USD.VND = r;
+  }
+
   /** Convert a USD amount to display currency. */
   convertFromUsd(usd: number, target: AppCurrency = this.currency()): number {
     return usd * RATE_FROM_USD[target];
@@ -48,6 +58,11 @@ export class CurrencyService {
       return `¥${cny.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
     return `$${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  /** VND → USD using the current display rate. */
+  vndToUsd(vnd: number): number {
+    return (Number(vnd) || 0) / RATE_FROM_USD.VND;
   }
 
   formatUsageFromUsd(usd: number, unit: string, target: AppCurrency = this.currency()): string {

@@ -9,6 +9,7 @@ import { WalletTx, GpayOrder, GpayQrResponse } from '../../models/marketplace.mo
 import { environment } from '../../../environments/environment';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
+import { CurrencyService } from '../../i18n/currency.service';
 
 declare const paypal: {
   FUNDING?: { PAYPAL?: string };
@@ -35,6 +36,8 @@ const GPAY_POLL_MAX = 225;
 })
 export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly api = inject(DashboardService);
+  /** Display currency (VND / USD / CNY) for the balance equivalent. */
+  readonly fx = inject(CurrencyService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
   private readonly route = inject(ActivatedRoute);
@@ -139,6 +142,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gpayPortalEnabled.set(!!cfg.portalEnabled);
         this.gpayQrEnabled.set(!!cfg.qrEnabled);
         this.gpayVndPerUsd.set(Number(cfg.vndPerUsd) || 26000);
+        if (cfg.vndPerUsd) this.fx.setVndPerUsd(Number(cfg.vndPerUsd));
         this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);
       },
       error: () => {
