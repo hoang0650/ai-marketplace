@@ -62,7 +62,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly gpayQr = signal<GpayQrResponse | null>(null);
   readonly gpayPolling = signal(false);
   readonly gpayBusy = signal(false);
-  readonly gpayVndPerUsd = signal(26000);
+  readonly gpayVndPerUsd = signal(26500);
   readonly gpayMinTopupVnd = signal(0);
 
   depositAmount = 10;
@@ -77,7 +77,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly quickAmounts = computed(() => PAYPAL_QUICK);
   readonly gpayQuickAmounts = computed(() => GPAY_QUICK_VND);
   readonly gpayEstimateUsd = computed(() => {
-    const rate = this.gpayVndPerUsd() || 26000;
+    const rate = this.gpayVndPerUsd() || 26500;
     return Math.round((this.depositVnd / rate) * 100) / 100;
   });
 
@@ -141,7 +141,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gpayEnabled.set(!!cfg.enabled);
         this.gpayPortalEnabled.set(!!cfg.portalEnabled);
         this.gpayQrEnabled.set(!!cfg.qrEnabled);
-        this.gpayVndPerUsd.set(Number(cfg.vndPerUsd) || 26000);
+        this.gpayVndPerUsd.set(Number(cfg.vndPerUsd) || 26500);
         if (cfg.vndPerUsd) this.fx.setVndPerUsd(Number(cfg.vndPerUsd));
         this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);
       },

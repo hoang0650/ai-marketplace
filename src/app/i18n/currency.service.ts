@@ -16,7 +16,7 @@ export const CURRENCIES: Array<{ id: AppCurrency; symbol: string }> = [
  */
 const RATE_FROM_USD: Record<AppCurrency, number> = {
   USD: 1,
-  VND: 25_000,
+  VND: 26_500,
   CNY: 7.25,
 };
 
