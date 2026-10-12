@@ -354,7 +354,7 @@ export class DashboardAnalyticsComponent implements OnInit {
 @Component({
   selector: 'app-dashboard-products',
   standalone: true,
-  imports: [FormsModule, RouterLink, DecimalPipe, TemplateGitBuildComponent],
+  imports: [FormsModule, RouterLink, DecimalPipe, TemplateGitBuildComponent, TPipe],
   template: `
     <div class="mb-4 flex justify-between gap-3">
       <h2 class="font-display text-2xl">Your products</h2>
@@ -441,6 +441,11 @@ export class DashboardAnalyticsComponent implements OnInit {
             <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Compare-at price (USD)</label>
             <input class="input" type="number" min="0" step="0.01" [(ngModel)]="draft.compareAtPrice" name="compareAtPrice" />
             <p class="mt-1 text-xs text-muted">Giá gốc gạch ngang khi cao hơn giá bán. 0 = không giảm giá listing. Voucher mã giảm giá tạo ở Bán hàng → Mã giảm giá.</p>
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'sellAff.ratePct' | t }}</label>
+            <input class="input" type="number" min="0" max="25" step="0.5" [(ngModel)]="draft.affiliatePct" name="affiliatePct" [placeholder]="'sellAff.inherit' | t" />
+            <p class="mt-1 text-xs text-muted">{{ 'sellAff.productHint' | t }}</p>
           </div>
         }
         }
@@ -798,7 +803,16 @@ export class DashboardProductsComponent implements OnInit {
       priceYear: 79,
       compareAtPrice: 0,
       negotiable: true,
+      affiliatePct: '' as number | string,
     };
+  }
+
+  /** Seller affiliate commission 0–25% → fraction; empty = store default (null). Server re-validates. */
+  draftAffiliateRate(): number | null {
+    const raw = this.draft.affiliatePct;
+    if (raw === '' || raw === null || raw === undefined) return null;
+    const n = Math.min(25, Math.max(0, Number(raw) || 0));
+    return Math.round(n * 100) / 10000;
   }
 
   isHireDraft(): boolean {
@@ -1036,6 +1050,7 @@ export class DashboardProductsComponent implements OnInit {
         creatorName: user?.name || 'Creator',
         category: this.draft.category,
         pricing,
+        affiliateRate: this.draftAffiliateRate(),
         contentMeta,
         runtime: {
           serverlessEndpoint: this.draft.serverlessEndpoint.trim(),
@@ -1096,6 +1111,7 @@ export class DashboardProductsComponent implements OnInit {
         creatorName: user?.name || 'Creator',
         category: this.draft.category,
         pricing,
+        affiliateRate: this.draftAffiliateRate(),
         coverUrl: this.draft.coverUrl || undefined,
         gallery: this.draft.coverUrl ? [this.draft.coverUrl] : undefined,
         tags,

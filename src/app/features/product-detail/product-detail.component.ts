@@ -1,4 +1,5 @@
 import { Component, HostListener, OnInit, inject, signal, computed } from '@angular/core';
+import { AffiliateService } from '../../services/affiliate.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe, Location, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -93,6 +94,9 @@ export class ProductDetailComponent implements OnInit {
   readonly auth = inject(AuthService);
 
   readonly product = signal<Product | null>(null);
+  private readonly affiliateApi = inject(AffiliateService);
+  readonly affiliateCopied = signal(false);
+  readonly affiliateError = signal('');
   readonly wishlisted = computed(() => this.wishlistApi.saved(this.product()?.id));
   readonly inCart = computed(() => this.cart.has(this.product()?.id));
   readonly reviews = signal<Review[]>([]);
@@ -444,6 +448,32 @@ export class ProductDetailComponent implements OnInit {
   hasCompareAt(p: Product): boolean {
     const list = Number(p.pricing?.compareAtPrice) || 0;
     return list > this.unitUsd(p);
+  }
+
+  /** Effective seller-set affiliate rate (product or store default), 0 when not in the program. */
+  affiliateRate(p: Product): number {
+    return Number(p.affiliateEffectiveRate) || 0;
+  }
+
+  affiliatePct(p: Product): string {
+    return `${Math.round(this.affiliateRate(p) * 1000) / 10}%`;
+  }
+
+  isOwnProduct(p: Product): boolean {
+    const me = this.auth.user();
+    return !!me && (me.id === p.sellerId || (!!me.creatorSlug && me.creatorSlug === p.creatorSlug));
+  }
+
+  shareAffiliate(p: Product): void {
+    this.affiliateError.set('');
+    this.affiliateApi.link({ productSlug: p.slug }).subscribe({
+      next: (l) => {
+        const done = () => this.affiliateCopied.set(true);
+        if (navigator.clipboard?.writeText) void navigator.clipboard.writeText(l.url).then(done, done);
+        else done();
+      },
+      error: (err) => this.affiliateError.set(err?.error?.message || this.i18n.t('aff.linkInvalid')),
+    });
   }
 
   compareAtLabel(p: Product): string {

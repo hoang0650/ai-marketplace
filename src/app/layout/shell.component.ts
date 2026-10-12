@@ -12,6 +12,7 @@ import { I18nService } from '../i18n/i18n.service';
 import { TPipe } from '../i18n/t.pipe';
 import { AppLang } from '../i18n/messages';
 import { CartService } from '../features/cart/cart.service';
+import { AffiliateService } from '../services/affiliate.service';
 import { GoogleSignInComponent } from '../features/auth/google-sign-in.component';
 import { CurrencyService, AppCurrency, CURRENCIES } from '../i18n/currency.service';
 
@@ -95,6 +96,7 @@ export class ShellComponent {
   });
 
   constructor() {
+    inject(AffiliateService).startTracking();
     effect(() => {
       const authed = this.auth.isAuthenticated();
       if (!isPlatformBrowser(this.platformId)) return;

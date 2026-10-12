@@ -24,6 +24,7 @@ Bộ tài liệu pháp lý của sàn giao dịch TMĐT AI Markets (https://aima
 17. `17-chinh-sach-luu-tru-va-cung-cap-du-lieu.md` — Lưu trữ và cung cấp dữ liệu
 18. `18-chinh-sach-thue.md` — Thuế
 19. `19-chinh-sach-hoa-don.md` — Hóa đơn và chứng từ
+20. `20-chinh-sach-affiliate.md` — Chương trình Affiliate (phiên bản riêng 2026.10.12, hiệu lực 12/10/2026)
 
 ## Nơi hiển thị
 - Website: trang `/legal` đọc trực tiếp các tệp trong `src/assets/legal/`.

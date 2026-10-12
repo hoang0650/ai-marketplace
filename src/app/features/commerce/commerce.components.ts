@@ -7,7 +7,6 @@ import { SeoService } from '../../services/seo.service';
 import { AdminOverviewChartsComponent } from '../admin/admin-overview-charts.component';
 import {
   AdminOverview,
-  AffiliateStats,
   Order,
   Review,
 } from '../../models/marketplace.models';
@@ -35,46 +34,6 @@ export class BillingComponent {
   private readonly seo = inject(SeoService);
   constructor() {
     this.seo.set({ title: 'Billing' });
-  }
-}
-
-@Component({
-  selector: 'app-affiliate',
-  standalone: true,
-  imports: [CurrencyPipe, DecimalPipe],
-  template: `
-    <section class="page route-enter max-w-3xl">
-      <h1 class="section-title">Affiliate</h1>
-      @if (stats(); as s) {
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div class="panel">
-            <p class="text-xs text-muted">Code</p>
-            <p class="mt-2 font-mono text-xl">{{ s.code }}</p>
-          </div>
-          <div class="panel">
-            <p class="text-xs text-muted">Clicks</p>
-            <p class="mt-2 font-display text-3xl">{{ s.clicks | number }}</p>
-          </div>
-          <div class="panel">
-            <p class="text-xs text-muted">Conversions</p>
-            <p class="mt-2 font-display text-3xl">{{ s.conversions | number }}</p>
-          </div>
-          <div class="panel">
-            <p class="text-xs text-muted">Earnings</p>
-            <p class="mt-2 font-display text-3xl">{{ s.earnings | currency: s.currency }}</p>
-          </div>
-        </div>
-      }
-    </section>
-  `,
-})
-export class AffiliateComponent implements OnInit {
-  private readonly api = inject(DashboardService);
-  private readonly seo = inject(SeoService);
-  readonly stats = signal<AffiliateStats | null>(null);
-  ngOnInit(): void {
-    this.seo.set({ title: 'Affiliate' });
-    this.api.affiliate().subscribe((s) => this.stats.set(s));
   }
 }
 

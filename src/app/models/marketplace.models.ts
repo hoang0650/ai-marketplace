@@ -413,6 +413,10 @@ export interface Product {
   coverUrl: string;
   gallery: string[];
   pricing: ProductPricing;
+  /** Seller-set affiliate commission 0–0.25 (null = store default). */
+  affiliateRate?: number | null;
+  /** Effective rate shown on the product page ("Hoa hồng lên đến X%"). */
+  affiliateEffectiveRate?: number;
   contentMeta?: ProductContentMeta | null;
   /** GPU / game stream listings only. */
   streaming?: ProductStreaming;
@@ -815,12 +819,72 @@ export interface NotificationItem {
   params?: Record<string, string | number>;
 }
 
+export interface AffiliateConfig {
+  attributionDays: number;
+  maxRate: number;
+  attribution: 'last_click';
+  holdHours: number;
+  pit: { enabled: boolean; rate: number; thresholdVnd: number; legalReview: boolean };
+}
+
+export interface AffiliateCommissionRow {
+  id: string;
+  orderId: string;
+  productId: string;
+  productName: string;
+  currency: string;
+  baseAmount: number;
+  rate: number;
+  amount: number;
+  pitAmount: number;
+  netAmount: number;
+  reversedAmount: number;
+  state: 'pending' | 'available' | 'reversed';
+  holdUntil: string;
+  createdAt: string;
+}
+
 export interface AffiliateStats {
   code: string;
   clicks: number;
   conversions: number;
   earnings: number;
   currency: string;
+  kycStatus?: string;
+  payoutReady?: boolean;
+  orders?: number;
+  commission?: { pending: number; available: number; reversed: number; pitWithheld: number; total: number };
+  recent?: AffiliateCommissionRow[];
+  config?: AffiliateConfig;
+}
+
+export interface AffiliateLink {
+  code: string;
+  scope: 'product' | 'store';
+  rate: number;
+  inProgram: boolean;
+  path: string;
+  url: string;
+}
+
+export interface SellerAffiliateStats {
+  defaultRate: number;
+  maxRate: number;
+  clicks: number;
+  orders: number;
+  sales: number;
+  commission: number;
+  currency: string;
+  products: {
+    id: string;
+    name: string;
+    slug: string;
+    affiliateRate: number | null;
+    effectiveRate: number;
+    orders: number;
+    sales: number;
+    commission: number;
+  }[];
 }
 
 export interface DashboardSummary {

@@ -85,6 +85,22 @@
           <p class="pd-buy__ok">{{ 'pd.inStock' | t }}</p>
         </div>
 
+        @if (affiliateRate(p) > 0 && !isOwnProduct(p)) {
+          <div class="pd-aff">
+            <p class="pd-aff__rate">{{ 'aff.upTo' | t: { rate: affiliatePct(p) } }}</p>
+            @if (auth.isAuthenticated()) {
+              <button type="button" class="pd-aff__btn" (click)="shareAffiliate(p)">
+                {{ (affiliateCopied() ? 'aff.copied' : 'aff.getLink') | t }}
+              </button>
+            } @else {
+              <a class="pd-aff__btn" routerLink="/affiliate">{{ 'aff.join' | t }}</a>
+            }
+            @if (affiliateError()) {
+              <p class="pd-aff__err" role="alert">{{ affiliateError() }}</p>
+            }
+          </div>
+        }
+
         <p class="pd-buy__section">{{ 'pd.choosePkg' | t }}</p>
         <div class="pd-packages">
           @for (pkg of packages(); track pkg.id) {

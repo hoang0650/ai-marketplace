@@ -155,6 +155,12 @@ export const routes: Routes = [
           import('./features/sell/sell-coupons.component').then((m) => m.SellCouponsComponent),
       },
       {
+        path: 'affiliate',
+        canActivate: [sellerGuard],
+        loadComponent: () =>
+          import('./features/sell/sell-affiliate.component').then((m) => m.SellAffiliateComponent),
+      },
+      {
         path: 'payment',
         loadComponent: () =>
           import('./features/sell/sell-pages.components').then((m) => m.SellPaymentComponent),
@@ -619,7 +625,7 @@ export const routes: Routes = [
         path: 'affiliate',
         canActivate: [authGuard],
         loadComponent: () =>
-          import('./features/commerce/commerce.components').then((m) => m.AffiliateComponent),
+          import('./features/affiliate/affiliate.component').then((m) => m.AffiliateComponent),
       },
       {
         path: 'reviews',

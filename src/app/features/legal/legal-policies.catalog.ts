@@ -148,6 +148,13 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     summary: 'Phân biệt hóa đơn phí dịch vụ của sàn và hóa đơn của người bán.',
     group: 'commerce',
   },
+  {
+    slug: 'chinh-sach-affiliate',
+    file: '20-chinh-sach-affiliate.md',
+    title: 'Chính sách chương trình Affiliate',
+    summary: 'Phiên bản 2026.10.12: hoa hồng 0–25% giá trị đơn do người bán chi trả, last-click 30 ngày, giữ 48 giờ, thuế TNCN, hành vi cấm và thu hồi hoa hồng.',
+    group: 'commerce',
+  },
 ];
 
 const ALIASES: Record<string, string> = {
@@ -169,6 +176,8 @@ const ALIASES: Record<string, string> = {
   cookies: 'chinh-sach-cookies',
   'tax-policy': 'chinh-sach-thue',
   'invoice-policy': 'chinh-sach-hoa-don',
+  'affiliate-policy': 'chinh-sach-affiliate',
+  affiliate: 'chinh-sach-affiliate',
 };
 
 export function resolveLegalPolicy(slugOrAlias: string | null | undefined): LegalPolicyMeta | undefined {

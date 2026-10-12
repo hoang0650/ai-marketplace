@@ -256,6 +256,7 @@
                   @if (workEnabled && (auth.isFreelancer() || auth.isEmployer())) {
                     <li><a routerLink="/work/manage" (click)="closeUserMenu()">{{ 'work.title' | t }}</a></li>
                   }
+                  <li><a routerLink="/affiliate" (click)="closeUserMenu()">{{ 'aff.nav' | t }}</a></li>
                   <li><a routerLink="/settings" (click)="closeUserMenu()">{{ 'nav.settings' | t }}</a></li>
                 </ul>
                 <div class="user-menu__foot">

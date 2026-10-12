@@ -51,6 +51,7 @@ const SELLER_GROUPS: NavGroup[] = [
       { labelKey: 'sell.nav.messages', path: '/sell/messages' },
       { labelKey: 'sell.nav.complaints', path: '/sell/complaints' },
       { labelKey: 'sell.nav.coupons', path: '/sell/coupons' },
+      { labelKey: 'sell.nav.affiliate', path: '/sell/affiliate' },
     ],
   },
   {

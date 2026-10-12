@@ -5,6 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { isHiddenCategory, withoutHiddenProducts } from '../models/categories';
 import { AuthService } from './auth.service';
+import { AffiliateService } from './affiliate.service';
 import {
   AffiliateStats,
   AdminOverview,
@@ -588,6 +589,7 @@ export class DeploymentService {
 @Injectable({ providedIn: 'root' })
 export class BillingService {
   private readonly http = inject(HttpClient);
+  private readonly affiliate = inject(AffiliateService);
   private readonly base = environment.apiUrl;
 
   checkout(input: {
@@ -629,6 +631,8 @@ export class BillingService {
       quantity: input.quantity,
       licenseTerm: input.licenseTerm,
       couponCode: input.couponCode,
+      // Last-click referral (cookie set by AffiliateService); the API validates window/self-referral.
+      affiliateClickId: this.affiliate.currentClickId(),
       provider: 'wallet',
     });
   }
