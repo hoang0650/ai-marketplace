@@ -42,11 +42,11 @@ Mô tả, giá, đơn vị tính trung thực; giấy phép và quyền thương
 | API | Nguồn API, xác thực, giới hạn tần suất, điều khoản nhà cung cấp, đơn giá, cách xử lý dữ liệu |
 | Mẫu website/ứng dụng | Mã nguồn phải build thành công trên hệ thống (bản build lỗi không được cập nhật); demo chạy trong môi trường cách ly; quyền sở hữu mã nguồn |
 | Giọng đọc AI | Văn bản đồng ý của người có giọng nói đối với giọng nhân bản |
-| Dịch vụ thuê talent | Lĩnh vực, phạm vi công việc, năng lực, bảng giá tham khảo; không chứa nội dung tuyển dụng, cung ứng lao động |
+| Dịch vụ chuyên môn trọn gói | Phạm vi công việc, kết quả bàn giao, giá theo gói; không chứa tin tuyển dụng, vị trí việc làm, tiền lương, hồ sơ xin việc, giá theo giờ/tháng làm việc hoặc nội dung cung ứng, cho thuê lại lao động |
 | Máy chủ trò chơi, GPU | Chỉ cho thuê máy; không phát hành, vận hành trò chơi điện tử trên mạng |
+| Dataset | Nguồn gốc, quyền phân phối, giấy phép sử dụng; không chứa dữ liệu cá nhân hoặc dữ liệu bị cấm theo [Chính sách sử dụng chấp nhận được](10-chinh-sach-su-dung-chap-nhan-duoc.md) |
 | Phim AI, truyện/sách AI | Quyền tác giả, quyền phân phối; phân loại phim và cảnh báo độ tuổi; không chứa nội dung bị cấm theo Luật Điện ảnh, Luật Xuất bản |
 
-Nền tảng hiện chưa nhận dataset và tin tuyển dụng.
 
 ## Điều 5. Quyền của nền tảng
 

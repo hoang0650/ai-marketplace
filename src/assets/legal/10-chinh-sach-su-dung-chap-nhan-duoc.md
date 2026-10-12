@@ -12,7 +12,7 @@
 
 ---
 
-Chính sách áp dụng cho mọi người dùng, người bán và mọi dịch vụ trên nền tảng: API, AI agent, GPU, máy chủ trò chơi, AI App Builder, mẫu website/ứng dụng, thuê talent.
+Chính sách áp dụng cho mọi người dùng, người bán và mọi dịch vụ trên nền tảng: API, AI agent, GPU, máy chủ trò chơi, AI App Builder, mẫu website/ứng dụng, dataset, dịch vụ chuyên môn trọn gói.
 
 ## Điều 1. Hàng hóa, dịch vụ cấm kinh doanh trên nền tảng
 
@@ -24,8 +24,7 @@ Chính sách áp dụng cho mọi người dùng, người bán và mọi dịch
 - Deepfake, giọng nhân bản, hình ảnh người thật khi không có sự đồng ý của người đó;
 - Sản phẩm vi phạm quyền sở hữu trí tuệ;
 - Hàng hóa, dịch vụ thuộc ngành, nghề kinh doanh có điều kiện khi chưa có giấy phép tương ứng;
-- Phim, truyện/sách vi phạm Luật Điện ảnh, Luật Xuất bản (nội dung bị cấm, không phân loại phim, thiếu cảnh báo độ tuổi);
-- Dataset và tin tuyển dụng trong thời gian nền tảng chưa cung cấp các nhóm này.
+- Phim, truyện/sách vi phạm Luật Điện ảnh, Luật Xuất bản (nội dung bị cấm, không phân loại phim, thiếu cảnh báo độ tuổi).
 
 ## Điều 2. Tấn công và xâm nhập
 

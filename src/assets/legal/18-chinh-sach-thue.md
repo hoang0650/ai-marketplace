@@ -18,17 +18,17 @@ Chính sách áp dụng theo pháp luật về quản lý thuế, thuế giá tr
 
 ## Điều 2. Phí sàn không phải thuế
 
-Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, **không phải** thuế giá trị gia tăng hay thuế thu nhập của người bán. Phí của Google Play / App Store đối với giao dịch trong ứng dụng cũng không phải thuế và không phải phí sàn.
+Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, **không phải** thuế giá trị gia tăng hay thuế thu nhập của người bán. Phí của Google Play (15%) / App Store (30%) đối với giao dịch trong ứng dụng cũng không phải thuế và không phải phí sàn.
 
-## Điều 3. Khấu trừ, nộp thay đối với hộ, cá nhân kinh doanh
+## Điều 3. Khấu trừ thuế
 
-1. Nền tảng khấu trừ, khai và nộp thay thuế giá trị gia tăng, thuế thu nhập cá nhân đối với người bán là **hộ kinh doanh, cá nhân kinh doanh** theo Nghị định số 252/2026/NĐ-CP.
-2. Tỷ lệ khấu trừ áp dụng theo nhóm hàng hóa, dịch vụ và tình trạng cư trú của người bán do pháp luật quy định tại thời điểm giao dịch; căn cứ tính và ngưỡng doanh thu (nếu có) theo quy định hiện hành.
+1. Nền tảng khấu trừ thuế cố định **8%** giá trị đơn hàng (tương đương 10% trên phần 80% doanh thu của người bán) đối với **mọi người bán** (cá nhân, hộ kinh doanh, doanh nghiệp, tổ chức) tại thời điểm đơn hàng hoàn tất. Đối với hộ kinh doanh, cá nhân kinh doanh, nền tảng khai và nộp thay theo Nghị định số 252/2026/NĐ-CP.
+2. Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = **28%** giá trị đơn hàng (chưa gồm phí kho ứng dụng, nếu có). Số dư hiển thị của người bán là số dư ròng sau khấu trừ.
 3. Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng tại Kênh người bán; nền tảng cung cấp chứng từ khấu trừ thuế theo quy định.
 
-## Điều 4. Người bán là doanh nghiệp, tổ chức
+## Điều 4. Nghĩa vụ thuế khác của người bán
 
-Nền tảng không khấu trừ thuế đối với người bán là doanh nghiệp, tổ chức có đăng ký kinh doanh và mã số thuế đã được xác minh. Người bán tự kê khai, nộp thuế và xuất hóa đơn theo quy định.
+Việc nền tảng khấu trừ 8% không thay thế các nghĩa vụ thuế khác của người bán. Người bán (bao gồm doanh nghiệp, tổ chức) tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và xuất hóa đơn theo quy định của pháp luật.
 
 ## Điều 5. Hồ sơ thuế của người bán
 
@@ -36,7 +36,7 @@ Người bán khai báo loại hình (cá nhân, hộ kinh doanh, doanh nghiệp
 
 ## Điều 6. Tách khoản trên đối soát
 
-Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; phí kho ứng dụng (nếu có); thuế khấu trừ (nếu có); hoàn tiền, điều chỉnh; doanh thu người bán.
+Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; phí kho ứng dụng (nếu có); giảm giá (nếu có); thuế khấu trừ 8%; hoàn tiền, điều chỉnh; doanh thu người bán.
 
 ## Điều 7. Sản phẩm Bán bởi sàn
 

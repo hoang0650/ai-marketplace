@@ -50,8 +50,7 @@ Người bán không phản hồi trong thời hạn ở bước 3 thì nền t�
 ## Điều 5. Tạm giữ tiền khi có khiếu nại
 
 1. Doanh thu của người bán được tạm giữ 48 giờ kể từ khi ghi nhận. Khiếu nại về đơn hàng gửi trong thời gian này giữ nguyên khoản tạm giữ cho đến khi có quyết định.
-2. Khi người mua chấm dứt dự án thuê talent, hệ thống tự tạo hồ sơ khiếu nại và tạm giữ khoản của giai đoạn đã thanh toán gần nhất (nếu còn trong 48 giờ).
-3. Quyết định hoàn tiền được thực hiện vào ví hoặc phương thức thanh toán ban đầu; khoản tương ứng của người bán bị khấu trừ.
+2. Quyết định hoàn tiền được thực hiện vào ví hoặc phương thức thanh toán ban đầu; khoản tương ứng của người bán bị khấu trừ.
 
 ## Điều 6. Vai trò của nền tảng
 

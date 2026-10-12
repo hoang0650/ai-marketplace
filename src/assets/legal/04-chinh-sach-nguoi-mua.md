@@ -31,8 +31,9 @@
 ## Điều 3. Đặt hàng và thanh toán
 
 1. Người mua có thể lưu sản phẩm vào giỏ hàng, danh sách yêu thích (đồng bộ giữa website và ứng dụng), kiểm tra tổng giá rồi xác nhận thanh toán.
-2. Thanh toán bằng số dư ví, cổng GPay trên website hoặc Apple In-App Purchase / Google Play Billing trên ứng dụng.
-3. Số dư ví chỉ dùng trên nền tảng và **không rút về tài khoản ngân hàng**. Chi tiết tại [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
+2. Đơn hàng được thanh toán **duy nhất bằng số dư ví AI Markets**. Cổng GPay (ATM, thẻ, VietQR) trên website và Apple In-App Purchase / Google Play Billing trên ứng dụng chỉ dùng để nạp tiền vào ví.
+3. Giá và số dư ví được hiển thị bằng VNĐ, USD hoặc Nhân dân tệ (CNY) theo đơn vị tiền tệ người dùng lựa chọn; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp. Người mua thanh toán giá sau giảm (nếu có).
+4. Người mua được rút số dư ví tại mục “Withdraw” của ví sau khi hoàn tất xác minh danh tính (eKYC) bằng CCCD/hộ chiếu. Chi tiết tại [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
 
 ## Điều 4. Dịch vụ theo mức sử dụng (API, token)
 
@@ -48,7 +49,7 @@
 
 ## Điều 6. Dịch vụ AI agent (Bán bởi sàn)
 
-1. **Thuê bao:** 199.000 đồng/agent cho mỗi chu kỳ 30 ngày, trả trước từ số dư ví; thời gian gia hạn được cộng tiếp vào ngày hết hạn hiện tại. Mỗi agent có không gian làm việc riêng và đăng nhập bằng tài khoản AI Markets.
+1. **Thuê bao:** 199.000 VNĐ/agent cho mỗi chu kỳ 30 ngày (hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị), trả trước từ số dư ví; thời gian gia hạn được cộng tiếp vào ngày hết hạn hiện tại. Mỗi agent có không gian làm việc riêng và đăng nhập bằng tài khoản AI Markets.
 2. **Tự động gia hạn** được bật mặc định và có thể tắt bất cứ lúc nào tại trang agent. Nền tảng nhắc trước ngày hết hạn 3 ngày (thông báo và email), trừ phí trước ngày hết hạn 1 ngày; nếu số dư không đủ, hệ thống thông báo và thử lại sau mỗi 6 giờ.
 3. **Phí token:** khi dùng mô hình do nền tảng cung cấp, sau mỗi lượt chạy hệ thống trừ phí bằng giá gốc của nhà cung cấp mô hình **cộng 25%** và ghi nhận số token; mô hình miễn phí không phát sinh phí token. Khi dùng khóa API của mình (**BYOK**), nền tảng không thu phí token; khóa được mã hóa khi lưu và chỉ dùng cho agent của chính người mua.
 4. **Hết hạn:** agent bị khóa (không khởi chạy, đăng nhập, cấp khóa SSH, gọi mô hình), khóa SSH đang hiệu lực bị thu hồi. Dữ liệu trong không gian agent được giữ **30 ngày** kể từ ngày hết hạn, sau đó bị xóa và người mua được thông báo.
@@ -58,12 +59,12 @@
 
 Người mua xem demo trực tiếp trước khi mua. Sau khi thanh toán, người mua nhận quyền sử dụng theo giấy phép, được tạo bản sao riêng trong AI App Builder để chỉnh sửa (dùng khóa AI của người mua) và đẩy mã nguồn lên kho GitHub của mình; không được đăng bán lại thành mẫu mới.
 
-## Điều 8. Thuê talent (dịch vụ theo yêu cầu)
+## Điều 8. Dịch vụ chuyên môn trọn gói (làm website, làm ứng dụng, marketing, SEO, sáng tạo nội dung, tự động hóa quy trình)
 
-1. Người mua gửi yêu cầu (mô tả, ngân sách, thời hạn); người bán báo giá; hai bên thống nhất các giai đoạn trên nền tảng.
-2. Người mua xem demo từng giai đoạn và duyệt hoặc yêu cầu chỉnh sửa. **Chỉ khi duyệt** hệ thống mới trừ tiền giai đoạn đó; khoản này được tạm giữ 48 giờ để người mua khiếu nại nếu cần.
-3. Người mua có thể chấm dứt dự án (trễ hạn, không đúng yêu cầu, lý do khác): giai đoạn chưa duyệt bị hủy, hệ thống tự tạo hồ sơ khiếu nại và tạm giữ khoản đã thanh toán gần nhất (nếu còn trong 48 giờ) để xem xét hoàn tiền.
-4. Báo giá, giai đoạn, demo và lịch sử thao tác được lưu cùng dự án.
+1. Là dịch vụ do người bán cung cấp cho người mua theo hợp đồng dịch vụ quy định tại Điều 513 Bộ luật Dân sự 2015, giao kết khi người mua đặt mua và thanh toán bằng số dư ví. Phạm vi công việc, kết quả bàn giao, thời hạn và giá do người bán công bố trên trang dịch vụ.
+2. Giá được xác định theo gói hoặc theo kết quả bàn giao, không tính theo giờ, ngày hay tháng làm việc. Người bán tự quyết định phương pháp, thời gian, công cụ, nhân sự thực hiện và chịu trách nhiệm về kết quả bàn giao.
+3. Giữa người mua với người bán và nhân sự của người bán không phát sinh quan hệ lao động. Nền tảng không tuyển dụng, không tư vấn, giới thiệu việc làm, không cung ứng hay cho thuê lại lao động; trang dịch vụ không được chứa tin tuyển dụng, vị trí việc làm, tiền lương hoặc hồ sơ xin việc.
+4. Phí sàn, khấu trừ thuế, tạm giữ, hoàn tiền và giải quyết khiếu nại áp dụng như đối với các sản phẩm khác.
 
 ## Điều 9. Khóa API và bảo mật
 

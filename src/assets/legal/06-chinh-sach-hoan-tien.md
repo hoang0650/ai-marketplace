@@ -33,13 +33,13 @@ Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử d�
 | Mô hình, agent, gói kỹ năng, phần mềm, giọng đọc AI, mẫu website/ứng dụng (cấp giấy phép, tệp tải về) | Hoàn khi không bàn giao được, không đúng mô tả hoặc không sử dụng được và không khắc phục được trong thời hạn giải quyết khiếu nại. Khi hoàn tiền, giấy phép, khóa truy cập và bản sao liên quan bị thu hồi. |
 | API, token (theo mức sử dụng) | Phần đã sử dụng không được hoàn, trừ trường hợp tính sai hoặc lỗi dịch vụ được xác minh. |
 | Thuê GPU, máy chủ trò chơi (theo phút) | Phút đã sử dụng không được hoàn, trừ thời gian máy không hoạt động do lỗi của nền tảng hoặc tính sai được xác minh. |
-| Thuê bao AI agent (199.000 đồng/30 ngày) | Phí của chu kỳ đang hiệu lực không hoàn theo tỷ lệ khi người mua tự ngừng sử dụng; tắt tự động gia hạn để không bị trừ phí chu kỳ sau. Được hoàn khi agent không khả dụng do lỗi của nền tảng hoặc bị trừ phí sai. Phí token đã phát sinh không hoàn, trừ trường hợp tính sai. |
-| Thuê talent (theo giai đoạn) | Giai đoạn chưa duyệt không bị thu tiền. Khoản của giai đoạn đã duyệt được xem xét hoàn khi người mua khiếu nại hoặc chấm dứt dự án trong thời gian tạm giữ 48 giờ. |
-| Giao dịch qua Apple In-App Purchase / Google Play Billing | Một số yêu cầu hoàn tiền phải gửi qua Apple/Google theo chính sách của họ. Khi kho ứng dụng hoàn tiền, số dư ví hoặc quyền lợi tương ứng bị thu hồi. |
+| Thuê bao AI agent (199.000 VNĐ/30 ngày hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị) | Phí của chu kỳ đang hiệu lực không hoàn theo tỷ lệ khi người mua tự ngừng sử dụng; tắt tự động gia hạn để không bị trừ phí chu kỳ sau. Được hoàn khi agent không khả dụng do lỗi của nền tảng hoặc bị trừ phí sai. Phí token đã phát sinh không hoàn, trừ trường hợp tính sai. |
+| Dịch vụ chuyên môn trọn gói | Hoàn khi người bán không bàn giao kết quả hoặc kết quả không đúng mô tả đã công bố và không khắc phục được trong thời hạn giải quyết khiếu nại. |
+| Khoản nạp ví qua Apple In-App Purchase / Google Play Billing | Một số yêu cầu hoàn tiền phải gửi qua Apple/Google theo chính sách của họ. Khi kho ứng dụng hoàn tiền, số dư ví hoặc quyền lợi tương ứng bị thu hồi. |
 
 ## Điều 4. Thời hạn yêu cầu
 
-1. Người mua nên gửi yêu cầu trong **48 giờ** kể từ khi giao dịch hoặc khi giai đoạn được duyệt, để khoản tiền của người bán được tạm giữ trong lúc xem xét.
+1. Người mua nên gửi yêu cầu trong **48 giờ** kể từ khi giao dịch, để khoản tiền của người bán được tạm giữ trong lúc xem xét.
 2. Yêu cầu gửi sau thời hạn trên vẫn được tiếp nhận; việc hoàn tiền căn cứ kết quả xác minh theo Điều 2, Điều 3.
 
 ## Điều 5. Quy trình
@@ -51,11 +51,11 @@ Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử d�
 
 ## Điều 6. Nơi nhận tiền hoàn
 
-Tiền hoàn được trả về ví AI Markets hoặc phương thức thanh toán ban đầu. Số dư ví không rút về tài khoản ngân hàng.
+Tiền hoàn được trả về ví AI Markets hoặc phương thức thanh toán ban đầu. Người mua được rút số dư ví sau khi hoàn tất xác minh danh tính (eKYC) theo [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
 
 ## Điều 7. Chấm dứt dịch vụ
 
-1. Người mua có thể ngừng dịch vụ bất cứ lúc nào: dừng hoặc xóa máy GPU, dừng phiên máy chủ trò chơi, tắt tự động gia hạn agent, chấm dứt dự án thuê talent. Phí đã phát sinh đến thời điểm ngừng vẫn được tính.
+1. Người mua có thể ngừng dịch vụ bất cứ lúc nào: dừng hoặc xóa máy GPU, dừng phiên máy chủ trò chơi, tắt tự động gia hạn agent. Phí đã phát sinh đến thời điểm ngừng vẫn được tính.
 2. Nền tảng có thể tạm ngừng hoặc chấm dứt dịch vụ khi hết số dư, hết thuê bao, hoặc khi có vi phạm; dữ liệu liên quan được xử lý theo thời hạn tại [Chính sách người mua](04-chinh-sach-nguoi-mua.md) (máy GPU xóa sau 24 giờ, không gian agent giữ 30 ngày).
 
 ## Điều 8. Không xóa giao dịch

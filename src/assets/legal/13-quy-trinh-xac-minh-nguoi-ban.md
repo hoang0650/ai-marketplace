@@ -28,7 +28,8 @@ Hồ sơ cũng có thể ở trạng thái: **Từ chối**, **Tạm ngừng**, 
 | Loại người bán | Thông tin cần cung cấp |
 |---|---|
 | Cá nhân | Họ tên, loại và số giấy tờ tùy thân (CCCD/hộ chiếu), ảnh hai mặt giấy tờ, mã số thuế cá nhân, tài khoản nhận tiền đứng tên mình |
-| Hộ kinh doanh, doanh nghiệp, tổ chức | Tên, mã số thuế, địa chỉ của tổ chức; giấy tờ tùy thân của người đại diện theo pháp luật/chủ hộ; tài khoản nhận tiền đứng tên tổ chức hoặc chủ hộ |
+| Hộ kinh doanh | Tên hộ kinh doanh, mã số thuế, địa chỉ; Giấy chứng nhận đăng ký hộ kinh doanh (giấy phép kinh doanh) (bản chụp/bản scan); giấy tờ tùy thân của chủ hộ; tài khoản nhận tiền đứng tên hộ kinh doanh hoặc chủ hộ |
+| Doanh nghiệp, tổ chức | Tên, mã số thuế, địa chỉ của tổ chức; Giấy chứng nhận đăng ký doanh nghiệp / giấy phép kinh doanh hoặc giấy tờ thành lập tương đương (bản chụp/bản scan); giấy tờ tùy thân của người đại diện theo pháp luật; tài khoản nhận tiền đứng tên tổ chức |
 
 Trường hợp kinh doanh ngành, nghề có điều kiện, người bán bổ sung giấy phép tương ứng. Nền tảng chỉ thu thập dữ liệu cần thiết và bảo vệ theo [Chính sách bảo mật](08-chinh-sach-bao-mat-va-du-lieu.md).
 
@@ -51,6 +52,6 @@ Trước khi mở cửa hàng, người bán phải đọc [Chính sách ngườ
 
 Nền tảng có thể yêu cầu xác minh lại khi: thay đổi thông tin pháp lý, chủ thể hoặc tài khoản nhận tiền; có dấu hiệu gian lận; có khiếu nại nghiêm trọng; thay đổi sản phẩm, mức độ rủi ro.
 
-## Điều 7. Định danh điện tử
+## Điều 7. Xác minh danh tính (eKYC) và định danh điện tử
 
-Từ ngày 01/01/2027, người bán thực hiện định danh, xác thực điện tử (VNeID hoặc dịch vụ xác thực điện tử được cấp phép) theo quy định.
+Người bán phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán trước khi hồ sơ được phê duyệt và trước khi rút tiền; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.

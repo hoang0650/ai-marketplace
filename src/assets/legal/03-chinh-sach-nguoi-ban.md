@@ -16,14 +16,14 @@
 
 1. Có tài khoản hợp lệ, hoàn tất [Quy trình xác minh người bán](13-quy-trinh-xac-minh-nguoi-ban.md) ở trạng thái **đã xác minh** trước khi sản phẩm được hiển thị và trước khi rút tiền.
 2. Đọc và đánh dấu xác nhận Chính sách này cùng [Thỏa thuận người bán](15-mau-hop-dong-cung-cap-dich-vu-nguoi-ban.md); hệ thống lưu thời điểm và phiên bản xác nhận.
-3. Hồ sơ gồm: thông tin định danh (CCCD/hộ chiếu); giấy chứng nhận đăng ký kinh doanh và mã số thuế (nếu có); người đại diện; địa chỉ; tài khoản nhận tiền đứng tên người bán; giấy phép đối với ngành, nghề kinh doanh có điều kiện (nếu có).
-4. Từ ngày 01/01/2027, người bán thực hiện định danh, xác thực điện tử theo quy định.
+3. Hồ sơ gồm: thông tin định danh (CCCD/hộ chiếu); giấy chứng nhận đăng ký kinh doanh (giấy phép kinh doanh) đối với hộ kinh doanh, doanh nghiệp, tổ chức và mã số thuế (nếu có); người đại diện; địa chỉ; tài khoản nhận tiền đứng tên người bán; giấy phép đối với ngành, nghề kinh doanh có điều kiện (nếu có). Hộ kinh doanh tải lên bản chụp/bản scan Giấy chứng nhận đăng ký hộ kinh doanh; doanh nghiệp, tổ chức tải lên Giấy chứng nhận đăng ký doanh nghiệp / giấy phép kinh doanh hoặc giấy tờ thành lập tương đương.
+4. Người bán phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán trước khi hồ sơ được phê duyệt và trước khi rút tiền; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.
 
 ## Điều 2. Sản phẩm được phép đăng bán
 
-Mô hình AI, AI agent, gói kỹ năng, phần mềm, giọng đọc AI, mẫu website/ứng dụng, phim AI, truyện/sách AI, API, hạ tầng tính toán và dịch vụ theo yêu cầu (thuê talent) theo [Quy chế hoạt động](01-quy-che-hoat-dong-san-tmdt.md).
+Mô hình AI, AI agent, gói kỹ năng, phần mềm, giọng đọc AI, mẫu website/ứng dụng, phim AI, truyện/sách AI, API, hạ tầng tính toán, dataset và dịch vụ chuyên môn trọn gói (làm website, làm ứng dụng, marketing, SEO, sáng tạo nội dung, tự động hóa quy trình) theo [Quy chế hoạt động](01-quy-che-hoat-dong-san-tmdt.md).
 
-Nền tảng **hiện chưa nhận** đăng bán dataset và tin tuyển dụng (Work).
+Nền tảng không nhận đăng tin tuyển dụng, vị trí việc làm, hồ sơ xin việc hoặc dịch vụ cung ứng, cho thuê lại lao động.
 
 ## Điều 3. Hành vi bị cấm (người bán phải đọc trước khi mở cửa hàng)
 
@@ -46,17 +46,20 @@ Nền tảng **hiện chưa nhận** đăng bán dataset và tin tuyển dụng 
 ## Điều 5. Quy định riêng theo loại sản phẩm
 
 - **Mẫu website/ứng dụng:** tải mã nguồn (tệp nén hoặc kho GitHub); hệ thống tự build, bản build lỗi không được cập nhật vào sản phẩm; demo chạy trong môi trường cách ly; người mua không được đăng bán lại mẫu.
-- **Thuê talent:** báo giá, chia giai đoạn, gửi demo trên nền tảng; chỉ giai đoạn được người mua duyệt mới được thanh toán; với dịch vụ xây dựng website, ứng dụng, demo là dự án AI App Builder.
+- **Dịch vụ chuyên môn trọn gói:** mô tả rõ phạm vi công việc, kết quả bàn giao, thời hạn và giá theo gói (không tính theo giờ, ngày hay tháng làm việc); không chứa tin tuyển dụng, vị trí việc làm, tiền lương, hồ sơ xin việc; tuân thủ khoản 6 Mục X của [Quy chế hoạt động](01-quy-che-hoat-dong-san-tmdt.md).
+- **Dataset:** khai báo nguồn gốc, quyền phân phối và giấy phép sử dụng; không chứa dữ liệu cá nhân hoặc dữ liệu thu thập trái phép.
 - **API, compute, máy chủ trò chơi:** khai báo đơn giá theo đơn vị sử dụng; tích hợp qua cổng (gateway) của nền tảng để mức sử dụng được đo cho từng người mua; máy chủ trò chơi chỉ cho thuê máy, không phát hành, vận hành trò chơi.
 
 ## Điều 6. Phí, doanh thu và chi trả
 
-1. **Phí sàn mặc định 20%** giá trị đơn hàng (với thuê talent: trên từng giai đoạn được duyệt). Phí sàn không phải là thuế.
-2. **Phí kho ứng dụng** với giao dịch qua Apple In-App Purchase / Google Play Billing do Apple/Google thu theo chính sách của họ, được khấu trừ khi đối soát; giao dịch trên website không chịu phí này.
-3. **Thuế:** khấu trừ, nộp thay đối với người bán là hộ, cá nhân kinh doanh theo Nghị định số 252/2026/NĐ-CP, xem [Chính sách thuế](18-chinh-sach-thue.md).
-4. **Doanh thu người bán** = giá trị đơn − phí sàn − phí kho ứng dụng (nếu có) − thuế khấu trừ (nếu có) − hoàn tiền/điều chỉnh. Mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
-5. Doanh thu được **tạm giữ 48 giờ** kể từ khi ghi nhận; khoản liên quan khiếu nại đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
-6. Người bán đã xác minh gửi yêu cầu rút số dư khả dụng về tài khoản ngân hàng đứng tên mình. Số dư người bán là khoản phải trả theo đối soát, không phải tiền gửi.
+1. **Phí sàn mặc định 20%** giá trị đơn hàng sau giảm giá. Phí sàn không phải là thuế.
+2. **Phí kho ứng dụng** (Google Play 15%, App Store 30%) với giao dịch trong ứng dụng do Apple/Google thu theo chính sách của họ, không phải phí sàn, được khấu trừ khi đối soát; giao dịch trên website không chịu phí này.
+3. **Thuế:** khấu trừ cố định **8%** giá trị đơn hàng (10% trên phần 80% doanh thu của người bán) đối với mọi người bán khi đơn hàng hoàn tất. Tổng khấu trừ = phí sàn 20% + thuế 8% = **28%**. Xem [Chính sách thuế](18-chinh-sach-thue.md).
+4. **Mã giảm giá:** khoản giảm giá được áp dụng vào giá trị đơn hàng trước khi tính phí sàn; khoản giảm giá do người bán phát hành do người bán chịu.
+5. **Doanh thu người bán** = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − phí kho ứng dụng (nếu có) − hoàn tiền/điều chỉnh. Số dư hiển thị của người bán là số dư ròng. Mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
+6. Doanh thu được **tạm giữ 48 giờ** kể từ khi ghi nhận; khoản liên quan khiếu nại đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
+7. Người bán đã xác minh (bao gồm eKYC) gửi yêu cầu rút số dư khả dụng về tài khoản ngân hàng đứng tên mình. Số dư người bán là khoản phải trả theo đối soát, không phải tiền gửi.
+8. Thay đổi mức phí được thông báo ít nhất 30 ngày trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
 
 ## Điều 7. Xử lý vi phạm
 

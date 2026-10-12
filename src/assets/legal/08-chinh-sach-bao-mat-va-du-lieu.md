@@ -48,7 +48,7 @@ Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; x
 ## Điều 6. Chia sẻ dữ liệu
 
 Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
-- **Người bán:** thông tin cần để thực hiện đơn hàng, dự án thuê talent với người mua;
+- **Người bán:** thông tin cần để thực hiện đơn hàng với người mua;
 - **Đối tác thanh toán:** GPay, Apple, Google;
 - **Nhà cung cấp hạ tầng:** máy chủ, lưu trữ, GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
 - **Cơ quan nhà nước có thẩm quyền:** khi có yêu cầu theo quy định pháp luật.
@@ -57,7 +57,7 @@ Nền tảng **không mua bán dữ liệu cá nhân**.
 
 ## Điều 7. Chuyển dữ liệu ra nước ngoài
 
-Máy chủ ứng dụng và một số nhà cung cấp hạ tầng (máy chủ, GPU, API mô hình AI) đặt tại nước ngoài, do đó dữ liệu có thể được chuyển, lưu trữ ngoài lãnh thổ Việt Nam. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài, lựa chọn nhà cung cấp có cam kết bảo mật và thực hiện lưu trữ dữ liệu tại Việt Nam theo quy định về an ninh mạng.
+Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (Điều 5) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
 
 ## Điều 8. Biện pháp bảo vệ
 
