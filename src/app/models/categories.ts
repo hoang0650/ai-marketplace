@@ -286,10 +286,11 @@ export const AI_CATEGORIES: CategoryMeta[] = [
 ];
 
 /**
- * Paused until the licence exists: data intermediary (Luật Dữ liệu). Hidden from browsing and
- * new listings; owners and admins can still open existing listings.
+ * Categories hidden from browsing and new listings (owners and admins can still open existing
+ * listings). Empty since Quy chế 2.1 (05/10/2026): dataset is offered again, with no personal or
+ * unlawfully collected data (khoản 1 Mục XV). Keep in sync with the app `HIDDEN_CATEGORIES`.
  */
-export const HIDDEN_CATEGORIES: ReadonlySet<ProductCategory> = new Set<ProductCategory>(['dataset']);
+export const HIDDEN_CATEGORIES: ReadonlySet<ProductCategory> = new Set<ProductCategory>([]);
 
 export function isHiddenCategory(id?: ProductCategory | string | null): boolean {
   return HIDDEN_CATEGORIES.has(String(id || '') as ProductCategory);
