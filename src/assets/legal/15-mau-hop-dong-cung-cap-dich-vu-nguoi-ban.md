@@ -4,7 +4,7 @@
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
-**Điện thoại:** 1900 6159  
+**Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày hiệu lực:** 05/10/2026  
 **Phiên bản:** v2026.10.05
@@ -133,7 +133,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 10. Quyền và nghĩa vụ của Bên B
 
-1. Quyền: đăng sản phẩm đủ điều kiện sau khi được kiểm duyệt; quản lý cửa hàng, sản phẩm, giá, mã giảm giá; xem đơn hàng, mức sử dụng, doanh thu, số tiền tạm giữ, thuế đã khấu trừ; nhận thanh toán theo Điều 7; phản hồi khiếu nại, cung cấp bằng chứng; được thông báo lý do và yêu cầu xem xét lại quyết định xử lý, kiểm duyệt, giải quyết khiếu nại; yêu cầu cung cấp, trích xuất dữ liệu sản phẩm (trong 01 năm) và dữ liệu đơn hàng, hợp đồng, giao dịch (trong 03 năm) của mình qua support@aimarkets.vn hoặc hotline 1900 6159, kể cả khi tài khoản bị tạm ngừng hoặc chấm dứt.
+1. Quyền: đăng sản phẩm đủ điều kiện sau khi được kiểm duyệt; quản lý cửa hàng, sản phẩm, giá, mã giảm giá; xem đơn hàng, mức sử dụng, doanh thu, số tiền tạm giữ, thuế đã khấu trừ; nhận thanh toán theo Điều 7; phản hồi khiếu nại, cung cấp bằng chứng; được thông báo lý do và yêu cầu xem xét lại quyết định xử lý, kiểm duyệt, giải quyết khiếu nại; yêu cầu cung cấp, trích xuất dữ liệu sản phẩm (trong 01 năm) và dữ liệu đơn hàng, hợp đồng, giao dịch (trong 03 năm) của mình qua support@aimarkets.vn hoặc hotline 0931 881 584, kể cả khi tài khoản bị tạm ngừng hoặc chấm dứt.
 
 2. Nghĩa vụ:
 
@@ -185,7 +185,7 @@ i) Không mạo nhận là sản phẩm “Bán bởi sàn” hoặc dùng tên 
 
 1. Bên A xử lý dữ liệu cá nhân của Bên B và Người mua theo Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15, Nghị định số 356/2025/NĐ-CP và Quy chế. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm (lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập, hiển thị dạng che một phần).
 
-2. Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ (nội dung gửi tới nhà cung cấp mô hình AI, dữ liệu xử lý trên hạ tầng GPU ở nước ngoài) theo hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài.
+2. Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) (trung tâm dữ liệu của 123HOST tại TP. Hồ Chí Minh, địa chỉ IP 103.97.127.39). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ (nội dung gửi tới nhà cung cấp mô hình AI, dữ liệu xử lý trên hạ tầng GPU ở nước ngoài) theo hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài.
 
 3. Thời hạn lưu trữ tối thiểu: thông tin sản phẩm 01 năm; hợp đồng, đơn hàng, giao dịch, đối soát, hoàn tiền 03 năm kể từ ngày phát sinh; hồ sơ xác minh người bán trong thời gian hoạt động và 03 năm sau khi chấm dứt; khiếu nại, quyết định xử lý vi phạm 03 năm kể từ khi đóng; chứng từ kế toán, thuế theo pháp luật kế toán, thuế.
 

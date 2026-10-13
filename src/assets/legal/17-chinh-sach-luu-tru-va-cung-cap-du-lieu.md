@@ -5,7 +5,7 @@
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
-**Điện thoại:** 1900 6159  
+**Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày hiệu lực:** 04/10/2026  
 **Phiên bản:** 2.0
@@ -37,7 +37,7 @@ Khi có tranh chấp, điều tra hoặc yêu cầu pháp lý, dữ liệu liên
 
 ## Điều 4. Người bán trích xuất dữ liệu
 
-Người bán có thể yêu cầu trích xuất thông tin sản phẩm đã đăng (trong 01 năm) và giao dịch của mình (trong 03 năm) qua support@aimarkets.vn hoặc hotline 1900 6159.
+Người bán có thể yêu cầu trích xuất thông tin sản phẩm đã đăng (trong 01 năm) và giao dịch của mình (trong 03 năm) qua support@aimarkets.vn hoặc hotline 0931 881 584.
 
 ## Điều 5. Yêu cầu của cơ quan có thẩm quyền
 

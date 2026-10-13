@@ -5,7 +5,7 @@
 **Bên kiểm soát và xử lý dữ liệu:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
-**Điện thoại:** 1900 6159  
+**Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày hiệu lực:** 04/10/2026  
 **Phiên bản:** 2.0
@@ -57,7 +57,7 @@ Nền tảng **không mua bán dữ liệu cá nhân**.
 
 ## Điều 7. Chuyển dữ liệu ra nước ngoài
 
-Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (Điều 5) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
+Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) (trung tâm dữ liệu của 123HOST tại TP. Hồ Chí Minh, địa chỉ IP 103.97.127.39). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (Điều 5) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
 
 ## Điều 8. Biện pháp bảo vệ
 
@@ -87,4 +87,4 @@ Khi phát hiện vi phạm dữ liệu cá nhân, nền tảng cô lập, khắc
 
 ## Điều 13. Liên hệ
 
-Mọi yêu cầu về dữ liệu cá nhân gửi tới **support@aimarkets.vn** hoặc hotline **1900 6159**.
+Mọi yêu cầu về dữ liệu cá nhân gửi tới **support@aimarkets.vn** hoặc hotline **0931 881 584**.

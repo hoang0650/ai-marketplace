@@ -19,7 +19,7 @@
 - Đơn vị chủ quản, vận hành: Công ty TNHH giải pháp công nghệ PHGroup.
 - Mã số thuế: 3703279135.
 - Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam.
-- Điện thoại (hotline): 1900 6159.
+- Điện thoại (hotline): 0931 881 584.
 - Email: support@aimarkets.vn.
 
 Nội dung Quy chế này thống nhất với Đề án cung cấp dịch vụ sàn giao dịch thương mại điện tử nộp Bộ Công Thương.
@@ -238,7 +238,7 @@ d) Nội dung do AI tạo (hình ảnh, âm thanh, video, giọng nói nhân b�
 
 ### 6. Dữ liệu của người bán
 
-Người bán có thể yêu cầu cung cấp, trích xuất dữ liệu sản phẩm đã đăng (lưu tối thiểu 01 năm) và dữ liệu đơn hàng, hợp đồng, giao dịch (lưu tối thiểu 03 năm) của mình, kể cả khi tài khoản bị tạm ngừng hoặc chấm dứt, qua support@aimarkets.vn hoặc hotline 1900 6159 (khoản 4 Mục XIX).
+Người bán có thể yêu cầu cung cấp, trích xuất dữ liệu sản phẩm đã đăng (lưu tối thiểu 01 năm) và dữ liệu đơn hàng, hợp đồng, giao dịch (lưu tối thiểu 03 năm) của mình, kể cả khi tài khoản bị tạm ngừng hoặc chấm dứt, qua support@aimarkets.vn hoặc hotline 0931 881 584 (khoản 4 Mục XIX).
 
 ## VIII. XÁC MINH NGƯỜI BÁN
 
@@ -761,7 +761,7 @@ e) Xử lý theo Quy trình xử lý vi phạm tại Mục XV.
 
 - Biểu mẫu trực tuyến: https://aimarkets.vn/complaints/new (website) hoặc mục Khiếu nại trong ứng dụng;
 - Email: support@aimarkets.vn;
-- Hotline: 1900 6159.
+- Hotline: 0931 881 584.
 
 Mỗi hồ sơ có mã, trạng thái, bằng chứng đính kèm và lịch sử xử lý; người khiếu nại theo dõi tại https://aimarkets.vn/complaints.
 
@@ -868,7 +868,7 @@ Nền tảng không mua bán dữ liệu cá nhân.
 
 ### 7. Chuyển dữ liệu ra nước ngoài
 
-Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (khoản 5 Mục này) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
+Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) (trung tâm dữ liệu của 123HOST tại TP. Hồ Chí Minh, địa chỉ IP 103.97.127.39). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (khoản 5 Mục này) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
 
 ### 8. Biện pháp bảo vệ
 
@@ -918,7 +918,7 @@ Khi phát hiện vi phạm dữ liệu cá nhân, nền tảng cô lập, khắc
 
 ### 13. Liên hệ về dữ liệu cá nhân
 
-Mọi yêu cầu về dữ liệu cá nhân gửi tới support@aimarkets.vn hoặc hotline 1900 6159.
+Mọi yêu cầu về dữ liệu cá nhân gửi tới support@aimarkets.vn hoặc hotline 0931 881 584.
 
 ## XIX. LƯU TRỮ VÀ CUNG CẤP DỮ LIỆU
 
@@ -947,7 +947,7 @@ Khi có tranh chấp, điều tra hoặc yêu cầu pháp lý, dữ liệu liên
 
 ### 4. Người bán trích xuất dữ liệu
 
-Người bán có thể yêu cầu trích xuất thông tin sản phẩm đã đăng (trong 01 năm) và giao dịch của mình (trong 03 năm) qua support@aimarkets.vn hoặc hotline 1900 6159, kể cả khi tài khoản bị tạm ngừng hoặc chấm dứt.
+Người bán có thể yêu cầu trích xuất thông tin sản phẩm đã đăng (trong 01 năm) và giao dịch của mình (trong 03 năm) qua support@aimarkets.vn hoặc hotline 0931 881 584, kể cả khi tài khoản bị tạm ngừng hoặc chấm dứt.
 
 ### 5. Yêu cầu của cơ quan có thẩm quyền
 
@@ -1088,7 +1088,7 @@ Mọi thắc mắc, khiếu nại, yêu cầu hỗ trợ hoặc pháp lý xin vu
 - Công ty: Công ty TNHH giải pháp công nghệ PHGroup
 - Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam
 - Email hỗ trợ / pháp lý: support@aimarkets.vn
-- Hotline: 1900 6159
+- Hotline: 0931 881 584
 - Khiếu nại trực tuyến: https://aimarkets.vn/complaints
 
 |  | ĐẠI DIỆN CÔNG TY; (Ký, ghi rõ họ tên và đóng dấu); ……………………………………; Chức vụ: …………………… |
