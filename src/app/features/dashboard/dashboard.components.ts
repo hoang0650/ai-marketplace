@@ -106,12 +106,19 @@ export class DashboardShellComponent {
         <div class="panel">
           <p class="text-xs uppercase text-muted">Phí sàn (commission)</p>
           <p class="mt-2 font-display text-2xl">{{ (s.platformCommission || 0) | currency: s.currency }}</p>
-          <p class="mt-1 text-xs text-muted">Mặc định 20% — chưa gồm thuế 10% trên 80% seller</p>
+          <p class="mt-1 text-xs text-muted">Mặc định 20% giá sau giảm giá — không phải thuế</p>
         </div>
         <div class="panel">
           <p class="text-xs uppercase text-muted">Thuế khấu trừ</p>
           <p class="mt-2 font-display text-2xl">{{ (s.taxWithholding || 0) | currency: s.currency }}</p>
-          <p class="mt-1 text-xs text-muted">10% trên 80% doanh thu seller (8% đơn)</p>
+          @if (s.sellerTaxRate?.withheldByPlatform) {
+            <p class="mt-1 text-xs text-muted">Cá nhân kinh doanh: sàn khấu trừ, nộp thay {{ (s.sellerTaxRate?.total || 0) * 100 | number: '1.0-2' }}% (GTGT {{ (s.taxVatWithheld || 0) | currency: s.currency }} · TNCN {{ (s.taxPitWithheld || 0) | currency: s.currency }}) — NĐ 117/2025/NĐ-CP</p>
+          } @else {
+            <p class="mt-1 text-xs text-muted">Hộ kinh doanh / doanh nghiệp: 0% — tự kê khai, xuất hóa đơn</p>
+          }
+          @if (!s.sellerTypeDeclared) {
+            <a class="mt-1 block text-xs font-semibold" routerLink="/sell/verification">Khai báo loại người bán và MST (bắt buộc) ›</a>
+          }
         </div>
         <div class="panel">
           <p class="text-xs uppercase text-muted">Hoàn tiền</p>
@@ -395,7 +402,7 @@ export class DashboardAnalyticsComponent implements OnInit {
           <div class="md:col-span-2">
             <p class="mt-1 text-xs text-muted">
               Dịch vụ chuyên môn được bán theo gói giá cố định: mô tả rõ phạm vi, sản phẩm bàn giao và thời gian thực hiện.
-              Không báo giá, không tính theo giờ/tháng. Khách thanh toán bằng số dư ví khi mua; phí sàn 20% (trên giá sau giảm giá) và thuế 8% được khấu trừ khi đơn hoàn tất, tiền được tạm giữ 48 giờ trước khi rút.
+              Không báo giá, không tính theo giờ/tháng. Khách thanh toán bằng số dư ví khi mua; phí sàn 20% (trên giá sau giảm giá) và thuế theo loại người bán (cá nhân kinh doanh 7%; hộ kinh doanh, doanh nghiệp 0%) được khấu trừ khi đơn hoàn tất, tiền được tạm giữ 48 giờ trước khi rút.
             </p>
           </div>
         } @else {

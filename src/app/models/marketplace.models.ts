@@ -618,6 +618,9 @@ export interface SellerProfile {
   id: string;
   userId: string;
   sellerType: string;
+  /** Seller type explicitly declared at registration (mandatory, tax policy 2026-10). */
+  sellerTypeDeclared?: boolean;
+  taxRate?: { vat: number; pit: number; total: number; withheldByPlatform: boolean };
   legalName: string;
   displayName: string;
   taxCode: string;
@@ -683,6 +686,7 @@ export interface PayoutPolicy {
   minAmountVnd: number;
   holdHours: number;
   requiresNoDispute: boolean;
+  sellerType?: string | null;
 }
 
 export interface PayoutQuote {
@@ -824,7 +828,16 @@ export interface AffiliateConfig {
   maxRate: number;
   attribution: 'last_click';
   holdHours: number;
-  pit: { enabled: boolean; rate: number; thresholdVnd: number; legalReview: boolean };
+  pit: {
+    enabled: boolean;
+    rate: number;
+    thresholdVnd: number;
+    legalReview: boolean;
+    rule?: string;
+    commitmentForm?: string;
+    commitmentExempts?: boolean;
+    yearEndCertificate?: boolean;
+  };
 }
 
 export interface AffiliateCommissionRow {
@@ -837,6 +850,8 @@ export interface AffiliateCommissionRow {
   rate: number;
   amount: number;
   pitAmount: number;
+  pitRate?: number;
+  pitRule?: string;
   netAmount: number;
   reversedAmount: number;
   state: 'pending' | 'available' | 'reversed';
@@ -859,6 +874,41 @@ export interface AffiliateStats {
   commission?: { pending: number; available: number; reversed: number; pitWithheld: number; total: number };
   recent?: AffiliateCommissionRow[];
   config?: AffiliateConfig;
+  pitCommitment?: PitCommitment;
+}
+
+/** Cam kết Mẫu 08/CK-TNCN (affiliate PIT commitment) - eKYC-style upload + admin approval. */
+export interface PitCommitment {
+  status: 'none' | 'draft' | 'pending' | 'approved' | 'rejected';
+  year: number | null;
+  hasDocument: boolean;
+  personalTaxCode: string;
+  submittedAt: string | null;
+  reviewedAt: string | null;
+  rejectReason: string;
+  activeForCurrentYear: boolean;
+  currentYear: number;
+  form: string;
+  userId?: string;
+  name?: string;
+  email?: string;
+  fullName?: string;
+}
+
+export interface TaxPolicy {
+  version: string;
+  platformFeeRate: number;
+  platformFeeVatRate: number;
+  individual: {
+    withheldByPlatform: boolean;
+    digital: { vat: number; pit: number; total: number };
+    goods: { vat: number; pit: number; total: number };
+    annualThresholdVnd: number;
+  };
+  householdBusiness: { withheldByPlatform: boolean; rate: number };
+  company: { withheldByPlatform: boolean; rate: number; platformIssuesVatInvoiceOnFee: boolean };
+  legalBasis: string[];
+  legalReview: boolean;
 }
 
 export interface AffiliateLink {
@@ -901,6 +951,11 @@ export interface DashboardSummary {
   platformCommission?: number;
   storeFees?: number;
   taxWithholding?: number;
+  taxVatWithheld?: number;
+  taxPitWithheld?: number;
+  sellerType?: string;
+  sellerTypeDeclared?: boolean;
+  sellerTaxRate?: { vat: number; pit: number; total: number; withheldByPlatform: boolean };
   refunds?: number;
   netPayable?: number;
 }

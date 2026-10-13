@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AffiliateService } from '../../services/affiliate.service';
 import { SeoService } from '../../services/seo.service';
-import { AffiliateLink, AffiliateStats } from '../../models/marketplace.models';
+import { AffiliateLink, AffiliateStats, PitCommitment } from '../../models/marketplace.models';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { CurrencyService } from '../../i18n/currency.service';
@@ -129,6 +129,32 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
           }
         </div>
 
+
+        <div class="panel mt-6">
+          <h2 class="font-display text-xl">{{ 'aff.pit08.title' | t }}</h2>
+          <p class="mt-1 text-sm text-muted">{{ 'aff.pit08.lead' | t }}</p>
+          @if (pit(); as c) {
+            <p class="mt-2 text-sm">
+              {{ 'aff.pit08.status' | t }}: <strong>{{ 'aff.pit08.st.' + c.status | t }}</strong>
+              @if (c.year) { · {{ 'aff.pit08.year' | t }} {{ c.year }} }
+              @if (c.activeForCurrentYear) { · {{ 'aff.pit08.active' | t }} }
+            </p>
+            @if (c.status === 'rejected' && c.rejectReason) {
+              <p class="mt-1 text-sm text-red-600">{{ c.rejectReason }}</p>
+            }
+            @if (c.status !== 'pending') {
+              <div class="mt-3 flex flex-wrap items-center gap-2">
+                <input type="file" accept="application/pdf,image/jpeg,image/png,image/webp" (change)="pickPit($event)" [attr.aria-label]="'aff.pit08.file' | t" />
+                <input class="input w-24" type="number" name="pitYear" [(ngModel)]="pitYear" [min]="c.currentYear" [max]="c.currentYear + 1" [attr.aria-label]="'aff.pit08.year' | t" />
+                <input class="input w-44" name="pitTax" [(ngModel)]="pitTaxCode" [placeholder]="'aff.pit08.taxCode' | t" />
+                <button type="button" class="btn btn-fill" [disabled]="busy() || !c.hasDocument" (click)="submitPit()">{{ 'aff.pit08.submit' | t }}</button>
+              </div>
+            }
+            @if (pitMsg()) {
+              <p class="mt-2 text-sm" role="status">{{ pitMsg() }}</p>
+            }
+          }
+        </div>
         <div class="panel mt-6">
           <h2 class="font-display text-xl">{{ 'aff.rulesTitle' | t }}</h2>
           <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
@@ -139,6 +165,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
             <li>{{ 'aff.rule.hold' | t: { hours: s.config?.holdHours || 48 } }}</li>
             <li>{{ 'aff.rule.refund' | t }}</li>
             <li>{{ 'aff.rule.pit' | t }}</li>
+            <li>{{ 'aff.rule.pitCert' | t }}</li>
             <li>{{ 'aff.rule.banned' | t }}</li>
           </ul>
           <a routerLink="/legal/chinh-sach-affiliate" class="mt-3 inline-block underline">{{ 'aff.policy' | t }}</a>
@@ -158,10 +185,55 @@ export class AffiliateComponent implements OnInit {
   readonly busy = signal(false);
   readonly copied = signal(false);
   target = '';
+  readonly pit = signal<PitCommitment | null>(null);
+  readonly pitMsg = signal('');
+  pitYear = new Date().getFullYear();
+  pitTaxCode = '';
 
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('aff.title') });
-    this.api.dashboard().subscribe((s) => this.stats.set(s));
+    this.api.dashboard().subscribe((s) => {
+      this.stats.set(s);
+      if (s.pitCommitment) {
+        this.pit.set(s.pitCommitment);
+        this.pitYear = s.pitCommitment.year || s.pitCommitment.currentYear;
+        this.pitTaxCode = s.pitCommitment.personalTaxCode || '';
+      }
+    });
+  }
+
+  pickPit(ev: Event): void {
+    const file = (ev.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.pitMsg.set('');
+    this.busy.set(true);
+    this.api.uploadPitCommitment(file).subscribe({
+      next: (c) => {
+        this.pit.set(c);
+        this.pitMsg.set(this.i18n.t('aff.pit08.uploaded'));
+        this.busy.set(false);
+      },
+      error: (err) => {
+        this.pitMsg.set(err?.error?.message || this.i18n.t('aff.pit08.fail'));
+        this.busy.set(false);
+      },
+    });
+  }
+
+  submitPit(): void {
+    this.pitMsg.set('');
+    this.busy.set(true);
+    this.api.submitPitCommitment({ year: Number(this.pitYear), personalTaxCode: this.pitTaxCode.trim() }).subscribe({
+      next: (c) => {
+        this.pit.set(c);
+        this.pitMsg.set(this.i18n.t('aff.pit08.sent'));
+        this.busy.set(false);
+      },
+      error: (err) => {
+        this.pitMsg.set(err?.error?.message || this.i18n.t('aff.pit08.fail'));
+        this.busy.set(false);
+      },
+    });
   }
 
   money(amount: number, currency = 'USD'): string {

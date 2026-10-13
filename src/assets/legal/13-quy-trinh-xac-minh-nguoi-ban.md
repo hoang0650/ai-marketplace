@@ -27,9 +27,9 @@ Hồ sơ cũng có thể ở trạng thái: **Từ chối**, **Tạm ngừng**, 
 
 | Loại người bán | Thông tin cần cung cấp |
 |---|---|
-| Cá nhân | Họ tên, loại và số giấy tờ tùy thân (CCCD/hộ chiếu), ảnh hai mặt giấy tờ, mã số thuế cá nhân, tài khoản nhận tiền đứng tên mình |
-| Hộ kinh doanh | Tên hộ kinh doanh, mã số thuế, địa chỉ; Giấy chứng nhận đăng ký hộ kinh doanh (giấy phép kinh doanh) (bản chụp/bản scan); giấy tờ tùy thân của chủ hộ; tài khoản nhận tiền đứng tên hộ kinh doanh hoặc chủ hộ |
-| Doanh nghiệp, tổ chức | Tên, mã số thuế, địa chỉ của tổ chức; Giấy chứng nhận đăng ký doanh nghiệp / giấy phép kinh doanh hoặc giấy tờ thành lập tương đương (bản chụp/bản scan); giấy tờ tùy thân của người đại diện theo pháp luật; tài khoản nhận tiền đứng tên tổ chức |
+| Cá nhân kinh doanh | Loại người bán (bắt buộc); họ tên, loại và số giấy tờ tùy thân (CCCD/hộ chiếu), ảnh hai mặt giấy tờ, mã số thuế cá nhân (bắt buộc; có thể dùng số CCCD), tài khoản nhận tiền đứng tên mình. Nền tảng khấu trừ, nộp thay thuế 7% / 1,5% theo Nghị định 117/2025/NĐ-CP |
+| Hộ kinh doanh | Loại người bán (bắt buộc); tên hộ kinh doanh, mã số thuế (bắt buộc), số ĐKKD, địa chỉ; Giấy chứng nhận đăng ký hộ kinh doanh (giấy phép kinh doanh) (bản chụp/bản scan); giấy tờ tùy thân của chủ hộ; tài khoản nhận tiền đứng tên hộ kinh doanh hoặc chủ hộ |
+| Doanh nghiệp, tổ chức | Loại người bán (bắt buộc); tên, mã số thuế (bắt buộc), số ĐKKD, địa chỉ của tổ chức; Giấy chứng nhận đăng ký doanh nghiệp / giấy phép kinh doanh hoặc giấy tờ thành lập tương đương (bản chụp/bản scan); giấy tờ tùy thân của người đại diện theo pháp luật; tài khoản nhận tiền đứng tên tổ chức |
 
 Trường hợp kinh doanh ngành, nghề có điều kiện, người bán bổ sung giấy phép tương ứng. Nền tảng chỉ thu thập dữ liệu cần thiết và bảo vệ theo [Chính sách bảo mật](08-chinh-sach-bao-mat-va-du-lieu.md).
 

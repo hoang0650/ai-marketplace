@@ -157,7 +157,7 @@ Bước 8: Quản lý tài khoản. Trang cài đặt gồm: hồ sơ (Profile),
 
 Bước 1: Truy cập Kênh người bán (Seller Center). Trang tổng quan hiển thị trạng thái hồ sơ cửa hàng, xác minh danh tính (eKYC), sản phẩm, đơn hàng, tài liệu API và token, thanh toán. Menu gồm: thiết lập cửa hàng (eKYC, Seller verification, Shop profile, Images); bán hàng (Products, Web/app templates, Orders, Messages, Complaints, Coupons); tài chính (Payments, Withdraw, Ledger).
 
-Bước 2: Xác minh người bán. Tại “Seller verification”, người bán chọn loại người bán, nhập tên pháp lý, tên hiển thị, mã số thuế (nếu có), số đăng ký kinh doanh (nếu có), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII.
+Bước 2: Xác minh người bán. Tại “Seller verification”, người bán bắt buộc chọn loại người bán (Cá nhân kinh doanh, Hộ kinh doanh, Doanh nghiệp/Tổ chức) và nhập mã số thuế (MST; cá nhân có thể dùng số CCCD 12 số); nhập tên pháp lý, tên hiển thị, số đăng ký kinh doanh (ĐKKD, bắt buộc với hộ kinh doanh, doanh nghiệp/tổ chức), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII.
 
 Bước 3: Đăng sản phẩm. Tại “Products” → “New product”, người bán nhập tên, tagline, mô tả, danh mục AI, mô hình tính giá (ví dụ theo mức sử dụng – Usage), đơn giá (hình minh họa hiển thị đơn giá bằng USD), đơn vị tính (ví dụ 1K tokens), giá gốc so sánh (nếu có), ảnh bìa, thẻ (tags) và thông tin kỹ thuật. Sản phẩm được gửi kiểm duyệt theo Mục IX và chỉ hiển thị sau khi được duyệt.
 
@@ -183,13 +183,13 @@ Bước 3: Hoàn tất giao dịch. Hệ thống trừ số dư ví, tạo mã �
 
 ### 2. Thanh toán giữa Người bán - Ban Quản lý website
 
-Nền tảng (Ban quản lý website) thu tiền của người mua, khấu trừ phí sàn 20%, thuế khấu trừ 8% và chi trả phần còn lại cho người bán theo Mục XI và Mục XII.
+Nền tảng (Ban quản lý website) thu tiền của người mua, khấu trừ phí sàn 20%, thuế theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%) và chi trả phần còn lại cho người bán theo Mục XI và Mục XII.
 
-Bước 1: Theo dõi doanh thu và các khoản khấu trừ. Tại “Creator dashboard” → “Overview”, người bán xem doanh thu, số đơn hàng, số sản phẩm, lượng token sử dụng và các khoản: phí sàn (Commission) – giao diện ghi “Mặc định 20% — chưa gồm thuế 10% trên 80% seller”; thuế khấu trừ – “10% trên 80% doanh thu seller (8% đơn)”; hoàn tiền; số thực nhận (Net payable).
+Bước 1: Theo dõi doanh thu và các khoản khấu trừ. Tại “Creator dashboard” → “Overview”, người bán xem doanh thu, số đơn hàng, số sản phẩm, lượng token sử dụng và các khoản: phí sàn (Commission) – giao diện ghi “Mặc định 20% giá sau giảm giá — chưa gồm thuế”; thuế khấu trừ – theo loại người bán (cá nhân kinh doanh 7% giá trị đơn, gồm 5% GTGT và 2% TNCN; hộ kinh doanh, doanh nghiệp 0%); hoàn tiền; số thực nhận (Net payable).
 
 Bước 2: Hoàn tất hồ sơ để sử dụng chức năng thanh toán. Mục “Payments” chỉ sử dụng được sau khi người bán tạo hồ sơ cửa hàng và gửi duyệt (“Create your seller profile”).
 
-Bước 3: Rút tiền. Tại “Finance” → “Withdraw”, giao diện hiển thị quy tắc áp dụng: phí sàn (Platform fee) 20%, thuế (Tax) 8%, tổng (Total fee) 28%; phí sàn 20% và thuế 8% đã được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị là số dư ròng; thời gian tạm giữ (Hold period) 48 giờ; số dư khả dụng và số đang tạm giữ theo đơn; lịch sử ví (ghi nợ, ghi có kèm bản chụp hoa hồng, thuế). Khi người bán chưa xác minh danh tính, chức năng rút tiền bị khóa (“Identity not verified — withdrawals are locked”). Người bán nhập số tiền và chọn “Request withdrawal”; tiền được chuyển về tài khoản ngân hàng đứng tên người bán theo khoản 8 Mục XI.
+Bước 3: Rút tiền. Tại “Finance” → “Withdraw”, giao diện hiển thị quy tắc áp dụng: phí sàn (Platform fee) 20%, thuế (Tax) theo loại người bán (cá nhân kinh doanh 7%; hộ kinh doanh, doanh nghiệp 0%); phí sàn và thuế đã được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị là số dư ròng; thời gian tạm giữ (Hold period) 48 giờ; số dư khả dụng và số đang tạm giữ theo đơn; lịch sử ví (ghi nợ, ghi có kèm bản chụp hoa hồng, thuế). Khi người bán chưa xác minh danh tính, chức năng rút tiền bị khóa (“Identity not verified — withdrawals are locked”). Người bán nhập số tiền và chọn “Request withdrawal”; tiền được chuyển về tài khoản ngân hàng đứng tên người bán theo khoản 8 Mục XI.
 
 Bước 4: Đối soát. Tại “Ledger”, người bán xem sổ cái doanh thu, phí sàn và số dư để đối chiếu với lịch sử đơn hàng, rút tiền (khoản 7 Mục XI).
 
@@ -250,7 +250,7 @@ Hồ sơ cũng có thể ở trạng thái: Từ chối, Tạm ngừng, Chấm d
 
 ### 2. Hồ sơ xác minh
 
-Hồ sơ gồm: thông tin định danh (CCCD/hộ chiếu); giấy chứng nhận đăng ký kinh doanh (giấy phép kinh doanh) đối với hộ kinh doanh, doanh nghiệp, tổ chức và mã số thuế (nếu có); người đại diện; địa chỉ; tài khoản nhận tiền đứng tên người bán; giấy phép đối với ngành, nghề kinh doanh có điều kiện (nếu có). Cụ thể theo loại người bán:
+Hồ sơ gồm: loại người bán (bắt buộc: Cá nhân kinh doanh, Hộ kinh doanh, Doanh nghiệp/Tổ chức) và mã số thuế (bắt buộc; cá nhân có thể dùng số CCCD); thông tin định danh (CCCD/hộ chiếu); giấy chứng nhận đăng ký kinh doanh (ĐKKD) đối với hộ kinh doanh, doanh nghiệp, tổ chức; người đại diện; địa chỉ; tài khoản nhận tiền đứng tên người bán; giấy phép đối với ngành, nghề kinh doanh có điều kiện (nếu có). Cụ thể theo loại người bán:
 
 | Loại người bán | Thông tin cần cung cấp |
 |---|---|
@@ -422,7 +422,7 @@ Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase
 
 ### 5. Đơn hàng
 
-a) Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, thuế khấu trừ 8%, người bán tại thời điểm giao kết.
+a) Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, loại người bán, thuế khấu trừ theo loại người bán, người bán tại thời điểm giao kết.
 
 b) Đơn hàng có các trạng thái: chờ thanh toán, đã thanh toán, đang cung cấp, hoàn tất, hoàn tiền, tranh chấp; mọi thay đổi được ghi nhật ký.
 
@@ -437,7 +437,7 @@ c) Kết quả thanh toán được xác thực qua webhook có chữ ký; mỗi
 | Dịch vụ AI agent (Bán bởi sàn) | 199.000 VNĐ/agent/30 ngày (hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị); phí token khi dùng mô hình của nền tảng = giá gốc nhà cung cấp mô hình + 25%; dùng khóa API riêng (BYOK) không thu phí token |
 | Dịch vụ Bán bởi sàn khác (API, GPU, máy chủ trò chơi) | Giá niêm yết trên trang sản phẩm theo đơn vị sử dụng (token, ký tự, phút, giờ) |
 | Phí kho ứng dụng | Không áp dụng. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tiền vào ví; mọi đơn hàng (trên website và ứng dụng) được thanh toán bằng số dư ví nên không có phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán |
-| Thuế khấu trừ | Cố định 8% giá trị đơn hàng (10% trên phần 80% doanh thu của người bán), áp dụng cho mọi người bán, khấu trừ khi đơn hàng hoàn tất (chi tiết tại Mục XII). Tổng khấu trừ = phí sàn 20% + thuế 8% = 28%; người bán tự chịu trách nhiệm về nghĩa vụ thuế khác theo pháp luật |
+| Thuế khấu trừ | Theo loại người bán, tính trên giá trị đơn hàng sau giảm giá, khấu trừ khi đơn hàng hoàn tất (chi tiết tại Mục XII): cá nhân kinh doanh 7% (5% GTGT + 2% TNCN) đối với dịch vụ, phần mềm, sản phẩm số; 1,5% (1% GTGT + 0,5% TNCN) đối với hàng hóa vật lý; hộ kinh doanh, doanh nghiệp/tổ chức 0% (tự kê khai, xuất hóa đơn) |
 
 Thay đổi mức phí được thông báo ít nhất 30 ngày trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
 
@@ -447,7 +447,7 @@ Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; 
 
 ### 8. Doanh thu và chi trả cho người bán
 
-a) Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − hoàn tiền/điều chỉnh. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng. Doanh thu được ghi nhận vào số dư người bán; mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
+a) Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%) − hoa hồng affiliate (nếu có) − hoàn tiền/điều chỉnh. Ví dụ đơn hàng 1.000.000 đồng, tỷ lệ affiliate 25%: (i) người bán là cá nhân kinh doanh — phí sàn 200.000 đồng; thuế khấu trừ 70.000 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 480.000 đồng; (ii) người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đồng; thuế 0 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 550.000 đồng. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng. Doanh thu được ghi nhận vào số dư người bán; mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
 
 b) Doanh thu được tạm giữ 48 giờ kể từ khi ghi nhận để giải quyết hoàn tiền, khiếu nại; khoản liên quan đến khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
 
@@ -473,7 +473,7 @@ Người bán và người mua không được thỏa thuận thanh toán ngoài
 
 ### 1. Căn cứ
 
-Việc khấu trừ, khai, nộp thuế và lập hóa đơn, chứng từ áp dụng theo pháp luật về quản lý thuế, thuế giá trị gia tăng, thuế thu nhập cá nhân, quy định về hóa đơn điện tử đang có hiệu lực và Nghị định số 252/2026/NĐ-CP về trách nhiệm khấu trừ, khai, nộp thuế thay của tổ chức quản lý nền tảng thương mại điện tử.
+Việc khấu trừ, khai, nộp thuế và lập hóa đơn, chứng từ áp dụng theo pháp luật về quản lý thuế, thuế giá trị gia tăng, thuế thu nhập cá nhân, quy định về hóa đơn điện tử đang có hiệu lực , Luật Thuế thu nhập cá nhân, Nghị định số 117/2025/NĐ-CP (tổ chức quản lý nền tảng thương mại điện tử có chức năng thanh toán khấu trừ, khai, nộp thay thuế của cá nhân kinh doanh) và Thông tư số 40/2021/TT-BTC.
 
 ### 2. Phí sàn không phải thuế
 
@@ -481,23 +481,34 @@ Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán b
 
 ### 3. Khấu trừ thuế
 
-a) Nền tảng khấu trừ thuế cố định 8% giá trị đơn hàng (tương đương 10% trên phần 80% doanh thu của người bán) đối với mọi người bán (cá nhân, hộ kinh doanh, doanh nghiệp, tổ chức) tại thời điểm đơn hàng hoàn tất. Đối với hộ kinh doanh, cá nhân kinh doanh, nền tảng khai và nộp thay theo Nghị định số 252/2026/NĐ-CP.
+a) Mức khấu trừ phụ thuộc loại người bán đã khai báo và loại sản phẩm, tính trên giá trị đơn hàng sau giảm giá tại thời điểm đơn hàng hoàn tất:
 
-b) Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = 28% giá trị đơn hàng (không có phí kho ứng dụng). Số dư hiển thị của người bán là số dư ròng sau khấu trừ.
+| Loại người bán | Nền tảng khấu trừ, nộp thay | Nghĩa vụ của người bán |
+|---|---|---|
+| Cá nhân kinh doanh — dịch vụ, phần mềm, sản phẩm số (mặc định trên AI Markets) | **7%** giá trị đơn hàng sau giảm giá (5% GTGT + 2% TNCN) | Không phải tự khai đối với doanh thu đã được khấu trừ |
+| Cá nhân kinh doanh — hàng hóa vật lý (nếu có danh mục) | **1,5%** (1% GTGT + 0,5% TNCN) | Như trên |
+| Hộ kinh doanh | **0%** (không khấu trừ) | Tự kê khai, nộp thuế và xuất hóa đơn |
+| Doanh nghiệp/Tổ chức | **0%** (không khấu trừ) | Tự kê khai, nộp thuế, xuất hóa đơn; nhận hóa đơn GTGT (10%) của nền tảng cho phí sàn 20% |
 
-c) Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng tại Kênh người bán; nền tảng cung cấp chứng từ khấu trừ thuế theo quy định.
+Cá nhân kinh doanh có tổng doanh thu trên nền tảng trong năm dương lịch (tính cả đơn hàng) không vượt ngưỡng không chịu thuế 100.000.000 đồng/năm thì nền tảng không khấu trừ; ngưỡng được cấu hình và điều chỉnh theo quy định pháp luật hiện hành.
+
+b) Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế theo loại người bán (cá nhân kinh doanh 7%: tổng 27%; hộ kinh doanh, doanh nghiệp/tổ chức: 20%), không có phí kho ứng dụng. Số dư hiển thị của người bán là số dư ròng sau khấu trừ. Ví dụ đơn hàng 1.000.000 đồng, tỷ lệ affiliate 25%: (i) người bán là cá nhân kinh doanh — phí sàn 200.000 đồng; thuế khấu trừ 70.000 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 480.000 đồng; (ii) người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đồng; thuế 0 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 550.000 đồng.
+
+c) Số thuế đã khấu trừ (tách GTGT, TNCN) được hiển thị trên đối soát từng đơn hàng tại Kênh người bán. Nền tảng lập và nộp báo cáo theo quý (trong tháng 1, 4, 7, 10) cho cơ quan thuế về doanh thu của cá nhân kinh doanh, hộ kinh doanh trên nền tảng và số thuế đã khấu trừ, nộp thay (bao gồm thuế TNCN đã khấu trừ của người giới thiệu affiliate); cuối năm, nền tảng cấp chứng từ khấu trừ thuế TNCN cho cá nhân đã bị khấu trừ.
+
+d) Thu nhập của người giới thiệu (affiliate): nền tảng khấu trừ **10% thuế TNCN khi một lần chi trả hoa hồng từ 2.000.000 đồng trở lên** (Luật Thuế TNCN; Thông tư 111/2013/TT-BTC); dưới mức này không khấu trừ. Người giới thiệu chỉ có thu nhập thuộc diện khấu trừ nhưng ước tính tổng thu nhập chịu thuế trong năm sau giảm trừ gia cảnh chưa đến mức phải nộp thuế được tải lên **Cam kết Mẫu 08/CK-TNCN** (Thông tư 80/2021/TT-BTC) tại trang Affiliate; sau khi nền tảng duyệt, không khấu trừ đối với các khoản chi trả trong năm cam kết.
 
 ### 4. Nghĩa vụ thuế khác của người bán
 
-Việc nền tảng khấu trừ 8% không thay thế các nghĩa vụ thuế khác của người bán. Người bán (bao gồm doanh nghiệp, tổ chức) tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và xuất hóa đơn theo quy định của pháp luật.
+Việc nền tảng khấu trừ, nộp thay đối với cá nhân kinh doanh không thay thế các nghĩa vụ thuế khác của người bán. Hộ kinh doanh, doanh nghiệp, tổ chức tự kê khai, nộp thuế; mọi người bán tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và xuất hóa đơn theo quy định của pháp luật.
 
 ### 5. Hồ sơ thuế của người bán
 
-Người bán khai báo loại hình (cá nhân, hộ kinh doanh, doanh nghiệp/tổ chức), mã số thuế và tình trạng cư trú tại Kênh người bán. Hồ sơ được xác minh (theo Mục VIII) và lưu theo phiên bản; người bán phải cập nhật khi có thay đổi. Thông tin sai lệch có thể dẫn đến việc áp dụng mức khấu trừ không phù hợp và người bán chịu trách nhiệm về hậu quả.
+Người bán bắt buộc khai báo loại người bán (Cá nhân kinh doanh, Hộ kinh doanh, Doanh nghiệp/Tổ chức) và mã số thuế khi đăng ký, kèm giấy tờ CCCD / ĐKKD qua eKYC, và tình trạng cư trú tại Kênh người bán. Hồ sơ được xác minh (theo Mục VIII) và lưu theo phiên bản; người bán phải cập nhật khi có thay đổi. Thông tin sai lệch có thể dẫn đến việc áp dụng mức khấu trừ không phù hợp và người bán chịu trách nhiệm về hậu quả.
 
 ### 6. Tách khoản trên đối soát và sản phẩm Bán bởi sàn
 
-a) Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; giảm giá (nếu có); thuế khấu trừ 8%; hoàn tiền, điều chỉnh; doanh thu người bán (cách tính tại khoản 8 Mục XI).
+a) Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; giảm giá (nếu có); loại người bán; thuế khấu trừ (GTGT, TNCN) theo loại người bán; hoàn tiền, điều chỉnh; doanh thu người bán (cách tính tại khoản 8 Mục XI).
 
 b) Doanh thu từ sản phẩm “Bán bởi sàn” (API, GPU, máy chủ trò chơi, dịch vụ AI agent) thuộc Công ty và được kê khai, nộp thuế theo chế độ của Công ty.
 
@@ -511,7 +522,7 @@ Nền tảng không phải là bên bán đối với mọi giao dịch, vì v�
 
 a) Hóa đơn của nền tảng: Công ty xuất hóa đơn đối với sản phẩm, dịch vụ “Bán bởi sàn” (API, GPU, máy chủ trò chơi, thuê bao và phí token AI agent) cho người mua; và phí dịch vụ sàn cho người bán.
 
-b) Hóa đơn của người bán: đối với sản phẩm “Bán bởi Seller”, người bán là doanh nghiệp, tổ chức xuất hóa đơn cho người mua theo quy định. Đối với người bán là hộ, cá nhân kinh doanh mà nền tảng đã khấu trừ, nộp thay thuế, việc lập chứng từ thực hiện theo Nghị định số 252/2026/NĐ-CP.
+b) Hóa đơn của người bán: đối với sản phẩm “Bán bởi Seller”, người bán là doanh nghiệp, tổ chức xuất hóa đơn cho người mua theo quy định. Hộ kinh doanh tự xuất hóa đơn theo quy định. Đối với người bán là cá nhân kinh doanh mà nền tảng đã khấu trừ, nộp thay thuế, việc lập chứng từ thực hiện theo Nghị định số 117/2025/NĐ-CP. Nền tảng xuất hóa đơn GTGT (10%) cho phí dịch vụ sàn đối với người bán là doanh nghiệp, tổ chức.
 
 ### 9. Chứng từ giao dịch và giao dịch trong ứng dụng
 
@@ -1003,7 +1014,7 @@ Theo Chính sách người bán và Thỏa thuận người bán, người bán 
 - Giải quyết khiếu nại; phản hồi yêu cầu của nền tảng về khiếu nại trong thời hạn tại khoản 4 Mục XVII (02 ngày làm việc kể từ khi nền tảng yêu cầu);
 - Gắn nhãn nội dung do AI tạo theo Luật Trí tuệ nhân tạo số 134/2025/QH15 khi pháp luật yêu cầu;
 - Nếu dùng tài khoản nhà cung cấp hạ tầng của riêng mình, bảo đảm có quyền khai thác thương mại theo điều khoản của nhà cung cấp đó;
-- Thực hiện nghĩa vụ thuế, khai báo và cập nhật hồ sơ thuế theo Mục XII; chấp nhận khoản thuế khấu trừ cố định 8% giá trị đơn hàng; tự chịu trách nhiệm về các nghĩa vụ thuế khác theo pháp luật và xuất hóa đơn theo quy định;
+- Thực hiện nghĩa vụ thuế, khai báo và cập nhật hồ sơ thuế theo Mục XII; khai báo đúng loại người bán và mã số thuế; nếu là cá nhân kinh doanh, chấp nhận việc nền tảng khấu trừ, nộp thay 7% (dịch vụ, sản phẩm số) hoặc 1,5% (hàng hóa) giá trị đơn hàng; tự chịu trách nhiệm về các nghĩa vụ thuế khác theo pháp luật và xuất hóa đơn theo quy định;
 - Bảo vệ thông tin bí mật, dữ liệu cá nhân của người mua và khóa bí mật; chỉ sử dụng dữ liệu người mua nhận được qua nền tảng để thực hiện đơn hàng;
 - Tuân thủ Chính sách người bán, AUP (Mục XV) và pháp luật;
 - Không thu tiền ngoài nền tảng cho giao dịch phát sinh trên nền tảng.

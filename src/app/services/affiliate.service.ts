@@ -8,6 +8,7 @@ import {
   AffiliateConfig,
   AffiliateLink,
   AffiliateStats,
+  PitCommitment,
   SellerAffiliateStats,
 } from '../models/marketplace.models';
 
@@ -90,5 +91,33 @@ export class AffiliateService {
 
   setDefaultRate(rate: number): Observable<{ defaultRate: number }> {
     return this.http.put<{ defaultRate: number }>(`${this.base}/seller/default-rate`, { rate });
+  }
+
+  /* Cam kết Mẫu 08/CK-TNCN (PIT commitment): upload -> submit -> admin approves. */
+  pitCommitment(): Observable<PitCommitment> {
+    return this.http.get<PitCommitment>(`${this.base}/pit-commitment`);
+  }
+
+  uploadPitCommitment(file: File): Observable<PitCommitment> {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<PitCommitment>(`${this.base}/pit-commitment/document`, fd);
+  }
+
+  submitPitCommitment(body: { year: number; personalTaxCode: string }): Observable<PitCommitment> {
+    return this.http.post<PitCommitment>(`${this.base}/pit-commitment/submit`, body);
+  }
+
+  pitCommitmentDocument(userId?: string): Observable<{ url: string; expiresIn: number }> {
+    const params: Record<string, string> = userId ? { userId } : {};
+    return this.http.get<{ url: string; expiresIn: number }>(`${this.base}/pit-commitment/document`, { params });
+  }
+
+  adminPitCommitments(status = 'pending'): Observable<PitCommitment[]> {
+    return this.http.get<PitCommitment[]>(`${this.base}/admin/pit-commitments`, { params: { status } });
+  }
+
+  reviewPitCommitment(userId: string, decision: 'approved' | 'rejected', reason = ''): Observable<PitCommitment> {
+    return this.http.post<PitCommitment>(`${this.base}/admin/pit-commitments/${encodeURIComponent(userId)}/review`, { decision, reason });
   }
 }

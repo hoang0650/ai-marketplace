@@ -33,13 +33,14 @@ import { TPipe } from '../../i18n/t.pipe';
       <form class="verify__form" (ngSubmit)="submit()">
         <label>
           {{ 'sell.verify.sellerType' | t }}
-          <select [(ngModel)]="form.sellerType" name="sellerType">
+          <select [(ngModel)]="form.sellerType" name="sellerType" required>
+            <option value="" disabled>{{ 'sell.verify.type.choose' | t }}</option>
             <option value="individual">{{ 'sell.verify.type.individual' | t }}</option>
             <option value="household_business">{{ 'sell.verify.type.household_business' | t }}</option>
-            <option value="enterprise">{{ 'sell.verify.type.enterprise' | t }}</option>
-            <option value="organization">{{ 'sell.verify.type.organization' | t }}</option>
+            <option value="enterprise">{{ 'sell.verify.type.company' | t }}</option>
           </select>
         </label>
+        <p class="verify__tax" *ngIf="form.sellerType">{{ taxNoteKey() | t }}</p>
         <label>
           {{ 'sell.verify.legalName' | t }}
           <input [(ngModel)]="form.legalName" name="legalName" required />
@@ -50,11 +51,12 @@ import { TPipe } from '../../i18n/t.pipe';
         </label>
         <label>
           {{ 'sell.verify.taxCode' | t }}
-          <input [(ngModel)]="form.taxCode" name="taxCode" />
+          <input [(ngModel)]="form.taxCode" name="taxCode" required inputmode="numeric" />
+          <small>{{ 'sell.verify.taxCodeHint' | t }}</small>
         </label>
         <label>
           {{ 'sell.verify.brn' | t }}
-          <input [(ngModel)]="form.businessRegistrationNumber" name="brn" />
+          <input [(ngModel)]="form.businessRegistrationNumber" name="brn" [required]="needsBrn()" />
         </label>
         <label>
           {{ 'sell.verify.address' | t }}
@@ -148,6 +150,14 @@ import { TPipe } from '../../i18n/t.pipe';
         background: color-mix(in srgb, currentColor 5%, transparent);
         font-size: 0.88rem;
       }
+      .verify__tax {
+        margin: -0.4rem 0 0;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+        background: color-mix(in srgb, currentColor 6%, transparent);
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
       .verify__msg {
         margin-top: 1rem;
         color: #0f7b3a;
@@ -167,7 +177,7 @@ export class SellVerificationComponent implements OnInit {
   message = '';
 
   form = {
-    sellerType: 'individual',
+    sellerType: '',
     legalName: '',
     displayName: '',
     taxCode: '',
@@ -176,6 +186,28 @@ export class SellVerificationComponent implements OnInit {
     contactEmail: '',
     contactPhone: '',
   };
+
+  /** Registration offers three types; legacy 'organization'/COMPANY map to the company option. */
+  uiType(t: string | undefined): string {
+    const v = String(t || '').toLowerCase();
+    if (v === 'household_business') return 'household_business';
+    if (v === 'enterprise' || v === 'organization' || v === 'company') return 'enterprise';
+    return v === 'individual' ? 'individual' : '';
+  }
+
+  needsBrn(): boolean {
+    return this.form.sellerType === 'household_business' || this.form.sellerType === 'enterprise';
+  }
+
+  taxNoteKey(): string {
+    return `sell.verify.taxNote.${this.form.sellerType || 'individual'}`;
+  }
+
+  private validTaxCode(): boolean {
+    const v = this.form.taxCode.replace(/\s+/g, '');
+    if (/^\d{10}(-\d{3})?$/.test(v)) return true;
+    return this.form.sellerType !== 'enterprise' && /^\d{12}$/.test(v);
+  }
 
   statusText(status: string): string {
     const key = `sell.verify.st.${status}`;
@@ -192,7 +224,7 @@ export class SellVerificationComponent implements OnInit {
       this.profile = p;
       if (p) {
         this.form = {
-          sellerType: p.sellerType || 'individual',
+          sellerType: p.sellerTypeDeclared ? this.uiType(p.sellerType) : '',
           legalName: p.legalName || '',
           displayName: p.displayName || '',
           taxCode: p.taxCode || '',
@@ -210,6 +242,18 @@ export class SellVerificationComponent implements OnInit {
   }
 
   submit(): void {
+    if (!this.form.sellerType) {
+      this.message = this.i18n.t('sell.verify.err.type');
+      return;
+    }
+    if (!this.validTaxCode()) {
+      this.message = this.i18n.t('sell.verify.err.taxCode');
+      return;
+    }
+    if (this.needsBrn() && !this.form.businessRegistrationNumber.trim()) {
+      this.message = this.i18n.t('sell.verify.err.brn');
+      return;
+    }
     this.saving = true;
     this.sellers.apply(this.form).subscribe({
       next: (p) => {

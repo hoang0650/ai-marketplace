@@ -24,7 +24,7 @@ Công ty xuất hóa đơn đối với:
 
 ## Điều 3. Hóa đơn của người bán
 
-Đối với sản phẩm “Bán bởi Seller”, người bán là doanh nghiệp, tổ chức xuất hóa đơn cho người mua theo quy định. Đối với người bán là hộ, cá nhân kinh doanh mà nền tảng đã khấu trừ, nộp thay thuế, việc lập chứng từ thực hiện theo Nghị định số 252/2026/NĐ-CP.
+Đối với sản phẩm “Bán bởi Seller”, người bán là doanh nghiệp, tổ chức xuất hóa đơn cho người mua theo quy định. Hộ kinh doanh tự xuất hóa đơn theo quy định. Đối với người bán là cá nhân kinh doanh mà nền tảng đã khấu trừ, nộp thay thuế, việc lập chứng từ thực hiện theo Nghị định số 117/2025/NĐ-CP. Nền tảng xuất hóa đơn GTGT (10%) cho phí dịch vụ sàn 20% đối với người bán là doanh nghiệp, tổ chức.
 
 ## Điều 4. Chứng từ giao dịch
 

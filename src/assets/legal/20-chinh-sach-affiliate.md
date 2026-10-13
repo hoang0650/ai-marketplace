@@ -32,11 +32,11 @@
 2. Hoa hồng affiliate do **người bán chi trả từ phần doanh thu của người bán**; không trừ vào phí dịch vụ sàn và không làm thay đổi phần thuế khấu trừ.
 3. Công thức đối soát mỗi đơn hàng giới thiệu (giá trị đơn hàng = G, tỷ lệ affiliate = r):
    - Phí dịch vụ sàn = 20% × G;
-   - Thuế khấu trừ của người bán = 10% × (80% × G) = 8% × G;
+   - Thuế khấu trừ của người bán = t × G, với t theo loại người bán: cá nhân kinh doanh 7% (dịch vụ, sản phẩm số) hoặc 1,5% (hàng hóa); hộ kinh doanh, doanh nghiệp/tổ chức 0%;
    - Hoa hồng affiliate = r × G;
-   - Người bán thực nhận = G − 20% × G − 8% × G − r × G.
+   - Người bán thực nhận = G − 20% × G − t × G − r × G.
    
-   Ví dụ: đơn 1.000.000 đ, tỷ lệ 25%: phí sàn 200.000 đ; thuế 80.000 đ; hoa hồng affiliate 250.000 đ; người bán thực nhận 470.000 đ. Với tổng khấu trừ tối đa 53%, phần người bán thực nhận luôn dương.
+   Ví dụ: đơn 1.000.000 đ, tỷ lệ 25%: người bán cá nhân kinh doanh — phí sàn 200.000 đ; thuế 70.000 đ; hoa hồng affiliate 250.000 đ; người bán thực nhận 480.000 đ. Người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đ; thuế 0 đ; hoa hồng affiliate 250.000 đ; người bán thực nhận 550.000 đ. Với tổng khấu trừ tối đa 52% (cá nhân kinh doanh) hoặc 45% (hộ kinh doanh, doanh nghiệp), phần người bán thực nhận luôn dương.
 4. Tỷ lệ được **chốt tại thời điểm đặt hàng**. Thay đổi tỷ lệ chỉ áp dụng cho đơn hàng phát sinh sau thời điểm thay đổi.
 5. Chương trình chỉ áp dụng cho sản phẩm của người bán bên thứ ba; sản phẩm “Bán bởi sàn” không tham gia trừ khi nền tảng công bố khác.
 
@@ -55,8 +55,10 @@
 
 ## Điều 6. Thuế thu nhập cá nhân
 
-1. Đối với người giới thiệu là cá nhân, nền tảng áp dụng quy tắc khấu trừ thuế thu nhập cá nhân có thể cấu hình: **khấu trừ 10% trên mọi khoản hoa hồng, không áp dụng ngưỡng tối thiểu**, theo quy định chung về thu nhập từ cung cấp dịch vụ của cá nhân. Ví dụ: hoa hồng 250.000 đ thì khấu trừ 25.000 đ, người giới thiệu nhận 225.000 đ. Khoản đã khấu trừ được ghi trên lịch sử ví và chứng từ khấu trừ được cung cấp theo yêu cầu.
-2. Mức khấu trừ, ngưỡng áp dụng và cách xác định “mỗi lần chi trả” có thể được điều chỉnh để phù hợp quy định pháp luật về thuế; người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
+1. Đối với người giới thiệu là cá nhân, nền tảng khấu trừ **10% thuế TNCN khi một lần chi trả hoa hồng từ 2.000.000 đồng trở lên** (Luật Thuế TNCN; Thông tư 111/2013/TT-BTC); dưới mức này không khấu trừ. Người giới thiệu chỉ có thu nhập thuộc diện khấu trừ nhưng ước tính tổng thu nhập chịu thuế trong năm sau giảm trừ gia cảnh chưa đến mức phải nộp thuế được tải lên **Cam kết Mẫu 08/CK-TNCN** (Thông tư 80/2021/TT-BTC) tại trang Affiliate; sau khi nền tảng duyệt, không khấu trừ đối với các khoản chi trả trong năm cam kết. Ví dụ: hoa hồng 250.000 đ — không khấu trừ, người giới thiệu nhận 250.000 đ; hoa hồng 2.500.000 đ — khấu trừ 250.000 đ, người giới thiệu nhận 2.250.000 đ (0 đ nếu có Cam kết Mẫu 08/CK-TNCN đã được duyệt).
+2. Cam kết Mẫu 08/CK-TNCN được nộp và duyệt tương tự quy trình eKYC: người giới thiệu tải lên bản đã ký (PDF/ảnh), chọn năm cam kết và mã số thuế cá nhân; quản trị viên duyệt hoặc từ chối (nêu lý do). Người cam kết chịu trách nhiệm về tính trung thực của cam kết theo pháp luật.
+3. Khoản đã khấu trừ được ghi trên lịch sử ví; nền tảng báo cáo số thuế TNCN đã khấu trừ cho cơ quan thuế theo quý và cuối năm cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu.
+4. Mức khấu trừ, ngưỡng áp dụng và cách xác định “mỗi lần chi trả” có thể được điều chỉnh để phù hợp quy định pháp luật về thuế; người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
 
 ## Điều 7. Hành vi bị cấm
 

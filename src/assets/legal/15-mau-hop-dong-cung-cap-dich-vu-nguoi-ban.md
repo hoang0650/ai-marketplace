@@ -39,7 +39,7 @@ Nội dung dưới đây là các điều khoản của mẫu Hợp đồng dị
 
 1. Bên B phải có tài khoản hợp lệ, hoàn tất quy trình xác minh người bán ở trạng thái “đã xác minh” trước khi sản phẩm được hiển thị và trước khi rút tiền; đọc và xác nhận Chính sách người bán (gồm các hành vi bị cấm) và Thỏa thuận người bán. Hệ thống lưu thời điểm và phiên bản xác nhận.
 
-2. Hồ sơ xác minh theo loại người bán:
+2. Bên B bắt buộc khai báo loại người bán (Cá nhân kinh doanh, Hộ kinh doanh, Doanh nghiệp/Tổ chức) và mã số thuế (cá nhân có thể dùng số CCCD 12 số) khi đăng ký. Hồ sơ xác minh theo loại người bán:
 
 a) Cá nhân: họ tên, loại và số giấy tờ tùy thân (CCCD/hộ chiếu), ảnh hai mặt giấy tờ, mã số thuế cá nhân, tài khoản nhận tiền đứng tên mình;
 
@@ -83,17 +83,17 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 2. Phí sàn: mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho Bên B), lưu cố định tại thời điểm giao kết từng đơn hàng.
 
-3. Thuế khấu trừ: Bên A khấu trừ thuế cố định 8% giá trị đơn hàng (tương đương 10% trên phần 80% doanh thu của Bên B) tại thời điểm đơn hàng hoàn tất. Đối với hộ kinh doanh, cá nhân kinh doanh, Bên A khai và nộp thay theo Nghị định số 252/2026/NĐ-CP. Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế 8% = 28% giá trị đơn hàng (không có phí kho ứng dụng). Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng; Bên A cung cấp chứng từ khấu trừ thuế theo quy định.
+3. Thuế khấu trừ theo loại người bán, tính trên giá trị đơn hàng sau giảm giá tại thời điểm đơn hàng hoàn tất, căn cứ Luật Thuế thu nhập cá nhân, Nghị định số 117/2025/NĐ-CP (tổ chức quản lý nền tảng thương mại điện tử có chức năng thanh toán khấu trừ, khai, nộp thay thuế của cá nhân kinh doanh) và Thông tư số 40/2021/TT-BTC: (a) Bên B là cá nhân kinh doanh: Bên A khấu trừ, khai, nộp thay 7% (5% GTGT + 2% TNCN) đối với dịch vụ, phần mềm, sản phẩm số và 1,5% (1% GTGT + 0,5% TNCN) đối với hàng hóa vật lý; không khấu trừ khi doanh thu năm không vượt ngưỡng 100.000.000 đồng/năm (theo quy định hiện hành); (b) Bên B là hộ kinh doanh: không khấu trừ (0%), Bên B tự kê khai, nộp thuế và xuất hóa đơn; (c) Bên B là doanh nghiệp/tổ chức: không khấu trừ (0%), Bên A xuất hóa đơn GTGT (10%) cho phí sàn 20%. Không có phí kho ứng dụng. Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng; Bên A lập và nộp báo cáo theo quý (trong tháng 1, 4, 7, 10) cho cơ quan thuế về doanh thu của cá nhân kinh doanh, hộ kinh doanh trên Bên A và số thuế đã khấu trừ, nộp thay (bao gồm thuế TNCN đã khấu trừ của người giới thiệu affiliate); cuối năm, Bên A cấp chứng từ khấu trừ thuế TNCN cho cá nhân đã bị khấu trừ. Ví dụ đơn hàng 1.000.000 đồng, tỷ lệ affiliate 25%: (i) người bán là cá nhân kinh doanh — phí sàn 200.000 đồng; thuế khấu trừ 70.000 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 480.000 đồng; (ii) người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đồng; thuế 0 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 550.000 đồng.
 
 4. Phí kho ứng dụng: Không áp dụng. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tiền vào ví; mọi đơn hàng (trên website và ứng dụng) được thanh toán bằng số dư ví nên không có phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán.
 
-5. Việc khấu trừ 8% không thay thế các nghĩa vụ thuế khác của Bên B. Bên B tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và xuất hóa đơn cho Người mua theo quy định; Bên A xuất hóa đơn phí dịch vụ sàn cho Bên B.
+5. Việc khấu trừ, nộp thay (nếu có) không thay thế các nghĩa vụ thuế khác của Bên B. Bên B tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và xuất hóa đơn cho Người mua theo quy định; Bên A xuất hóa đơn phí dịch vụ sàn cho Bên B.
 
 6. Mỗi đơn hàng có mã duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, thuế khấu trừ, người bán tại thời điểm giao kết. Thay đổi mức phí được thông báo ít nhất 30 ngày trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
 
 ## Điều 7. Đối soát, tạm giữ và chi trả
 
-1. Doanh thu của Bên B = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ (8%) − hoàn tiền/điều chỉnh. Số dư hiển thị của Bên B là số dư ròng.
+1. Doanh thu của Bên B = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ theo loại người bán (khoản 3 Điều 6) − hoa hồng affiliate (nếu có) − hoàn tiền/điều chỉnh. Số dư hiển thị của Bên B là số dư ròng.
 
 2. Doanh thu được tạm giữ 48 giờ kể từ khi ghi nhận để giải quyết hoàn tiền, khiếu nại; khoản liên quan đến khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
 
@@ -147,7 +147,7 @@ d) Gắn nhãn nội dung do AI tạo theo Luật Trí tuệ nhân tạo số 13
 
 đ) Nếu dùng tài khoản nhà cung cấp hạ tầng của riêng mình, bảo đảm có quyền khai thác thương mại theo điều khoản của nhà cung cấp đó;
 
-e) Thực hiện nghĩa vụ thuế, khai báo và cập nhật hồ sơ thuế (loại hình, mã số thuế, tình trạng cư trú); chấp nhận khoản thuế khấu trừ cố định 8%; tự chịu trách nhiệm về các nghĩa vụ thuế khác và xuất hóa đơn theo quy định;
+e) Thực hiện nghĩa vụ thuế, khai báo và cập nhật hồ sơ thuế (loại hình, mã số thuế, tình trạng cư trú); khai báo đúng loại người bán và mã số thuế; nếu là cá nhân kinh doanh, chấp nhận việc Bên A khấu trừ, nộp thay theo khoản 3 Điều 6; tự chịu trách nhiệm về các nghĩa vụ thuế khác và xuất hóa đơn theo quy định;
 
 g) Bảo vệ thông tin bí mật, dữ liệu cá nhân của Người mua và khóa bí mật; chỉ sử dụng dữ liệu Người mua nhận được qua Nền tảng để thực hiện đơn hàng;
 

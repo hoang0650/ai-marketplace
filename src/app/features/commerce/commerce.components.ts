@@ -45,7 +45,7 @@ export class BillingComponent {
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
       <p class="mt-2 max-w-2xl text-muted">
-        GMV, phí sàn 20%, thuế 10% trên 80% doanh thu seller (8% đơn) và seller payable theo snapshot đơn. Không có phí CHPlay/App Store trên đơn hàng (IAP chỉ dùng để nạp ví).
+        GMV, phí sàn 20%, thuế theo loại người bán (cá nhân kinh doanh 7% / 1,5% do sàn khấu trừ; hộ kinh doanh, doanh nghiệp 0%) và seller payable theo snapshot đơn. Không có phí CHPlay/App Store trên đơn hàng (IAP chỉ dùng để nạp ví).
       </p>
 
       <div class="admin-tabs mt-6" role="tablist">
@@ -71,7 +71,7 @@ export class BillingComponent {
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Phí sàn (commission)</p>
             <p class="mt-2 font-display text-3xl">{{ d.platformFee | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">Mặc định {{ d.platformFeeRate | percent }} — thuế 10% tính riêng trên 80% seller</p>
+            <p class="mt-1 text-xs text-muted">Mặc định {{ d.platformFeeRate | percent }} — thuế tính riêng theo loại người bán (cá nhân 7%, HKD/doanh nghiệp 0%)</p>
           </div>
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Seller payable (net)</p>
@@ -195,6 +195,12 @@ export class BillingComponent {
             <h2 class="font-display text-2xl">Duyệt eKYC</h2>
             <p class="mt-1 text-sm text-muted">Xác minh hồ sơ cá nhân và tổ chức (hộ kinh doanh / công ty). Chỉ tài khoản đã duyệt mới được rút tiền.</p>
             <p class="mt-2"><a class="text-accent underline" routerLink="/admin/kyc">Mở hàng chờ duyệt eKYC</a></p>
+          </div>
+
+          <div class="panel">
+            <h2 class="font-display text-2xl">Thuế &amp; báo cáo thuế</h2>
+            <p class="mt-1 text-sm text-muted">Xuất báo cáo thuế quý (CSV/XLSX), dữ liệu chứng từ khấu trừ TNCN cuối năm, duyệt Cam kết Mẫu 08/CK-TNCN của affiliate.</p>
+            <p class="mt-2"><a class="text-accent underline" routerLink="/admin/tax">Mở công cụ thuế</a></p>
           </div>
 
           <div class="panel">
