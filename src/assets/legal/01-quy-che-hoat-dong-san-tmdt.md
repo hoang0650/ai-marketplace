@@ -39,7 +39,7 @@ Quy chế này được xây dựng theo:
 
 Quy chế áp dụng cho mọi tổ chức, cá nhân truy cập hoặc sử dụng AI Markets trên website và ứng dụng di động, gồm: chủ quản nền tảng, người bán, người mua và các bên cung cấp dịch vụ hỗ trợ. Website và ứng dụng dùng chung tài khoản, ví, đơn hàng, hệ thống khiếu nại và bộ chính sách này.
 
-Quy chế này hợp nhất nội dung của các văn bản: Quy chế hoạt động (phiên bản 2.1), Điều khoản sử dụng (phiên bản 2.0), Chính sách người bán (phiên bản 2.1), Chính sách người mua (phiên bản 2.0), Chính sách thanh toán và đối soát (phiên bản 2.0), Chính sách hoàn tiền và chấm dứt dịch vụ (phiên bản 2.0), Chính sách khiếu nại và giải quyết tranh chấp (phiên bản 2.0), Chính sách bảo mật và bảo vệ dữ liệu cá nhân (phiên bản 2.0), Chính sách sở hữu trí tuệ, bản quyền và giấy phép sử dụng (phiên bản 2.0), Chính sách sử dụng chấp nhận được (AUP) và danh mục cấm kinh doanh (phiên bản 2.1), Chính sách kiểm duyệt sản phẩm AI (phiên bản 2.1), Chính sách an ninh agent và container (phiên bản 2.0), Quy trình xác minh người bán (phiên bản 2.0), Quy trình xử lý vi phạm (phiên bản 2.0), Thỏa thuận cung cấp dịch vụ người bán (phiên bản v2026.10.05), Chính sách cookies và lưu trữ trên trình duyệt (phiên bản 2.0), Chính sách lưu trữ và cung cấp dữ liệu (phiên bản 2.0), Chính sách thuế (phiên bản 2.0), Chính sách hóa đơn (phiên bản 2.0). Quy chế được đọc cùng các chính sách khác được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal) (danh mục tại Phụ lục). Khi có mâu thuẫn, Quy chế này được ưu tiên áp dụng, trừ trường hợp pháp luật quy định khác.
+Quy chế này hợp nhất nội dung của các văn bản: Quy chế hoạt động (phiên bản 2.1), Điều khoản sử dụng (phiên bản 2.0), Chính sách người bán (phiên bản 2.1), Chính sách người mua (phiên bản 2.0), Chính sách thanh toán và đối soát (phiên bản 2.0), Chính sách hoàn tiền và chấm dứt dịch vụ (phiên bản 2.0), Chính sách khiếu nại và giải quyết tranh chấp (phiên bản 2.0), Chính sách bảo mật và bảo vệ dữ liệu cá nhân (phiên bản 2.0), Chính sách sở hữu trí tuệ, bản quyền và giấy phép sử dụng (phiên bản 2.0), Chính sách sử dụng chấp nhận được (AUP) và danh mục cấm kinh doanh (phiên bản 2.1), Chính sách kiểm duyệt sản phẩm AI (phiên bản 2.1), Chính sách an ninh agent và container (phiên bản 2.0), Quy trình xác minh người bán (phiên bản 2.0), Quy trình xử lý vi phạm (phiên bản 2.0), Thỏa thuận cung cấp dịch vụ người bán (phiên bản v2026.10.05), Chính sách cookies và lưu trữ trên trình duyệt (phiên bản 2.0), Chính sách lưu trữ và cung cấp dữ liệu (phiên bản 2.0), Chính sách thuế (phiên bản 2.0), Chính sách hóa đơn (phiên bản 2.0). Quy chế được đọc cùng các chính sách khác được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal). Khi có mâu thuẫn, Quy chế này được ưu tiên áp dụng, trừ trường hợp pháp luật quy định khác.
 
 ### 4. Chấp nhận Quy chế và Điều khoản sử dụng
 
@@ -1094,51 +1094,3 @@ Mọi thắc mắc, khiếu nại, yêu cầu hỗ trợ hoặc pháp lý xin vu
 
 |  | ĐẠI DIỆN CÔNG TY; (Ký, ghi rõ họ tên và đóng dấu); ……………………………………; Chức vụ: …………………… |
 |---|---|
-
-PHỤ LỤC
-
-THÔNG TIN QUẢN LÝ BỘ TÀI LIỆU CHÍNH SÁCH AI MARKETS
-
-(Kèm theo Quy chế hoạt động Sàn giao dịch thương mại điện tử AI Markets)
-
-### 1. Danh mục tài liệu chính sách của AI Markets
-
-Bộ tài liệu pháp lý của sàn giao dịch TMĐT AI Markets gồm 19 văn bản dưới đây. Toàn bộ 19 văn bản đã được hợp nhất vào Quy chế này; Quy chế được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal).
-
-| STT | Tên tài liệu | Ghi chú |
-|---|---|---|
-| 1 | Quy chế hoạt động sàn giao dịch TMĐT | Đã hợp nhất vào Quy chế này |
-| 2 | Điều khoản sử dụng | Đã hợp nhất vào Quy chế này |
-| 3 | Chính sách người bán | Đã hợp nhất vào Quy chế này |
-| 4 | Chính sách người mua | Đã hợp nhất vào Quy chế này |
-| 5 | Chính sách thanh toán và đối soát | Đã hợp nhất vào Quy chế này |
-| 6 | Chính sách hoàn tiền và chấm dứt dịch vụ | Đã hợp nhất vào Quy chế này |
-| 7 | Chính sách khiếu nại và giải quyết tranh chấp | Đã hợp nhất vào Quy chế này |
-| 8 | Chính sách bảo mật và bảo vệ dữ liệu cá nhân | Đã hợp nhất vào Quy chế này |
-| 9 | Chính sách sở hữu trí tuệ, bản quyền và giấy phép sử dụng | Đã hợp nhất vào Quy chế này |
-| 10 | Chính sách sử dụng chấp nhận được (AUP) và danh mục cấm kinh doanh | Đã hợp nhất vào Quy chế này |
-| 11 | Chính sách kiểm duyệt sản phẩm AI | Đã hợp nhất vào Quy chế này |
-| 12 | Chính sách an ninh agent và container | Đã hợp nhất vào Quy chế này |
-| 13 | Quy trình xác minh người bán | Đã hợp nhất vào Quy chế này |
-| 14 | Quy trình xử lý vi phạm | Đã hợp nhất vào Quy chế này |
-| 15 | Thỏa thuận cung cấp dịch vụ người bán | Đã hợp nhất vào Quy chế này (phiên bản v2026.10.05) |
-| 16 | Chính sách cookies và lưu trữ trên trình duyệt | Đã hợp nhất vào Quy chế này |
-| 17 | Chính sách lưu trữ và cung cấp dữ liệu | Đã hợp nhất vào Quy chế này |
-| 18 | Chính sách thuế | Đã hợp nhất vào Quy chế này |
-| 19 | Chính sách hóa đơn (hóa đơn và chứng từ) | Đã hợp nhất vào Quy chế này |
-
-### 2. Nơi hiển thị
-
-- Website: trang /legal đọc trực tiếp các tệp trong src/assets/legal/.
-- Ứng dụng di động: tải cùng các tệp từ https://aimarkets.vn/assets/legal/, nên nội dung trên ứng dụng cập nhật sau khi website được triển khai.
-- API: ensure-legal-documents.js lưu bản tóm tắt có phiên bản để ghi nhận chấp thuận của người dùng.
-
-### 3. Quy ước cập nhật
-
-- Mỗi tài liệu có dòng “Ngày hiệu lực” và “Phiên bản”; thay đổi nội dung phải tăng phiên bản.
-- Thông báo trước ít nhất 30 ngày khi thay đổi chính sách ảnh hưởng đến quyền, nghĩa vụ của người dùng.
-- Đồng bộ bản sao trong AI_Marketplace_Policies/ và phiên bản BASE_DOCS trong API mỗi lần cập nhật.
-
-### 4. Lưu ý pháp lý
-
-Đây là nội dung chính sách vận hành, không phải ý kiến pháp lý. Nên rà soát với đơn vị tư vấn TMĐT, thuế, thanh toán và dữ liệu cá nhân trước khi công bố hoặc khi pháp luật thay đổi.
