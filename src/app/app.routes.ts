@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, creatorGuard, sellerGuard, adminGuard, listingGuard } from './guards/auth.guards';
+import { authGuard, creatorGuard, sellerGuard, adminGuard, listingGuard, taxStaffGuard } from './guards/auth.guards';
 import { visibleCategoryGuard, workBoardGuard } from './guards/feature.guards';
 
 export const routes: Routes = [
@@ -682,7 +682,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin/tax',
-        canActivate: [adminGuard],
+        canActivate: [taxStaffGuard],
         loadComponent: () => import('./features/admin/admin-tax.component').then((m) => m.AdminTaxComponent),
       },
       {

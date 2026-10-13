@@ -52,8 +52,10 @@ Người chưa đủ năng lực hành vi dân sự chỉ được sử dụng d
 Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - Chủ quản nền tảng (Nền tảng): Công ty TNHH giải pháp công nghệ PHGroup, vận hành AI Markets.
-- Người bán: tổ chức, hộ kinh doanh, cá nhân đã đăng ký và được xác minh, đăng bán sản phẩm, dịch vụ trên nền tảng.
-- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng.
+- Người bán: tổ chức, hộ kinh doanh, cá nhân đã đăng ký và được xác minh, đăng bán sản phẩm, dịch vụ trên nền tảng. Khi đăng ký, người bán bắt buộc chọn một trong ba loại: cá nhân kinh doanh, hộ kinh doanh, doanh nghiệp/tổ chức, và cung cấp mã số thuế (hộ kinh doanh, doanh nghiệp/tổ chức kèm giấy chứng nhận đăng ký kinh doanh); loại người bán là căn cứ xác định mức khấu trừ thuế.
+- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán duy nhất bằng số dư ví AI Markets; người mua được rút số dư ví sau khi hoàn tất xác minh danh tính (eKYC).
+- Người giới thiệu (affiliate, người tiếp thị liên kết): người dùng đã hoàn tất xác minh danh tính (eKYC) tham gia Chương trình Affiliate, chia sẻ liên kết sản phẩm, gian hàng và nhận hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá do người bán chi trả; chỉ rút hoa hồng khi số dư hoa hồng khả dụng từ 2.000.000 đ (mỗi lần rút tối thiểu 2.000.000 đ), khấu trừ 10% thuế TNCN mỗi lần rút hoặc 0% khi có Bản cam kết Mẫu 08/CK-TNCN được duyệt. Người giới thiệu là một tư cách của tài khoản, không phải loại tài khoản riêng.
+- Ban quản trị (quản trị viên): nhân sự của Chủ quản nền tảng được phân quyền vận hành (người dùng, xác minh người bán và eKYC, kiểm duyệt, khiếu nại, tài chính). Việc xuất báo cáo thuế theo quý, dữ liệu chứng từ khấu trừ thuế TNCN và duyệt Bản cam kết Mẫu 08/CK-TNCN chỉ do quản trị viên hoặc nhân sự kế toán thuế được cấp quyền riêng thực hiện.
 - Bán bởi sàn (Platform Direct): sản phẩm, dịch vụ do chính Công ty cung cấp, được gắn nhãn “Bán bởi sàn”.
 - Bán bởi Seller: sản phẩm, dịch vụ do người bán cung cấp, ghi rõ tên cửa hàng.
 - Nhà cung cấp hạ tầng (Provider): đơn vị cung cấp máy chủ, GPU, API mô hình AI, thanh toán… cho nền tảng hoặc người bán. Provider không phải là người bán chỉ vì sản phẩm sử dụng hạ tầng của họ.

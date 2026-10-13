@@ -113,6 +113,8 @@ export interface User {
   avatarUrl?: string;
   coverUrl?: string;
   role: UserRole;
+  /** Least-privilege staff permissions, e.g. 'finance.tax' (kế toán thuế). Admins need none. */
+  adminPermissions?: string[];
   creatorSlug?: string;
   bio?: string;
   /** none | draft | pending | verified | rejected */

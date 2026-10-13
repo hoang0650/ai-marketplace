@@ -15,7 +15,7 @@ function afterAuthRoute(user: User, next: string): string {
   if (!skip && next.startsWith('/')) return next;
   if (user.role === 'admin') return '/admin';
   if (user.role === 'seller') return '/dashboard';
-  if (user.role === 'talent') return WORK_BOARD_ENABLED ? '/work/talents' : '/sell';
+  if (user.role === 'talent') return WORK_BOARD_ENABLED ? '/work/talents' : '/';
   if (user.role === 'freelancer') return WORK_BOARD_ENABLED ? '/work/manage/contracts' : '/';
   if (user.role === 'employer') return WORK_BOARD_ENABLED ? '/work/manage' : '/';
   return '/marketplace';

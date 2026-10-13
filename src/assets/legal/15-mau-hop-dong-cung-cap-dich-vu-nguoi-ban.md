@@ -19,7 +19,7 @@ Nội dung dưới đây là các điều khoản của mẫu Hợp đồng dị
 
 - Sàn AI Markets (Nền tảng): sàn giao dịch thương mại điện tử tại https://aimarkets.vn và ứng dụng di động “AI Markets” (iOS, Android) do Bên A sở hữu, vận hành.
 - Quy chế: Quy chế hoạt động sàn giao dịch thương mại điện tử AI Markets (bản hợp nhất các chính sách của Nền tảng) được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal), kể cả các sửa đổi, bổ sung được thông báo theo Điều 17.
-- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng.
+- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; thanh toán đơn hàng duy nhất bằng số dư Ví; được rút số dư Ví sau khi hoàn tất xác minh danh tính (eKYC).
 - Sản phẩm: hàng hóa số, dịch vụ trực tuyến do Bên B đăng bán, gắn nhãn “Bán bởi Seller – tên cửa hàng”, phân biệt với sản phẩm “Bán bởi sàn” do Bên A trực tiếp cung cấp.
 - Ví AI Markets (Ví): số dư của người dùng trên Nền tảng, là phương thức duy nhất để thanh toán đơn hàng.
 - Kênh người bán: khu vực quản lý dành cho Bên B (hồ sơ cửa hàng, xác minh, sản phẩm, đơn hàng, khiếu nại, mã giảm giá, thanh toán, rút tiền, sổ cái).

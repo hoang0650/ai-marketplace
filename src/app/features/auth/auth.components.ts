@@ -14,7 +14,7 @@ function afterAuthRoute(user: User, returnUrl?: string | null): string {
   if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) return returnUrl;
   if (user.role === 'admin') return '/admin';
   if (user.role === 'seller') return '/dashboard';
-  if (user.role === 'talent') return WORK_BOARD_ENABLED ? '/work/talents' : '/sell';
+  if (user.role === 'talent') return WORK_BOARD_ENABLED ? '/work/talents' : '/';
   if (user.role === 'freelancer') return WORK_BOARD_ENABLED ? '/work/manage/contracts' : '/';
   if (user.role === 'employer') return WORK_BOARD_ENABLED ? '/work/manage' : '/';
   return '/marketplace';
@@ -91,7 +91,7 @@ export class RegisterComponent implements OnInit {
   readonly brand = environment.brandName;
   readonly roles: SignupRole[] = WORK_BOARD_ENABLED
     ? ['buyer', 'seller', 'talent', 'freelancer', 'employer']
-    : ['buyer', 'seller', 'talent'];
+    : ['buyer', 'seller'];
   readonly role = signal<SignupRole>('buyer');
   name = '';
   email = '';

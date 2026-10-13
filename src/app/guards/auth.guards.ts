@@ -43,12 +43,21 @@ export const employerGuard: CanActivateFn = () => {
   );
 };
 
-/** Sellers list every category; talent only custom-work (hire) listings — the API enforces the split. */
+/** Only sellers list products (Hire/Work is discontinued, so legacy talent accounts cannot list). */
 export const listingGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
   return auth.ensureReady().pipe(
-    map(() => (auth.isSeller() || auth.isTalent() ? true : router.createUrlTree(['/auth/login']))),
+    map(() => (auth.isSeller() ? true : router.createUrlTree(['/auth/login']))),
+  );
+};
+
+/** Admin or staff with the 'finance.tax' permission (kế toán thuế). */
+export const taxStaffGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.ensureReady().pipe(
+    map(() => (auth.isTaxStaff() ? true : router.createUrlTree(['/']))),
   );
 };
 

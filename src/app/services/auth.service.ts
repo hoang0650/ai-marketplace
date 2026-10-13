@@ -86,6 +86,8 @@ export class AuthService {
     const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
     return role === 'admin';
   });
+  /** Tax tools (quarterly export, PIT certificates, Mẫu 08 queue): admin or 'finance.tax' staff. */
+  readonly isTaxStaff = computed(() => this.isAdmin() || !!this.userSignal()?.adminPermissions?.includes('finance.tax'));
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
