@@ -1108,3 +1108,68 @@ export interface PayoutAccountResponse {
   canEdit: boolean;
   holderName: string;
 }
+
+export type InvoiceBuyerType = 'none' | 'organization' | 'individual';
+
+export interface OrderInvoice {
+  id: string;
+  orderId: string;
+  productName: string;
+  amount: number;
+  currency: string;
+  orderedAt: string | null;
+  wantsInvoice: boolean;
+  buyerType: InvoiceBuyerType;
+  buyerName: string;
+  taxCode: string;
+  personalId: string;
+  address: string;
+  email: string;
+  budgetUnitCode: string;
+  status: 'pending' | 'issued' | 'cancelled';
+  invoiceNumber: string;
+  invoiceSeries: string;
+  lookupCode: string;
+  hasPdf: boolean;
+  issuedAt: string | null;
+  editableUntil: string | null;
+  editable: boolean;
+  provider: string;
+  buyer?: { id: string; name?: string; email?: string };
+  pdfObjectName?: string;
+}
+
+export interface InvoicePrefill {
+  buyerType: 'organization' | 'individual';
+  buyerName: string;
+  taxCode: string;
+  personalId: string;
+  address: string;
+  email: string;
+  budgetUnitCode: string;
+  source: 'saved' | 'kyc' | 'profile';
+}
+
+export interface OrderInvoiceResponse {
+  order: { id: string; productName: string; amount: number; currency: string; status: string; createdAt: string };
+  invoice: OrderInvoice | null;
+  prefill: InvoicePrefill;
+  hasSavedProfile: boolean;
+}
+
+export interface InvoiceChoiceBody {
+  wantsInvoice: boolean;
+  buyerType?: 'organization' | 'individual';
+  buyerName?: string;
+  taxCode?: string;
+  personalId?: string;
+  address?: string;
+  email?: string;
+  budgetUnitCode?: string;
+  saveProfile?: boolean;
+}
+
+export interface AdminInvoiceList {
+  items: OrderInvoice[];
+  counts: { pending: number; issued: number; cancelled: number; pendingWanted: number };
+}

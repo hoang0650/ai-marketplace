@@ -27,6 +27,7 @@ import { TemplatePanelComponent } from '../builder/template-panel.component';
 import { CartService } from '../cart/cart.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
+import { InvoiceChoiceComponent } from '../orders/invoice-choice.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { MARKETPLACE_AGENTS, OpenClawGatewayService } from '../agents/openclaw-gateway.service';
 import { isRunpodProduct, resolveRunpodEndpoint } from '../../models/runpod-playground';
@@ -66,7 +67,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -109,6 +110,8 @@ export class ProductDetailComponent implements OnInit {
   readonly resultView = signal<ResultView>('preview');
   readonly runStatus = signal<RunStatus>('idle');
   readonly checkoutMsg = signal('');
+  /** Last successful order (VAT invoice choice under the success message). */
+  readonly lastOrderId = signal('');
   readonly issuedLicense = signal<IssuedLicense | null>(null);
   readonly episodes = signal<ContentEpisode[]>([]);
   readonly selectedEpisode = signal<ContentEpisode | null>(null);
@@ -1752,6 +1755,7 @@ export class ProductDetailComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.checkingOut.set(false);
+        this.lastOrderId.set(res.orderId || '');
         if (res.license?.licenseKey) {
           this.issuedLicense.set(res.license);
           this.checkoutMsg.set(

@@ -192,7 +192,7 @@ export class DashboardHomeComponent implements OnInit {
         <tbody>
           @for (o of orders(); track o.id) {
             <tr class="border-t border-line">
-              <td class="py-3 font-mono text-xs">{{ o.id }}</td>
+              <td class="py-3 font-mono text-xs"><a class="underline" [routerLink]="['/orders', o.id]">{{ o.id }}</a></td>
               <td>{{ o.productName }}</td>
               <td>{{ o.buyerName }}</td>
               <td>{{ o.amount | currency: o.currency }}</td>

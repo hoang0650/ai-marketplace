@@ -10,12 +10,13 @@ import { isLicenseCategory } from '../../models/categories';
 import { forkJoin } from 'rxjs';
 import { CartService } from './cart.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { InvoiceChoiceComponent } from '../orders/invoice-choice.component';
 import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, FormsModule, TPipe],
+  imports: [RouterLink, CurrencyPipe, FormsModule, TPipe, InvoiceChoiceComponent],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
 })
@@ -43,6 +44,7 @@ export class CartComponent implements OnInit {
       licenseKey?: string;
       emailSent?: boolean;
       emailTo?: string | null;
+      orderId?: string;
     }>
   >([]);
   readonly suggested = signal<Product[]>([]);
@@ -134,6 +136,7 @@ export class CartComponent implements OnInit {
             licenseKey: row.license?.licenseKey,
             emailSent: row.emailSent,
             emailTo: row.emailTo,
+            orderId: row.orderId,
           })),
         );
         this.paid.set(true);

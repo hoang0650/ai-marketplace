@@ -36,6 +36,10 @@ import {
   KycSubjectType,
   KycReviewStatus,
   KycQueueResponse,
+  OrderInvoice,
+  OrderInvoiceResponse,
+  InvoiceChoiceBody,
+  AdminInvoiceList,
   PayoutBankAccount,
   PayoutAccountInfo,
   PayoutAccountResponse,
@@ -628,6 +632,7 @@ export class BillingService {
     emailSent?: boolean;
     emailTo?: string | null;
     emailReason?: string;
+    orderId?: string;
   }> {
     return this.http.post<{
       checkoutId: string;
@@ -643,6 +648,7 @@ export class BillingService {
       emailSent?: boolean;
       emailTo?: string | null;
       emailReason?: string;
+      orderId?: string;
     }>(`${this.base}/billing/checkout`, {
       productId: input.productId,
       quantity: input.quantity,
@@ -1438,5 +1444,40 @@ export class LegalService {
       `${this.base}/legal/${documentType}/accept`,
       { context },
     );
+  }
+}
+
+/** Order VAT invoice choice (buyer) + admin invoice queue. */
+@Injectable({ providedIn: 'root' })
+export class InvoiceService {
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
+
+  get(orderId: string): Observable<OrderInvoiceResponse> {
+    return this.http.get<OrderInvoiceResponse>(`${this.base}/orders/${orderId}/invoice`);
+  }
+
+  save(orderId: string, body: InvoiceChoiceBody): Observable<{ ok: boolean; invoice: OrderInvoice }> {
+    return this.http.put<{ ok: boolean; invoice: OrderInvoice }>(`${this.base}/orders/${orderId}/invoice`, body);
+  }
+
+  pdfUrl(orderId: string): Observable<{ url: string; expiresIn: number }> {
+    return this.http.get<{ url: string; expiresIn: number }>(`${this.base}/orders/${orderId}/invoice/pdf`);
+  }
+
+  adminList(query: { status?: string; wants?: string; q?: string } = {}): Observable<AdminInvoiceList> {
+    let params = new HttpParams();
+    for (const [k, v] of Object.entries(query)) if (v) params = params.set(k, v);
+    return this.http.get<AdminInvoiceList>(`${this.base}/admin/invoices`, { params });
+  }
+
+  adminUpdate(id: string, body: { status: string; invoiceNumber?: string; invoiceSeries?: string; lookupCode?: string }): Observable<{ ok: boolean; invoice: OrderInvoice }> {
+    return this.http.put<{ ok: boolean; invoice: OrderInvoice }>(`${this.base}/admin/invoices/${id}`, body);
+  }
+
+  adminUploadPdf(id: string, file: File): Observable<{ ok: boolean; invoice: OrderInvoice }> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.http.post<{ ok: boolean; invoice: OrderInvoice }>(`${this.base}/admin/invoices/${id}/pdf`, form);
   }
 }

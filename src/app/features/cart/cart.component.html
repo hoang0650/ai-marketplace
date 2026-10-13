@@ -16,6 +16,9 @@
             @if (r.licenseKey) {
               <span class="paid-key">{{ r.licenseKey }}</span>
             }
+            @if (r.orderId) {
+              <app-invoice-choice [orderId]="r.orderId" [compact]="true" />
+            }
           </li>
         }
       </ul>

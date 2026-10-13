@@ -686,6 +686,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/admin-tax.component').then((m) => m.AdminTaxComponent),
       },
       {
+        path: 'admin/invoices',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/admin/admin-invoices.component').then((m) => m.AdminInvoicesComponent),
+      },
+      {
+        path: 'orders/:id',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/orders/order-detail.component').then((m) => m.OrderDetailComponent),
+      },
+      {
         path: 'admin/kyc',
         canActivate: [adminGuard],
         loadComponent: () => import('./features/admin/admin-kyc.component').then((m) => m.AdminKycComponent),

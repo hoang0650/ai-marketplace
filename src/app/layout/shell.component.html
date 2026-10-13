@@ -243,6 +243,7 @@
                     <li><a routerLink="/admin" (click)="closeUserMenu()">{{ 'nav.admin' | t }}</a></li>
                     <li><a routerLink="/admin/finance" (click)="closeUserMenu()">{{ 'admin.finance.title' | t }}</a></li>
                     <li><a routerLink="/admin/kyc" (click)="closeUserMenu()">{{ 'admin.kyc.title' | t }}</a></li>
+                    <li><a routerLink="/admin/invoices" (click)="closeUserMenu()">{{ 'admin.inv.title' | t }}</a></li>
                     <li><a routerLink="/admin/agent-purges" (click)="closeUserMenu()">{{ 'admin.agentPurge.title' | t }}</a></li>
                   }
                   @if (auth.isTaxStaff()) {

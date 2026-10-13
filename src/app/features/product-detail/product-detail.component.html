@@ -279,6 +279,9 @@
 
         @if (checkoutMsg()) {
           <p class="checkout-msg">{{ checkoutMsg() }}</p>
+          @if (lastOrderId()) {
+            <app-invoice-choice [orderId]="lastOrderId()" [compact]="true" />
+          }
         }
         @if (issuedLicense(); as lic) {
           <p class="checkout-msg font-mono text-xs">
