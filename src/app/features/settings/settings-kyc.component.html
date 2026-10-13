@@ -176,7 +176,7 @@
         <p class="kyc-hint">{{ 'kyc.waitReview' | t }}</p>
       } @else if (k.status === 'verified') {
         <p class="kyc-banner ok">{{ 'kyc.verifiedHint' | t }}</p>
-        <a routerLink="/sell/withdraw" class="btn btn-outline">{{ 'kyc.goWithdraw' | t }}</a>
+        <a routerLink="/wallet" [queryParams]="{ tab: 'withdraw' }" class="btn btn-outline">{{ 'kyc.goWithdraw' | t }}</a>
       }
     </div>
   }

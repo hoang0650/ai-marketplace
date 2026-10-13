@@ -1084,3 +1084,10 @@ export interface KycAdminDocuments {
   prefix: string;
   documents: KycDocumentInfo[];
 }
+
+/** Bank account sent with a buyer wallet withdrawal (buyers have no seller payout account on file). */
+export interface PayoutBankAccount {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+}

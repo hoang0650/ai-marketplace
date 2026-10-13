@@ -161,10 +161,61 @@
           <strong>{{ 'payout.rulesTitle' | t }}</strong>
           <p>{{ 'payout.rulesBody' | t }}</p>
         </div>
-        <div class="actions">
-          <a routerLink="/settings/kyc" class="btn-dark">{{ 'kyc.goVerify' | t }}</a>
-          <a routerLink="/sell/withdraw" class="btn-outline">{{ 'wallet.withdraw.sellerPayout' | t }}</a>
-        </div>
+        @if (!kycLoaded()) {
+          <p class="lede">{{ 'wallet.wd.loading' | t }}</p>
+        } @else if (!kycVerified()) {
+          <div class="wd-kyc">
+            <p>{{ 'kyc.withdrawBlocked' | t }}</p>
+            <p class="wd-kyc__status">{{ ('kyc.status.' + (kyc()?.status || 'none')) | t }}</p>
+            <div class="actions">
+              <a routerLink="/settings/kyc" class="btn-dark">{{ 'kyc.goVerify' | t }}</a>
+            </div>
+          </div>
+        } @else if (sellerLike()) {
+          <p class="lede">{{ 'wallet.wd.sellerHint' | t }}</p>
+          <div class="actions">
+            <a routerLink="/sell/withdraw" class="btn-dark">{{ 'wallet.withdraw.sellerPayout' | t }}</a>
+          </div>
+        } @else {
+          <form class="wd-form" (ngSubmit)="submitWithdraw()">
+            <p class="wd-ok">{{ 'kyc.status.verified' | t }} · {{ 'wallet.wd.feeFree' | t }}</p>
+            @if (wdSummary(); as s) {
+              <p class="wd-avail">
+                {{ 'sell.wd.available' | t }}: <strong>{{ s.available | currency: s.currency: 'symbol-narrow': '1.2-2' }}</strong>
+                @if (s.held > 0) {
+                  · {{ 'sell.wd.held' | t }}: {{ s.held | currency: s.currency: 'symbol-narrow': '1.2-2' }}
+                }
+              </p>
+            }
+            <label>
+              <span>{{ 'wallet.wd.amount' | t }}</span>
+              <input class="wd-input" type="number" min="0.01" step="0.01" name="wdAmount" [(ngModel)]="wdAmount" [max]="wdAvailable()" required />
+            </label>
+            <label>
+              <span>{{ 'wallet.wd.bankName' | t }}</span>
+              <input class="wd-input" name="wdBankName" [(ngModel)]="wdBankName" maxlength="100" autocomplete="off" required />
+            </label>
+            <label>
+              <span>{{ 'wallet.wd.accountNumber' | t }}</span>
+              <input class="wd-input" name="wdAccountNumber" [(ngModel)]="wdAccountNumber" inputmode="numeric" maxlength="24" autocomplete="off" required />
+            </label>
+            <label>
+              <span>{{ 'wallet.wd.accountName' | t }}</span>
+              <input class="wd-input" name="wdAccountName" [(ngModel)]="wdAccountName" maxlength="100" autocomplete="off" required />
+            </label>
+            @if (wdAmount && wdAmount > 0) {
+              <p class="wd-net">{{ 'payout.net' | t }}: <strong>{{ wdAmount | currency: (wdSummary()?.currency || 'USD'): 'symbol-narrow': '1.2-2' }}</strong> ({{ 'wallet.wd.feeFree' | t }})</p>
+            }
+            <div class="actions">
+              <button type="submit" class="btn-dark" [disabled]="!canSubmitWithdraw()">
+                {{ wdBusy() ? ('wallet.wd.sending' | t) : ('sell.wd.submit' | t) }}
+              </button>
+            </div>
+            @if (wdMsg()) {
+              <p [class.wd-err]="wdErr()" [class.wd-ok]="!wdErr()">{{ wdMsg() }}</p>
+            }
+          </form>
+        }
       </div>
     }
 

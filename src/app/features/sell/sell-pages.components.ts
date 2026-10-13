@@ -327,6 +327,13 @@ export class SellPaymentComponent {
         }
       }
 
+      @if (persona() === 'buyer') {
+        <div class="policy">
+          <p>{{ 'wallet.wd.buyerHere' | t }}</p>
+          <a routerLink="/wallet" [queryParams]="{ tab: 'withdraw' }" class="link">{{ 'wallet.wd.goWallet' | t }} →</a>
+        </div>
+      }
+
       @if (kyc(); as k) {
         @if (!k.withdrawAllowed && auth.user()?.role !== 'admin') {
           <div class="kyc-block">
@@ -474,6 +481,8 @@ export class SellWithdrawComponent implements OnInit {
   }
 
   canWithdraw(): boolean {
+    // Buyers withdraw from /wallet (bank account form); the seller center is for seller payouts.
+    if (this.persona() === 'buyer') return false;
     if (this.auth.user()?.role === 'admin') return true;
     if (!this.policy()?.canWithdraw) return false;
     return !!this.kyc()?.withdrawAllowed;
