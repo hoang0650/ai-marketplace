@@ -731,3 +731,10 @@ th {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.wd-form .wd-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}

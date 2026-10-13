@@ -66,6 +66,8 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   wdBankName = '';
   wdAccountNumber = '';
   wdAccountName = '';
+  wdSaveAccount = true;
+  readonly wdHasSaved = signal(false);
 
   /** Approved eKYC (or admin) unlocks withdrawals; seller verification is not required for buyers. */
   readonly kycVerified = computed(() => this.auth.user()?.role === 'admin' || !!this.kyc()?.withdrawAllowed || this.kyc()?.status === 'verified');
@@ -209,6 +211,20 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       error: () => this.kycLoaded.set(true),
     });
     this.api.walletSummary().subscribe({ next: (s) => this.wdSummary.set(s), error: () => undefined });
+    this.api.payoutAccount().subscribe({
+      next: (r) => {
+        if (r.account) {
+          this.wdHasSaved.set(true);
+          this.wdSaveAccount = false;
+          if (!this.wdBankName) this.wdBankName = r.account.bankName;
+          if (!this.wdAccountNumber) this.wdAccountNumber = r.account.accountNumber;
+          if (!this.wdAccountName) this.wdAccountName = r.account.accountName;
+        } else if (!this.wdAccountName && r.holderName) {
+          this.wdAccountName = r.holderName;
+        }
+      },
+      error: () => undefined,
+    });
     this.api.payoutPolicy('buyer').subscribe({
       next: (r) => {
         this.wdPersonas.set(r.personas || []);
@@ -252,7 +268,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         bankName: this.wdBankName.trim(),
         accountNumber: this.wdAccountNumber.replace(/[\s.-]/g, ''),
         accountName: this.wdAccountName.trim(),
-      })
+      }, this.wdSaveAccount)
       .subscribe({
         next: (tx) => {
           this.wdBusy.set(false);
@@ -265,7 +281,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         error: (err) => {
           this.wdBusy.set(false);
           this.wdErr.set(true);
-          this.wdMsg.set(err?.error?.message || this.i18n.t('sell.wd.fail'));
+          this.wdMsg.set(
+            err?.error?.code === 'ACCOUNT_NAME_MISMATCH' ? this.i18n.t('payacc.nameMismatch') : err?.error?.message || this.i18n.t('sell.wd.fail'),
+          );
         },
       });
   }

@@ -731,6 +731,8 @@ export interface WalletTx {
   reviewedAt?: string | null;
   createdAt: string;
   user?: { id: string; name: string; email: string; role: string };
+  /** Withdrawals: destination bank account (full number for admins, masked for the owner). */
+  payoutAccount?: { bankName: string; accountName: string; accountNumber: string; accountNumberMasked: string; source: string };
 }
 
 export interface GpayConfig {
@@ -1090,4 +1092,19 @@ export interface PayoutBankAccount {
   bankName: string;
   accountNumber: string;
   accountName: string;
+}
+
+export interface PayoutAccountInfo {
+  bankName: string;
+  accountNumber: string;
+  accountNumberMasked: string;
+  accountName: string;
+  updatedAt: string | null;
+}
+
+export interface PayoutAccountResponse {
+  account: PayoutAccountInfo | null;
+  kycStatus: string;
+  canEdit: boolean;
+  holderName: string;
 }

@@ -203,6 +203,10 @@
               <span>{{ 'wallet.wd.accountName' | t }}</span>
               <input class="wd-input" name="wdAccountName" [(ngModel)]="wdAccountName" maxlength="100" autocomplete="off" required />
             </label>
+            <label class="wd-check">
+              <input type="checkbox" name="wdSaveAccount" [(ngModel)]="wdSaveAccount" />
+              <span>{{ (wdHasSaved() ? 'payacc.updateSaved' : 'payacc.saveForLater') | t }}</span>
+            </label>
             @if (wdAmount && wdAmount > 0) {
               <p class="wd-net">{{ 'payout.net' | t }}: <strong>{{ wdAmount | currency: (wdSummary()?.currency || 'USD'): 'symbol-narrow': '1.2-2' }}</strong> ({{ 'wallet.wd.feeFree' | t }})</p>
             }

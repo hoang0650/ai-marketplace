@@ -17,6 +17,7 @@ import {
 } from '../../models/marketplace.models';
 import { categoryLabel, isTemplateCategory, sellerWorkspaceKind } from '../../models/categories';
 import { ShopProfileService } from './shop-profile.service';
+import { PayoutAccountFormComponent } from '../wallet/payout-account-form.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 
@@ -239,12 +240,16 @@ export class SellOrdersComponent implements OnInit {
 @Component({
   selector: 'app-sell-payment',
   standalone: true,
-  imports: [RouterLink, TPipe],
+  imports: [RouterLink, TPipe, PayoutAccountFormComponent],
   template: `
     <section class="pay">
       <p class="crumb">{{ 'sell.ws.seller.sub' | t }} · {{ shop.statusLabel() }} · {{ 'sell.nav.payment' | t }}</p>
       <h1>{{ 'sell.nav.payment' | t }}</h1>
-      @if (!shop.started() || shop.profile().status === 'draft') {
+      <!-- Any eKYC-verified user (buyer or seller) can save a payout account; unverified users see the eKYC prompt. -->
+      <app-payout-account-form />
+      @if (!isSeller()) {
+        <p class="buyer-note">{{ 'payacc.buyerNote' | t }} <a routerLink="/wallet" [queryParams]="{ tab: 'withdraw' }" class="link">{{ 'wallet.wd.goWallet' | t }} ›</a></p>
+      } @else if (!shop.started() || shop.profile().status === 'draft') {
         <div class="gate">
           <span class="gate__icon">ℹ</span>
           <h2>{{ 'sell.pay.gateTitle' | t }}</h2>
@@ -269,10 +274,17 @@ export class SellOrdersComponent implements OnInit {
     p { color: #666; line-height: 1.5; }
     .btn { display: inline-flex; margin-top: .5rem; min-height: 2.5rem; padding: .55rem 1.1rem; border-radius: 10px; background: #171717; color: #fff; text-decoration: none; font-weight: 800; }
     .link { color: #e53935; font-weight: 700; text-decoration: none; }
+    .buyer-note { max-width: 560px; margin: 0 auto; text-align: center; color: #666; font-size: .9rem; }
   `,
 })
 export class SellPaymentComponent {
   readonly shop = inject(ShopProfileService);
+  private readonly auth = inject(AuthService);
+  /** Seller onboarding gate only applies to seller accounts; buyers just manage their payout account. */
+  readonly isSeller = computed(() => {
+    const role = this.auth.user()?.role;
+    return role === 'seller' || role === 'admin' || this.shop.started();
+  });
   constructor() {
     inject(SeoService).set({ title: inject(I18nService).t('sell.nav.payment') });
   }

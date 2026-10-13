@@ -37,6 +37,8 @@ import {
   KycReviewStatus,
   KycQueueResponse,
   PayoutBankAccount,
+  PayoutAccountInfo,
+  PayoutAccountResponse,
   KycAdminDocuments,
   AdminDailyPoint,
   AdminGranularity,
@@ -316,8 +318,21 @@ export class DashboardService {
     return this.http.get<WalletSummary>(`${this.base}/wallet/summary`);
   }
 
-  withdraw(amount: number, persona?: string, bankAccount?: PayoutBankAccount): Observable<WalletTx> {
-    return this.http.post<WalletTx>(`${this.base}/wallet/withdraw`, { amount, persona, ...(bankAccount ? { bankAccount } : {}) });
+  withdraw(amount: number, persona?: string, bankAccount?: PayoutBankAccount, saveAccount = false): Observable<WalletTx> {
+    return this.http.post<WalletTx>(`${this.base}/wallet/withdraw`, {
+      amount,
+      persona,
+      ...(bankAccount ? { bankAccount } : {}),
+      ...(saveAccount ? { saveAccount: true } : {}),
+    });
+  }
+
+  payoutAccount(): Observable<PayoutAccountResponse> {
+    return this.http.get<PayoutAccountResponse>(`${this.base}/wallet/payout-account`);
+  }
+
+  savePayoutAccount(body: PayoutBankAccount): Observable<{ ok: boolean; account: PayoutAccountInfo | null }> {
+    return this.http.put<{ ok: boolean; account: PayoutAccountInfo | null }>(`${this.base}/wallet/payout-account`, body);
   }
 
   payoutPolicy(persona?: string, amount?: number): Observable<PayoutPolicyResponse> {
