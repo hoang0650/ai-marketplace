@@ -105,8 +105,14 @@
           <h3>{{ (item.kyc.subjectType === 'organization' ? 'kyc.docsRep' : 'kyc.docs') | t }}</h3>
           <div class="admin-kyc__docs">
             @for (side of sides; track side) {
-              <figure>
-                @if (docs()[side]; as url) {
+              <figure [class.admin-kyc__doc--wide]="side === 'license'">
+                @if (side === 'license' && docs()[side] && item.kyc.licenseFile?.isPdf) {
+                  <a class="admin-kyc__file" [href]="docs()[side]" target="_blank" rel="noopener noreferrer">
+                    <span class="admin-kyc__file-icon" aria-hidden="true">PDF</span>
+                    <span class="admin-kyc__file-name">{{ item.kyc.licenseFile?.name }}</span>
+                    <span class="admin-kyc__file-view">{{ 'kyc.file.view' | t }}</span>
+                  </a>
+                } @else if (docs()[side]; as url) {
                   <a [href]="url" target="_blank" rel="noopener noreferrer"><img [src]="url" [alt]="side" /></a>
                 } @else {
                   <div class="admin-kyc__placeholder">{{ 'kyc.noPhoto' | t }}</div>

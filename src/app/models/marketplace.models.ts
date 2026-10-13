@@ -190,6 +190,8 @@ export interface KycProfile {
   hasLicense?: boolean;
   /** True when subjectType is organization: the licence scan is required to submit. */
   licenseRequired?: boolean;
+  /** Uploaded business licence file (PDF; legacy uploads may be images). */
+  licenseFile?: KycLicenseFile | null;
   submittedAt: string | null;
   reviewedAt: string | null;
   rejectReason: string;
@@ -1049,4 +1051,11 @@ export interface AdminOverview {
     suspendedUntil?: string | null;
     salesCount?: number;
   }>;
+}
+
+export interface KycLicenseFile {
+  name: string;
+  size: number;
+  contentType: string;
+  isPdf: boolean;
 }

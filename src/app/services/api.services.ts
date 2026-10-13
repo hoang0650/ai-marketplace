@@ -1291,7 +1291,7 @@ export class KycService {
 
   uploadDocument(side: KycSide, file: File): Observable<{ ok: boolean; side: string; previewUrl?: string; kyc: KycProfile }> {
     const form = new FormData();
-    form.append('image', file, file.name);
+    form.append('file', file, file.name);
     return this.http.post<{ ok: boolean; side: string; previewUrl?: string; kyc: KycProfile }>(
       `${this.base}/kyc/documents/${side}`,
       form,

@@ -100,11 +100,27 @@ export class SettingsKycComponent implements OnInit {
     });
   }
 
+  fileSize(bytes: number): string {
+    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  }
+
   onFile(side: KycSide, ev: Event): void {
     const input = ev.target as HTMLInputElement;
     const file = input.files?.[0];
     input.value = '';
     if (!file) return;
+    if (side === 'license') {
+      const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+      if (!isPdf) {
+        this.error.set(this.i18n.t('kyc.file.mustPdf'));
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        this.error.set(this.i18n.t('kyc.file.tooLarge'));
+        return;
+      }
+    }
     this.busy.set(true);
     this.error.set('');
     this.api.uploadDocument(side, file).subscribe({

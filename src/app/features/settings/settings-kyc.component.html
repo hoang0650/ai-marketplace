@@ -121,17 +121,43 @@
       <h2>{{ (isOrg ? 'kyc.docsRep' : 'kyc.docs') | t }}</h2>
       <div class="kyc-docs">
         @for (side of visibleSides; track side) {
-          <label class="kyc-doc">
-            <span>{{ sideKey(side) | t }}</span>
-            @if (previews()[side]; as url) {
-              <img [src]="url" [alt]="side" />
-            } @else {
-              <div class="kyc-placeholder">{{ 'kyc.noPhoto' | t }}</div>
-            }
-            @if (k.canEdit) {
-              <input type="file" accept="image/jpeg,image/png,image/webp" (change)="onFile(side, $event)" [disabled]="busy()" />
-            }
-          </label>
+          @if (side === 'license') {
+            <div class="kyc-doc kyc-doc--wide">
+              <span>{{ sideKey(side) | t }}</span>
+              @if (k.hasLicense && k.licenseFile; as f) {
+                <div class="kyc-file">
+                  <span class="kyc-file__icon" aria-hidden="true">PDF</span>
+                  <span class="kyc-file__meta">
+                    <span class="kyc-file__name" [title]="f.name">{{ f.name }}</span>
+                    @if (f.size) {
+                      <span class="kyc-file__size">{{ fileSize(f.size) }}</span>
+                    }
+                  </span>
+                  @if (previews()[side]; as url) {
+                    <a class="kyc-file__view" [href]="url" target="_blank" rel="noopener noreferrer">{{ 'kyc.file.view' | t }}</a>
+                  }
+                </div>
+              } @else {
+                <div class="kyc-placeholder kyc-placeholder--file">{{ 'kyc.file.none' | t }}</div>
+              }
+              @if (k.canEdit) {
+                <input type="file" accept="application/pdf,.pdf" (change)="onFile(side, $event)" [disabled]="busy()" [attr.aria-label]="sideKey(side) | t" />
+                <span class="kyc-file__hint">{{ 'kyc.file.pdfHint' | t }}</span>
+              }
+            </div>
+          } @else {
+            <label class="kyc-doc">
+              <span>{{ sideKey(side) | t }}</span>
+              @if (previews()[side]; as url) {
+                <img [src]="url" [alt]="side" />
+              } @else {
+                <div class="kyc-placeholder">{{ 'kyc.noPhoto' | t }}</div>
+              }
+              @if (k.canEdit) {
+                <input type="file" accept="image/jpeg,image/png,image/webp" (change)="onFile(side, $event)" [disabled]="busy()" />
+              }
+            </label>
+          }
         }
       </div>
       @if (isOrg) {
