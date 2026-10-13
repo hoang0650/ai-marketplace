@@ -31,6 +31,8 @@ Nền tảng lưu trữ dữ liệu để vận hành giao dịch, bảo đảm 
 
 Hết thời hạn, dữ liệu được xóa hoặc ẩn danh, trừ trường hợp tại Điều 3.
 
+Khi người dùng xóa tài khoản, dữ liệu hồ sơ cá nhân bị xóa ngay; các nhóm dữ liệu trong bảng trên (đơn hàng, giao dịch, hóa đơn, khiếu nại, hồ sơ eKYC/xác minh đã nộp) được giữ gắn với tài khoản đã ẩn danh đến hết thời hạn rồi xóa. Cách xóa tài khoản: xem Điều 9 [Chính sách bảo mật và dữ liệu](08-chinh-sach-bao-mat-va-du-lieu.md) hoặc https://aimarkets.vn/account/delete.
+
 ## Điều 3. Tạm giữ dữ liệu
 
 Khi có tranh chấp, điều tra hoặc yêu cầu pháp lý, dữ liệu liên quan được tạm giữ và không bị xóa theo thời hạn thông thường cho đến khi vụ việc kết thúc.

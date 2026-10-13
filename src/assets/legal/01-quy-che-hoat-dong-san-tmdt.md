@@ -881,7 +881,8 @@ Người dùng có quyền: được biết; đồng ý hoặc rút lại sự �
 Cách thực hiện:
 
 - Tự thực hiện tại trang Cài đặt: chỉnh sửa hồ sơ, đổi mật khẩu, đăng xuất khỏi mọi thiết bị, ngắt liên kết Google, chọn ngôn ngữ thông báo, xem lịch sử hoạt động.
-- Gửi yêu cầu tới support@aimarkets.vn: cung cấp bản sao dữ liệu, xóa tài khoản và dữ liệu, hạn chế hoặc phản đối xử lý. Nền tảng xác minh danh tính trước khi thực hiện và phản hồi trong thời hạn pháp luật quy định.
+- Tự xóa tài khoản: tại Hồ sơ/Cài đặt → Xóa tài khoản trên ứng dụng hoặc website (https://aimarkets.vn/settings/delete-account); người không thể đăng nhập gửi yêu cầu tại https://aimarkets.vn/account/delete và được xử lý trong 30 ngày sau khi xác minh danh tính. Việc xóa thực hiện ngay sau khi xác nhận nếu không còn số dư ví, yêu cầu rút tiền, đơn hàng chưa hoàn tất, tranh chấp, khiếu nại đang mở hoặc máy GPU đang chạy: hồ sơ cá nhân, mật khẩu, phiên đăng nhập, khóa API, giỏ hàng, danh sách yêu thích, thông báo bị xóa; gian hàng, sản phẩm bị gỡ; tài khoản được ẩn danh và không thể khôi phục.
+- Gửi yêu cầu tới support@aimarkets.vn: cung cấp bản sao dữ liệu, xóa dữ liệu, hạn chế hoặc phản đối xử lý. Nền tảng xác minh danh tính trước khi thực hiện và phản hồi trong thời hạn pháp luật quy định.
 
 Dữ liệu mà pháp luật buộc phải lưu (đơn hàng, hợp đồng, chứng từ thuế, hồ sơ khiếu nại) được giữ đến hết thời hạn bắt buộc rồi mới xóa.
 

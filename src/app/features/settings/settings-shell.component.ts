@@ -48,6 +48,7 @@ export class SettingsShellComponent {
       { path: '/settings/notifications', title: this.i18n.t('settings.noti'), desc: this.i18n.t('settings.notiDesc'), icon: '🔔' },
       { path: '/settings/connections', title: this.i18n.t('settings.conn'), desc: this.i18n.t('settings.connDesc'), icon: '🔗' },
       { path: '/settings/feed', title: this.i18n.t('settings.feed'), desc: this.i18n.t('settings.feedDesc'), icon: '📰' },
+      { path: '/settings/delete-account', title: this.i18n.t('settings.delete'), desc: this.i18n.t('settings.deleteDesc'), icon: '🗑️' },
     ];
   });
 }

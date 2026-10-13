@@ -76,6 +76,16 @@ export class I18nService {
   private readInitial(): AppLang {
     if (!isPlatformBrowser(this.platformId)) return 'vi';
     try {
+      // `?lang=vi|en|zh` (used by the mobile app's in-app browser) wins and is remembered.
+      const q = new URLSearchParams(window.location.search).get('lang');
+      if (q === 'vi' || q === 'en' || q === 'zh') {
+        localStorage.setItem(STORAGE_KEY, q);
+        return q;
+      }
+    } catch {
+      /* ignore */
+    }
+    try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === 'vi' || saved === 'en' || saved === 'zh') return saved;
     } catch {

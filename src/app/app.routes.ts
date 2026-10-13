@@ -538,6 +538,11 @@ export const routes: Routes = [
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'profile' },
           {
+            path: 'delete-account',
+            loadComponent: () =>
+              import('./features/settings/account-delete.component').then((m) => m.AccountDeleteComponent),
+          },
+          {
             path: 'profile',
             loadComponent: () =>
               import('./features/settings/settings-profile.component').then(
@@ -773,6 +778,11 @@ export const routes: Routes = [
         data: { policySlug: 'dieu-khoan-su-dung' },
         loadComponent: () =>
           import('./features/legal/legal-policy-page.component').then((m) => m.LegalPolicyPageComponent),
+      },
+      {
+        path: 'account/delete',
+        loadComponent: () =>
+          import('./features/settings/account-delete.component').then((m) => m.AccountDeleteComponent),
       },
       {
         path: 'legal',
