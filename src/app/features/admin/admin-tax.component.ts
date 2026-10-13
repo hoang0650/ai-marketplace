@@ -24,7 +24,7 @@ import { PitCommitment } from '../../models/marketplace.models';
       <h1 class="section-title">Thuế &amp; báo cáo thuế</h1>
       <p class="mt-2 max-w-3xl text-muted">
         Cá nhân kinh doanh: sàn khấu trừ, nộp thay 7% (5% GTGT + 2% TNCN) cho dịch vụ/sản phẩm số, 1,5% cho hàng hóa (NĐ 117/2025/NĐ-CP).
-        Hộ kinh doanh, doanh nghiệp/tổ chức: 0% (doanh nghiệp nhận hóa đơn GTGT 10% cho phí sàn). Affiliate: 10% TNCN khi một lần chi trả từ 2.000.000 đ,
+        Hộ kinh doanh, doanh nghiệp/tổ chức: 0% (doanh nghiệp nhận hóa đơn GTGT 10% cho phí sàn). Affiliate: rút tối thiểu 2.000.000 đ, khấu trừ 10% TNCN mỗi lần rút,
         0% nếu có Mẫu 08/CK-TNCN được duyệt.
       </p>
 

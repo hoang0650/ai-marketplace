@@ -37,7 +37,7 @@ Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán b
 
 ## Điều 3a. Thuế TNCN của người giới thiệu (affiliate)
 
-Đối với hoa hồng affiliate trả cho cá nhân, nền tảng khấu trừ **10% thuế TNCN khi một lần chi trả hoa hồng từ 2.000.000 đồng trở lên** (Luật Thuế TNCN; Thông tư 111/2013/TT-BTC); dưới mức này không khấu trừ. Người giới thiệu chỉ có thu nhập thuộc diện khấu trừ nhưng ước tính tổng thu nhập chịu thuế trong năm sau giảm trừ gia cảnh chưa đến mức phải nộp thuế được tải lên **Cam kết Mẫu 08/CK-TNCN** (Thông tư 80/2021/TT-BTC) tại trang Affiliate; sau khi nền tảng duyệt, không khấu trừ đối với các khoản chi trả trong năm cam kết. Chi tiết tại [Chính sách Affiliate](20-chinh-sach-affiliate.md).
+Đối với hoa hồng affiliate trả cho cá nhân, nền tảng khấu trừ **10% thuế TNCN trên mỗi lần rút hoa hồng** (Luật Thuế TNCN; Thông tư 111/2013/TT-BTC). Hoa hồng được ghi có đủ (chưa khấu trừ thuế); người giới thiệu chỉ rút được khi số dư hoa hồng khả dụng từ **2.000.000 đồng** trở lên và mỗi lần rút tối thiểu 2.000.000 đồng. Người giới thiệu chỉ có thu nhập thuộc diện khấu trừ nhưng ước tính tổng thu nhập chịu thuế trong năm sau giảm trừ gia cảnh chưa đến mức phải nộp thuế được tải lên **Cam kết Mẫu 08/CK-TNCN** (Thông tư 80/2021/TT-BTC) tại trang Affiliate; sau khi nền tảng duyệt, không khấu trừ đối với các lần rút trong năm cam kết. Ví dụ: rút 2.500.000 đồng — thuế TNCN 250.000 đồng, thực nhận 2.250.000 đồng. Chi tiết tại [Chính sách Affiliate](20-chinh-sach-affiliate.md).
 
 ## Điều 3b. Báo cáo thuế và chứng từ khấu trừ
 

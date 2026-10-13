@@ -50,15 +50,15 @@
 ## Điều 5. Ghi có, tạm giữ và rút tiền
 
 1. Hoa hồng được ghi có vào ví của người giới thiệu ngay khi đơn hàng hoàn tất và được **tạm giữ 48 giờ** như doanh thu của người bán; nếu đơn hàng phát sinh khiếu nại, khoản hoa hồng tiếp tục bị giữ đến khi khiếu nại được giải quyết.
-2. Sau thời gian tạm giữ, hoa hồng trở thành số dư khả dụng và được rút về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh eKYC, theo Chính sách thanh toán và đối soát.
+2. Sau thời gian tạm giữ, hoa hồng trở thành số dư khả dụng và được rút về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh eKYC, theo Chính sách thanh toán và đối soát. Người giới thiệu chỉ được rút khi **số dư hoa hồng khả dụng từ 2.000.000 đồng** trở lên; **mỗi lần rút tối thiểu 2.000.000 đồng**.
 3. Trang Affiliate hiển thị: liên kết, số lượt nhấp, số đơn, hoa hồng đang tạm giữ, hoa hồng khả dụng và hoa hồng bị thu hồi.
 
 ## Điều 6. Thuế thu nhập cá nhân
 
-1. Đối với người giới thiệu là cá nhân, nền tảng khấu trừ **10% thuế TNCN khi một lần chi trả hoa hồng từ 2.000.000 đồng trở lên** (Luật Thuế TNCN; Thông tư 111/2013/TT-BTC); dưới mức này không khấu trừ. Người giới thiệu chỉ có thu nhập thuộc diện khấu trừ nhưng ước tính tổng thu nhập chịu thuế trong năm sau giảm trừ gia cảnh chưa đến mức phải nộp thuế được tải lên **Cam kết Mẫu 08/CK-TNCN** (Thông tư 80/2021/TT-BTC) tại trang Affiliate; sau khi nền tảng duyệt, không khấu trừ đối với các khoản chi trả trong năm cam kết. Ví dụ: hoa hồng 250.000 đ — không khấu trừ, người giới thiệu nhận 250.000 đ; hoa hồng 2.500.000 đ — khấu trừ 250.000 đ, người giới thiệu nhận 2.250.000 đ (0 đ nếu có Cam kết Mẫu 08/CK-TNCN đã được duyệt).
+1. Đối với người giới thiệu là cá nhân, hoa hồng được ghi có đủ (chưa khấu trừ thuế) và nền tảng khấu trừ **10% thuế TNCN trên mỗi lần rút hoa hồng** (Luật Thuế TNCN; Thông tư 111/2013/TT-BTC). Người giới thiệu chỉ có thu nhập thuộc diện khấu trừ nhưng ước tính tổng thu nhập chịu thuế trong năm sau giảm trừ gia cảnh chưa đến mức phải nộp thuế được tải lên **Cam kết Mẫu 08/CK-TNCN** (Thông tư 80/2021/TT-BTC) tại trang Affiliate; sau khi nền tảng duyệt, không khấu trừ đối với các lần rút trong năm cam kết. Ví dụ: rút 2.500.000 đ — khấu trừ 250.000 đ, người giới thiệu nhận 2.250.000 đ (khấu trừ 0 đ nếu có Cam kết Mẫu 08/CK-TNCN đã được duyệt); số dư 1.500.000 đ — chưa được rút.
 2. Cam kết Mẫu 08/CK-TNCN được nộp và duyệt tương tự quy trình eKYC: người giới thiệu tải lên bản đã ký (PDF/ảnh), chọn năm cam kết và mã số thuế cá nhân; quản trị viên duyệt hoặc từ chối (nêu lý do). Người cam kết chịu trách nhiệm về tính trung thực của cam kết theo pháp luật.
 3. Khoản đã khấu trừ được ghi trên lịch sử ví; nền tảng báo cáo số thuế TNCN đã khấu trừ cho cơ quan thuế theo quý và cuối năm cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu.
-4. Mức khấu trừ, ngưỡng áp dụng và cách xác định “mỗi lần chi trả” có thể được điều chỉnh để phù hợp quy định pháp luật về thuế; người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
+4. Mức khấu trừ, mức rút tối thiểu có thể được điều chỉnh để phù hợp quy định pháp luật về thuế; người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
 
 ## Điều 7. Hành vi bị cấm
 

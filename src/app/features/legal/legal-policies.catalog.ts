@@ -138,7 +138,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-thue',
     file: '18-chinh-sach-thue.md',
     title: 'Chính sách thuế',
-    summary: 'Cá nhân kinh doanh: sàn khấu trừ, nộp thay 7% (dịch vụ, sản phẩm số) hoặc 1,5% (hàng hóa); hộ kinh doanh, doanh nghiệp 0%; affiliate 10% TNCN khi một lần chi trả từ 2 triệu đồng; báo cáo quý và chứng từ khấu trừ cuối năm.',
+    summary: 'Cá nhân kinh doanh: sàn khấu trừ, nộp thay 7% (dịch vụ, sản phẩm số) hoặc 1,5% (hàng hóa); hộ kinh doanh, doanh nghiệp 0%; affiliate rút tối thiểu 2 triệu đồng, khấu trừ 10% TNCN mỗi lần rút; báo cáo quý và chứng từ khấu trừ cuối năm.',
     group: 'commerce',
   },
   {

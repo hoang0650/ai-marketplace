@@ -832,6 +832,8 @@ export interface AffiliateConfig {
     enabled: boolean;
     rate: number;
     thresholdVnd: number;
+    /** Minimum affiliate balance and single withdrawal (VND). */
+    minWithdrawVnd?: number;
     legalReview: boolean;
     rule?: string;
     commitmentForm?: string;
@@ -875,6 +877,21 @@ export interface AffiliateStats {
   recent?: AffiliateCommissionRow[];
   config?: AffiliateConfig;
   pitCommitment?: PitCommitment;
+  withdrawal?: AffiliateWithdrawal;
+}
+
+/** Affiliate wallet slice: withdraw only when availableVnd >= minWithdrawVnd; PIT per withdrawal. */
+export interface AffiliateWithdrawal {
+  earned: number;
+  held: number;
+  withdrawn: number;
+  balance: number;
+  available: number;
+  availableVnd: number;
+  minWithdrawVnd: number;
+  canWithdraw: boolean;
+  pitRate: number;
+  pitCommitmentApplied: boolean;
 }
 
 /** Cam kết Mẫu 08/CK-TNCN (affiliate PIT commitment) - eKYC-style upload + admin approval. */

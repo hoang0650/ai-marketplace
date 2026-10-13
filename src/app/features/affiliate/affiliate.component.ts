@@ -69,6 +69,38 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
           </div>
         </div>
 
+        @if (s.withdrawal; as w) {
+          <form class="panel mt-6" (ngSubmit)="withdraw()">
+            <h2 class="font-display text-xl">{{ 'aff.wd.title' | t }}</h2>
+            <p class="mt-1 text-sm text-muted">
+              {{ 'aff.wd.rule' | t: { min: vnd(w.minWithdrawVnd), rate: pctNum(w.pitRate) } }}
+            </p>
+            @if (w.pitCommitmentApplied) {
+              <p class="mt-1 text-sm text-muted">{{ 'aff.wd.exempt' | t }}</p>
+            }
+            <p class="mt-3 text-sm">{{ 'aff.wd.available' | t: { amount: vnd(w.availableVnd) } }}</p>
+            @if (!w.canWithdraw) {
+              <p class="mt-1 text-sm text-muted">{{ 'aff.wd.below' | t: { min: vnd(w.minWithdrawVnd) } }}</p>
+            } @else {
+              <div class="mt-3 flex flex-wrap items-end gap-3">
+                <label class="text-sm">
+                  {{ 'aff.wd.amount' | t }}
+                  <input class="input mt-1 block w-48" type="number" name="wdAmount" [(ngModel)]="wdVnd" [min]="w.minWithdrawVnd" [max]="w.availableVnd" step="1000" />
+                </label>
+                <button type="submit" class="btn btn-fill" [disabled]="busy() || wdVnd < w.minWithdrawVnd || wdVnd > w.availableVnd">{{ 'aff.wd.submit' | t }}</button>
+              </div>
+              @if (wdVnd >= w.minWithdrawVnd) {
+                <p class="mt-2 text-sm text-muted">
+                  {{ 'aff.wd.preview' | t: { gross: vnd(wdVnd), pit: vnd(wdVnd * w.pitRate), net: vnd(wdVnd - wdVnd * w.pitRate) } }}
+                </p>
+              }
+            }
+            @if (wdMsg()) {
+              <p class="mt-2 text-sm">{{ wdMsg() }}</p>
+            }
+          </form>
+        }
+
         @if (!s.kycRequired) {
         <form class="panel mt-6" (ngSubmit)="makeLink()">
           <h2 class="font-display text-xl">{{ 'aff.linkTitle' | t }}</h2>
@@ -188,6 +220,8 @@ export class AffiliateComponent implements OnInit {
   readonly pit = signal<PitCommitment | null>(null);
   readonly pitMsg = signal('');
   pitYear = new Date().getFullYear();
+  wdVnd = 2_000_000;
+  readonly wdMsg = signal('');
   pitTaxCode = '';
 
   ngOnInit(): void {
@@ -215,6 +249,37 @@ export class AffiliateComponent implements OnInit {
       },
       error: (err) => {
         this.pitMsg.set(err?.error?.message || this.i18n.t('aff.pit08.fail'));
+        this.busy.set(false);
+      },
+    });
+  }
+
+  pctNum(r: number): string {
+    return String(Math.round((Number(r) || 0) * 1000) / 10);
+  }
+
+  vnd(n: number): string {
+    return Math.round(Number(n) || 0).toLocaleString('vi-VN');
+  }
+
+  /** Withdraw affiliate commission (amount typed in VND, sent in wallet currency). */
+  withdraw(): void {
+    const w = this.stats()?.withdrawal;
+    if (!w) return;
+    const vnd = Math.floor(Number(this.wdVnd) || 0);
+    if (vnd < w.minWithdrawVnd || vnd > w.availableVnd) return;
+    const fx = w.available > 0 && w.availableVnd > 0 ? w.availableVnd / w.available : 26_500;
+    const amount = vnd >= w.availableVnd ? w.available : Math.round((vnd / fx) * 100) / 100;
+    this.wdMsg.set('');
+    this.busy.set(true);
+    this.api.withdraw(amount).subscribe({
+      next: () => {
+        this.wdMsg.set(this.i18n.t('aff.wd.sent'));
+        this.busy.set(false);
+        this.api.dashboard().subscribe((s) => this.stats.set(s));
+      },
+      error: (err) => {
+        this.wdMsg.set(err?.error?.message || this.i18n.t('aff.pit08.fail'));
         this.busy.set(false);
       },
     });

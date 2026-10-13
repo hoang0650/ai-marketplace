@@ -93,6 +93,14 @@ export class AffiliateService {
     return this.http.put<{ defaultRate: number }>(`${this.base}/seller/default-rate`, { rate });
   }
 
+  /** Affiliate withdrawal (wallet currency, USD): min 2,000,000 VND, 10% PIT unless Mẫu 08 approved. */
+  withdraw(amount: number): Observable<{ quote?: { gross: number; tax: number; net: number } }> {
+    return this.http.post<{ quote?: { gross: number; tax: number; net: number } }>(`${environment.apiUrl.replace(/\/$/, '')}/wallet/withdraw`, {
+      amount,
+      persona: 'affiliate',
+    });
+  }
+
   /* Cam kết Mẫu 08/CK-TNCN (PIT commitment): upload -> submit -> admin approves. */
   pitCommitment(): Observable<PitCommitment> {
     return this.http.get<PitCommitment>(`${this.base}/pit-commitment`);
