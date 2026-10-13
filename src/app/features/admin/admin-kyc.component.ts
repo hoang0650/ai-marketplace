@@ -6,7 +6,7 @@ import { KycService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
-import { KycQueueItem, KycReviewStatus, KycSide, KycSubjectType } from '../../models/marketplace.models';
+import { KycAdminDocuments, KycDocumentInfo, KycQueueItem, KycReviewStatus, KycSide, KycSubjectType } from '../../models/marketplace.models';
 
 @Component({
   selector: 'app-admin-kyc',
@@ -30,6 +30,9 @@ export class AdminKycComponent implements OnInit {
   readonly counts = signal({ pending: 0, verified: 0, rejected: 0 });
   readonly selectedId = signal('');
   readonly docs = signal<Partial<Record<KycSide, string>>>({});
+  /** MinIO storage info for the selected record (keys, names, sizes). */
+  readonly storage = signal<KycAdminDocuments | null>(null);
+  readonly copied = signal('');
   readonly loading = signal(true);
   readonly busy = signal(false);
   readonly error = signal('');
@@ -78,8 +81,15 @@ export class AdminKycComponent implements OnInit {
     this.selectedId.set(userId);
     this.rejectReason = '';
     this.docs.set({});
+    this.storage.set(null);
     const item = this.items().find((i) => i.userId === userId);
     if (!item) return;
+    this.api.adminDocuments(userId).subscribe({
+      next: (r) => {
+        if (this.selectedId() === userId) this.storage.set(r);
+      },
+      error: () => undefined,
+    });
     for (const side of this.sides) {
       const has = side === 'front' ? item.kyc.hasFront : side === 'back' ? item.kyc.hasBack : !!item.kyc.hasLicense;
       if (!has) continue;
@@ -89,6 +99,58 @@ export class AdminKycComponent implements OnInit {
         },
         error: () => undefined,
       });
+    }
+  }
+
+  /** Storage rows: live MinIO info when loaded, else what the queue returned. */
+  storageDocs(item: KycQueueItem): KycDocumentInfo[] {
+    const s = this.storage();
+    return s && s.userId === item.userId ? s.documents : item.kyc.documents || [];
+  }
+
+  recordIdOf(item: KycQueueItem): string {
+    const s = this.storage();
+    return (s && s.userId === item.userId && s.recordId) || item.kyc.recordId || '';
+  }
+
+  shortId(id: string | undefined | null): string {
+    const v = String(id || '');
+    return v.length > 12 ? `${v.slice(0, 6)}…${v.slice(-4)}` : v;
+  }
+
+  fileSize(bytes: number): string {
+    if (!bytes) return '—';
+    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  }
+
+  copy(text: string, ev?: Event): void {
+    ev?.stopPropagation();
+    if (!text) return;
+    const done = () => {
+      this.copied.set(text);
+      setTimeout(() => {
+        if (this.copied() === text) this.copied.set('');
+      }, 1500);
+    };
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => this.fallbackCopy(text, done));
+    } else this.fallbackCopy(text, done);
+  }
+
+  private fallbackCopy(text: string, done: () => void): void {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      done();
+    } finally {
+      ta.remove();
     }
   }
 

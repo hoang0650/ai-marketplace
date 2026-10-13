@@ -48,6 +48,12 @@
                 {{ item.email }}
               </span>
               <span class="admin-kyc__row-sub">{{ item.kyc.submittedAt | date: 'short' }}</span>
+              <span class="admin-kyc__row-ids mono" [title]="item.userId + (item.kyc.recordId ? ' · ' + item.kyc.recordId : '')">
+                {{ 'admin.kyc.ids.user' | t }} {{ shortId(item.userId) }}
+                @if (item.kyc.recordId) {
+                  · {{ 'admin.kyc.ids.record' | t }} {{ shortId(item.kyc.recordId) }}
+                }
+              </span>
             </button>
           </li>
         } @empty {
@@ -101,6 +107,62 @@
               <dd class="admin-kyc__reject-text">{{ item.kyc.rejectReason }}</dd>
             }
           </dl>
+
+          <section class="admin-kyc__storage">
+            <h3>{{ 'admin.kyc.ids.title' | t }}</h3>
+            <dl class="admin-kyc__ids">
+              <dt>{{ 'admin.kyc.ids.userId' | t }}</dt>
+              <dd>
+                <code>{{ item.userId }}</code>
+                <button type="button" class="admin-kyc__copy" (click)="copy(item.userId, $event)">
+                  {{ (copied() === item.userId ? 'admin.kyc.ids.copied' : 'admin.kyc.ids.copy') | t }}
+                </button>
+              </dd>
+              <dt>{{ 'admin.kyc.ids.recordId' | t }}</dt>
+              <dd>
+                @if (recordIdOf(item); as rid) {
+                  <code>{{ rid }}</code>
+                  <button type="button" class="admin-kyc__copy" (click)="copy(rid, $event)">
+                    {{ (copied() === rid ? 'admin.kyc.ids.copied' : 'admin.kyc.ids.copy') | t }}
+                  </button>
+                } @else {
+                  —
+                }
+              </dd>
+              @if (storage()?.userId === item.userId && storage()?.prefix; as prefix) {
+                <dt>{{ 'admin.kyc.ids.prefix' | t }}</dt>
+                <dd>
+                  <code>{{ prefix }}</code>
+                  <button type="button" class="admin-kyc__copy" (click)="copy(prefix, $event)">
+                    {{ (copied() === prefix ? 'admin.kyc.ids.copied' : 'admin.kyc.ids.copy') | t }}
+                  </button>
+                </dd>
+              }
+            </dl>
+            @if (storageDocs(item).length) {
+              <ul class="admin-kyc__objects">
+                @for (d of storageDocs(item); track d.side) {
+                  <li>
+                    <div class="admin-kyc__object-head">
+                      <strong>{{ ('kyc.side.' + d.side) | t }}</strong>
+                      <span class="text-muted">{{ d.fileName }} · {{ fileSize(d.size) }}</span>
+                      @if (d.exists === false) {
+                        <span class="admin-kyc__missing">{{ 'admin.kyc.ids.missing' | t }}</span>
+                      }
+                    </div>
+                    <div class="admin-kyc__object-key">
+                      <code>{{ d.objectKey }}</code>
+                      <button type="button" class="admin-kyc__copy" (click)="copy(d.objectKey, $event)">
+                        {{ (copied() === d.objectKey ? 'admin.kyc.ids.copied' : 'admin.kyc.ids.copy') | t }}
+                      </button>
+                    </div>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="text-muted">{{ 'admin.kyc.ids.none' | t }}</p>
+            }
+          </section>
 
           <h3>{{ (item.kyc.subjectType === 'organization' ? 'kyc.docsRep' : 'kyc.docs') | t }}</h3>
           <div class="admin-kyc__docs">

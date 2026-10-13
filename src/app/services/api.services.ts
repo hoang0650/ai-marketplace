@@ -36,6 +36,7 @@ import {
   KycSubjectType,
   KycReviewStatus,
   KycQueueResponse,
+  KycAdminDocuments,
   AdminDailyPoint,
   AdminGranularity,
   AgentPurgeItem,
@@ -1315,6 +1316,10 @@ export class KycService {
     if (query.subjectType) params = params.set('subjectType', query.subjectType);
     if (query.q) params = params.set('q', query.q);
     return this.http.get<KycQueueResponse>(`${this.base}/kyc/admin/queue`, { params });
+  }
+
+  adminDocuments(userId: string): Observable<KycAdminDocuments> {
+    return this.http.get<KycAdminDocuments>(`${this.base}/kyc/admin/${userId}/documents`);
   }
 
   adminDecide(userId: string, decision: 'verified' | 'rejected', rejectReason?: string): Observable<{ ok: boolean; kyc: KycProfile }> {

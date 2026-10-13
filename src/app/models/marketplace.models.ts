@@ -192,6 +192,13 @@ export interface KycProfile {
   licenseRequired?: boolean;
   /** Uploaded business licence file (PDF; legacy uploads may be images). */
   licenseFile?: KycLicenseFile | null;
+  /** Admin only: KYC record id, user id and MinIO storage info per document. */
+  recordId?: string;
+  userId?: string;
+  frontObjectName?: string;
+  backObjectName?: string;
+  licenseObjectName?: string;
+  documents?: KycDocumentInfo[];
   submittedAt: string | null;
   reviewedAt: string | null;
   rejectReason: string;
@@ -1058,4 +1065,22 @@ export interface KycLicenseFile {
   size: number;
   contentType: string;
   isPdf: boolean;
+}
+
+/** Admin only: where a KYC document lives in MinIO. */
+export interface KycDocumentInfo {
+  side: KycSide;
+  objectKey: string;
+  fileName: string;
+  size: number;
+  contentType: string;
+  /** From MinIO stat on the admin documents endpoint: false = object missing, null = unknown. */
+  exists?: boolean | null;
+}
+
+export interface KycAdminDocuments {
+  userId: string;
+  recordId: string;
+  prefix: string;
+  documents: KycDocumentInfo[];
 }

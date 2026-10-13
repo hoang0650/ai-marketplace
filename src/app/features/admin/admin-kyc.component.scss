@@ -268,6 +268,86 @@
   font-weight: 600;
 }
 
+.admin-kyc__row-ids {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-kyc__storage {
+  margin: 1rem 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.admin-kyc__storage h3 {
+  margin: 0;
+}
+.admin-kyc__ids {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+.admin-kyc__ids dt {
+  color: var(--color-muted);
+  font-weight: 700;
+}
+.admin-kyc__ids dd,
+.admin-kyc__object-key {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.admin-kyc__storage code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.78rem;
+  background: #f4f4f5;
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+}
+.admin-kyc__copy {
+  flex: none;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+}
+.admin-kyc__objects {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.admin-kyc__objects li {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  min-width: 0;
+}
+.admin-kyc__object-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+  min-width: 0;
+}
+.admin-kyc__missing {
+  color: #b42318;
+  font-weight: 700;
+}
 .admin-kyc__doc--wide {
   grid-column: 1 / -1;
 }
