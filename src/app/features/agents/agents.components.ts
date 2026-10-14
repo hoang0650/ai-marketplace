@@ -12,6 +12,11 @@ import {
 } from './agents.models';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
 import { NanoclawProviderComponent } from './nanoclaw-provider.component';
+import { AgentVoteComponent } from './agent-vote.component';
+import { CommunityAgent, CommunityAgentsService, VoteBoard } from './community-agents.service';
+import { COMMUNITY_VOTE_MESSAGES } from './community-vote.messages';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
 
 @Component({
   selector: 'app-my-agents',
@@ -135,7 +140,7 @@ export class MyAgentsComponent implements OnInit {
 @Component({
   selector: 'app-agent-marketplace',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TPipe, AgentVoteComponent],
   styleUrl: './agents.styles.scss',
   template: `
     <section class="agents-page route-enter">
@@ -149,13 +154,16 @@ export class MyAgentsComponent implements OnInit {
 
       <div class="agents-tabs">
         <button type="button" class="agents-tab" [class.active]="tab() === 'public'" (click)="setTab('public')">
-          Public ({{ publicCount }})
+          {{ 'cvote.tabPublic' | t: { n: publicCount + community().length } }}
         </button>
-        <button type="button" class="agents-tab" [class.active]="tab() === 'internal'" (click)="setTab('internal')">
-          Internal ({{ internalCount }})
+        <button type="button" class="agents-tab" [class.active]="tab() === 'vote'" (click)="setTab('vote')">
+          {{ 'cvote.tab' | t: { n: board()?.leaderboard?.length || 0 } }}
         </button>
       </div>
 
+      @if (tab() === 'vote') {
+        <app-agent-vote [board]="board()" (changed)="loadBoard()" />
+      } @else {
       <div class="agents-grid">
         @for (agent of agents(); track agent.id) {
           <article class="agent-card">
@@ -191,7 +199,27 @@ export class MyAgentsComponent implements OnInit {
         } @empty {
           <p class="text-muted">No agents in this tab.</p>
         }
+        @for (c of community(); track c._id) {
+          <article class="agent-card">
+            <div class="agent-card__head">
+              <img class="agent-icon" [src]="c.avatarUrl" [alt]="c.name" width="40" height="40" loading="lazy" />
+              <h2>{{ c.name }}</h2>
+            </div>
+            <p class="agent-card__desc">{{ c.description }}</p>
+            <div class="badge-row">
+              <span class="badge badge--ok">{{ 'cvote.community' | t }}</span>
+              <span class="badge badge--ghost">★ {{ c.stars }}</span>
+              <span class="badge badge--ghost">{{ 'cvote.votes' | t: { n: c.voteCount } }}</span>
+            </div>
+            <div class="agent-card__actions">
+              <button type="button" class="agents-btn agents-btn--launch" disabled [attr.title]="'cvote.communityHint' | t">{{ 'cvote.comingSoon' | t }}</button>
+              <a class="agents-btn agents-btn--ghost" [href]="c.htmlUrl" target="_blank" rel="noopener noreferrer">{{ 'cvote.github' | t }} ↗</a>
+            </div>
+            <p class="agent-card__hint">{{ 'cvote.communityHint' | t }}</p>
+          </article>
+        }
       </div>
+      }
 
       @if (status()) {
         <p class="agents-status">{{ status() }}</p>
@@ -202,14 +230,22 @@ export class MyAgentsComponent implements OnInit {
 export class AgentMarketplaceComponent implements OnInit {
   readonly gateway = inject(OpenClawGatewayService);
   private readonly seo = inject(SeoService);
-  readonly tab = signal<'public' | 'internal'>('public');
+  private readonly community$ = inject(CommunityAgentsService);
+  private readonly i18n = inject(I18nService);
+  readonly tab = signal<'public' | 'vote'>('public');
+  readonly board = signal<VoteBoard | null>(null);
+  /** Community agents voted in and approved — shown in Public as catalog entries (GitHub link, coming soon). */
+  readonly community = signal<CommunityAgent[]>([]);
   readonly agents = signal<MarketplaceAgent[]>([]);
   readonly busyId = signal('');
   readonly status = signal('');
   readonly hostExample = '{userId}.openclaw.aimarkets.vn';
   readonly pricing = signal<AgentPricing[]>([]);
   publicCount = 0;
-  internalCount = 0;
+
+  constructor() {
+    this.i18n.extend(COMMUNITY_VOTE_MESSAGES);
+  }
 
   canLaunch(agent: MarketplaceAgent): boolean {
     return this.gateway.isLaunchableAgent(agent);
@@ -231,18 +267,28 @@ export class AgentMarketplaceComponent implements OnInit {
   ngOnInit(): void {
     this.seo.set({ title: 'Agent Marketplace' });
     this.publicCount = this.gateway.listMarketplaceAgents('public').length;
-    this.internalCount = this.gateway.listMarketplaceAgents('internal').length;
     this.refresh();
+    this.loadBoard();
     this.gateway.loadPricing().subscribe((rows) => this.pricing.set(rows));
   }
 
-  setTab(tab: 'public' | 'internal'): void {
+  setTab(tab: 'public' | 'vote'): void {
     this.tab.set(tab);
-    this.refresh();
+    if (tab === 'vote') this.loadBoard();
   }
 
   refresh(): void {
-    this.agents.set(this.gateway.listMarketplaceAgents(this.tab()));
+    this.agents.set(this.gateway.listMarketplaceAgents('public'));
+  }
+
+  loadBoard(): void {
+    this.community$.board().subscribe({
+      next: (b) => {
+        this.board.set(b);
+        this.community.set(b.listed || []);
+      },
+      error: () => this.board.set({ cycle: null as never, leaderboard: [], pending: [], listed: [] }),
+    });
   }
 
   launch(agent: MarketplaceAgent): void {
