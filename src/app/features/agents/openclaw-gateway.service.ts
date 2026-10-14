@@ -9,6 +9,8 @@ import { CurrencyService } from '../../i18n/currency.service';
 import {
   AGENT_SUBSCRIPTION_REQUIRED,
   AgentPricing,
+  AgentRentalReceipt,
+  AgentRentalRefund,
   AgentRuntimeKind,
   AgentSubscriptionStatus,
   HiredAgent,
@@ -389,12 +391,13 @@ export class OpenClawGatewayService {
   /** Pay one monthly period from the wallet (new plan or renewal). */
   subscribe(
     agent?: Partial<MarketplaceAgent> | null,
+    idempotencyKey: string = this.newIdempotencyKey(),
   ): Observable<{ ok: boolean; status?: AgentSubscriptionStatus; code?: string; message?: string }> {
     const kind = this.runtimeKind(agent);
     if (!kind) return of({ ok: false, message: 'This agent has no monthly plan.' });
     return this.http
       .post<AgentSubscriptionStatus>(`${environment.apiUrl}/agents/subscriptions/${kind}`, {}, {
-        headers: this.authHeaders(),
+        headers: this.authHeaders().set('Idempotency-Key', idempotencyKey),
       })
       .pipe(
         map((status) => ({ ok: true, status })),
@@ -407,6 +410,30 @@ export class OpenClawGatewayService {
           return of({ ok: false, code, message });
         }),
       );
+  }
+
+  /** One key per Launch/Rent click: retries of the same click never charge twice. */
+  newIdempotencyKey(): string {
+    const c = (globalThis as { crypto?: Crypto }).crypto;
+    if (c?.randomUUID) return `rent-${c.randomUUID()}`;
+    return `rent-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+  }
+
+  /** Refund a just-made rental whose workspace could not be launched (server checks ownership + window). */
+  refundRental(
+    agent: Partial<MarketplaceAgent> | null | undefined,
+    walletTxId: string,
+    reason: string,
+  ): Observable<AgentRentalRefund> {
+    const kind = this.runtimeKind(agent);
+    if (!kind || !walletTxId) return of({ refunded: false, failed: true });
+    return this.http
+      .post<AgentRentalRefund>(
+        `${environment.apiUrl}/agents/subscriptions/${kind}/refund`,
+        { walletTxId, reason: String(reason || '').slice(0, 200) },
+        { headers: this.authHeaders() },
+      )
+      .pipe(catchError(() => of<AgentRentalRefund>({ refunded: false, failed: true })));
   }
 
   setAutoRenew(
@@ -434,7 +461,10 @@ export class OpenClawGatewayService {
 
   /**
    * Launch; when the monthly plan is missing or expired, offer to pay one period
-   * from the wallet and launch again.
+   * from the wallet and launch again. A rental charge is reported back in
+   * `res.rental`; when the workspace then fails to start, the charge is refunded
+   * and reported in `res.refund`. After a rental the tab is not auto-opened (the
+   * browser would block a popup outside the click) — the launch notice offers it.
    */
   launchWithPlan(agent: MarketplaceAgent): Observable<OpenClawLaunchResult> {
     return this.launchGateway({ agent }).pipe(
@@ -450,13 +480,34 @@ export class OpenClawGatewayService {
                 'Auto-renew from the wallet is on by default — you can turn it off anytime on the agent page.\n' +
                 'Token usage on AI Markets models is billed at provider price + 25%; your own API keys (BYOK) carry no token fee.',
             );
-            if (!ok) return of(res);
-            return this.subscribe(agent).pipe(
-              switchMap((sub) =>
-                sub.ok
-                  ? this.launchGateway({ agent })
-                  : of<OpenClawLaunchResult>({ success: false, code: sub.code, message: sub.message }),
-              ),
+            if (!ok) return of<OpenClawLaunchResult>({ ...res, code: 'RENT_CANCELLED' });
+            return this.subscribe(agent, this.newIdempotencyKey()).pipe(
+              switchMap((sub) => {
+                if (!sub.ok || !sub.status) {
+                  return of<OpenClawLaunchResult>({ success: false, code: sub.code, message: sub.message });
+                }
+                const st = sub.status;
+                const rental: AgentRentalReceipt = {
+                  charged: Boolean(st.charged),
+                  duplicate: Boolean(st.duplicate),
+                  walletTxId: st.walletTxId || null,
+                  chargedVnd: st.chargedVnd ?? st.fee?.vnd ?? 0,
+                  periodDays: st.fee?.periodDays ?? 30,
+                  paidUntil: st.paidUntil,
+                  autoRenew: st.autoRenew,
+                };
+                return this.launchGateway({ agent, strict: true, openTab: false }).pipe(
+                  switchMap((launched) => {
+                    if (launched.success) return of<OpenClawLaunchResult>({ ...launched, rental });
+                    if (!rental.charged || !rental.walletTxId) {
+                      return of<OpenClawLaunchResult>({ ...launched, rental });
+                    }
+                    return this.refundRental(agent, rental.walletTxId, launched.message || 'launch failed').pipe(
+                      map((refund) => ({ ...launched, success: false, rental, refund })),
+                    );
+                  }),
+                );
+              }),
             );
           }),
         );
@@ -468,7 +519,14 @@ export class OpenClawGatewayService {
    * Same flow as hotelapp ai-chatbox `openOpenClawGateway`:
    * open blank tab → fetch direct-url → navigate → auto-approve pairing.
    */
-  launchGateway(opts?: { agent?: MarketplaceAgent; userId?: string }): Observable<OpenClawLaunchResult> {
+  launchGateway(opts?: {
+    agent?: MarketplaceAgent;
+    userId?: string;
+    /** Report API launch errors instead of falling back to a guessed URL (used right after a rental). */
+    strict?: boolean;
+    /** false: return the URL without opening a tab (caller shows it). */
+    openTab?: boolean;
+  }): Observable<OpenClawLaunchResult> {
     if (opts?.agent && !this.isLaunchableAgent(opts.agent)) {
       return of({ success: false, message: this.comingSoonMessage(opts.agent) });
     }
@@ -500,9 +558,13 @@ export class OpenClawGatewayService {
     const info = this.runtimeInfo(agent);
     const skipApprove = !info.pairing;
 
-    return this.resolveLaunchUrl(userId, agent).pipe(
+    return this.resolveLaunchUrl(userId, agent, Boolean(opts?.strict)).pipe(
       tap((res) => {
         this.opening = false;
+        if (res.success && res.url && opts?.openTab === false && opts?.agent) {
+          this.upsertHired(opts.agent, 'running');
+          return;
+        }
         if (res.success && res.url && isPlatformBrowser(this.platformId)) {
           if (opts?.agent) this.upsertHired(opts.agent, 'running');
           const tab = window.open(res.url, '_blank');
@@ -650,6 +712,7 @@ export class OpenClawGatewayService {
   private resolveLaunchUrl(
     userId?: string,
     agent?: MarketplaceAgent | null,
+    strict = false,
   ): Observable<OpenClawLaunchResult> {
     const kind = this.runtimeKind(agent);
     const hermes = kind === 'hermes';
@@ -672,6 +735,16 @@ export class OpenClawGatewayService {
               message: err?.error?.message || 'This agent needs an active monthly plan.',
             });
           }
+          if (strict) {
+            return of<OpenClawLaunchResult>({
+              success: false,
+              code: err?.error?.code || 'LAUNCH_FAILED',
+              message:
+                err?.error?.detail ||
+                err?.error?.message ||
+                `${this.runtimeInfo(agent).label} could not be started right now.`,
+            });
+          }
           if (sso) return of(this.fallbackSsoUrl(agent, err?.error?.message));
           if (hermes) return of(this.fallbackHermesUrl(userId));
           if (nanoclaw) return of(this.fallbackNanoclawUrl(userId));
@@ -681,6 +754,13 @@ export class OpenClawGatewayService {
         map((res) => {
           if (res?.success && res.url) return res;
           if (res?.code === AGENT_SUBSCRIPTION_REQUIRED) return res;
+          if (strict) {
+            return {
+              success: false,
+              code: res?.code || 'LAUNCH_FAILED',
+              message: res?.message || `${this.runtimeInfo(agent).label} could not be started right now.`,
+            };
+          }
           if (sso) return res?.message ? res : this.fallbackSsoUrl(agent);
           if (hermes) return this.fallbackHermesUrl(userId);
           if (nanoclaw) return this.fallbackNanoclawUrl(userId);

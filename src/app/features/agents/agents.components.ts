@@ -17,6 +17,7 @@ import { CommunityAgent, CommunityAgentsService, VoteBoard } from './community-a
 import { COMMUNITY_VOTE_MESSAGES } from './community-vote.messages';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
+import { LaunchNoticeService } from './launch-notice.service';
 
 @Component({
   selector: 'app-my-agents',
@@ -68,7 +69,7 @@ import { TPipe } from '../../i18n/t.pipe';
             <div class="agent-row__actions">
               @if (isOpenClawHired(a)) {
                 <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', a.agentId, 'setup']">Setup</a>
-                <button type="button" class="agents-btn agents-btn--ghost" (click)="launch(a)">Launch</button>
+                <button type="button" class="agents-btn agents-btn--ghost" (click)="launch(a)" [disabled]="!!launchingId()">{{ launchingId() === a.agentId ? '…' : 'Launch' }}</button>
               }
               <a class="agents-btn" [routerLink]="['/hire-agent', a.agentId]">Manage</a>
             </div>
@@ -91,6 +92,8 @@ import { TPipe } from '../../i18n/t.pipe';
 })
 export class MyAgentsComponent implements OnInit {
   private readonly gateway = inject(OpenClawGatewayService);
+  private readonly notice = inject(LaunchNoticeService);
+  readonly launchingId = signal('');
   private readonly seo = inject(SeoService);
   readonly hired = signal<HiredAgent[]>([]);
   readonly plans = signal<AgentSubscriptionStatus[]>([]);
@@ -126,12 +129,13 @@ export class MyAgentsComponent implements OnInit {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
+    if (this.launchingId()) return;
+    this.launchingId.set(row.agentId);
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchWithPlan(agent).subscribe((res) => {
-      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
-      if (!res.success && typeof window !== 'undefined' && res.message) {
-        window.alert(res.message);
-      }
+      this.launchingId.set('');
+      this.status.set(res.success ? (res.rental && !res.refund ? `${res.rental.charged ? 'Rented' : 'Ready'} — see the notice to open it.` : 'Opened — check the new tab.') : res.message || 'Launch failed');
+      this.notice.report(agent, this.gateway.runtimeInfo(agent).label, res, () => this.launch(row));
       this.reload();
     });
   }
@@ -186,7 +190,7 @@ export class MyAgentsComponent implements OnInit {
                 [disabled]="busyId() === agent.id || !canLaunch(agent)"
                 [attr.title]="canLaunch(agent) ? 'Open Control UI / Dashboard' : gateway.comingSoonMessage(agent)"
               >
-                {{ canLaunch(agent) ? '🚀 Launch' : 'Soon' }}
+                {{ busyId() === agent.id ? ('launchNotice.launching' | t) : canLaunch(agent) ? '🚀 Launch' : 'Soon' }}
               </button>
               <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', agent.id]">Details</a>
             </div>
@@ -229,6 +233,7 @@ export class MyAgentsComponent implements OnInit {
 })
 export class AgentMarketplaceComponent implements OnInit {
   readonly gateway = inject(OpenClawGatewayService);
+  private readonly notice = inject(LaunchNoticeService);
   private readonly seo = inject(SeoService);
   private readonly community$ = inject(CommunityAgentsService);
   private readonly i18n = inject(I18nService);
@@ -296,14 +301,13 @@ export class AgentMarketplaceComponent implements OnInit {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
+    if (this.busyId()) return;
     this.busyId.set(agent.id);
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busyId.set('');
-      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
-      if (!res.success && typeof window !== 'undefined' && res.message) {
-        window.alert(res.message);
-      }
+      this.status.set(res.success ? (res.rental && !res.refund ? `${res.rental.charged ? 'Rented' : 'Ready'} — see the notice to open it.` : 'Opened — check the new tab.') : res.message || 'Launch failed');
+      this.notice.report(agent, this.gateway.runtimeInfo(agent).label, res, () => this.launch(agent));
     });
   }
 }
@@ -425,7 +429,7 @@ export class AgentMarketplaceComponent implements OnInit {
               <div class="mt-4 flex flex-wrap gap-2">
                 @if (isLaunchable()) {
                   <a class="agents-btn agents-btn--outline" [routerLink]="['/hire-agent', a.id, 'setup']">Setup Wizard</a>
-                  <button type="button" class="agents-btn agents-btn--outline" (click)="launch()">
+                  <button type="button" class="agents-btn agents-btn--outline" (click)="launch()" [disabled]="busy()">
                     {{ uiName() }}
                   </button>
                 } @else {
@@ -607,6 +611,7 @@ export class AgentDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly gateway = inject(OpenClawGatewayService);
+  private readonly notice = inject(LaunchNoticeService);
   private readonly seo = inject(SeoService);
 
   readonly agent = signal<MarketplaceAgent | null>(null);
@@ -732,16 +737,15 @@ export class AgentDetailComponent implements OnInit {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
+    if (this.busy()) return;
     this.busy.set(true);
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busy.set(false);
       this.hired.set(this.gateway.getHired(agent.id) || null);
       this.loadPlan(agent);
-      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
-      if (!res.success && typeof window !== 'undefined' && res.message) {
-        window.alert(res.message);
-      }
+      this.status.set(res.success ? (res.rental && !res.refund ? `${res.rental.charged ? 'Rented' : 'Ready'} — see the notice to open it.` : 'Opened — check the new tab.') : res.message || 'Launch failed');
+      this.notice.report(agent, this.brandName(), res, () => this.launch());
     });
   }
 
@@ -770,15 +774,29 @@ export class AgentDetailComponent implements OnInit {
           (p.paidUntil ? '' : '\nAuto-renew from the wallet is on by default — you can turn it off anytime.'),
       );
     if (!ok) return;
+    if (this.planBusy()) return;
     this.planBusy.set(true);
-    this.gateway.subscribe(agent).subscribe((res) => {
+    this.gateway.subscribe(agent, this.gateway.newIdempotencyKey()).subscribe((res) => {
       this.planBusy.set(false);
       if (res.ok && res.status) {
-        this.plan.set(res.status);
-        this.status.set(`${label} plan active until ${String(res.status.paidUntil || '').slice(0, 10)}.`);
+        const st = res.status;
+        this.plan.set(st);
+        this.status.set(`${label} plan active until ${String(st.paidUntil || '').slice(0, 10)}.`);
+        this.notice.report(agent, label, {
+          success: true,
+          rental: {
+            charged: Boolean(st.charged),
+            duplicate: Boolean(st.duplicate),
+            walletTxId: st.walletTxId || null,
+            chargedVnd: st.chargedVnd ?? st.fee.vnd,
+            periodDays: st.fee.periodDays,
+            paidUntil: st.paidUntil,
+            autoRenew: st.autoRenew,
+          },
+        });
       } else {
         this.status.set(res.message || 'Payment failed');
-        if (typeof window !== 'undefined' && res.message) window.alert(res.message);
+        this.notice.report(agent, label, { success: false, code: res.code, message: res.message || 'Payment failed' });
       }
     });
   }

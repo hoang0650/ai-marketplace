@@ -69,6 +69,32 @@ export interface AgentSubscriptionStatus {
   retentionDays: number;
   fee: AgentFee;
   charged?: boolean;
+  /** Same Launch click replayed: no second charge. */
+  duplicate?: boolean;
+  walletTxId?: string | null;
+  chargedAmount?: number;
+  chargedVnd?: number;
+  chargedCurrency?: string;
+  chargedAt?: string | null;
+}
+
+/** What a Launch did to the wallet (shown in the launch notice). */
+export interface AgentRentalReceipt {
+  charged: boolean;
+  duplicate?: boolean;
+  walletTxId?: string | null;
+  chargedVnd: number;
+  periodDays: number;
+  paidUntil: string | null;
+  autoRenew: boolean;
+}
+
+export interface AgentRentalRefund {
+  refunded: boolean;
+  alreadyRefunded?: boolean;
+  feeVnd?: number;
+  /** Refund request itself failed — support must reverse the charge. */
+  failed?: boolean;
 }
 
 export const AGENT_SUBSCRIPTION_REQUIRED = 'AGENT_SUBSCRIPTION_REQUIRED';
@@ -86,6 +112,10 @@ export interface OpenClawLaunchResult {
   autoLogin?: boolean;
   audience?: string;
   userId?: string;
+  /** Set when this Launch rented the agent (wallet charge). */
+  rental?: AgentRentalReceipt;
+  /** Set when provisioning failed after a charge and the rental was refunded. */
+  refund?: AgentRentalRefund;
 }
 
 export interface OpenClawSshAccess {
