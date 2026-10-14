@@ -19,7 +19,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'quy-che-hoat-dong-san-tmdt',
     file: '01-quy-che-hoat-dong-san-tmdt.md',
     title: 'Quy chế hoạt động sàn TMĐT',
-    summary: 'Phiên bản 2.1, hiệu lực 05/10/2026: mô hình sàn, sản phẩm được phép, phí sàn 20% + thuế theo loại người bán (cá nhân kinh doanh 7%, hộ kinh doanh/doanh nghiệp 0%), thanh toán bằng ví và giải quyết khiếu nại.',
+    summary: 'Mô hình sàn, sản phẩm được phép, phí và thuế, thanh toán bằng ví và giải quyết khiếu nại.',
     group: 'core',
   },
   {
@@ -33,7 +33,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-nguoi-ban',
     file: '03-chinh-sach-nguoi-ban.md',
     title: 'Chính sách người bán',
-    summary: 'Bắt buộc khai báo loại người bán và MST, eKYC, giấy chứng nhận đăng ký kinh doanh, phí sàn 20%, thuế theo loại người bán, giữ tiền 48 giờ.',
+    summary: 'Bắt buộc khai báo loại người bán và MST, eKYC, giấy chứng nhận đăng ký kinh doanh, phí sàn, thuế theo loại người bán, giữ tiền 48 giờ.',
     group: 'commerce',
   },
   {
