@@ -748,6 +748,13 @@ export class DashboardProductsComponent implements OnInit {
       this.onCategoryChange();
       this.showForm = true;
     }
+    // Deep link from /sell/integrate: /sell/products/new?category=game-server|gpu-compute
+    const cat = this.route.snapshot.queryParamMap.get('category') || '';
+    if (cat === 'game-server' || cat === 'gpu-compute') {
+      this.draft.category = cat as ProductCategory;
+      this.onCategoryChange();
+      this.showForm = true;
+    }
   }
 
   catalogForCategory(): RunpodPublicEndpoint[] {
