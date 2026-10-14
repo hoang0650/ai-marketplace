@@ -121,8 +121,22 @@ export interface AgentConnectCommand {
   title: string;
   description: string;
   command: string | null;
+  /** Single-line variants per shell (Windows cmd.exe, PowerShell, macOS/Linux). */
+  variants?: { cmd: string; powershell: string; posix: string };
+  /** Literal token in the command to replace with the pairing request id. */
+  placeholder?: string;
   scope: string;
   expiresAt: string | null;
+}
+
+export type TerminalShell = 'cmd' | 'powershell' | 'posix';
+
+export interface PendingPairing {
+  requestId: string;
+  deviceId?: string;
+  scopes?: string[];
+  approvable: boolean;
+  reason?: string;
 }
 
 export interface AgentConnectCommands {

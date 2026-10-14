@@ -4,7 +4,7 @@ import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../services/seo.service';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
-import { AgentConnectCommand, MarketplaceAgent, OpenClawSshAccess } from './agents.models';
+import { AgentConnectCommand, MarketplaceAgent, OpenClawSshAccess, TerminalShell } from './agents.models';
 
 export type SetupChannelId =
   | 'telegram'
@@ -434,6 +434,9 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                   {{ pairingBusy() ? 'Approving...' : 'Approve' }}
                 </button>
               </div>
+              <button type="button" class="oc-link" (click)="findPendingPairing(true)" [disabled]="pairingLookupBusy()">
+                {{ pairingLookupBusy() ? 'Looking for your request...' : 'Find my pending request ID' }}
+              </button>
               @if (pairingMsg(); as m) {
                 <p [class]="m.ok ? 'oc-ok-msg' : 'oc-err-msg'">{{ m.text }}</p>
               }
@@ -577,6 +580,33 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
             } @else if (commandsError()) {
               <p class="oc-err-msg">{{ commandsError() }}</p>
             } @else {
+              <div class="oc-shell-tabs" role="tablist" aria-label="Terminal type">
+                @for (t of shellTabs; track t.id) {
+                  <button
+                    type="button"
+                    role="tab"
+                    class="oc-shell-tab"
+                    [class.oc-shell-tab--active]="shell() === t.id"
+                    [attr.aria-selected]="shell() === t.id"
+                    (click)="shell.set(t.id)"
+                  >{{ t.label }}</button>
+                }
+              </div>
+              @if (hasPlaceholderCommand()) {
+                <div class="oc-pair-row">
+                  <input
+                    class="oc-input"
+                    [(ngModel)]="pairingCode"
+                    name="ocPairCmd"
+                    placeholder="Request ID from the Control UI (filled automatically when found)"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <button type="button" class="oc-btn oc-btn--ghost oc-btn--sm" (click)="findPendingPairing(true)" [disabled]="pairingLookupBusy()">
+                    {{ pairingLookupBusy() ? 'Looking...' : 'Find' }}
+                  </button>
+                </div>
+              }
               @for (c of commands(); track c.id) {
                 <div class="oc-cmd">
                   <div class="oc-cmd__head">
@@ -588,8 +618,8 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                   <p class="oc-card__desc">{{ c.description }}</p>
                   @if (c.command) {
                     <div class="oc-copy-row">
-                      <pre class="oc-ssh-cmd oc-ssh-cmd--select">{{ c.command }}</pre>
-                      <button type="button" class="oc-btn oc-btn--ghost oc-btn--sm" (click)="copyValue(c.command, 'cmd-' + c.id, 'Command copied.')">
+                      <pre class="oc-ssh-cmd oc-ssh-cmd--select oc-ssh-cmd--wrap">{{ commandText(c) }}</pre>
+                      <button type="button" class="oc-btn oc-btn--ghost oc-btn--sm" (click)="copyValue(commandText(c), 'cmd-' + c.id, 'Command copied.')">
                         {{ copied() === 'cmd-' + c.id ? 'Copied' : 'Copy' }}
                       </button>
                     </div>
@@ -660,6 +690,60 @@ export class OpenClawSetupWizardComponent implements OnInit {
   readonly commandsError = signal('');
   readonly pairingMsg = signal<{ ok: boolean; text: string } | null>(null);
 
+  readonly shellTabs: { id: TerminalShell; label: string }[] = [
+    { id: 'cmd', label: 'Windows (cmd)' },
+    { id: 'powershell', label: 'PowerShell' },
+    { id: 'posix', label: 'macOS / Linux' },
+  ];
+  readonly shell = signal<TerminalShell>(this.detectShell());
+  readonly pairingLookupBusy = signal(false);
+
+  private detectShell(): TerminalShell {
+    const ua = typeof navigator === 'undefined' ? '' : `${navigator.userAgent} ${navigator.platform || ''}`;
+    return /Win/i.test(ua) ? 'cmd' : 'posix';
+  }
+
+  hasPlaceholderCommand(): boolean {
+    return this.commands().some((c) => Boolean(c.placeholder && c.command));
+  }
+
+  /** Single-line command for the selected shell, with the request id filled in when known. */
+  commandText(c: AgentConnectCommand): string {
+    const base = c.variants?.[this.shell()] || c.command || '';
+    const rid = this.pairingCode.trim();
+    if (c.placeholder && /^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$/.test(rid)) {
+      return base.split(c.placeholder).join(rid);
+    }
+    return base;
+  }
+
+  /** Prefills the request id with this buyer's own pending request (server filters by owner). */
+  findPendingPairing(userInitiated = false): void {
+    const agent = this.agent();
+    if (!this.profile().pairing || this.pairingLookupBusy()) return;
+    this.pairingLookupBusy.set(true);
+    this.gateway.getPendingPairings(agent).subscribe((res) => {
+      this.pairingLookupBusy.set(false);
+      const own = (res.pending || []).filter((p) => p.approvable);
+      if (own.length >= 1) {
+        this.pairingCode = own[own.length - 1].requestId;
+        if (userInitiated) {
+          this.pairingMsg.set({
+            ok: true,
+            text: own.length === 1 ? 'Found your pending request.' : `Found ${own.length} requests; filled in the newest.`,
+          });
+        }
+      } else if (userInitiated) {
+        this.pairingMsg.set({
+          ok: false,
+          text: res.success
+            ? 'No pending request from your workspace. Open the Control UI from aimarkets.vn, then try again.'
+            : res.message || 'Could not load pairing requests.',
+        });
+      }
+    });
+  }
+
   loadCommands(): void {
     const agent = this.agent();
     if (!agent || !this.isLaunchable()) return;
@@ -669,6 +753,7 @@ export class OpenClawSetupWizardComponent implements OnInit {
       this.commandsBusy.set(false);
       this.commands.set(res.success ? res.commands : []);
       if (!res.success) this.commandsError.set(res.message || 'Sign in to see your personal commands.');
+      if (res.success && this.hasPlaceholderCommand() && !this.pairingCode.trim()) this.findPendingPairing();
     });
   }
 
