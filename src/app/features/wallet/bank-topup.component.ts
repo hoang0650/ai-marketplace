@@ -188,16 +188,19 @@ export class BankTopupComponent implements OnInit {
   amount = 10;
   currency: 'USD' | 'VND' = 'USD';
 
+  /** Mirrors API convertAmount: no rounding to 1,000đ. USD input → VND = cents * rate. */
   estVnd(): number {
     const rate = this.cfg()?.vndPerUsd || 26500;
     const n = Number(this.amount) || 0;
-    const vnd = this.currency === 'VND' ? n : n * rate;
-    return Math.ceil(Math.round(vnd) / 1000) * 1000;
+    if (this.currency === 'VND') return Math.round(n);
+    return Math.round((Math.round(n * 100) * rate) / 100);
   }
 
   estUsd(): number {
     const rate = this.cfg()?.vndPerUsd || 26500;
-    return Math.round((this.estVnd() / rate) * 100) / 100;
+    const n = Number(this.amount) || 0;
+    if (this.currency === 'USD') return Math.round(n * 100) / 100;
+    return Math.round((Math.round(n) / rate) * 100) / 100;
   }
 
   ngOnInit(): void {
