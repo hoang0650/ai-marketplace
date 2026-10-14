@@ -6,8 +6,6 @@
 **Ngày hiệu lực:** 05/10/2026  
 **Phiên bản:** 2.1
 
-> Toàn văn Quy chế hoạt động (bản hợp nhất). Hình minh họa giao diện có trong bản Quy chế nộp Bộ Công Thương và không hiển thị trên trang này.
-
 ---
 
 ## I. NGUYÊN TẮC CHUNG
