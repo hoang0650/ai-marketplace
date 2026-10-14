@@ -15,7 +15,7 @@ import {
   MarketplaceAgent,
   OpenClawLaunchResult,
   OpenClawSshAccess,
-} from './agents.models';
+  AgentConnectCommands, } from './agents.models';
 
 const HIRED_KEY = 'phai.openclaw.hired';
 
@@ -553,47 +553,53 @@ export class OpenClawGatewayService {
     return `${base}/#${hash.toString()}`;
   }
 
+  /**
+   * Approve one of the signed-in buyer's own pending device pairings. The API checks
+   * ownership (request opened from https://<userId>.openclaw.aimarkets.vn) and scopes;
+   * the client only sends the request id.
+   */
   approvePairing(
     requestId?: string | null,
     agent?: MarketplaceAgent | null,
-  ): Observable<{ success: boolean; message?: string }> {
-    const userId = this.auth.user()?.id || '';
-    const path = this.agentApiPath(agent);
+  ): Observable<{ success: boolean; message?: string; code?: string }> {
+    const kind = this.runtimeKind(agent) || 'openclaw';
     return this.http
-      .post<{ success: boolean; message?: string }>(
-        `${environment.apiUrl}/${path}/device-pairings/approve`,
-        {
-          request_id: requestId || null,
-          requestId: requestId || null,
-          role: 'operator',
-          scopes: ['operator.read', 'operator.write', 'operator.admin', 'operator.pairing'],
-          user_id: userId,
-        },
+      .post<{ success: boolean; message?: string; code?: string }>(
+        `${environment.apiUrl}/agent-connect/${kind}/pairing/approve`,
+        { requestId: requestId || null },
         { headers: this.authHeaders() },
       )
-      .pipe(catchError(() => of({ success: false, message: 'Approve failed' })));
+      .pipe(
+        catchError((err) =>
+          of({
+            success: false,
+            code: err?.error?.code,
+            message: err?.error?.message || 'Approve failed - check the request id and try again.',
+          }),
+        ),
+      );
   }
 
-  /** Generate temporary SSH command: desktop → user sandbox/server (60 min). */
-  generateSsh(input?: {
-    agentId?: string;
-    host?: string;
-    port?: number;
-    username?: string;
-  }): Observable<OpenClawSshAccess> {
+  /** Copyable per-user commands (short-lived tokens bound to this buyer + agent type). */
+  getConnectCommands(agent?: MarketplaceAgent | null): Observable<AgentConnectCommands> {
+    const kind = this.runtimeKind(agent) || 'openclaw';
+    return this.http
+      .get<AgentConnectCommands>(`${environment.apiUrl}/agent-connect/${kind}/commands`, {
+        headers: this.authHeaders(),
+      })
+      .pipe(
+        catchError((err) =>
+          of({ success: false, commands: [], message: err?.error?.message || 'Could not load your commands.' }),
+        ),
+      );
+  }
+
+  /** Generate temporary SSH command for the buyer's own agent. Host/user are chosen by the server. */
+  generateSsh(input?: { agentId?: string }): Observable<OpenClawSshAccess> {
     const agentId = input?.agentId || 'openclaw';
     const path = this.agentApiPath({ id: agentId });
     return this.http
-      .post<OpenClawSshAccess>(
-        `${environment.apiUrl}/${path}/ssh/generate`,
-        {
-          agentId,
-          host: input?.host || undefined,
-          port: input?.port || undefined,
-          username: input?.username || undefined,
-        },
-        { headers: this.authHeaders() },
-      )
+      .post<OpenClawSshAccess>(`${environment.apiUrl}/${path}/ssh/generate`, { agentId }, { headers: this.authHeaders() })
       .pipe(
         catchError((err) =>
           of({
@@ -603,7 +609,6 @@ export class OpenClawGatewayService {
         ),
       );
   }
-
   getActiveSsh(agentId = 'openclaw'): Observable<OpenClawSshAccess> {
     const path = this.agentApiPath({ id: agentId });
     const params = new HttpParams().set('agentId', agentId);
@@ -769,28 +774,15 @@ export class OpenClawGatewayService {
     return headers;
   }
 
-  /** Same as hotelapp ai-chatbox: tick immediately, then poll. */
-  private triggerAutoApprove(maxAttempts: number, intervalMs: number): void {
-    let attempts = 0;
+  /**
+   * Blind "approve the latest pending request" polling was removed: on the shared
+   * AI Markets gateway it could approve another buyer's device, and it hammered the
+   * API once per second. Ticketed launches are paired by the gateway itself; manual
+   * approval needs the request id (setup page, step "Device & DM pairing").
+   */
+  private triggerAutoApprove(_maxAttempts: number, _intervalMs: number): void {
     this.clearApproveTimers();
-    const tick = () => {
-      attempts += 1;
-      this.approvePairing().subscribe((res) => {
-        if (res.success || attempts >= maxAttempts) {
-          this.clearApproveTimers();
-        }
-      });
-    };
-    tick();
-    this.approveInterval = setInterval(() => {
-      if (attempts >= maxAttempts) {
-        this.clearApproveTimers();
-        return;
-      }
-      tick();
-    }, intervalMs);
   }
-
   private approveDelayTimer(ms: number, fn: () => void): void {
     this.approveTimer = setTimeout(fn, ms);
   }

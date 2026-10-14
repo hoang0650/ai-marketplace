@@ -763,7 +763,6 @@ export class AgentDetailComponent implements OnInit {
     this.gateway
       .generateSsh({
         agentId: agent.id,
-        host: this.sshHost.trim() || undefined,
       })
       .subscribe((res) => {
         this.sshBusy.set(false);

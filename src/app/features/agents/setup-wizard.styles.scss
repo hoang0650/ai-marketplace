@@ -532,3 +532,87 @@
     color: var(--oc-text);
   }
 }
+
+/* ---------- Step navigation (same for every agent type) ---------- */
+.oc-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+}
+
+.oc-steps__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem 0.4rem 0.4rem;
+  border: 1px solid var(--oc-line);
+  border-radius: 999px;
+  background: var(--oc-card);
+  color: var(--oc-text);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--oc-accent);
+    background: var(--oc-card-hover);
+    outline: none;
+  }
+}
+
+.oc-steps__num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--oc-accent);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.oc-card[id^='step-'] {
+  scroll-margin-top: 5rem;
+}
+
+/* ---------- Per-user terminal commands ---------- */
+.oc-cmd {
+  border: 1px solid var(--oc-line);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  margin: 0 0 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.oc-cmd__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.oc-cmd__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.oc-cmd__exp {
+  font-size: 0.75rem;
+  color: var(--oc-muted);
+  white-space: nowrap;
+}
+
+.oc-cmd__scope {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  color: var(--oc-muted);
+}
+
+.oc-cmd .oc-ssh-cmd {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
