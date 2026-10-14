@@ -689,8 +689,13 @@ export interface PayoutPolicy {
   persona: PayoutPersona;
   canWithdraw: boolean;
   platformFeeRate: number;
-  taxRate: number;
-  totalFeeRate: number;
+  /** null when the tax depends on the order (mixed product kinds) or the seller type is undeclared. */
+  taxRate: number | null;
+  totalFeeRate: number | null;
+  /** single | per_order | none | unknown | override (seller personas only). */
+  taxMode?: 'single' | 'per_order' | 'none' | 'unknown' | 'override';
+  taxBreakdown?: Array<{ kind: 'DIGITAL' | 'GOODS' | 'ALL'; rate: number; totalFeeRate: number }>;
+  taxProfileIncomplete?: boolean;
   chargeAtWithdraw: boolean;
   minAmount: number;
   minAmountCurrency: string;
