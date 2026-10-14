@@ -20,6 +20,7 @@ import { ShopProfileService } from './shop-profile.service';
 import { PayoutAccountFormComponent } from '../wallet/payout-account-form.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
+import { PersonaToggleComponent } from './persona-toggle.component';
 
 @Component({
   selector: 'app-sell-images',
@@ -293,20 +294,14 @@ export class SellPaymentComponent {
 @Component({
   selector: 'app-sell-withdraw',
   standalone: true,
-  imports: [FormsModule, CurrencyPipe, DecimalPipe, RouterLink, TPipe],
+  imports: [FormsModule, CurrencyPipe, DecimalPipe, RouterLink, TPipe, PersonaToggleComponent],
   template: `
     <section>
       <p class="crumb">{{ 'sell.nav.finance' | t }} / {{ 'sell.nav.withdraw' | t }}</p>
       <h1>{{ 'wallet.withdraw.title' | t }}</h1>
 
       @if (personas().length > 1) {
-        <div class="personas">
-          @for (p of personas(); track p) {
-            <button type="button" [class.active]="p === persona()" (click)="setPersona(p)">
-              {{ ('payout.persona.' + p) | t }}
-            </button>
-          }
-        </div>
+        <app-persona-toggle [personas]="personas()" [value]="persona()" (valueChange)="setPersona($event)" />
       }
 
       @if (policy(); as pol) {
@@ -413,9 +408,6 @@ export class SellPaymentComponent {
   styles: `
     .crumb { margin: 0; color: #888; font-size: .8rem; }
     h1 { margin: .3rem 0 1rem; font-size: 1.45rem; font-weight: 800; }
-    .personas { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .personas button { border: 1px solid #e5e5e5; background: #fff; border-radius: 999px; padding: .35rem .9rem; font: inherit; font-weight: 700; cursor: pointer; }
-    .personas button.active { background: #111; color: #fff; border-color: #111; }
     .policy { background: #f7f7f5; border: 1px solid #ececec; border-radius: 12px; padding: .85rem 1rem; margin-bottom: 1rem; }
     .policy p { margin: 0 0 .4rem; font-weight: 700; }
     .policy ul { display: flex; gap: 1.25rem; flex-wrap: wrap; }

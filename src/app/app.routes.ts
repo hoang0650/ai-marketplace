@@ -172,9 +172,8 @@ export const routes: Routes = [
       },
       {
         path: 'ledger',
-        data: { page: 'ledger' },
         loadComponent: () =>
-          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+          import('./features/sell/sell-ledger.component').then((m) => m.SellLedgerComponent),
       },
       {
         path: 'docs/api-usage',
