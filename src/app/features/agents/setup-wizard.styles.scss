@@ -616,3 +616,30 @@
   white-space: pre-wrap;
   word-break: break-all;
 }
+.oc-ssh-cmd--wrap {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.oc-shell-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.oc-shell-tab {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--oc-line);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.oc-shell-tab--active {
+  background: var(--oc-accent, #4f46e5);
+  border-color: var(--oc-accent, #4f46e5);
+  color: #fff;
+}

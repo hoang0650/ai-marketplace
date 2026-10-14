@@ -15,7 +15,8 @@ import {
   MarketplaceAgent,
   OpenClawLaunchResult,
   OpenClawSshAccess,
-  AgentConnectCommands, } from './agents.models';
+  AgentConnectCommands,
+  PendingPairing, } from './agents.models';
 
 const HIRED_KEY = 'phai.openclaw.hired';
 
@@ -578,6 +579,16 @@ export class OpenClawGatewayService {
           }),
         ),
       );
+  }
+
+  /** This buyer's own pending device pairing requests (server filters by owner). */
+  getPendingPairings(agent?: MarketplaceAgent | null): Observable<{ success: boolean; pending: PendingPairing[]; message?: string }> {
+    const kind = this.runtimeKind(agent) || 'openclaw';
+    return this.http
+      .get<{ success: boolean; pending: PendingPairing[] }>(`${environment.apiUrl}/agent-connect/${kind}/pairing/pending`, {
+        headers: this.authHeaders(),
+      })
+      .pipe(catchError((err) => of({ success: false, pending: [], message: err?.error?.message || 'Could not load pairing requests.' })));
   }
 
   /** Copyable per-user commands (short-lived tokens bound to this buyer + agent type). */
