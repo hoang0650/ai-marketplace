@@ -738,3 +738,51 @@ th {
   gap: 0.5rem;
   font-weight: 500;
 }
+
+/* Nạp tiền method switcher (VietQR | GPay), shown only when GPay is enabled. */
+.topup-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.topup-switch button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  border: 1px solid #ececec;
+  background: #fff;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  cursor: pointer;
+  color: #171717;
+}
+
+.topup-switch button.on {
+  border-color: #171717;
+  box-shadow: 0 0 0 3px rgba(23, 23, 23, 0.08);
+}
+
+.topup-switch__icon {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 0.8rem;
+  flex: none;
+}
+
+.topup-switch__icon--qr { background: #fff5f5; color: #e53935; }
+.topup-switch__icon--gpay { background: #eff6ff; color: #1d4ed8; }
+
+.topup-switch__txt { display: grid; gap: 0.1rem; }
+.topup-switch__txt small { color: #777; font-size: 0.78rem; }
+
+@media (max-width: 560px) {
+  .topup-switch { grid-template-columns: 1fr; }
+}
