@@ -20,6 +20,7 @@ import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../i18n/currency.service';
 import { BankTopupComponent } from './bank-topup.component';
+import { GpayTopupComponent } from './gpay-topup.component';
 
 declare const paypal: {
   FUNDING?: { PAYPAL?: string };
@@ -42,7 +43,7 @@ const GPAY_POLL_MAX = 225;
 @Component({
   selector: 'app-wallet',
   standalone: true,
-  imports: [BankTopupComponent, CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [BankTopupComponent, GpayTopupComponent, CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.scss',
 })
@@ -103,6 +104,29 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   depositAmount = 10;
   depositVnd = 100000;
+
+  /** Nạp tiền: VietQR bank transfer always; GPay alongside it only when GPAY_UI_ENABLED. */
+  readonly topupMethod = signal<'vietqr' | 'gpay'>('vietqr');
+  /** VND amount shared between the VietQR and GPay forms. */
+  topupVnd = 0;
+  readonly topupLabels = computed(() =>
+    this.i18n.lang() === 'vi'
+      ? { vietqr: 'Chuyển khoản VietQR', vietqrDesc: 'Quét mã, admin xác nhận', gpay: 'GPay', gpayDesc: 'Cổng thanh toán, cộng ví tự động' }
+      : { vietqr: 'VietQR bank transfer', vietqrDesc: 'Scan & transfer, confirmed by us', gpay: 'GPay', gpayDesc: 'Payment gateway, auto credit' },
+  );
+
+  setTopupMethod(m: 'vietqr' | 'gpay'): void {
+    if (m === 'gpay' && !GPAY_UI_ENABLED) return;
+    if (m === 'gpay' && this.topupVnd > 0) this.depositVnd = this.topupVnd;
+    if (m === 'vietqr' && this.depositVnd > 0) this.topupVnd = this.depositVnd;
+    this.topupMethod.set(m);
+  }
+
+  onTopupVnd(v: number): void {
+    const n = Math.round(Number(v) || 0);
+    this.topupVnd = n;
+    this.depositVnd = n;
+  }
   private paypalClientId = '';
   private paypalScript?: HTMLScriptElement;
   private paypalButtonsGen = 0;
@@ -189,9 +213,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Back from GPay's gateway: /wallet?gpay=return&order=AIM…
+    if (GPAY_UI_ENABLED && this.route.snapshot.queryParamMap.get('method') === 'gpay') this.topupMethod.set('gpay');
     const gpayOrder = this.route.snapshot.queryParamMap.get('order');
     if (this.route.snapshot.queryParamMap.get('gpay') === 'return' && gpayOrder) {
       this.depositMethod.set('gpay');
+      this.topupMethod.set('gpay');
       this.setMsg(this.i18n.t('wallet.gpay.checking'), false);
       this.pollGpayOrder(gpayOrder);
     }
