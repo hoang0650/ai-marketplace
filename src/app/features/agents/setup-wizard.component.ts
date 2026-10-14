@@ -453,7 +453,13 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                 60 minutes.
               }
             </p>
-            <button type="button" class="oc-btn" (click)="generateSsh()" [disabled]="sshBusy()">
+            @if (sshUnavailable()) {
+              <p class="oc-card__desc oc-ssh-unavailable" role="status">
+                SSH access isn't available for {{ profile().brand }} yet. We're rolling out isolated per-buyer sandboxes; until
+                then, use the dashboard instead.
+              </p>
+            }
+            <button type="button" class="oc-btn" (click)="generateSsh()" [disabled]="sshBusy() || sshUnavailable()">
               {{ sshBusy() ? 'Generating…' : profile().sshAuth === 'key' ? 'Generate SSH key' : 'Generate SSH command' }}
                 </button>
             @if (ssh(); as s) {
@@ -493,7 +499,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                 <div class="oc-field">
                   <p class="oc-label">Password</p>
                   <div class="oc-copy-row">
-                    <pre class="oc-ssh-cmd oc-ssh-cmd--select">{{ s.password }}</pre>
+                    <pre class="oc-ssh-cmd oc-ssh-cmd--select">{{ s.password || 'Shown only once when generated. Generate again if you lost it.' }}</pre>
                 <button
                   type="button"
                       class="oc-btn oc-btn--ghost oc-btn--sm"
@@ -681,6 +687,8 @@ export class OpenClawSetupWizardComponent implements OnInit {
 
   readonly ssh = signal<OpenClawSshAccess | null>(null);
   readonly sshBusy = signal(false);
+  /** Server answered 403 `ssh_not_isolated`: SSH is off until per-buyer sandboxes exist. */
+  readonly sshUnavailable = signal(false);
   sshPlaceholder = '{userId}.openclaw.aimarkets.vn';
   pairingCode = '';
 
@@ -844,6 +852,10 @@ export class OpenClawSetupWizardComponent implements OnInit {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
           this.loadCommands();
+        } else if (res.code === 'ssh_not_isolated') {
+          this.sshUnavailable.set(true);
+          this.ssh.set(null);
+          this.status.set('SSH access is not available yet for this agent.');
         } else {
           this.status.set(res.message || 'SSH generate failed. Login required, or the host template is not set.');
         }

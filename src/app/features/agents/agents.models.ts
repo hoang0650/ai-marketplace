@@ -109,6 +109,8 @@ export interface OpenClawSshAccess {
   note?: string;
   howTo?: string[];
   message?: string;
+  /** Machine-readable error, e.g. `ssh_not_isolated` when SSH is disabled server-side. */
+  code?: string;
   active?: boolean;
   session?: OpenClawSshAccess | null;
 }

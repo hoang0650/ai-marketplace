@@ -769,6 +769,9 @@ export class AgentDetailComponent implements OnInit {
         if (res.success && res.command) {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
+        } else if (res.code === 'ssh_not_isolated') {
+          this.ssh.set(null);
+          this.status.set('SSH access is not available yet for this agent (isolated sandboxes are rolling out).');
         } else {
           const prefix = this.subdomain().toUpperCase();
           const hint = `${prefix}_SSH_HOST_TEMPLATE={userId}.${this.subdomain()}.aimarkets.vn`;
