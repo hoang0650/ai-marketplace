@@ -681,6 +681,12 @@ export const routes: Routes = [
           import('./features/admin/admin-finance.component').then((m) => m.AdminFinanceComponent),
       },
       {
+        path: 'admin/bank-deposits',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/admin-bank-deposits.component').then((m) => m.AdminBankDepositsComponent),
+      },
+      {
         path: 'admin/tax',
         canActivate: [taxStaffGuard],
         loadComponent: () => import('./features/admin/admin-tax.component').then((m) => m.AdminTaxComponent),

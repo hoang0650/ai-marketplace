@@ -19,6 +19,7 @@ import { environment } from '../../../environments/environment';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../i18n/currency.service';
+import { BankTopupComponent } from './bank-topup.component';
 
 declare const paypal: {
   FUNDING?: { PAYPAL?: string };
@@ -41,7 +42,7 @@ const GPAY_POLL_MAX = 225;
 @Component({
   selector: 'app-wallet',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [BankTopupComponent, CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.scss',
 })
