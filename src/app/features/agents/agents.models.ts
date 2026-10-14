@@ -112,3 +112,22 @@ export interface OpenClawSshAccess {
   active?: boolean;
   session?: OpenClawSshAccess | null;
 }
+
+/** One copyable command on the setup page; `scope` is `<runtime>:<userId>:<action>`. */
+export interface AgentConnectCommand {
+  id: string;
+  title: string;
+  description: string;
+  command: string | null;
+  scope: string;
+  expiresAt: string | null;
+}
+
+export interface AgentConnectCommands {
+  success: boolean;
+  runtime?: string;
+  userId?: string;
+  features?: { label: string; pairing: boolean; ssh: boolean; sso: boolean };
+  commands: AgentConnectCommand[];
+  message?: string;
+}
