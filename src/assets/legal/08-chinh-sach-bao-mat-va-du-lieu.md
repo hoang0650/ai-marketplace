@@ -28,7 +28,7 @@ Chính sách được xây dựng theo Luật Bảo vệ dữ liệu cá nhân s
 | Kỹ thuật, bảo mật | Địa chỉ IP, thời điểm đăng nhập, nhật ký hoạt động tài khoản, nhật ký máy chủ và lỗi | Hệ thống |
 | Nội dung gửi tới AI | Văn bản, tệp, hình ảnh người dùng gửi vào API, agent, AI App Builder | Người dùng |
 
-Nền tảng không lưu thông tin thẻ thanh toán; dữ liệu thẻ do cổng thanh toán, Apple, Google xử lý. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm: lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập và hiển thị dạng che một phần.
+Nền tảng không lưu thông tin thẻ thanh toán; dữ liệu thanh toán trong ứng dụng do Apple, Google xử lý; khoản chuyển khoản do ngân hàng xử lý. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm: lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập và hiển thị dạng che một phần.
 
 ## Điều 3. Mục đích xử lý
 
@@ -49,7 +49,7 @@ Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; x
 
 Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
 - **Người bán:** thông tin cần để thực hiện đơn hàng với người mua;
-- **Đối tác thanh toán:** GPay, Apple, Google;
+- **Đối tác thanh toán:** ngân hàng nơi Công ty mở Tài khoản thanh toán, Apple, Google;
 - **Nhà cung cấp hạ tầng:** máy chủ, lưu trữ, GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
 - **Cơ quan nhà nước có thẩm quyền:** khi có yêu cầu theo quy định pháp luật.
 

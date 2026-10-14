@@ -79,7 +79,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 6. Thanh toán, phí dịch vụ và thuế
 
-1. Mọi đơn hàng được Người mua thanh toán duy nhất bằng số dư Ví AI Markets. Cổng thanh toán GPay (ATM, thẻ ngân hàng, VietQR) trên website và Apple In-App Purchase, Google Play Billing trên ứng dụng chỉ dùng để nạp tiền vào ví. Bên A thu tiền của Người mua thông qua ví; Bên A không lưu thông tin thẻ của Người mua.
+1. Mọi đơn hàng được Người mua thanh toán duy nhất bằng số dư Ví AI Markets. Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website và Apple In-App Purchase, Google Play Billing trên ứng dụng chỉ dùng để nạp tiền vào ví. Bên A thu tiền của Người mua thông qua ví; Bên A không lưu thông tin thẻ của Người mua.
 
 2. Phí sàn: mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho Bên B), lưu cố định tại thời điểm giao kết từng đơn hàng.
 

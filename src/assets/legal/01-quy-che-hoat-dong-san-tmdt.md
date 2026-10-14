@@ -60,7 +60,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 - Bán bởi Seller: sản phẩm, dịch vụ do người bán cung cấp, ghi rõ tên cửa hàng.
 - Nhà cung cấp hạ tầng (Provider): đơn vị cung cấp máy chủ, GPU, API mô hình AI, thanh toán… cho nền tảng hoặc người bán. Provider không phải là người bán chỉ vì sản phẩm sử dụng hạ tầng của họ.
 - Chính sách sử dụng chấp nhận được (AUP): các quy định về hàng hóa, dịch vụ cấm kinh doanh và hành vi bị cấm tại Mục XV của Quy chế này.
-- Ví (ví AI Markets): số dư của người dùng trên nền tảng, được hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc Nhân dân tệ – CNY); được nạp qua các phương thức nạp tiền được công bố (GPay/VietQR, thanh toán trong ứng dụng); là phương thức duy nhất để thanh toán đơn hàng trên nền tảng; người mua được rút số dư sau khi hoàn tất xác minh danh tính (eKYC).
+- Ví (ví AI Markets): số dư của người dùng trên nền tảng, được hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc Nhân dân tệ – CNY); được nạp qua các phương thức nạp tiền được công bố (chuyển khoản ngân hàng qua Mã QR VietQR vào Tài khoản thanh toán của Công ty, thanh toán trong ứng dụng); là phương thức duy nhất để thanh toán đơn hàng trên nền tảng; người mua được rút số dư sau khi hoàn tất xác minh danh tính (eKYC).
 - Mã giảm giá (voucher, coupon): khoản giảm trừ do người bán hoặc nền tảng áp dụng vào giá trị đơn hàng theo khoản 2 Mục XI.
 
 ## III. HÀNG HÓA, DỊCH VỤ VÀ MÔ HÌNH HOẠT ĐỘNG
@@ -177,7 +177,7 @@ Bước 7: Xử lý khiếu nại. Tại “Complaints”, người bán theo d�
 
 Người mua thanh toán đơn hàng thông qua ví AI Markets; nền tảng thu tiền và đối soát, chi trả cho người bán theo Mục XI. Người mua và người bán không thanh toán trực tiếp cho nhau ngoài nền tảng (khoản 10 Mục XI).
 
-Bước 1: Nạp tiền vào ví. Tại “AI Markets Wallet” → “Top up”, người mua chọn GPay (ATM / thẻ / VietQR), nhập số tiền nạp bằng VND hoặc chọn mức nhanh, sau đó chọn “Pay with GPay gateway” hoặc “Create VietQR”. Ví được ghi có tự động sau khi GPay xác nhận; số tiền nạp được quy đổi theo tỷ giá hiển thị trên trang tại thời điểm nạp; số dư ví hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc CNY; hình minh họa hiển thị USD). Trang ví đồng thời hiển thị số dư khả dụng, lịch sử giao dịch và tổng quan theo tháng. Trên ứng dụng di động, việc nạp ví thực hiện qua Apple In-App Purchase / Google Play Billing theo khoản 4 Mục XI. Các phương thức này chỉ dùng để nạp ví; đơn hàng được thanh toán bằng số dư ví (Bước 2).
+Bước 1: Nạp tiền vào ví. Tại “AI Markets Wallet” → “Top up”, người mua nhập số tiền nạp bằng VND hoặc chọn mức nhanh, sau đó chuyển khoản ngân hàng bằng cách quét Mã QR VietQR vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup, ghi đúng nội dung chuyển khoản (mã nạp tiền) hiển thị trên trang. Ví được ghi có sau khi khoản chuyển khoản được đối chiếu với giao dịch ghi có trên Tài khoản thanh toán của Công ty; số tiền nạp được quy đổi theo tỷ giá hiển thị trên trang tại thời điểm nạp; số dư ví hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc CNY; hình minh họa hiển thị USD). Trang ví đồng thời hiển thị số dư khả dụng, lịch sử giao dịch và tổng quan theo tháng. Trên ứng dụng di động, việc nạp ví thực hiện qua Apple In-App Purchase / Google Play Billing theo khoản 4 Mục XI. Các phương thức này chỉ dùng để nạp ví; đơn hàng được thanh toán bằng số dư ví (Bước 2).
 
 Bước 2: Kiểm tra giỏ hàng và thanh toán. Quy trình gồm 3 bước: 1 Giỏ hàng (Cart) → 2 Thanh toán (Checkout) → 3 Hoàn tất (Done). Mỗi sản phẩm được thanh toán riêng; phim, truyện và gói kỹ năng được cấp một giấy phép cho mỗi listing, kể cả cùng cửa hàng. Khung thanh toán hiển thị tạm tính, giảm giá của người bán, giảm giá của nền tảng, ô nhập mã giảm giá và tổng đơn hàng. Phương thức thanh toán trên giao diện là ví AI Markets (“Pay with AI Markets wallet only”); người mua chọn “Pay with AI Markets wallet”. Nếu số dư không đủ, người mua nạp thêm theo Bước 1.
 
@@ -389,11 +389,11 @@ Nền tảng áp dụng hạn mức (quota), giới hạn tần suất (rate lim
 
 ### 1. Đối tác và phương thức thanh toán
 
-Mọi đơn hàng trên website và ứng dụng được thanh toán duy nhất bằng số dư ví AI Markets (“Pay with AI Markets wallet only”). Cổng GPay/VietQR và các phương thức khác dưới đây chỉ dùng để nạp tiền vào ví, không dùng để thanh toán trực tiếp đơn hàng.
+Mọi đơn hàng trên website và ứng dụng được thanh toán duy nhất bằng số dư ví AI Markets (“Pay with AI Markets wallet only”). Sàn TMĐT aimarkets.vn áp dụng phương thức thanh toán trực tiếp qua Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup và Ví số dư nội bộ. Chuyển khoản ngân hàng (Mã QR VietQR) và các phương thức khác dưới đây chỉ dùng để nạp tiền vào ví, không dùng để thanh toán trực tiếp đơn hàng.
 
 | Kênh | Đối tác | Phương thức | Mục đích |
 |---|---|---|---|
-| Website | Cổng thanh toán GPay | ATM, thẻ ngân hàng, VietQR | Nạp tiền vào ví |
+| Website | Chuyển khoản ngân hàng vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup | Mã QR VietQR (chuyển khoản từ tài khoản ngân hàng của người mua) | Nạp tiền vào ví |
 | Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple của người mua | Nạp tiền vào ví |
 | Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play của người mua | Nạp tiền vào ví |
 | Website và ứng dụng | Ví AI Markets | Số dư đã nạp qua các kênh trên | Thanh toán đơn hàng |
@@ -410,7 +410,7 @@ c) Mã giảm giá (voucher): người bán có thể tạo mã giảm giá cho 
 
 ### 3. Ví người mua
 
-a) Người mua nạp tiền vào ví qua cổng GPay (ATM, thẻ, VietQR) trên website hoặc hệ thống thanh toán trong ứng dụng; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp, theo điểm a khoản 2 Mục này. Nền tảng thu tiền của người mua thông qua ví.
+a) Người mua nạp tiền vào ví bằng chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website hoặc hệ thống thanh toán trong ứng dụng; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp, theo điểm a khoản 2 Mục này. Nền tảng thu tiền của người mua thông qua ví.
 
 b) Số dư ví là phương thức duy nhất để thanh toán đơn hàng trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
@@ -848,7 +848,7 @@ Mục này được xây dựng theo Luật Bảo vệ dữ liệu cá nhân s�
 | Kỹ thuật, bảo mật | Địa chỉ IP, thời điểm đăng nhập, nhật ký hoạt động tài khoản, nhật ký máy chủ và lỗi | Hệ thống |
 | Nội dung gửi tới AI | Văn bản, tệp, hình ảnh người dùng gửi vào API, agent, AI App Builder | Người dùng |
 
-Nền tảng không lưu thông tin thẻ thanh toán; dữ liệu thẻ do cổng thanh toán, Apple, Google xử lý. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm: lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập và hiển thị dạng che một phần.
+Nền tảng không lưu thông tin thẻ thanh toán; dữ liệu thanh toán trong ứng dụng do Apple, Google xử lý; khoản chuyển khoản do ngân hàng xử lý. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm: lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập và hiển thị dạng che một phần.
 
 ### 3. Mục đích xử lý
 
@@ -873,7 +873,7 @@ c) Người dùng chỉ đưa dữ liệu cá nhân của người khác vào AI
 Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
 
 - Người bán: thông tin cần để thực hiện đơn hàng với người mua;
-- Đối tác thanh toán: GPay, Apple, Google;
+- Đối tác thanh toán: ngân hàng nơi Công ty mở Tài khoản thanh toán, Apple, Google;
 - Nhà cung cấp hạ tầng: máy chủ ứng dụng, máy chủ cơ sở dữ liệu và lưu trữ (cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232)), GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
 - Cơ quan nhà nước có thẩm quyền: khi có yêu cầu theo quy định pháp luật.
 
@@ -920,7 +920,7 @@ Các dữ liệu này cần thiết để nền tảng hoạt động và không
 
 c) Phân tích: nền tảng dùng công cụ phân tích truy cập do PHGroup tự vận hành (analytics.phgrouptechs.com) để đo lượt truy cập, trang được xem, lỗi và hiệu suất ở mức tổng hợp. Dữ liệu không được bán hay chia sẻ cho bên quảng cáo.
 
-d) Bên thứ ba: khi người dùng chủ động sử dụng, các dịch vụ sau có thể đặt cookie hoặc dữ liệu riêng theo chính sách của họ: Google (đăng nhập bằng Google); GPay (trang thanh toán); Apple, Google Play (thanh toán trong ứng dụng di động).
+d) Bên thứ ba: khi người dùng chủ động sử dụng, các dịch vụ sau có thể đặt cookie hoặc dữ liệu riêng theo chính sách của họ: Google (đăng nhập bằng Google); Apple, Google Play (thanh toán trong ứng dụng di động).
 
 đ) Quảng cáo: nền tảng hiện không dùng cookie quảng cáo hay theo dõi chéo trang. Nếu áp dụng trong tương lai, nền tảng sẽ cập nhật chính sách này và xin đồng ý của người dùng trước khi bật.
 
@@ -1080,7 +1080,7 @@ Người bán xác nhận đã đọc và đồng ý: Quy chế hoạt động; 
 
 ## XXIV. BÊN CUNG CẤP DỊCH VỤ HỖ TRỢ
 
-Cổng thanh toán GPay, Apple, Google, nhà cung cấp máy chủ (bao gồm Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) – lưu trữ cơ sở dữ liệu và dữ liệu người dùng tại Việt Nam), tên miền, hạ tầng GPU/API AI và dịch vụ thư điện tử thực hiện theo hợp đồng/điều khoản dịch vụ với Công ty, bảo đảm an toàn giao dịch, bảo mật dữ liệu và phối hợp cung cấp thông tin khi cơ quan có thẩm quyền yêu cầu.
+Ngân hàng nơi Công ty mở Tài khoản thanh toán, Apple, Google, nhà cung cấp máy chủ (bao gồm Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) – lưu trữ cơ sở dữ liệu và dữ liệu người dùng tại Việt Nam), tên miền, hạ tầng GPU/API AI và dịch vụ thư điện tử thực hiện theo hợp đồng/điều khoản dịch vụ với Công ty, bảo đảm an toàn giao dịch, bảo mật dữ liệu và phối hợp cung cấp thông tin khi cơ quan có thẩm quyền yêu cầu.
 
 ## XXV. ĐIỀU KHOẢN ÁP DỤNG
 

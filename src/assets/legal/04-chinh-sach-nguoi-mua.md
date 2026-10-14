@@ -31,7 +31,7 @@
 ## Điều 3. Đặt hàng và thanh toán
 
 1. Người mua có thể lưu sản phẩm vào giỏ hàng, danh sách yêu thích (đồng bộ giữa website và ứng dụng), kiểm tra tổng giá rồi xác nhận thanh toán.
-2. Đơn hàng được thanh toán **duy nhất bằng số dư ví AI Markets**. Cổng GPay (ATM, thẻ, VietQR) trên website và Apple In-App Purchase / Google Play Billing trên ứng dụng chỉ dùng để nạp tiền vào ví.
+2. Đơn hàng được thanh toán **duy nhất bằng số dư ví AI Markets**. Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website và Apple In-App Purchase / Google Play Billing trên ứng dụng chỉ dùng để nạp tiền vào ví.
 3. Giá và số dư ví được hiển thị bằng VNĐ, USD hoặc Nhân dân tệ (CNY) theo đơn vị tiền tệ người dùng lựa chọn; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp. Người mua thanh toán giá sau giảm (nếu có).
 4. Người mua được rút số dư ví tại mục “Withdraw” của ví sau khi hoàn tất xác minh danh tính (eKYC) bằng CCCD/hộ chiếu. Chi tiết tại [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
 

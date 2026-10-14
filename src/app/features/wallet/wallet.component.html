@@ -40,7 +40,7 @@
               </div>
             </button>
           }
-          @if (gpayAvailable() || !paypalVisible) {
+          @if (gpayVisible && (gpayAvailable() || !paypalVisible)) {
             <button
               type="button"
               class="method method--gpay"
@@ -85,7 +85,7 @@
               </div>
             }
           </div>
-        } @else {
+        } @else if (gpayVisible) {
           <p class="hint">{{ 'wallet.gpay.hint' | t }}</p>
 
           @if (!gpayEnabled()) {
@@ -144,6 +144,8 @@
               }
             </div>
           }
+        } @else {
+          <p class="offline">{{ 'wallet.topup.unavailable' | t }}</p>
         }
 
         @if (msg()) {
