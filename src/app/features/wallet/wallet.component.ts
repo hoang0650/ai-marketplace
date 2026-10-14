@@ -30,6 +30,8 @@ type DepositMethod = 'paypal' | 'gpay';
 
 /** PayPal is hidden on the web (GPay only); the /v1/paypal API stays so it can be re-enabled. */
 const PAYPAL_UI_ENABLED = false;
+/** GPay is temporarily hidden (environment.gpayEnabled, default false); its code and API stay in place. */
+const GPAY_UI_ENABLED = (environment as { gpayEnabled?: boolean }).gpayEnabled === true;
 const PAYPAL_QUICK = [5, 10, 20, 50, 100];
 const GPAY_QUICK_VND = [50_000, 100_000, 200_000, 500_000, 1_000_000];
 const GPAY_POLL_MS = 4000;
@@ -86,6 +88,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly msgIsError = signal(false);
 
   readonly paypalVisible = PAYPAL_UI_ENABLED;
+  readonly gpayVisible = GPAY_UI_ENABLED;
   readonly depositMethod = signal<DepositMethod>(PAYPAL_UI_ENABLED ? 'paypal' : 'gpay');
   readonly gpayAvailable = signal(false);
   readonly gpayEnabled = signal(false);
@@ -170,10 +173,10 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.api.gpayConfig().subscribe({
       next: (cfg) => {
-        this.gpayAvailable.set(cfg.available ?? !!cfg.enabled);
-        this.gpayEnabled.set(!!cfg.enabled);
-        this.gpayPortalEnabled.set(!!cfg.portalEnabled);
-        this.gpayQrEnabled.set(!!cfg.qrEnabled);
+        this.gpayAvailable.set(GPAY_UI_ENABLED && (cfg.available ?? !!cfg.enabled));
+        this.gpayEnabled.set(GPAY_UI_ENABLED && !!cfg.enabled);
+        this.gpayPortalEnabled.set(GPAY_UI_ENABLED && !!cfg.portalEnabled);
+        this.gpayQrEnabled.set(GPAY_UI_ENABLED && !!cfg.qrEnabled);
         this.gpayVndPerUsd.set(Number(cfg.vndPerUsd) || 26500);
         if (cfg.vndPerUsd) this.fx.setVndPerUsd(Number(cfg.vndPerUsd));
         this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);

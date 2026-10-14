@@ -47,7 +47,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Mọi đơn thanh toán bằng ví; GPay, Apple/Google IAP chỉ để nạp ví; rút ví sau eKYC; đối soát và cấm giao dịch ngoài sàn.',
+    summary: 'Mọi đơn thanh toán bằng ví; chuyển khoản ngân hàng (VietQR), Apple/Google IAP chỉ để nạp ví; rút ví sau eKYC; đối soát và cấm giao dịch ngoài sàn.',
     group: 'commerce',
   },
   {

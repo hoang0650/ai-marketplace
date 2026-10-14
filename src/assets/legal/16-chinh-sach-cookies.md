@@ -35,8 +35,7 @@ Nền tảng dùng công cụ phân tích truy cập do PHGroup tự vận hành
 
 Khi người dùng chủ động sử dụng, các dịch vụ sau có thể đặt cookie hoặc dữ liệu riêng theo chính sách của họ:
 - **Google** (đăng nhập bằng Google);
-- **GPay** (trang thanh toán);
-- **Apple, Google Play** (thanh toán trong ứng dụng di động).
+- - **Apple, Google Play** (thanh toán trong ứng dụng di động).
 
 ## Điều 5. Quảng cáo
 
