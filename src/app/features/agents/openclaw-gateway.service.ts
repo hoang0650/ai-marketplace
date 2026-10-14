@@ -604,6 +604,7 @@ export class OpenClawGatewayService {
         catchError((err) =>
           of({
             success: false,
+            code: err?.error?.code,
             message: err?.error?.message || err?.message || 'Failed to generate SSH access',
           }),
         ),
