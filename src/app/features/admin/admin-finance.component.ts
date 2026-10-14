@@ -7,14 +7,14 @@ import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { WalletTx } from '../../models/marketplace.models';
+import { BackButtonComponent } from '../../shared/components/back-button.component';
 
 type FinanceTab = 'deposit' | 'withdraw';
 type StatusFilter = '' | 'pending' | 'completed' | 'failed' | 'cancelled';
-
 @Component({
   selector: 'app-admin-finance',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe, BackButtonComponent],
   templateUrl: './admin-finance.component.html',
   styleUrl: './admin-finance.component.scss',
 })

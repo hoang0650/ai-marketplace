@@ -7,11 +7,12 @@ import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { KycAdminDocuments, KycDocumentInfo, KycQueueItem, KycReviewStatus, KycSide, KycSubjectType } from '../../models/marketplace.models';
+import { BackButtonComponent } from '../../shared/components/back-button.component';
 
 @Component({
   selector: 'app-admin-kyc',
   standalone: true,
-  imports: [DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [DatePipe, FormsModule, RouterLink, TPipe, BackButtonComponent],
   templateUrl: './admin-kyc.component.html',
   styleUrl: './admin-kyc.component.scss',
 })

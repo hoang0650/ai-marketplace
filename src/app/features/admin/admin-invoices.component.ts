@@ -7,14 +7,16 @@ import { AdminInvoiceList, OrderInvoice } from '../../models/marketplace.models'
 import { SeoService } from '../../services/seo.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
+import { BackButtonComponent } from '../../shared/components/back-button.component';
 
 /** /admin/invoices — per-order invoice records: mark issued, attach number/PDF. No e-invoice provider integration yet. */
 @Component({
   selector: 'app-admin-invoices',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe, BackButtonComponent],
   template: `
     <section class="page ai">
+      <app-back-button />
       <p class="crumb"><a routerLink="/admin">{{ 'nav.admin' | t }}</a></p>
       <h1>{{ 'admin.inv.title' | t }}</h1>
       <p class="muted">{{ 'admin.inv.lede' | t }}</p>
