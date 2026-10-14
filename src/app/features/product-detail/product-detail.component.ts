@@ -30,6 +30,7 @@ import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { InvoiceChoiceComponent } from '../orders/invoice-choice.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { MARKETPLACE_AGENTS, OpenClawGatewayService } from '../agents/openclaw-gateway.service';
+import { LaunchNoticeService } from '../agents/launch-notice.service';
 import { isRunpodProduct, resolveRunpodEndpoint } from '../../models/runpod-playground';
 import {
   RunpodField,
@@ -85,6 +86,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly i18n = inject(I18nService);
   private readonly currencySvc = inject(CurrencyService);
   private readonly openclaw = inject(OpenClawGatewayService);
+  private readonly launchNotice = inject(LaunchNoticeService);
   private readonly walletApi = inject(DashboardService);
   private readonly uploadApi = inject(UploadService);
   private readonly contentApi = inject(ContentService);
@@ -980,7 +982,8 @@ export class ProductDetailComponent implements OnInit {
     const launch$ = agent ? this.openclaw.launchWithPlan(agent) : this.openclaw.launchGateway();
     launch$.subscribe((res) => {
       this.openclawBusy.set(false);
-      this.openclawStatus.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
+      if (agent) this.launchNotice.report(agent, this.openclaw.runtimeInfo(agent).label, res, () => this.launchOpenClaw());
+      this.openclawStatus.set(res.success ? (res.rental ? 'Rented — open it from the notice.' : 'Opened — check the new tab.') : res.message || 'Launch failed');
       if (res.success) {
         this.checkoutMsg.set(`${brand} launched.`);
       }

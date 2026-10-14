@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../services/seo.service';
+import { LaunchNoticeService } from './launch-notice.service';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
 import { AgentConnectCommand, MarketplaceAgent, OpenClawSshAccess, TerminalShell } from './agents.models';
 
@@ -657,6 +658,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
 export class OpenClawSetupWizardComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   readonly gateway = inject(OpenClawGatewayService);
+  private readonly notice = inject(LaunchNoticeService);
   private readonly seo = inject(SeoService);
 
   readonly channels = OPENCLAW_CHANNELS;
@@ -888,18 +890,20 @@ export class OpenClawSetupWizardComponent implements OnInit {
       this.launchError.set(this.gateway.comingSoonMessage(agent));
       return;
     }
+    if (this.busy()) return;
     this.busy.set(true);
     this.launchError.set('');
     this.status.set(`Opening ${agent.name} at ${this.host()}…`);
     this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busy.set(false);
+      this.notice.report(agent, this.gateway.runtimeInfo(agent).label, res, () => this.openUi());
       if (res.success) {
         this.launched.set(true);
         if (res.username && res.password) {
           this.creds.set({ username: res.username, password: res.password });
         }
-        this.status.set('Opened — check the new tab.');
-      } else {
+        this.status.set(res.rental ? 'Rented — use “Open” in the notice to start it.' : 'Opened — check the new tab.');
+      } else if (res.code !== 'RENT_CANCELLED') {
         const msg = res.message || 'Failed to open the dashboard';
         this.launchError.set(msg);
         this.status.set(msg);
