@@ -871,6 +871,36 @@ export interface ComputeNode {
   maxConcurrent: number;
   createdAt: string;
   updatedAt: string;
+  /** Product category (seller list only). */
+  category?: string;
+  /** Owner-only editable settings (seller list only). The webhook secret itself is never returned. */
+  config?: ComputeNodeConfig;
+}
+
+export interface ComputeNodeConfig {
+  webhookUrl: string;
+  hasWebhookSecret: boolean;
+  streamHost: string;
+  streamPort: number;
+  streamPath: string;
+  streamKind: string;
+  streamTls: boolean;
+  iframeUrl: string;
+  healthUrl: string;
+  gpu: string;
+  mobileStream: { iframeUrl: string; host: string; port: number; path: string } | null;
+}
+
+/** Seller's own product as offered by the compute node picker. */
+export interface ComputeProductOption {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  published: boolean;
+  moderationStatus: string;
+  eligible: boolean;
+  reason: '' | 'NOT_COMPUTE_CATEGORY' | 'NOT_PUBLISHED';
 }
 
 export interface MobileStreamConfig {
@@ -1211,6 +1241,11 @@ export class SellerComputeService {
 
   listNodes(): Observable<ComputeNode[]> {
     return this.http.get<ComputeNode[]>(`${this.base}/seller/compute/nodes`);
+  }
+
+  /** The seller's own products (drafts included) flagged eligible / not for a compute node. */
+  listProducts(): Observable<ComputeProductOption[]> {
+    return this.http.get<ComputeProductOption[]>(`${this.base}/seller/compute/products`);
   }
 
   registerNode(body: {
