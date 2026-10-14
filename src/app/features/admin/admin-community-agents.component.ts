@@ -7,14 +7,16 @@ import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { CommunityAgent, CommunityAgentsService, VoteBoard } from '../agents/community-agents.service';
 import { COMMUNITY_VOTE_MESSAGES } from '../agents/community-vote.messages';
+import { BackButtonComponent } from '../../shared/components/back-button.component';
 
 /** Admin: review community vote winners (security check → approve & list / reject), close the cycle now. */
 @Component({
   selector: 'app-admin-community-agents',
   standalone: true,
-  imports: [DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [DatePipe, FormsModule, RouterLink, TPipe, BackButtonComponent],
   template: `
     <section class="acv page route-enter">
+      <app-back-button />
       <p class="acv__crumb"><a routerLink="/admin">{{ 'nav.admin' | t }}</a> / <a routerLink="/hire-agent/marketplace">Agent Marketplace</a></p>
       <div class="acv__head">
         <h1>{{ 'cvote.admin.title' | t }}</h1>

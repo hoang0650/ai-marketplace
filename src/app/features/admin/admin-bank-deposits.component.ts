@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
+import { BackButtonComponent } from '../../shared/components/back-button.component';
 
 interface AdminBankDeposit {
   id: string;
@@ -22,9 +23,10 @@ interface AdminBankDeposit {
 @Component({
   selector: 'app-admin-bank-deposits',
   standalone: true,
-  imports: [FormsModule, CurrencyPipe, DecimalPipe, DatePipe],
+  imports: [FormsModule, CurrencyPipe, DecimalPipe, DatePipe, BackButtonComponent],
   template: `
     <section class="page">
+      <app-back-button />
       <h1>Bank transfer deposits (VietQR)</h1>
       <p>Match the <strong>transfer content</strong> and VND amount on the bank statement, then credit. Nothing is credited automatically.</p>
       <div class="filters">
