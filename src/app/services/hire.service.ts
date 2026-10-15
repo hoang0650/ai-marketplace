@@ -20,6 +20,7 @@ export interface HireMilestone {
   previewKind: 'web' | 'app' | null;
   demoUrl: string;
   demoNote: string;
+  files?: import('../shared/attachments/attachments').FileAttachment[];
   submittedAt: string | null;
   approvedAt: string | null;
   revisionNote: string;
@@ -56,7 +57,7 @@ export interface HireProject {
   terminationNote: string;
   complaintId: string | null;
   events: { at: string; actor: string; action: string; note: string }[];
-  messages?: { id: string; at: string; actor: 'buyer' | 'seller' | 'admin' | 'system'; body: string; link: string }[];
+  messages?: { id: string; at: string; actor: 'buyer' | 'seller' | 'admin' | 'system'; body: string; link: string; attachments?: import('../shared/attachments/attachments').FileAttachment[] }[];
   origin?: 'quote' | 'package';
   createdAt: string;
   updatedAt: string;
@@ -88,8 +89,8 @@ export class HireService {
     return this.http.post<HireProject & { existing?: boolean }>(`${environment.apiUrl}/hire/packages`, { productId, brief });
   }
 
-  message(id: string, body: string, link?: string): Observable<HireProject> {
-    return this.http.post<HireProject>(`${this.base}/${id}/messages`, { body, ...(link ? { link } : {}) });
+  message(id: string, body: string, link?: string, attachmentIds?: string[]): Observable<HireProject> {
+    return this.http.post<HireProject>(`${this.base}/${id}/messages`, { body, ...(link ? { link } : {}), ...(attachmentIds?.length ? { attachmentIds } : {}) });
   }
 
   complain(id: string, note: string, requestedAction?: string): Observable<HireProject> {
@@ -120,7 +121,7 @@ export class HireService {
     return this.http.post<HireProject>(`${this.base}/${id}/accept`, { milestones });
   }
 
-  submit(id: string, payload: { builderProjectId?: string; demoUrl?: string; note?: string }): Observable<HireProject> {
+  submit(id: string, payload: { builderProjectId?: string; demoUrl?: string; note?: string; attachmentIds?: string[] }): Observable<HireProject> {
     return this.http.post<HireProject>(`${this.base}/${id}/submit`, payload);
   }
 

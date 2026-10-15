@@ -10,6 +10,7 @@ import { BuilderProject, BuilderService } from '../builder/builder.service';
 import { DeviceFrameComponent } from '../builder/device-frame.component';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
+import { ATTACH_ACCEPT, AttachmentService, AttachmentsComponent, FileAttachment, attachmentProblem, fileSize } from '../../shared/attachments/attachments';
 
 interface MilestoneRow {
   title: string;
@@ -32,7 +33,7 @@ function round2(n: number): number {
 @Component({
   selector: 'app-hire-project-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, CurrencyPipe, FormsModule, TPipe, DeviceFrameComponent],
+  imports: [RouterLink, DatePipe, CurrencyPipe, FormsModule, TPipe, DeviceFrameComponent, AttachmentsComponent],
   templateUrl: './hire-project-detail.component.html',
   styleUrl: './hire-project-detail.component.scss',
 })
@@ -64,6 +65,12 @@ export class HireProjectDetailComponent implements OnInit {
   demoBuilderId = '';
   demoUrl = '';
   demoNote = '';
+  readonly fileAccept = ATTACH_ACCEPT;
+  readonly size = fileSize;
+  readonly msgFiles = signal<FileAttachment[]>([]);
+  readonly demoFiles = signal<FileAttachment[]>([]);
+  readonly uploading = signal(0);
+  private readonly attach = inject(AttachmentService);
   revisionNote = '';
   showRevision = false;
   terminateReason: HireTerminateReason = 'not_as_requested';
@@ -182,8 +189,44 @@ export class HireProjectDetailComponent implements OnInit {
   sendMessage(): void {
     const p = this.project();
     const body = this.msgBody.trim();
-    if (!p || !body) return;
-    this.run(this.hire.message(p.id, body), () => (this.msgBody = ''));
+    const files = this.msgFiles();
+    if (!p || (!body && !files.length) || this.uploading()) return;
+    this.run(this.hire.message(p.id, body, undefined, files.map((a) => a.id)), () => {
+      this.msgBody = '';
+      this.msgFiles.set([]);
+    });
+  }
+
+  /** Upload picked files into the project's private storage; target = message or deliverable. */
+  pickFiles(ev: Event, target: 'msg' | 'demo'): void {
+    const p = this.project();
+    const input = ev.target as HTMLInputElement;
+    const picked = Array.from(input.files || []);
+    input.value = '';
+    if (!p) return;
+    const list = target === 'msg' ? this.msgFiles : this.demoFiles;
+    for (const file of picked.slice(0, 10 - list().length)) {
+      const bad = attachmentProblem(file);
+      if (bad) {
+        this.actionError.set(`${file.name}: ${this.i18n.t(bad)}`);
+        continue;
+      }
+      this.uploading.update((n) => n + 1);
+      this.attach.upload(file, 'hire', p.id).subscribe({
+        next: (a) => {
+          list.update((l) => [...l, a]);
+          this.uploading.update((n) => n - 1);
+        },
+        error: (err) => {
+          this.actionError.set(`${file.name}: ${err?.error?.code || err?.error?.message || this.i18n.t('hire.err.generic')}`);
+          this.uploading.update((n) => n - 1);
+        },
+      });
+    }
+  }
+
+  dropFile(target: 'msg' | 'demo', id: string): void {
+    (target === 'msg' ? this.msgFiles : this.demoFiles).update((l) => l.filter((a) => a.id !== id));
   }
 
   fileComplaint(): void {
@@ -269,10 +312,12 @@ export class HireProjectDetailComponent implements OnInit {
         builderProjectId: p.demoKind ? this.demoBuilderId || undefined : undefined,
         demoUrl: this.demoUrl.trim() || undefined,
         note: this.demoNote.trim(),
+        attachmentIds: this.demoFiles().map((a) => a.id),
       }),
       () => {
         this.demoUrl = '';
         this.demoNote = '';
+        this.demoFiles.set([]);
       },
     );
   }

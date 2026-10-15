@@ -190,6 +190,9 @@
                     <p class="mt-1 whitespace-pre-line text-sm">{{ m.demoNote }}</p>
                     @if (m.demoUrl) { <a [href]="m.demoUrl" target="_blank" rel="noopener" class="text-sm">{{ m.demoUrl }}</a> }
                   }
+                  @if (m.files?.length) {
+                    <div class="hp-files"><small>{{ 'attach.deliverables' | t }}</small><app-attachments [items]="m.files" /></div>
+                  }
                   @if (m.previewUrl) {
                     <a [href]="m.previewUrl" target="_blank" rel="noopener" class="text-sm">{{ 'hire.demo.openTab' | t }}</a>
                   }
@@ -222,7 +225,17 @@
                   }
                   <label class="hp-label">{{ 'hire.demo.note' | t }}</label>
                   <textarea class="input min-h-20" [(ngModel)]="demoNote" name="demoNote" [placeholder]="'hire.demo.notePh' | t"></textarea>
-                  <button type="button" class="btn btn-fill" (click)="submitDemo()" [disabled]="busy() || (!!p.demoKind && !demoBuilderId)">{{ 'hire.demo.submit' | t }}</button>
+                  <label class="hp-label">{{ 'attach.addDeliverables' | t }}</label>
+                  <input type="file" multiple [accept]="fileAccept" (change)="pickFiles($event, 'demo')" class="hp-file-input" />
+                  @if (demoFiles().length) {
+                    <div class="hp-pending">
+                      @for (a of demoFiles(); track a.id) {
+                        <span class="hp-pending__chip">{{ a.name }} · {{ size(a.size) }} <button type="button" (click)="dropFile('demo', a.id)" [attr.aria-label]="'attach.remove' | t">×</button></span>
+                      }
+                    </div>
+                  }
+                  @if (uploading()) { <p class="text-xs text-muted">{{ 'attach.uploading' | t }}</p> }
+                  <button type="button" class="btn btn-fill" (click)="submitDemo()" [disabled]="busy() || uploading() > 0 || (!!p.demoKind && !demoBuilderId)">{{ 'hire.demo.submit' | t }}</button>
                 </div>
               }
               @if (p.role === 'seller' && m.status === 'submitted') {
@@ -316,16 +329,28 @@
             @for (m of p.messages || []; track m.id) {
               <div class="hp-msg" [class.hp-msg--me]="m.actor === p.role">
                 <small>{{ (m.actor === 'buyer' ? p.buyerName : p.sellerName) || m.actor }} · {{ m.at | date: 'dd/MM HH:mm' }}</small>
-                <p>{{ m.body }}</p>
+                @if (m.attachments?.length) { <app-attachments [items]="m.attachments" /> }
+                @if (m.body) { <p>{{ m.body }}</p> }
               </div>
             } @empty {
               <p class="text-xs text-muted">{{ 'hire.chat.empty' | t }}</p>
             }
           </div>
           @if (p.role) {
+            @if (msgFiles().length) {
+                    <div class="hp-pending">
+                      @for (a of msgFiles(); track a.id) {
+                        <span class="hp-pending__chip">{{ a.name }} · {{ size(a.size) }} <button type="button" (click)="dropFile('msg', a.id)" [attr.aria-label]="'attach.remove' | t">×</button></span>
+                      }
+                    </div>
+                  }
             <form class="hp-chat__form" (ngSubmit)="sendMessage()">
+              <input #hpf type="file" multiple hidden [accept]="fileAccept" (change)="pickFiles($event, 'msg')" />
+              <button type="button" class="hp-attach" (click)="hpf.click()" [disabled]="busy()" [attr.aria-label]="'chat.attach' | t" [title]="'chat.attach' | t">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M16.5 6.5v9a4.5 4.5 0 0 1-9 0V6a3 3 0 0 1 6 0v8.5a1.5 1.5 0 0 1-3 0V7H9v7.5a3 3 0 0 0 6 0V6a4.5 4.5 0 0 0-9 0v9.5a6 6 0 0 0 12 0v-9h-1.5Z"/></svg>
+              </button>
               <input class="input" name="msgBody" [(ngModel)]="msgBody" maxlength="4000" [placeholder]="'hire.chat.ph' | t" />
-              <button type="submit" class="btn btn-fill" [disabled]="busy() || !msgBody.trim()">{{ 'hire.chat.send' | t }}</button>
+              <button type="submit" class="btn btn-fill" [disabled]="busy() || uploading() > 0 || (!msgBody.trim() && !msgFiles().length)">{{ 'hire.chat.send' | t }}</button>
             </form>
           }
         </section>

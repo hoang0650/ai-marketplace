@@ -1473,7 +1473,7 @@ export class ChatService {
     return this.http.get<ChatMessage[]>(`${this.base}/chat/conversations/${conversationId}/messages`);
   }
 
-  send(conversationId: string, body: { body?: string; imageUrl?: string }): Observable<ChatMessage> {
+  send(conversationId: string, body: { body?: string; imageUrl?: string; attachmentIds?: string[] }): Observable<ChatMessage> {
     return this.http.post<ChatMessage>(`${this.base}/chat/conversations/${conversationId}/messages`, body);
   }
 }

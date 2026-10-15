@@ -89,3 +89,13 @@
 :host-context([data-theme='dark']) .chat-compose__send { background: #c9a961; color: #111; }
 .chat-compose__send:disabled, .chat-compose__icon:disabled { opacity: .4; cursor: not-allowed; }
 .chat-hint { margin: 0; padding: 0 1rem .55rem 4rem; font-size: .68rem; color: var(--color-muted, #888); background: var(--color-surface, #fff); }
+
+.chat-pending { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 14px 0; border-top: 1px solid var(--border, rgba(127,127,127,.2)); }
+.chat-pending__chip { display: inline-flex; align-items: center; gap: 6px; max-width: 260px; padding: 4px 6px 4px 4px; border-radius: 10px;
+  background: color-mix(in srgb, currentColor 8%, transparent); font-size: 12px; }
+.chat-pending__chip img, .chat-pending__chip b { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; flex: none; display: grid; place-items: center;
+  background: #6366f1; color: #fff; font-size: 9px; text-transform: uppercase; }
+.chat-pending__chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-pending__chip button { border: 0; background: none; color: inherit; cursor: pointer; font-size: 16px; line-height: 1; opacity: .7; }
+.chat-pending__chip--busy { padding: 8px 10px; opacity: .8; }
+.chat-bubble app-attachments { margin-bottom: 4px; }

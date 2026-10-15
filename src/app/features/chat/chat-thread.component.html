@@ -30,6 +30,7 @@
           @if (r.m.kind === 'image' && r.m.imageUrl) {
             <a [href]="r.m.imageUrl" target="_blank" rel="noopener"><img [src]="r.m.imageUrl" alt="" /></a>
           }
+          @if (r.m.attachments?.length) { <app-attachments [items]="r.m.attachments" /> }
           @if (r.m.body) { <p>{{ r.m.body }}</p> }
           @if (r.last) { <time>{{ r.m.createdAt | date: 'HH:mm' }}</time> }
         </div>
@@ -38,10 +39,22 @@
       }
     </div>
 
+    @if (pending().length || uploading()) {
+      <div class="chat-pending">
+        @for (a of pending(); track a.id) {
+          <span class="chat-pending__chip">
+            @if (a.kind === 'image') { <img [src]="a.url" alt="" /> } @else { <b>{{ a.name.split('.').pop() }}</b> }
+            <span>{{ a.name }} · {{ size(a.size) }}</span>
+            <button type="button" (click)="removePending(a.id)" [attr.aria-label]="'attach.remove' | t">×</button>
+          </span>
+        }
+        @if (uploading()) { <span class="chat-pending__chip chat-pending__chip--busy">{{ 'attach.uploading' | t }}</span> }
+      </div>
+    }
     <form class="chat-compose" (submit)="send($event)">
-      <input #file type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onFile($event)" />
+      <input #file type="file" [accept]="accept" multiple hidden (change)="onFile($event)" />
       <button type="button" class="chat-compose__icon" (click)="file.click()" [disabled]="busy()" [attr.aria-label]="'chat.attach' | t" [title]="'chat.attach' | t">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M19 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 12H5V7h14v10Zm-4.5-6.5L11 15l-2-2.5L6 16h12l-3.5-5.5ZM8.5 10.5A1.5 1.5 0 1 0 8.5 7.5a1.5 1.5 0 0 0 0 3Z"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M16.5 6.5v9a4.5 4.5 0 0 1-9 0V6a3 3 0 0 1 6 0v8.5a1.5 1.5 0 0 1-3 0V7H9v7.5a3 3 0 0 0 6 0V6a4.5 4.5 0 0 0-9 0v9.5a6 6 0 0 0 12 0v-9h-1.5Z"/></svg>
       </button>
       <textarea
         [(ngModel)]="draft"
