@@ -39,6 +39,7 @@ export class LoginComponent {
   password = '';
   showPassword = false;
   readonly error = signal('');
+  readonly notice = signal('');
   readonly loading = signal(false);
 
   constructor() {
@@ -50,6 +51,7 @@ export class LoginComponent {
       return;
     }
     const q = this.route.snapshot.queryParamMap;
+    if (q.get('reset') === '1') this.notice.set(this.i18n.t('auth.resetDone'));
     if (q.get('google') === 'error') {
       this.error.set(q.get('message') || this.i18n.t('auth.googleFail'));
     }

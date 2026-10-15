@@ -64,6 +64,13 @@
           </div>
         </div>
 
+        <p class="auth-page__foot" style="margin:0;text-align:right">
+          <a routerLink="/auth/forgot-password" [queryParams]="email ? { email } : {}">{{ 'auth.forgot' | t }}</a>
+        </p>
+
+        @if (notice()) {
+          <div class="auth-alert" role="status" style="background:#ecfdf5;color:#065f46;border-color:#a7f3d0">{{ notice() }}</div>
+        }
         @if (error()) {
           <div class="auth-alert" role="alert">{{ error() }}</div>
         }

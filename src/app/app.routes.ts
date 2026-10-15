@@ -497,6 +497,14 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/auth.components').then((m) => m.LoginComponent),
       },
       {
+        path: 'auth/forgot-password',
+        loadComponent: () => import('./features/auth/password-reset.components').then((m) => m.ForgotPasswordComponent),
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () => import('./features/auth/password-reset.components').then((m) => m.ResetPasswordComponent),
+      },
+      {
         path: 'auth/google/callback',
         loadComponent: () =>
           import('./features/auth/google-auth-callback.component').then((m) => m.GoogleAuthCallbackComponent),
