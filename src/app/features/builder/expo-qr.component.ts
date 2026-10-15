@@ -51,7 +51,7 @@ export interface ExpoSnackInfo {
           <p class="eq__sdk">
             {{ 'builder.expo.sdk' | t: { v: major(info()!.sdkVersion!) } }}
             @if (info()!.retargeted) {
-              {{ 'builder.expo.retargeted' | t: { from: major(info()!.templateSdk!) } }}
+              {{ 'builder.expo.retargeted' | t: { from: major(info()!.templateSdk!), v: major(info()!.sdkVersion!) } }}
             }
           </p>
         }
