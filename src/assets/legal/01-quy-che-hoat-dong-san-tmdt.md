@@ -1,24 +1,26 @@
 # QUY CHẾ HOẠT ĐỘNG SÀN GIAO DỊCH THƯƠNG MẠI ĐIỆN TỬ AI MARKETS
 
-**Website:** https://aimarkets.vn · Ứng dụng di động “AI Markets” (iOS, Android)  
-**Đơn vị chủ quản:** Công ty TNHH giải pháp công nghệ PHGroup  
-**MST:** 3703279135  
-**Ngày hiệu lực:** 05/10/2026  
-**Phiên bản:** 2.1
+> CÔNG TY TNHH GIẢI PHÁP · CÔNG NGHỆ PHGROUP · CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM · Độc lập – Tự do – Hạnh phúc · Số: 01/2026/QC-PHGROUP · Bình Dương, ngày …… tháng …… năm 2026
 
----
+**(https://aimarkets.vn và ứng dụng di động “AI Markets”)**
 
 ## I. NGUYÊN TẮC CHUNG
 
 ### 1. Thông tin về nền tảng và đơn vị chủ quản
 
-- Tên nền tảng: AI Markets – sàn giao dịch thương mại điện tử.
-- Website: https://aimarkets.vn; ứng dụng di động “AI Markets” (iOS, Android).
-- Đơn vị chủ quản, vận hành: Công ty TNHH giải pháp công nghệ PHGroup.
-- Mã số thuế: 3703279135.
-- Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam.
-- Điện thoại (hotline): 0931 881 584.
-- Email: support@aimarkets.vn.
+- Tên nền tảng: **AI Markets** – sàn giao dịch thương mại điện tử.
+
+- Website: https://aimarkets.vn; ứng dụng di động “AI Markets” (iOS, Android).
+
+- Đơn vị chủ quản, vận hành: **Công ty TNHH giải pháp công nghệ PHGroup**.
+
+- Mã số thuế: 3703279135.
+
+- Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam.
+
+- Điện thoại (hotline): 0931 881 584.
+
+- Email: support@aimarkets.vn.
 
 Nội dung Quy chế này thống nhất với Đề án cung cấp dịch vụ sàn giao dịch thương mại điện tử nộp Bộ Công Thương.
 
@@ -26,18 +28,23 @@ Nội dung Quy chế này thống nhất với Đề án cung cấp dịch vụ 
 
 Quy chế này được xây dựng theo:
 
-- Luật Thương mại điện tử số 122/2025/QH15;
-- Nghị định số 248/2026/NĐ-CP;
-- Luật Bảo vệ quyền lợi người tiêu dùng số 19/2023/QH15;
-- Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15;
-- Nghị định số 356/2025/NĐ-CP;
-- Các văn bản hướng dẫn có liên quan.
+- Luật Thương mại điện tử số 122/2025/QH15;
+
+- Nghị định số 248/2026/NĐ-CP;
+
+- Luật Bảo vệ quyền lợi người tiêu dùng số 19/2023/QH15;
+
+- Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15;
+
+- Nghị định số 356/2025/NĐ-CP;
+
+- Các văn bản hướng dẫn có liên quan.
 
 ### 3. Phạm vi và đối tượng áp dụng
 
-Quy chế áp dụng cho mọi tổ chức, cá nhân truy cập hoặc sử dụng AI Markets trên website và ứng dụng di động, gồm: chủ quản nền tảng, người bán, người mua và các bên cung cấp dịch vụ hỗ trợ. Website và ứng dụng dùng chung tài khoản, ví, đơn hàng, hệ thống khiếu nại và bộ chính sách này.
+Quy chế áp dụng cho mọi tổ chức, cá nhân truy cập hoặc sử dụng AI Markets trên website và ứng dụng di động, gồm: chủ quản nền tảng (ban quản trị), người bán, người mua, người giới thiệu (affiliate) và các bên cung cấp dịch vụ hỗ trợ. Website và ứng dụng dùng chung tài khoản, ví, đơn hàng, hệ thống khiếu nại và bộ chính sách này.
 
-Quy chế này hợp nhất nội dung của các văn bản: Quy chế hoạt động (phiên bản 2.1), Điều khoản sử dụng (phiên bản 2.0), Chính sách người bán (phiên bản 2.1), Chính sách người mua (phiên bản 2.0), Chính sách thanh toán và đối soát (phiên bản 2.0), Chính sách hoàn tiền và chấm dứt dịch vụ (phiên bản 2.0), Chính sách khiếu nại và giải quyết tranh chấp (phiên bản 2.0), Chính sách bảo mật và bảo vệ dữ liệu cá nhân (phiên bản 2.0), Chính sách sở hữu trí tuệ, bản quyền và giấy phép sử dụng (phiên bản 2.0), Chính sách sử dụng chấp nhận được (AUP) và danh mục cấm kinh doanh (phiên bản 2.1), Chính sách kiểm duyệt sản phẩm AI (phiên bản 2.1), Chính sách an ninh agent và container (phiên bản 2.0), Quy trình xác minh người bán (phiên bản 2.0), Quy trình xử lý vi phạm (phiên bản 2.0), Thỏa thuận cung cấp dịch vụ người bán (phiên bản v2026.10.05), Chính sách cookies và lưu trữ trên trình duyệt (phiên bản 2.0), Chính sách lưu trữ và cung cấp dữ liệu (phiên bản 2.0), Chính sách thuế (phiên bản 2.0), Chính sách hóa đơn (phiên bản 2.0). Quy chế được đọc cùng các chính sách khác được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal). Khi có mâu thuẫn, Quy chế này được ưu tiên áp dụng, trừ trường hợp pháp luật quy định khác.
+Quy chế này hợp nhất nội dung của các văn bản: Quy chế hoạt động, Điều khoản sử dụng, Chính sách người bán, Chính sách người mua, Chính sách thanh toán và đối soát, Chính sách hoàn tiền và chấm dứt dịch vụ, Chính sách khiếu nại và giải quyết tranh chấp, Chính sách bảo mật và bảo vệ dữ liệu cá nhân, Chính sách sở hữu trí tuệ, bản quyền và giấy phép sử dụng, Chính sách sử dụng chấp nhận được (AUP) và danh mục cấm kinh doanh, Chính sách kiểm duyệt sản phẩm AI, Chính sách an ninh agent và container, Quy trình xác minh người bán, Quy trình xử lý vi phạm, Thỏa thuận cung cấp dịch vụ người bán, Chính sách cookies và lưu trữ trên trình duyệt, Chính sách lưu trữ và cung cấp dữ liệu, Chính sách thuế, Chính sách hóa đơn. Quy chế được đọc cùng các chính sách khác được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal). Khi có mâu thuẫn, Quy chế này được ưu tiên áp dụng, trừ trường hợp pháp luật quy định khác.
 
 ### 4. Chấp nhận Quy chế và Điều khoản sử dụng
 
@@ -49,17 +56,27 @@ Người chưa đủ năng lực hành vi dân sự chỉ được sử dụng d
 
 Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
-- Chủ quản nền tảng (Nền tảng): Công ty TNHH giải pháp công nghệ PHGroup, vận hành AI Markets.
-- Người bán: tổ chức, hộ kinh doanh, cá nhân đã đăng ký và được xác minh, đăng bán sản phẩm, dịch vụ trên nền tảng. Khi đăng ký, người bán bắt buộc chọn một trong ba loại: cá nhân kinh doanh, hộ kinh doanh, doanh nghiệp/tổ chức, và cung cấp mã số thuế (hộ kinh doanh, doanh nghiệp/tổ chức kèm giấy chứng nhận đăng ký kinh doanh); loại người bán là căn cứ xác định mức khấu trừ thuế.
-- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán duy nhất bằng số dư ví AI Markets; người mua được rút số dư ví sau khi hoàn tất xác minh danh tính (eKYC).
-- Người giới thiệu (affiliate, người tiếp thị liên kết): người dùng đã hoàn tất xác minh danh tính (eKYC) tham gia Chương trình Affiliate, chia sẻ liên kết sản phẩm, gian hàng và nhận hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá do người bán chi trả; chỉ rút hoa hồng khi số dư hoa hồng khả dụng từ 2.000.000 đ (mỗi lần rút tối thiểu 2.000.000 đ), khấu trừ 10% thuế TNCN mỗi lần rút hoặc 0% khi có Bản cam kết Mẫu 08/CK-TNCN được duyệt. Người giới thiệu là một tư cách của tài khoản, không phải loại tài khoản riêng.
-- Ban quản trị (quản trị viên): nhân sự của Chủ quản nền tảng được phân quyền vận hành (người dùng, xác minh người bán và eKYC, kiểm duyệt, khiếu nại, tài chính). Việc xuất báo cáo thuế theo quý, dữ liệu chứng từ khấu trừ thuế TNCN và duyệt Bản cam kết Mẫu 08/CK-TNCN chỉ do quản trị viên hoặc nhân sự kế toán thuế được cấp quyền riêng thực hiện.
-- Bán bởi sàn (Platform Direct): sản phẩm, dịch vụ do chính Công ty cung cấp, được gắn nhãn “Bán bởi sàn”.
-- Bán bởi Seller: sản phẩm, dịch vụ do người bán cung cấp, ghi rõ tên cửa hàng.
-- Nhà cung cấp hạ tầng (Provider): đơn vị cung cấp máy chủ, GPU, API mô hình AI, thanh toán… cho nền tảng hoặc người bán. Provider không phải là người bán chỉ vì sản phẩm sử dụng hạ tầng của họ.
-- Chính sách sử dụng chấp nhận được (AUP): các quy định về hàng hóa, dịch vụ cấm kinh doanh và hành vi bị cấm tại Mục XV của Quy chế này.
-- Ví (ví AI Markets): số dư của người dùng trên nền tảng, được hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc Nhân dân tệ – CNY); được nạp qua các phương thức nạp tiền được công bố (chuyển khoản ngân hàng qua Mã QR VietQR vào Tài khoản thanh toán của Công ty, thanh toán trong ứng dụng); là phương thức duy nhất để thanh toán đơn hàng trên nền tảng; người mua được rút số dư sau khi hoàn tất xác minh danh tính (eKYC).
-- Mã giảm giá (voucher, coupon): khoản giảm trừ do người bán hoặc nền tảng áp dụng vào giá trị đơn hàng theo khoản 2 Mục XI.
+- **Chủ quản nền tảng (Nền tảng):** Công ty TNHH giải pháp công nghệ PHGroup, vận hành AI Markets.
+
+- **Người bán:** tổ chức, hộ kinh doanh, cá nhân đã đăng ký và được xác minh, đăng bán sản phẩm, dịch vụ trên nền tảng. Khi đăng ký, người bán bắt buộc chọn một trong ba loại: cá nhân kinh doanh, hộ kinh doanh, doanh nghiệp/tổ chức, và cung cấp mã số thuế (hộ kinh doanh, doanh nghiệp/tổ chức kèm giấy chứng nhận đăng ký kinh doanh); loại người bán là căn cứ xác định mức khấu trừ thuế.
+
+- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán duy nhất bằng số dư ví AI Markets; người mua được rút số dư ví sau khi hoàn tất xác minh danh tính (eKYC).
+
+- **Người giới thiệu (affiliate, người tiếp thị liên kết):** người dùng đã hoàn tất xác minh danh tính (eKYC) tham gia Chương trình Affiliate, chia sẻ liên kết sản phẩm, gian hàng và nhận hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá do người bán chi trả; chỉ rút hoa hồng khi số dư hoa hồng khả dụng từ 2.000.000 đ (mỗi lần rút tối thiểu 2.000.000 đ), khấu trừ 10% thuế TNCN mỗi lần rút hoặc 0% khi có Bản cam kết Mẫu 08/CK-TNCN được duyệt. Người giới thiệu là một tư cách của tài khoản, không phải loại tài khoản riêng; một tài khoản có thể đồng thời là người mua, người bán và người giới thiệu.
+
+- **Ban quản trị (quản trị viên):** nhân sự của Chủ quản nền tảng được phân quyền vận hành: quản lý người dùng, xác minh người bán và eKYC, kiểm duyệt sản phẩm, giải quyết khiếu nại, tài chính, đối soát. Việc xuất báo cáo thuế theo quý, dữ liệu chứng từ khấu trừ thuế TNCN và duyệt Bản cam kết Mẫu 08/CK-TNCN chỉ do quản trị viên hoặc nhân sự kế toán thuế được cấp quyền riêng thực hiện.
+
+- **Bán bởi sàn (Platform Direct):** sản phẩm, dịch vụ do chính Công ty cung cấp, được gắn nhãn “Bán bởi sàn”.
+
+- **Bán bởi Seller:** sản phẩm, dịch vụ do người bán cung cấp, ghi rõ tên cửa hàng.
+
+- **Nhà cung cấp hạ tầng (Provider):** đơn vị cung cấp máy chủ, GPU, API mô hình AI, thanh toán… cho nền tảng hoặc người bán. Provider **không** phải là người bán chỉ vì sản phẩm sử dụng hạ tầng của họ.
+
+- **Chính sách sử dụng chấp nhận được (AUP):** các quy định về hàng hóa, dịch vụ cấm kinh doanh và hành vi bị cấm tại Mục XV của Quy chế này.
+
+- **Ví (ví AI Markets):** số dư của người dùng trên nền tảng, được hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc Nhân dân tệ – CNY); được nạp qua các phương thức nạp tiền được công bố (chuyển khoản ngân hàng qua Mã QR VietQR vào Tài khoản thanh toán của Công ty, thanh toán trong ứng dụng); là phương thức duy nhất để thanh toán đơn hàng trên nền tảng; người mua được rút số dư sau khi hoàn tất xác minh danh tính (eKYC).
+
+- **Mã giảm giá (voucher, coupon):** khoản giảm trừ do người bán hoặc nền tảng áp dụng vào giá trị đơn hàng theo khoản 2 Mục XI.
 
 ## III. HÀNG HÓA, DỊCH VỤ VÀ MÔ HÌNH HOẠT ĐỘNG
 
@@ -67,7 +84,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 Nền tảng không kinh doanh hàng hóa hữu hình. Sản phẩm, dịch vụ được bàn giao trực tuyến (khóa API, quyền truy cập, tệp tải về, phiên máy chủ), gồm:
 
-a) Dịch vụ API trí tuệ nhân tạo (văn bản, hình ảnh, video, giọng nói), tính phí theo mức sử dụng. Các dịch vụ suy luận (API mô hình, endpoint suy luận, hạ tầng suy luận) được gộp chung vào một danh mục **“Suy luận”** trên sàn.
+a) Dịch vụ API trí tuệ nhân tạo (văn bản, hình ảnh, video, giọng nói), tính phí theo mức sử dụng. Các dịch vụ suy luận (API mô hình, endpoint suy luận, hạ tầng suy luận) được gộp chung vào một danh mục “Suy luận” trên sàn.
 
 b) Mô hình AI, AI agent, gói kỹ năng (skill pack), phần mềm, giọng đọc AI có giấy phép sử dụng. Giọng nhân bản chỉ được bán khi có văn bản đồng ý của người có giọng nói.
 
@@ -81,7 +98,7 @@ e) Dịch vụ chuyên môn trọn gói do người bán cung cấp theo kết q
 
 g) Phim AI nhiều tập và truyện/sách AI do người bán đăng tải, cấp quyền xem/đọc theo thời hạn (license key ngày/tháng/năm). Người bán chịu trách nhiệm về quyền tác giả, phân loại phim, cảnh báo độ tuổi và các nghĩa vụ khác theo pháp luật về điện ảnh, xuất bản.
 
-h) Dataset (bộ dữ liệu) do người bán đăng bán theo giấy phép sử dụng do người bán công bố; không được chứa dữ liệu cá nhân hoặc dữ liệu thu thập trái phép (khoản 1 Mục XV). Dataset, giọng đọc AI chỉ được dùng để huấn luyện, tinh chỉnh mô hình khi giấy phép đã mua cho phép mục đích huấn luyện; tại trang Huấn luyện (Training), người mua chỉ chọn được dataset/giọng đọc mình đã được cấp phép, và mô hình tạo ra phải tuân thủ phạm vi giấy phép đó.
+h) Dataset (bộ dữ liệu) do người bán đăng bán theo giấy phép sử dụng do người bán công bố; không được chứa dữ liệu cá nhân hoặc dữ liệu thu thập trái phép (khoản 1 Mục XV). Dataset, giọng đọc AI chỉ được dùng để huấn luyện, tinh chỉnh mô hình khi giấy phép đã mua cho phép mục đích huấn luyện; tại trang Huấn luyện, người mua chỉ chọn được dataset/giọng đọc mình đã được cấp phép và mô hình tạo ra phải tuân thủ phạm vi giấy phép đó.
 
 Danh mục hàng hóa, dịch vụ cấm kinh doanh trên nền tảng được quy định tại khoản 1 Mục XV của Quy chế này.
 
@@ -97,7 +114,7 @@ Người bán chịu trách nhiệm về quyền cung cấp, giấy phép, chấ
 
 ### 3. Dịch vụ và hạ tầng của bên thứ ba
 
-Một số sản phẩm sử dụng hạ tầng hoặc API của nhà cung cấp bên thứ ba (máy chủ, GPU, mô hình AI, thanh toán). Người dùng phải tuân thủ điều khoản của sản phẩm và của nhà cung cấp liên quan. Nhà cung cấp hạ tầng không mặc nhiên là bên bán trên nền tảng.
+Một số sản phẩm sử dụng hạ tầng hoặc API của nhà cung cấp bên thứ ba (máy chủ, GPU, mô hình AI, thanh toán). Người dùng phải tuân thủ điều khoản của sản phẩm và của nhà cung cấp liên quan. Nhà cung cấp hạ tầng **không** mặc nhiên là bên bán trên nền tảng.
 
 Khi người dùng kết nối agent với kênh nhắn tin (Telegram, WhatsApp, Discord, Slack…) hoặc dùng khóa API riêng (BYOK), người dùng chịu trách nhiệm với tài khoản, chi phí và nội dung phát sinh trên các dịch vụ đó.
 
@@ -121,9 +138,11 @@ d) Khóa API, khóa SSH là thông tin bí mật. Nếu bị lộ, người mua 
 
 ### 3. Hành vi không được thực hiện đối với tài khoản
 
-- Chia sẻ, mua bán tài khoản hoặc dùng để né kiểm soát;
-- Tạo tài khoản giả mạo, sử dụng thông tin của người khác;
-- Vượt qua giới hạn kỹ thuật hoặc biện pháp bảo mật.
+- Chia sẻ, mua bán tài khoản hoặc dùng để né kiểm soát;
+
+- Tạo tài khoản giả mạo, sử dụng thông tin của người khác;
+
+- Vượt qua giới hạn kỹ thuật hoặc biện pháp bảo mật.
 
 ### 4. Tài khoản người bán
 
@@ -131,75 +150,101 @@ Người bán phải hoàn tất Quy trình xác minh người bán và xác nh�
 
 ## V. QUY TRÌNH GIAO DỊCH TRÊN WEBSITE
 
-Các bước dưới đây mô tả thao tác thực tế trên website https://aimarkets.vn. Hình minh họa được chụp từ giao diện website (ngôn ngữ hiển thị tiếng Anh) bằng tài khoản thử nghiệm (giao diện tiếng Việt, cập nhật tháng 10/2026); số liệu trên hình chỉ mang tính minh họa. Quy định chi tiết áp dụng theo các Mục được dẫn chiếu của Quy chế này.
+Các bước dưới đây mô tả thao tác thực tế trên website https://aimarkets.vn. Hình minh họa được chụp từ giao diện website (ngôn ngữ hiển thị tiếng Anh) bằng tài khoản thử nghiệm; số liệu trên hình chỉ mang tính minh họa. Quy định chi tiết áp dụng theo các Mục được dẫn chiếu của Quy chế này. Hình minh họa các chức năng mới (danh mục Suy luận, dịch vụ chuyên môn theo giai đoạn, tin nhắn kèm tệp, Bảng điều khiển người mua) được chụp từ giao diện tiếng Việt, tháng 10/2026.
 
 ### 1. Quy trình dành cho Người mua
 
-![Hình 1. Trang chủ AI Markets](assets/legal/img/h01-trang-chu.jpg)
+**Bước 1:** Đăng ký, đăng nhập tài khoản. Người mua truy cập https://aimarkets.vn, chọn “Log in” (Đăng nhập) hoặc “Register” (Đăng ký); đăng nhập bằng email và mật khẩu hoặc chọn “Continue with Google” (theo Mục IV).
 
-![Hình 2. Chân trang: thông tin doanh nghiệp, liên kết chính sách](assets/legal/img/h02-chan-trang.jpg)
+![Hình 1: Trang đăng nhập, đăng ký tài khoản](assets/legal/img/qc-01.jpg)
 
-Bước 1: Đăng ký, đăng nhập tài khoản. Người mua truy cập https://aimarkets.vn, chọn “Log in” (Đăng nhập) hoặc “Register” (Đăng ký); đăng nhập bằng email và mật khẩu hoặc chọn “Continue with Google” (theo Mục IV).
+**Bước 2:** Tìm kiếm sản phẩm. Tại mục “Marketplace”, người mua lọc sản phẩm theo danh mục (Generate, APIs & Inference, Platform…), sắp xếp (Featured, Best sellers, Low price, High price, Newest) hoặc nhập từ khóa vào ô tìm kiếm. Mỗi sản phẩm ghi rõ “Sold by platform” (Bán bởi sàn) hoặc “Sold by seller – tên cửa hàng” (Bán bởi Seller) và giá theo đơn vị tính.
 
-Bước 2: Tìm kiếm sản phẩm. Tại mục “Marketplace”, người mua lọc sản phẩm theo danh mục (Generate, APIs & Inference, Platform…), sắp xếp (Featured, Best sellers, Low price, High price, Newest) hoặc nhập từ khóa vào ô tìm kiếm. Mỗi sản phẩm ghi rõ “Sold by platform” (Bán bởi sàn) hoặc “Sold by seller – tên cửa hàng” (Bán bởi Seller) và giá theo đơn vị tính. Danh mục “Suy luận” gom các dịch vụ API mô hình và hạ tầng suy luận.
+![Hình 2: Trang danh sách sản phẩm, bộ lọc danh mục và tìm kiếm](assets/legal/img/qc-02.jpg)
 
-![Hình 3. Sàn giao dịch – lọc theo danh mục](assets/legal/img/h03-san-giao-dich.jpg)
+![Hình 3: Danh mục Suy luận (gộp API mô hình và hạ tầng suy luận)](assets/legal/img/qc-03.jpg)
 
-![Hình 4. Danh mục Suy luận (gộp)](assets/legal/img/h06-danh-muc-suy-luan.jpg)
+**Bước 3:** Xem chi tiết sản phẩm. Trang sản phẩm hiển thị mô tả, đánh giá, các gói dịch vụ (package) và giá theo đơn vị tính, số lượng, thời hạn sử dụng/giấy phép (ngày/tháng/năm), khung thanh toán bằng ví AI Markets (số dư, nút nạp tiền “Top up”) và các nút “Add to cart” (Thêm vào giỏ hàng), “Chat with seller” (Trao đổi với người bán).
 
-Bước 3: Xem chi tiết sản phẩm. Trang sản phẩm hiển thị mô tả, đánh giá, các gói dịch vụ (package) và giá theo đơn vị tính, số lượng, thời hạn sử dụng/giấy phép (ngày/tháng/năm), khung thanh toán bằng ví AI Markets (số dư, nút nạp tiền “Top up”) và các nút “Add to cart” (Thêm vào giỏ hàng), “Chat with seller” (Trao đổi với người bán).
-
-![Hình 5. Chi tiết sản phẩm](assets/legal/img/h04-chi-tiet-san-pham.jpg)
+![Hình 4: Trang chi tiết sản phẩm, gói dịch vụ, giá và khung thanh toán](assets/legal/img/qc-04.jpg)
 
 Người mua có thể xem trang cửa hàng của người bán: nhãn “Verified seller” (người bán đã xác minh), số sản phẩm, lượt bán, đánh giá và chính sách cửa hàng (thanh toán qua ví AI Markets; khiếu nại, tranh chấp được giải quyết trên nền tảng, không gửi đường dẫn ra ngoài nền tảng trong tin nhắn).
 
-Bước 4: Đặt hàng và thanh toán. Người mua thêm sản phẩm vào giỏ hàng và thanh toán theo khoản 1 Mục VI. Khi thanh toán thành công, hợp đồng được giao kết, hệ thống tạo mã đơn hàng và gửi email xác nhận (khoản 1 Mục X).
+![Hình 5: Trang cửa hàng của người bán đã xác minh](assets/legal/img/qc-05.jpg)
 
-Bước 4a: Dịch vụ chuyên môn theo giai đoạn. Với gói dịch vụ chuyên môn, người mua chọn “Bắt đầu dự án”, nhập yêu cầu; hệ thống mở không gian dự án với các giai đoạn (mặc định 30% – 40% – 30%) và chưa trừ tiền. Người mua trao đổi, gửi tệp với người bán, xem bàn giao từng giai đoạn, chọn “Nghiệm thu” (ví bị trừ giá trị giai đoạn) hoặc “Yêu cầu chỉnh sửa”; có thể chấm dứt hoặc khiếu nại (khoản 6 Mục X).
+**Bước 4:** Đặt hàng và thanh toán. Người mua thêm sản phẩm vào giỏ hàng và thanh toán theo khoản 1 Mục VI. Khi thanh toán thành công, hợp đồng được giao kết, hệ thống tạo mã đơn hàng và gửi email xác nhận (khoản 1 Mục X).
 
-![Hình 6. Trang gói dịch vụ chuyên môn](assets/legal/img/h07-goi-dich-vu-chuyen-mon.jpg)
+**Bước 4a: Dịch vụ chuyên môn theo giai đoạn. Với gói dịch vụ chuyên môn (làm website, làm ứng dụng, marketing, SEO, sáng tạo nội dung, tự động hóa quy trình), người mua chọn “Bắt đầu dự án” và nhập yêu cầu; hệ thống mở không gian dự án với các giai đoạn theo tỷ lệ người bán công bố (mặc định 30% – 40% – 30%) và chưa trừ tiền. Người mua trao đổi, gửi hình ảnh, tệp với người bán; xem bàn giao từng giai đoạn và chọn “Nghiệm thu” (ví bị trừ đúng giá trị giai đoạn, khoản thực nhận của người bán được tạm giữ 48 giờ) hoặc “Yêu cầu chỉnh sửa”; có thể chấm dứt dự án hoặc khiếu nại – các giai đoạn chưa nghiệm thu bị hủy và không thu tiền (khoản 6 Mục X).**
 
-![Hình 7. Không gian dự án: các giai đoạn, trao đổi và tệp](assets/legal/img/h08-khong-gian-du-an.jpg)
+![Hình 6: Trang gói dịch vụ chuyên môn – Bắt đầu dự án](assets/legal/img/qc-06.jpg)
 
-![Hình 8. Bàn giao giai đoạn – Nghiệm thu / Yêu cầu chỉnh sửa](assets/legal/img/h09-nghiem-thu-giai-doan.jpg)
+![Hình 7: Không gian dự án: các giai đoạn 30% – 40% – 30%, trao đổi và tệp](assets/legal/img/qc-07.jpg)
 
-![Hình 9. Dự án đã chấm dứt: giai đoạn chưa nghiệm thu bị hủy, khiếu nại được tạo](assets/legal/img/h10-cham-dut-khieu-nai.jpg)
+![Hình 8: Bàn giao giai đoạn – Nghiệm thu / Yêu cầu chỉnh sửa](assets/legal/img/qc-08.jpg)
 
-Bước 5: Nhận và sử dụng dịch vụ. Sản phẩm được bàn giao trực tuyến (khóa API, quyền truy cập, tệp tải về, phiên máy chủ). Với dịch vụ theo mức sử dụng, người mua theo dõi tại trang “AI usage”: số tiền đã trừ, tổng token, token đầu vào/đầu ra, số lượt gọi và lịch sử từng lượt sử dụng (khoản 2, khoản 3 Mục X).
+![Hình 9: Dự án đã chấm dứt: giai đoạn chưa nghiệm thu bị hủy, khiếu nại được tạo](assets/legal/img/qc-09.jpg)
 
-Bước 6: Quản lý đơn hàng. Tại trang hồ sơ, người mua xem số đơn hàng, giao dịch thành công, tranh chấp, số dư ví, tổng quan mua hàng và danh sách đơn hàng gần đây (trạng thái “Đã thanh toán”), kèm nút “Khiếu nại” cho từng đơn.
+**Bước 5:** Nhận và sử dụng dịch vụ. Sản phẩm được bàn giao trực tuyến (khóa API, quyền truy cập, tệp tải về, phiên máy chủ). Với dịch vụ theo mức sử dụng, người mua theo dõi tại trang “AI usage”: số tiền đã trừ, tổng token, token đầu vào/đầu ra, số lượt gọi và lịch sử từng lượt sử dụng (khoản 2, khoản 3 Mục X).
 
-Bước 7: Khiếu nại (nếu có). Tại mục “Complaints” → “File a complaint”, người mua điền tên/tài khoản, email, loại khiếu nại (Người mua – Người bán; Người mua – Nền tảng; Người bán – Nền tảng), mã đơn hàng, sản phẩm, nội dung khiếu nại, yêu cầu xử lý và bằng chứng (mỗi dòng một đường dẫn https). Không gửi mật khẩu, khóa API hoặc thông tin bí mật không cần thiết. Hồ sơ được xử lý theo Mục XVII.
+![Hình 10: Trang theo dõi mức sử dụng và phí đã trừ vào ví](assets/legal/img/qc-10.jpg)
 
-Trong mục “Tin nhắn”, người mua và người bán có thể gửi hình ảnh (xem trước) và tệp (tải về) tối đa 25 MB/tệp theo khoản 6 Mục X.
+**Bước 6: Quản lý đơn hàng. Tại trang hồ sơ, người mua xem số đơn hàng, giao dịch thành công, tranh chấp, số dư ví, tổng quan mua hàng và danh sách đơn hàng gần đây (trạng thái “Đã thanh toán”), kèm nút “Khiếu nại” cho từng đơn. Tại “Bảng điều khiển” (menu tài khoản → Bảng điều khiển), người mua xem tập trung các thẻ: Đơn hàng (trạng thái, chi tiết và hóa đơn, nút “Khiếu nại”, “Yêu cầu hoàn tiền”), Khiếu nại (trạng thái, tiến trình xử lý, trao đổi), Hoàn tiền (số tiền, trạng thái, liên kết sổ giao dịch ví), Dự án dịch vụ, License/sản phẩm đã mua và API key.**
 
-![Hình 10. Tin nhắn kèm hình ảnh và tệp](assets/legal/img/h11-tin-nhan-tep.jpg)
+![Hình 11: Trang hồ sơ người mua: đơn hàng, tranh chấp, số dư ví](assets/legal/img/qc-11.jpg)
 
-![Hình 11. Huấn luyện mô hình với dataset/giọng đọc đã được cấp phép](assets/legal/img/h12-huan-luyen-du-lieu-co-giay-phep.jpg)
+![Hình 12: Bảng điều khiển người mua – Đơn hàng](assets/legal/img/qc-12.jpg)
 
-Bước 8: Quản lý tài khoản. Trang cài đặt gồm: hồ sơ (Profile), xác minh danh tính (eKYC – giao diện ghi chú “bắt buộc trước khi rút tiền”), lịch sử hoạt động, bảo mật (mật khẩu, phiên đăng nhập), thông báo (ngôn ngữ thông báo), tài khoản liên kết (theo khoản 2 Mục IV).
+![Hình 13: Chi tiết đơn hàng – hóa đơn, Khiếu nại, Yêu cầu hoàn tiền](assets/legal/img/qc-13.jpg)
+
+![Hình 14: Bảng điều khiển người mua – Hoàn tiền](assets/legal/img/qc-14.jpg)
+
+**Bước 7: Khiếu nại (nếu có). Tại mục “Complaints” → “File a complaint”, người mua điền tên/tài khoản, email, loại khiếu nại (Người mua – Người bán; Người mua – Nền tảng; Người bán – Nền tảng), mã đơn hàng, sản phẩm, nội dung khiếu nại, yêu cầu xử lý và bằng chứng (mỗi dòng một đường dẫn https). Không gửi mật khẩu, khóa API hoặc thông tin bí mật không cần thiết. Hồ sơ được xử lý theo Mục XVII. Trên trang chi tiết khiếu nại, người mua, người bán và Ban quản lý trao đổi trực tiếp, gửi thêm hình ảnh, tệp bằng chứng (tối đa 25 MB/tệp); trong mục “Tin nhắn” và không gian dự án, các bên cũng gửi được hình ảnh (xem trước) và tệp (tải về). Tệp được lưu riêng tư, chỉ các bên liên quan và Ban quản lý truy cập được.**
+
+![Hình 15: Biểu mẫu gửi khiếu nại](assets/legal/img/qc-15.jpg)
+
+![Hình 16: Trao đổi kèm tệp trong hồ sơ khiếu nại](assets/legal/img/qc-16.jpg)
+
+![Hình 17: Tin nhắn kèm hình ảnh và tệp](assets/legal/img/qc-17.jpg)
+
+![Hình 18: Huấn luyện mô hình với dataset/giọng đọc đã được cấp phép](assets/legal/img/qc-18.jpg)
+
+**Bước 8:** Quản lý tài khoản. Trang cài đặt gồm: hồ sơ (Profile), xác minh danh tính (eKYC – giao diện ghi chú “bắt buộc trước khi rút tiền”), lịch sử hoạt động, bảo mật (mật khẩu, phiên đăng nhập), thông báo (ngôn ngữ thông báo), tài khoản liên kết (theo khoản 2 Mục IV).
+
+![Hình 19: Trang cài đặt tài khoản](assets/legal/img/qc-19.jpg)
 
 ### 2. Quy trình dành cho Người bán
 
-Bước 1: Truy cập Kênh người bán (Seller Center). Trang tổng quan hiển thị trạng thái hồ sơ cửa hàng, xác minh danh tính (eKYC), sản phẩm, đơn hàng, tài liệu API và token, thanh toán. Menu gồm: thiết lập cửa hàng (eKYC, Seller verification, Shop profile, Images); bán hàng (Products, Web/app templates, Orders, Messages, Complaints, Coupons); tài chính (Payments, Withdraw, Ledger).
+**Bước 1:** Truy cập Kênh người bán (Seller Center). Trang tổng quan hiển thị trạng thái hồ sơ cửa hàng, xác minh danh tính (eKYC), sản phẩm, đơn hàng, tài liệu API và token, thanh toán. Menu gồm: thiết lập cửa hàng (eKYC, Seller verification, Shop profile, Images); bán hàng (Products, Web/app templates, Orders, Messages, Complaints, Coupons); tài chính (Payments, Withdraw, Ledger).
 
-Bước 2: Xác minh người bán. Tại “Seller verification”, người bán bắt buộc chọn loại người bán (Cá nhân kinh doanh, Hộ kinh doanh, Doanh nghiệp/Tổ chức) và nhập mã số thuế (MST; cá nhân có thể dùng số CCCD 12 số); nhập tên pháp lý, tên hiển thị, số đăng ký kinh doanh (ĐKKD, bắt buộc với hộ kinh doanh, doanh nghiệp/tổ chức), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII.
+![Hình 20: Trang tổng quan Kênh người bán (Seller Center)](assets/legal/img/qc-20.jpg)
 
-Bước 3: Đăng sản phẩm. Tại “Products” → “New product”, người bán nhập tên, tagline, mô tả, danh mục AI, mô hình tính giá (ví dụ theo mức sử dụng – Usage), đơn giá (hình minh họa hiển thị đơn giá bằng USD), đơn vị tính (ví dụ 1K tokens), giá gốc so sánh (nếu có), ảnh bìa, thẻ (tags) và thông tin kỹ thuật. Sản phẩm được gửi kiểm duyệt theo Mục IX và chỉ hiển thị sau khi được duyệt.
+**Bước 2:** Xác minh người bán. Tại “Seller verification”, người bán chọn loại người bán (bắt buộc: Cá nhân, Hộ kinh doanh hoặc Doanh nghiệp/Tổ chức – căn cứ xác định mức khấu trừ thuế theo khoản 3 Mục XII), nhập tên pháp lý, tên hiển thị, mã số thuế (bắt buộc; cá nhân có thể dùng số CCCD 12 số), số đăng ký kinh doanh (bắt buộc đối với hộ kinh doanh, doanh nghiệp/tổ chức), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII.
 
-Bước 4: Quản lý sản phẩm. Danh sách sản phẩm hiển thị loại, số lượt bán, đánh giá và thao tác theo từng loại (giọng đọc, tập/chương, listing, giấy phép, triển khai, mẫu website/ứng dụng).
+![Hình 21: Biểu mẫu xác minh người bán và Thỏa thuận người bán](assets/legal/img/qc-21.jpg)
 
-Bước 5: Tạo mã giảm giá (nếu có). Tại “Coupons”, người bán tạo mã cho toàn cửa hàng hoặc từng sản phẩm: mã, loại giảm giá (phần trăm), giá trị, phạm vi áp dụng, giá trị đơn tối thiểu, mức giảm tối đa, số lượt sử dụng, ngày hết hạn. Giao diện ghi: khoản giảm giá được áp dụng vào đơn hàng trước khi tính phí sàn và người bán chịu khoản giảm giá.
+**Bước 3:** Đăng sản phẩm. Tại “Products” → “New product”, người bán nhập tên, tagline, mô tả, danh mục AI, mô hình tính giá (ví dụ theo mức sử dụng – Usage), đơn giá (hình minh họa hiển thị đơn giá bằng USD), đơn vị tính (ví dụ 1K tokens), giá gốc so sánh (nếu có), ảnh bìa, thẻ (tags) và thông tin kỹ thuật. Sản phẩm được gửi kiểm duyệt theo Mục IX và chỉ hiển thị sau khi được duyệt.
 
-Bước 6: Theo dõi đơn hàng. Tại “Orders”, người bán xem mã đơn hàng, sản phẩm, người mua, số tiền, trạng thái (ví dụ “Paid” – đã thanh toán) và ngày giao dịch; cung cấp sản phẩm, dịch vụ theo cam kết.
+![Hình 22: Biểu mẫu đăng sản phẩm mới](assets/legal/img/qc-22.jpg)
 
-Bước 7: Xử lý khiếu nại. Tại “Complaints”, người bán theo dõi khiếu nại của người mua theo quy trình: tiếp nhận, xác minh, phân loại, người bán phản hồi, xem xét bằng chứng, quyết định và đóng hồ sơ; thời hạn phản hồi theo khoản 4 Mục XVII. Với dịch vụ chuyên môn theo giai đoạn, người bán bàn giao từng giai đoạn trong không gian dự án và phản hồi khiếu nại tại trang chi tiết khiếu nại.
+**Bước 4:** Quản lý sản phẩm. Danh sách sản phẩm hiển thị loại, số lượt bán, đánh giá và thao tác theo từng loại (giọng đọc, tập/chương, listing, giấy phép, triển khai, mẫu website/ứng dụng).
 
-![Hình 12. Người bán bàn giao giai đoạn](assets/legal/img/h14-nguoi-ban-ban-giao.jpg)
+![Hình 23: Danh sách sản phẩm của người bán](assets/legal/img/qc-23.jpg)
 
-![Hình 13. Người bán xem và phản hồi khiếu nại](assets/legal/img/h13-nguoi-ban-phan-hoi-khieu-nai.jpg)
+**Bước 5:** Tạo mã giảm giá (nếu có). Tại “Coupons”, người bán tạo mã cho toàn cửa hàng hoặc từng sản phẩm: mã, loại giảm giá (phần trăm), giá trị, phạm vi áp dụng, giá trị đơn tối thiểu, mức giảm tối đa, số lượt sử dụng, ngày hết hạn. Giao diện ghi: khoản giảm giá được áp dụng vào đơn hàng trước khi tính phí sàn và người bán chịu khoản giảm giá.
 
-![Hình 14. Trung tâm pháp lý trên website](assets/legal/img/h05-quy-che.jpg)
+![Hình 24: Trang tạo mã giảm giá của người bán](assets/legal/img/qc-24.jpg)
+
+**Bước 6:** Theo dõi đơn hàng. Tại “Orders”, người bán xem mã đơn hàng, sản phẩm, người mua, số tiền, trạng thái (ví dụ “Paid” – đã thanh toán) và ngày giao dịch; cung cấp sản phẩm, dịch vụ theo cam kết.
+
+![Hình 25: Danh sách đơn hàng người bán nhận được](assets/legal/img/qc-25.jpg)
+
+**Bước 7: Xử lý khiếu nại. Tại “Complaints”, người bán theo dõi khiếu nại của người mua theo quy trình: tiếp nhận, xác minh, phân loại, người bán phản hồi, xem xét bằng chứng, quyết định và đóng hồ sơ; thời hạn phản hồi theo khoản 4 Mục XVII. Với dịch vụ chuyên môn theo giai đoạn, người bán bàn giao từng giai đoạn trong không gian dự án và phản hồi khiếu nại tại trang chi tiết khiếu nại.**
+
+![Hình 26: Trang khiếu nại của người mua trong Kênh người bán](assets/legal/img/qc-26.jpg)
+
+![Hình 27: Người bán bàn giao giai đoạn trong không gian dự án](assets/legal/img/qc-27.jpg)
+
+![Hình 28: Người bán xem và phản hồi khiếu nại](assets/legal/img/qc-28.jpg)
 
 ## VI. QUY TRÌNH THANH TOÁN
 
@@ -207,29 +252,39 @@ Bước 7: Xử lý khiếu nại. Tại “Complaints”, người bán theo d�
 
 Người mua thanh toán đơn hàng thông qua ví AI Markets; nền tảng thu tiền và đối soát, chi trả cho người bán theo Mục XI. Người mua và người bán không thanh toán trực tiếp cho nhau ngoài nền tảng (khoản 10 Mục XI).
 
-Bước 1: Nạp tiền vào ví. Tại “AI Markets Wallet” → “Top up”, người mua nhập số tiền nạp bằng VND hoặc chọn mức nhanh, sau đó chuyển khoản ngân hàng bằng cách quét Mã QR VietQR vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup, ghi đúng nội dung chuyển khoản (mã nạp tiền) hiển thị trên trang. Ví được ghi có sau khi khoản chuyển khoản được đối chiếu với giao dịch ghi có trên Tài khoản thanh toán của Công ty; số tiền nạp được quy đổi theo tỷ giá hiển thị trên trang tại thời điểm nạp; số dư ví hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc CNY; hình minh họa hiển thị USD). Trang ví đồng thời hiển thị số dư khả dụng, lịch sử giao dịch và tổng quan theo tháng. Trên ứng dụng di động, việc nạp ví thực hiện qua Apple In-App Purchase / Google Play Billing theo khoản 4 Mục XI. Các phương thức này chỉ dùng để nạp ví; đơn hàng được thanh toán bằng số dư ví (Bước 2).
+**Bước 1:** Nạp tiền vào ví. Tại “AI Markets Wallet” → “Top up”, người mua nhập số tiền nạp bằng VND hoặc chọn mức nhanh, sau đó chuyển khoản ngân hàng bằng cách quét Mã QR VietQR vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup, ghi đúng nội dung chuyển khoản (mã nạp tiền) hiển thị trên trang. Ví được ghi có sau khi khoản chuyển khoản được đối chiếu với giao dịch ghi có trên Tài khoản thanh toán của Công ty; số tiền nạp được quy đổi theo tỷ giá hiển thị trên trang tại thời điểm nạp; số dư ví hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc CNY; hình minh họa hiển thị USD). Trang ví đồng thời hiển thị số dư khả dụng, lịch sử giao dịch và tổng quan theo tháng. Trên ứng dụng di động, việc nạp ví thực hiện qua Apple In-App Purchase / Google Play Billing theo khoản 4 Mục XI. Các phương thức này chỉ dùng để nạp ví; đơn hàng được thanh toán bằng số dư ví (Bước 2).
 
-Bước 2: Kiểm tra giỏ hàng và thanh toán. Quy trình gồm 3 bước: 1 Giỏ hàng (Cart) → 2 Thanh toán (Checkout) → 3 Hoàn tất (Done). Mỗi sản phẩm được thanh toán riêng; phim, truyện và gói kỹ năng được cấp một giấy phép cho mỗi listing, kể cả cùng cửa hàng. Khung thanh toán hiển thị tạm tính, giảm giá của người bán, giảm giá của nền tảng, ô nhập mã giảm giá và tổng đơn hàng. Phương thức thanh toán trên giao diện là ví AI Markets (“Pay with AI Markets wallet only”); người mua chọn “Pay with AI Markets wallet”. Nếu số dư không đủ, người mua nạp thêm theo Bước 1.
+![Hình 29: Trang ví AI Markets và nạp tiền vào ví](assets/legal/img/qc-29.jpg)
 
-Bước 3: Hoàn tất giao dịch. Hệ thống trừ số dư ví, tạo mã đơn hàng, lưu bản chụp giá, phí, thuế tại thời điểm giao kết và gửi email xác nhận; đơn hàng hiển thị trạng thái đã thanh toán ở trang của người mua và Kênh người bán. Doanh thu của người bán được ghi nhận và tạm giữ 48 giờ (khoản 8 Mục XI). Hoàn tiền (nếu có) thực hiện theo Mục XIII.
+**Bước 2:** Kiểm tra giỏ hàng và thanh toán. Quy trình gồm 3 bước: 1 Giỏ hàng (Cart) → 2 Thanh toán (Checkout) → 3 Hoàn tất (Done). Mỗi sản phẩm được thanh toán riêng; phim, truyện và gói kỹ năng được cấp một giấy phép cho mỗi listing, kể cả cùng cửa hàng. Khung thanh toán hiển thị tạm tính, giảm giá của người bán, giảm giá của nền tảng, ô nhập mã giảm giá và tổng đơn hàng. Phương thức thanh toán trên giao diện là ví AI Markets (“Pay with AI Markets wallet only”); người mua chọn “Pay with AI Markets wallet”. Nếu số dư không đủ, người mua nạp thêm theo Bước 1.
+
+![Hình 30: Giỏ hàng và thanh toán bằng ví AI Markets](assets/legal/img/qc-30.jpg)
+
+**Bước 3:** Hoàn tất giao dịch. Hệ thống trừ số dư ví, tạo mã đơn hàng, lưu bản chụp giá, phí, thuế tại thời điểm giao kết và gửi email xác nhận; đơn hàng hiển thị trạng thái đã thanh toán ở trang của người mua và Kênh người bán. Doanh thu của người bán được ghi nhận và tạm giữ 48 giờ (khoản 8 Mục XI). Sau khi mua thành công, người mua chọn lấy hoặc không lấy hóa đơn điện tử (mặc định không lấy) theo khoản 9 Mục XII. Hoàn tiền (nếu có) thực hiện theo Mục XIII.
 
 ### 2. Thanh toán giữa Người bán - Ban Quản lý website
 
-Nền tảng (Ban quản lý website) thu tiền của người mua, khấu trừ phí sàn 20%, thuế theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%) và chi trả phần còn lại cho người bán theo Mục XI và Mục XII.
+Nền tảng (Ban quản lý website) thu tiền của người mua, khấu trừ phí sàn 20%, thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% (5% thuế GTGT + 2% thuế TNCN) đối với sản phẩm số, dịch vụ (mức mặc định) hoặc 1,5% (1% thuế GTGT + 0,5% thuế TNCN) đối với hàng hóa vật lý; hộ kinh doanh, doanh nghiệp/tổ chức 0%) và chi trả phần còn lại cho người bán theo Mục XI và Mục XII.
 
-Bước 1: Theo dõi doanh thu và các khoản khấu trừ. Tại “Creator dashboard” → “Overview”, người bán xem doanh thu, số đơn hàng, số sản phẩm, lượng token sử dụng và các khoản: phí sàn (Commission) – giao diện ghi “Mặc định 20% giá sau giảm giá — chưa gồm thuế”; thuế khấu trừ – theo loại người bán (cá nhân kinh doanh 7% giá trị đơn, gồm 5% GTGT và 2% TNCN; hộ kinh doanh, doanh nghiệp 0%); hoàn tiền; số thực nhận (Net payable).
+**Bước 1:** Theo dõi doanh thu và các khoản khấu trừ. Tại “Creator dashboard” → “Overview”, người bán xem doanh thu, số đơn hàng, số sản phẩm, lượng token sử dụng và các khoản: phí sàn (Commission) – giao diện ghi “Mặc định 20% giá sau giảm giá — thuế tính riêng theo loại người bán”; Apple In-App Purchase/Google Play Billing chỉ dùng để nạp ví, không phát sinh phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán; thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%), tách thuế GTGT và thuế TNCN; hoàn tiền; số thực nhận (Net payable).
 
-Bước 2: Hoàn tất hồ sơ để sử dụng chức năng thanh toán. Mục “Payments” chỉ sử dụng được sau khi người bán tạo hồ sơ cửa hàng và gửi duyệt (“Create your seller profile”).
+![Hình 31: Bảng điều khiển doanh thu, phí sàn, thuế khấu trừ và thực nhận](assets/legal/img/qc-31.jpg)
 
-Bước 3: Rút tiền. Tại “Finance” → “Withdraw”, giao diện hiển thị quy tắc áp dụng: phí sàn (Platform fee) 20%, thuế (Tax) theo loại người bán (cá nhân kinh doanh 7%; hộ kinh doanh, doanh nghiệp 0%); phí sàn và thuế đã được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị là số dư ròng; thời gian tạm giữ (Hold period) 48 giờ; số dư khả dụng và số đang tạm giữ theo đơn; lịch sử ví (ghi nợ, ghi có kèm bản chụp hoa hồng, thuế). Khi người bán chưa xác minh danh tính, chức năng rút tiền bị khóa (“Identity not verified — withdrawals are locked”). Người bán nhập số tiền và chọn “Request withdrawal”; tiền được chuyển về tài khoản ngân hàng đứng tên người bán theo khoản 8 Mục XI.
+**Bước 2:** Hoàn tất hồ sơ để sử dụng chức năng thanh toán. Mục “Payments” chỉ sử dụng được sau khi người bán tạo hồ sơ cửa hàng và gửi duyệt (“Create your seller profile”).
 
-Bước 4: Đối soát. Tại “Ledger”, người bán xem sổ cái doanh thu, phí sàn và số dư để đối chiếu với lịch sử đơn hàng, rút tiền (khoản 7 Mục XI).
+![Hình 32: Yêu cầu tạo hồ sơ người bán trước khi sử dụng chức năng thanh toán](assets/legal/img/qc-32.jpg)
+
+**Bước 3:** Rút tiền. Tại “Finance” → “Withdraw”, giao diện hiển thị quy tắc áp dụng: phí sàn (Platform fee) 20%, thuế (Tax) theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%); phí sàn và thuế đã được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị là số dư ròng; thời gian tạm giữ (Hold period) 48 giờ; số dư khả dụng và số đang tạm giữ theo đơn; lịch sử ví (ghi nợ, ghi có kèm bản chụp hoa hồng, thuế). Khi người bán chưa xác minh danh tính, chức năng rút tiền bị khóa (“Identity not verified — withdrawals are locked”). Người bán nhập số tiền và chọn “Request withdrawal”; tiền được chuyển về tài khoản ngân hàng đứng tên người bán theo khoản 8 Mục XI.
+
+![Hình 33: Trang rút tiền: phí sàn, thuế, thời gian tạm giữ và lịch sử ví](assets/legal/img/qc-33.jpg)
+
+**Bước 4:** Đối soát. Tại “Ledger”, người bán xem sổ cái doanh thu, phí sàn và số dư để đối chiếu với lịch sử đơn hàng, rút tiền (khoản 7 Mục XI).
 
 ## VII. QUY ĐỊNH DÀNH CHO NGƯỜI BÁN
 
 ### 1. Điều kiện tham gia
 
-a) Có tài khoản hợp lệ, hoàn tất Quy trình xác minh người bán (Mục VIII) ở trạng thái đã xác minh trước khi sản phẩm được hiển thị và trước khi rút tiền.
+a) Có tài khoản hợp lệ, hoàn tất Quy trình xác minh người bán (Mục VIII) ở trạng thái **đã xác minh** trước khi sản phẩm được hiển thị và trước khi rút tiền.
 
 b) Đọc và đánh dấu xác nhận Chính sách người bán cùng Thỏa thuận người bán (Mục XXII); hệ thống lưu thời điểm và phiên bản xác nhận.
 
@@ -253,20 +308,28 @@ d) Nội dung do AI tạo (hình ảnh, âm thanh, video, giọng nói nhân b�
 
 ### 4. Quy định riêng theo loại sản phẩm
 
-- Mẫu website/ứng dụng: người bán cam kết có quyền sở hữu trí tuệ đối với mã nguồn; tải mã nguồn (tệp nén hoặc kho GitHub); hệ thống tự build, mẫu phải build thành công và được kiểm duyệt trước khi hiển thị, bản build lỗi không được cập nhật vào sản phẩm; demo chạy trong môi trường cách ly; người mua nhận quyền sử dụng theo giấy phép công bố, được tạo bản sao riêng để chỉnh sửa nhưng không được đăng bán lại thành mẫu mới.
-- Dịch vụ chuyên môn trọn gói: mô tả rõ phạm vi công việc, kết quả bàn giao, thời hạn và giá theo gói; tuân thủ khoản 6 Mục X.
-- Agent, image, container: khai báo và tuân thủ yêu cầu an ninh tại Mục XVI.
-- API, compute, máy chủ trò chơi: khai báo đơn giá theo đơn vị sử dụng; tích hợp qua cổng (gateway) của nền tảng để mức sử dụng được đo cho từng người mua; máy chủ trò chơi chỉ cho thuê máy, không phát hành, vận hành trò chơi.
+- **Mẫu website/ứng dụng:** người bán cam kết có quyền sở hữu trí tuệ đối với mã nguồn; tải mã nguồn (tệp nén hoặc kho GitHub); hệ thống tự build, mẫu phải build thành công và được kiểm duyệt trước khi hiển thị, bản build lỗi không được cập nhật vào sản phẩm; demo chạy trong môi trường cách ly; người mua nhận quyền sử dụng theo giấy phép công bố, được tạo bản sao riêng để chỉnh sửa nhưng không được đăng bán lại thành mẫu mới.
+
+- Dịch vụ chuyên môn trọn gói: chia gói thành các giai đoạn (mặc định 30% – 40% – 30%); bàn giao từng giai đoạn trong không gian dự án, chỉnh sửa khi người mua yêu cầu; tiền được ghi nhận khi người mua nghiệm thu từng giai đoạn và tạm giữ 48 giờ; khi người mua chấm dứt, giai đoạn chưa nghiệm thu bị hủy; mô tả rõ phạm vi công việc, kết quả bàn giao, thời hạn và giá theo gói; tuân thủ khoản 6 Mục X.
+- **Agent, image, container:** khai báo và tuân thủ yêu cầu an ninh tại Mục XVI.
+
+- **API, compute, máy chủ trò chơi:** khai báo đơn giá theo đơn vị sử dụng; tích hợp qua cổng (gateway) của nền tảng để mức sử dụng được đo cho từng người mua; máy chủ trò chơi chỉ cho thuê máy, không phát hành, vận hành trò chơi.
 
 ### 5. Hành vi bị cấm đối với người bán (người bán phải đọc trước khi mở cửa hàng)
 
-- Cung cấp thông tin giả, mạo danh, đăng ký lại sau khi bị chấm dứt;
-- Đăng sản phẩm không có quyền phân phối, vi phạm sở hữu trí tuệ, chứa mã độc hoặc cơ chế truy cập trái phép;
-- Bán giọng nhân bản hoặc nội dung deepfake khi không có sự đồng ý của người liên quan;
-- Mô tả sai sự thật, đánh giá ảo, thổi phồng số lượt bán;
-- Yêu cầu, nhận thanh toán ngoài nền tảng cho giao dịch phát sinh trên nền tảng;
-- Mạo nhận là sản phẩm “Bán bởi sàn” hoặc dùng tên nhà cung cấp hạ tầng làm danh tính người bán;
-- Các hành vi tại Mục XV của Quy chế này (Chính sách sử dụng chấp nhận được).
+- Cung cấp thông tin giả, mạo danh, đăng ký lại sau khi bị chấm dứt;
+
+- Đăng sản phẩm không có quyền phân phối, vi phạm sở hữu trí tuệ, chứa mã độc hoặc cơ chế truy cập trái phép;
+
+- Bán giọng nhân bản hoặc nội dung deepfake khi không có sự đồng ý của người liên quan;
+
+- Mô tả sai sự thật, đánh giá ảo, thổi phồng số lượt bán;
+
+- Yêu cầu, nhận thanh toán ngoài nền tảng cho giao dịch phát sinh trên nền tảng;
+
+- Mạo nhận là sản phẩm “Bán bởi sàn” hoặc dùng tên nhà cung cấp hạ tầng làm danh tính người bán;
+
+- Các hành vi tại Mục XV của Quy chế này (Chính sách sử dụng chấp nhận được).
 
 ### 6. Dữ liệu của người bán
 
@@ -278,15 +341,15 @@ Người bán có thể yêu cầu cung cấp, trích xuất dữ liệu sản p
 
 Hồ sơ xác minh được xử lý theo trình tự: Chờ xử lý → Yêu cầu bổ sung (nếu thiếu) → Đang thẩm định → Đã xác minh.
 
-Hồ sơ cũng có thể ở trạng thái: Từ chối, Tạm ngừng, Chấm dứt.
+Hồ sơ cũng có thể ở trạng thái: **Từ chối**, **Tạm ngừng**, **Chấm dứt**.
 
 ### 2. Hồ sơ xác minh
 
-Hồ sơ gồm: loại người bán (bắt buộc: Cá nhân kinh doanh, Hộ kinh doanh, Doanh nghiệp/Tổ chức) và mã số thuế (bắt buộc; cá nhân có thể dùng số CCCD); thông tin định danh (CCCD/hộ chiếu); giấy chứng nhận đăng ký kinh doanh (ĐKKD) đối với hộ kinh doanh, doanh nghiệp, tổ chức; người đại diện; địa chỉ; tài khoản nhận tiền đứng tên người bán; giấy phép đối với ngành, nghề kinh doanh có điều kiện (nếu có). Cụ thể theo loại người bán:
+Khi đăng ký, người bán bắt buộc chọn loại người bán (Cá nhân, Hộ kinh doanh, Doanh nghiệp/Tổ chức) và khai báo mã số thuế; loại người bán là căn cứ xác định mức khấu trừ thuế (khoản 3 Mục XII). Hồ sơ gồm: thông tin định danh (CCCD/hộ chiếu); giấy chứng nhận đăng ký kinh doanh (giấy phép kinh doanh) đối với hộ kinh doanh, doanh nghiệp, tổ chức và mã số thuế (bắt buộc với mọi loại người bán); người đại diện; địa chỉ; tài khoản nhận tiền đứng tên người bán; giấy phép đối với ngành, nghề kinh doanh có điều kiện (nếu có). Cụ thể theo loại người bán:
 
 | Loại người bán | Thông tin cần cung cấp |
 |---|---|
-| Cá nhân | Họ tên, loại và số giấy tờ tùy thân (CCCD/hộ chiếu), ảnh hai mặt giấy tờ, mã số thuế cá nhân, tài khoản nhận tiền đứng tên mình |
+| Cá nhân | Họ tên, loại và số giấy tờ tùy thân (CCCD/hộ chiếu), ảnh hai mặt giấy tờ, mã số thuế cá nhân (bắt buộc; có thể dùng số CCCD 12 số), tài khoản nhận tiền đứng tên mình |
 | Hộ kinh doanh | Tên hộ kinh doanh, mã số thuế, địa chỉ; Giấy chứng nhận đăng ký hộ kinh doanh (giấy phép kinh doanh) (bản chụp/bản scan); giấy tờ tùy thân của chủ hộ; tài khoản nhận tiền đứng tên hộ kinh doanh hoặc chủ hộ |
 | Doanh nghiệp, tổ chức | Tên, mã số thuế, địa chỉ của tổ chức; Giấy chứng nhận đăng ký doanh nghiệp / giấy phép kinh doanh hoặc giấy tờ thành lập tương đương (bản chụp/bản scan); giấy tờ tùy thân của người đại diện theo pháp luật; tài khoản nhận tiền đứng tên tổ chức |
 
@@ -298,10 +361,13 @@ Quản trị viên kiểm tra: tính nhất quán giữa giấy tờ, mã số t
 
 ### 4. Kết quả xác minh
 
-- Đã xác minh: người bán được hiển thị sản phẩm (sau kiểm duyệt) và rút tiền.
-- Từ chối: nêu lý do; người bán được bổ sung và gửi lại nếu phù hợp.
-- Tạm ngừng: ngừng quyền bán và rút tiền trong phạm vi quyết định.
-- Chấm dứt: không được đăng ký lại bằng cùng thông tin định danh, mã số thuế, tài khoản nhận tiền.
+- **Đã xác minh:** người bán được hiển thị sản phẩm (sau kiểm duyệt) và rút tiền.
+
+- **Từ chối:** nêu lý do; người bán được bổ sung và gửi lại nếu phù hợp.
+
+- **Tạm ngừng:** ngừng quyền bán và rút tiền trong phạm vi quyết định.
+
+- **Chấm dứt:** không được đăng ký lại bằng cùng thông tin định danh, mã số thuế, tài khoản nhận tiền.
 
 ### 5. Xác nhận chính sách
 
@@ -313,7 +379,7 @@ Nền tảng có thể yêu cầu xác minh lại khi: thay đổi thông tin ph
 
 ### 7. Xác minh danh tính (eKYC) và định danh điện tử
 
-Người bán phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán trước khi hồ sơ được phê duyệt và trước khi rút tiền; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.
+Người bán phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán **trước khi hồ sơ được phê duyệt và trước khi rút tiền**; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.
 
 ## IX. KIỂM DUYỆT SẢN PHẨM AI
 
@@ -379,21 +445,21 @@ d) Số liệu hệ thống là căn cứ tính phí, trừ trường hợp sai 
 
 ### 3. Thuê GPU và máy chủ trò chơi
 
-a) Thuê GPU: người mua nạp tiền trước, chọn cấu hình và khởi tạo máy; số dư phải đủ tối thiểu 01 giờ theo giá đang chạy. Phí tính theo phút sử dụng; phí lưu trữ ổ đĩa khi máy dừng (nếu có) được niêm yết trước. Hệ thống cảnh báo khi số dư sắp hết, tự động dừng máy khi hết số dư và xóa máy sau 24 giờ nếu người mua không nạp thêm; dữ liệu trên máy bị xóa sẽ không khôi phục được.
+a) **Thuê GPU:** người mua nạp tiền trước, chọn cấu hình và khởi tạo máy; số dư phải đủ tối thiểu 01 giờ theo giá đang chạy. Phí tính theo **phút sử dụng**; phí lưu trữ ổ đĩa khi máy dừng (nếu có) được niêm yết trước. Hệ thống cảnh báo khi số dư sắp hết, **tự động dừng máy khi hết số dư** và **xóa máy sau 24 giờ** nếu người mua không nạp thêm; dữ liệu trên máy bị xóa sẽ không khôi phục được.
 
-b) Máy chủ trò chơi / GPU streaming: số dư phải đủ tối thiểu 01 phút; phí trừ mỗi phút trong khi phiên chạy, phút lẻ cuối được làm tròn lên. Phiên tự dừng khi hết số dư hoặc khi không còn tín hiệu từ thiết bị trong 5 phút. Mỗi người mua có một phiên cho mỗi sản phẩm; chuyển thiết bị (PC ↔ điện thoại) sẽ dừng phiên cũ để không bị tính tiền hai lần.
+b) **Máy chủ trò chơi / GPU streaming:** số dư phải đủ tối thiểu 01 phút; phí trừ **mỗi phút** trong khi phiên chạy, phút lẻ cuối được làm tròn lên. Phiên tự dừng khi hết số dư hoặc khi không còn tín hiệu từ thiết bị trong 5 phút. Mỗi người mua có một phiên cho mỗi sản phẩm; chuyển thiết bị (PC ↔ điện thoại) sẽ dừng phiên cũ để không bị tính tiền hai lần.
 
 c) Người mua tự chịu trách nhiệm về phần mềm, trò chơi tự cài đặt trên máy thuê và phải có quyền sử dụng hợp pháp.
 
 ### 4. Dịch vụ AI agent (Bán bởi sàn)
 
-a) Thuê bao: 199.000 VNĐ/agent cho mỗi chu kỳ 30 ngày, hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị, trả trước từ số dư ví; thời gian gia hạn được cộng tiếp vào ngày hết hạn hiện tại. Mỗi agent có không gian làm việc riêng và đăng nhập bằng tài khoản AI Markets.
+a) **Thuê bao:199.000 VNĐ**/agent cho mỗi chu kỳ 30 ngày, hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị, trả trước từ số dư ví; thời gian gia hạn được cộng tiếp vào ngày hết hạn hiện tại. Mỗi agent có không gian làm việc riêng và đăng nhập bằng tài khoản AI Markets.
 
-b) Tự động gia hạn được bật mặc định và người mua có thể tắt bất cứ lúc nào tại trang agent. Nền tảng nhắc trước ngày hết hạn 3 ngày (thông báo và email), trừ phí gia hạn trước ngày hết hạn 1 ngày; nếu số dư không đủ, hệ thống thông báo và thử lại sau mỗi 6 giờ.
+b) **Tự động gia hạn** được bật mặc định và người mua có thể tắt bất cứ lúc nào tại trang agent. Nền tảng nhắc trước ngày hết hạn 3 ngày (thông báo và email), trừ phí gia hạn trước ngày hết hạn 1 ngày; nếu số dư không đủ, hệ thống thông báo và thử lại sau mỗi 6 giờ.
 
-c) Phí token: khi dùng mô hình do nền tảng cung cấp, sau mỗi lượt chạy hệ thống trừ phí bằng giá gốc của nhà cung cấp mô hình cộng 25% và ghi nhận số token; mô hình miễn phí không phát sinh phí token. Khi dùng khóa API của mình (BYOK), nền tảng không thu phí token; khóa được mã hóa khi lưu và chỉ dùng cho agent của chính người mua.
+c) **Phí token:** khi dùng mô hình do nền tảng cung cấp, sau mỗi lượt chạy hệ thống trừ phí bằng giá gốc của nhà cung cấp mô hình **cộng 25%** và ghi nhận số token; mô hình miễn phí không phát sinh phí token. Khi dùng khóa API của mình (**BYOK**), nền tảng không thu phí token; khóa được mã hóa khi lưu và chỉ dùng cho agent của chính người mua.
 
-d) Hết hạn: agent bị khóa (không khởi chạy, đăng nhập, cấp khóa SSH, gọi mô hình), khóa SSH đang hiệu lực bị thu hồi. Dữ liệu trong không gian agent được giữ 30 ngày kể từ ngày hết hạn, sau đó bị xóa và người mua được thông báo (chi tiết tại khoản 2 Mục XVI).
+d) **Hết hạn:** agent bị khóa (không khởi chạy, đăng nhập, cấp khóa SSH, gọi mô hình), khóa SSH đang hiệu lực bị thu hồi. Dữ liệu trong không gian agent được giữ **30 ngày** kể từ ngày hết hạn, sau đó bị xóa và người mua được thông báo (chi tiết tại khoản 2 Mục XVI).
 
 đ) Người mua chịu trách nhiệm về nội dung agent gửi qua kênh nhắn tin đã kết nối và về khóa SSH tạm thời mình tạo.
 
@@ -409,15 +475,15 @@ b) Giá được xác định theo gói hoặc theo kết quả bàn giao, khôn
 
 c) Giữa người mua với người bán và nhân sự của người bán không phát sinh quan hệ lao động. Nền tảng không tuyển dụng, không tư vấn, giới thiệu việc làm, không cung ứng hay cho thuê lại lao động; trang dịch vụ không được chứa tin tuyển dụng, vị trí việc làm, tiền lương hoặc hồ sơ xin việc.
 
-d) Thanh toán theo giai đoạn (milestone). Mỗi gói dịch vụ được chia thành các giai đoạn với tỷ lệ giá trị do người bán công bố; mặc định 3 giai đoạn 30% – 40% – 30% giá gói. Khi người mua bắt đầu dự án, hệ thống tạo không gian dự án riêng (trao đổi, tệp, bàn giao) và **chưa trừ tiền**.
+d) Thanh toán theo giai đoạn (milestone). Mỗi gói dịch vụ được chia thành các giai đoạn với tỷ lệ giá trị do người bán công bố; mặc định 3 giai đoạn 30% – 40% – 30% giá gói. Khi người mua bắt đầu dự án, hệ thống tạo không gian dự án riêng (trao đổi, tệp, bàn giao) và chưa trừ tiền.
 
-đ) Người bán bàn giao từng giai đoạn (ghi chú, tệp, bản demo). Người mua chọn **Nghiệm thu** hoặc **Yêu cầu chỉnh sửa**; người bán chỉnh sửa và bàn giao lại không giới hạn số lần trong phạm vi đã công bố. Chỉ người mua được nghiệm thu; người bán không thể tự nghiệm thu.
+đ) Người bán bàn giao từng giai đoạn (ghi chú, tệp, bản demo). Người mua chọn Nghiệm thu hoặc Yêu cầu chỉnh sửa; người bán chỉnh sửa và bàn giao lại trong phạm vi đã công bố. Chỉ người mua được nghiệm thu; người bán không thể tự nghiệm thu.
 
-e) Ví của người mua chỉ bị trừ giá trị của giai đoạn **tại thời điểm người mua nghiệm thu** giai đoạn đó; nếu số dư không đủ, việc nghiệm thu bị từ chối và không phát sinh giao dịch. Mỗi giai đoạn chỉ được thu một lần (thao tác nghiệm thu lặp lại không bị trừ tiền lần hai). Phí sàn và thuế tính trên giá trị từng giai đoạn; phần thực nhận của người bán được **tạm giữ 48 giờ** kể từ khi nghiệm thu.
+e) Ví của người mua chỉ bị trừ giá trị của giai đoạn tại thời điểm người mua nghiệm thu giai đoạn đó; nếu số dư không đủ, việc nghiệm thu bị từ chối và không phát sinh giao dịch. Mỗi giai đoạn chỉ được thu một lần. Phí sàn và thuế tính trên giá trị từng giai đoạn; phần thực nhận của người bán được tạm giữ 48 giờ kể từ khi nghiệm thu.
 
-g) Người mua có thể **chấm dứt** dự án hoặc gửi **khiếu nại** đối với giai đoạn đang thực hiện. Khi chấm dứt, các giai đoạn chưa nghiệm thu bị hủy và không bị thu tiền; các giai đoạn đã nghiệm thu không bị ảnh hưởng, trừ khi có kết luận khác khi giải quyết khiếu nại. Khiếu nại được tạo ở trạng thái chờ người bán phản hồi, hiển thị cho người mua, người bán và Ban quản lý; khoản tạm giữ liên quan được giữ nguyên đến khi có kết quả theo quy trình giải quyết khiếu nại.
+g) Người mua có thể chấm dứt dự án hoặc gửi khiếu nại đối với giai đoạn đang thực hiện. Khi chấm dứt, các giai đoạn chưa nghiệm thu bị hủy và không bị thu tiền; các giai đoạn đã nghiệm thu không bị ảnh hưởng, trừ khi có kết luận khác khi giải quyết khiếu nại. Khiếu nại được tạo ở trạng thái chờ người bán phản hồi, hiển thị cho người mua, người bán và Ban quản lý; khoản tạm giữ liên quan được giữ nguyên đến khi có kết quả.
 
-h) Trao đổi và tệp trong dự án: người mua và người bán gửi tin nhắn, hình ảnh và tệp (PDF, ZIP, DOCX, XLSX, PPTX… tối đa 25 MB/tệp, theo danh sách định dạng cho phép; tệp thực thi bị từ chối). Tệp được lưu riêng tư, chỉ người tham gia và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn; nội dung trao đổi là căn cứ khi giải quyết khiếu nại.
+h) Trao đổi và tệp trong dự án: người mua và người bán gửi tin nhắn, hình ảnh và tệp (PDF, ZIP, DOCX, XLSX, PPTX… tối đa 25 MB/tệp, theo danh sách định dạng cho phép; tệp thực thi bị từ chối). Tệp được lưu riêng tư, chỉ người tham gia và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn.
 
 i) Phí sàn, khấu trừ thuế, tạm giữ, hoàn tiền và giải quyết khiếu nại áp dụng theo Mục XI, Mục XII, Mục XIII và Mục XVII của Quy chế này, tính trên giá trị từng giai đoạn.
 
@@ -429,7 +495,7 @@ Nền tảng áp dụng hạn mức (quota), giới hạn tần suất (rate lim
 
 ### 1. Đối tác và phương thức thanh toán
 
-Mọi đơn hàng trên website và ứng dụng được thanh toán duy nhất bằng số dư ví AI Markets (“Pay with AI Markets wallet only”). Sàn TMĐT aimarkets.vn áp dụng phương thức thanh toán trực tiếp qua Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup và Ví số dư nội bộ. Chuyển khoản ngân hàng (Mã QR VietQR) và các phương thức khác dưới đây chỉ dùng để nạp tiền vào ví, không dùng để thanh toán trực tiếp đơn hàng.
+Sàn TMĐT aimarkets.vn áp dụng phương thức thanh toán trực tiếp qua Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup và Ví số dư nội bộ. Người mua chuyển khoản ngân hàng (Mã QR VietQR) hoặc dùng thanh toán trong ứng dụng theo bảng dưới đây để nạp tiền vào Ví số dư nội bộ (ví AI Markets); mọi đơn hàng trên website và ứng dụng được thanh toán duy nhất bằng số dư ví (“Pay with AI Markets wallet only”). Các phương thức nạp tiền dưới đây chỉ dùng để nạp tiền vào ví, không dùng để thanh toán trực tiếp đơn hàng.
 
 | Kênh | Đối tác | Phương thức | Mục đích |
 |---|---|---|---|
@@ -442,33 +508,33 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ### 2. Giá và mã giảm giá
 
-a) Giá sản phẩm, dịch vụ và số dư ví có thể được hiển thị bằng VNĐ, USD hoặc Nhân dân tệ (CNY) theo đơn vị tiền tệ hiển thị do người dùng lựa chọn. Khi nạp ví, số tiền nạp được quy đổi theo tỷ giá hiển thị trên trang nạp tiền tại thời điểm nạp. Giá trị nêu trong Quy chế này bằng một loại tiền được hiểu là bao gồm giá trị tương đương theo đơn vị tiền tệ hiển thị.
+a) Giá sản phẩm, dịch vụ và số dư ví có thể được hiển thị bằng **VNĐ, USD hoặc Nhân dân tệ (CNY)** theo đơn vị tiền tệ hiển thị do người dùng lựa chọn. Khi nạp ví, số tiền nạp được quy đổi theo tỷ giá hiển thị trên trang nạp tiền tại thời điểm nạp (tỷ giá quy đổi tham chiếu: 26.500 VNĐ/USD). Giá trị nêu trong Quy chế này bằng một loại tiền được hiểu là bao gồm giá trị tương đương theo đơn vị tiền tệ hiển thị.
 
-b) Giá hiển thị phải nêu rõ: loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Người mua thanh toán giá sau giảm (nếu có); phí sàn do người bán chịu và không cộng thêm vào giá của người mua.
+b) Giá hiển thị phải nêu rõ: loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Người mua thanh toán **giá sau giảm (nếu có)**; phí sàn do người bán chịu và không cộng thêm vào giá của người mua.
 
-c) Mã giảm giá (voucher): người bán có thể tạo mã giảm giá cho toàn cửa hàng hoặc từng sản phẩm theo điều kiện công bố (giá trị, phạm vi, giá trị đơn tối thiểu, mức giảm tối đa, số lượt, thời hạn). Khoản giảm giá được áp dụng vào giá trị đơn hàng trước khi tính phí sàn; khoản giảm giá do người bán phát hành do người bán chịu. Giỏ hàng có thể hiển thị khoản giảm giá của người bán và khoản giảm giá của nền tảng (“Platform discount”).
+c) **Mã giảm giá (voucher):** người bán có thể tạo mã giảm giá cho toàn cửa hàng hoặc từng sản phẩm theo điều kiện công bố (giá trị, phạm vi, giá trị đơn tối thiểu, mức giảm tối đa, số lượt, thời hạn). Khoản giảm giá được áp dụng vào giá trị đơn hàng **trước khi tính phí sàn**; khoản giảm giá do người bán phát hành **do người bán chịu**. Giỏ hàng có thể hiển thị khoản giảm giá của người bán và khoản giảm giá của nền tảng (“Platform discount”).
 
 ### 3. Ví người mua
 
 a) Người mua nạp tiền vào ví bằng chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website hoặc hệ thống thanh toán trong ứng dụng; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp, theo điểm a khoản 2 Mục này. Nền tảng thu tiền của người mua thông qua ví.
 
-b) Số dư ví là phương thức duy nhất để thanh toán đơn hàng trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
+b) Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
-c) Người mua được rút số dư ví tại mục “Withdraw” của ví sau khi hoàn tất xác minh danh tính (eKYC) bằng CCCD/hộ chiếu; khi chưa xác minh, chức năng rút tiền chưa được sử dụng. Tiền hoàn được trả về ví hoặc phương thức thanh toán ban đầu theo Mục XIII của Quy chế này.
+c) Người mua được **rút số dư ví** tại mục “Withdraw” của ví sau khi hoàn tất xác minh danh tính (eKYC) bằng CCCD/hộ chiếu; khi chưa xác minh, chức năng rút tiền chưa được sử dụng. Tiền hoàn được trả về ví hoặc phương thức thanh toán ban đầu theo Mục XIII của Quy chế này.
 
 d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát; không phải tài khoản tiền gửi hay tài khoản thanh toán, không được trả lãi.
 
 ### 4. Thanh toán trong ứng dụng
 
-Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website (xem khoản 9 Mục XII). Nền tảng không khấu trừ phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán.
+Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website (xem khoản 9, khoản 10 Mục XII). Apple In-App Purchase / Google Play Billing chỉ dùng để nạp tiền vào ví AI Markets; không có phí kho ứng dụng nào được khấu trừ trên đơn hàng hoặc từ doanh thu của người bán. Đơn hàng trên ứng dụng chịu các khoản khấu trừ như trên website: phí sàn 20% và thuế theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%).
 
 ### 5. Đơn hàng
 
-a) Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, loại người bán, thuế khấu trừ theo loại người bán, người bán tại thời điểm giao kết.
+a) Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, giảm giá (nếu có), phí sàn, loại người bán, thuế khấu trừ (thuế GTGT, thuế TNCN, căn cứ áp dụng), người bán tại thời điểm giao kết.
 
 b) Đơn hàng có các trạng thái: chờ thanh toán, đã thanh toán, đang cung cấp, hoàn tất, hoàn tiền, tranh chấp; mọi thay đổi được ghi nhật ký.
 
-c) Kết quả thanh toán được xác thực qua webhook có chữ ký; mỗi giao dịch, webhook, bút toán có khóa chống trùng để chỉ được ghi nhận một lần.
+c) Khoản chuyển khoản nạp ví được đối chiếu với giao dịch ghi có trên Tài khoản thanh toán của Công ty theo nội dung chuyển khoản (mã nạp tiền); khoản nạp trong ứng dụng được xác thực qua biên nhận của Apple/Google; mỗi giao dịch, thông báo, bút toán có khóa chống trùng để chỉ được ghi nhận một lần.
 
 ### 6. Phí và cơ chế tính giá
 
@@ -476,12 +542,13 @@ c) Kết quả thanh toán được xác thực qua webhook có chữ ký; mỗi
 |---|---|
 | Mở, duy trì tài khoản | Miễn phí |
 | Phí sàn với người bán bên thứ ba | Mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho người bán), lưu cố định tại thời điểm giao kết từng đơn. Phí sàn không phải là thuế |
+| Hoa hồng affiliate (tùy chọn) | Người bán tự nguyện đặt từ 0% đến 25% giá trị đơn hàng sau giảm giá cho từng sản phẩm hoặc toàn gian hàng (mặc định 0% = không tham gia). Hoa hồng chỉ phát sinh với đơn hàng được ghi nhận cho người giới thiệu, do người bán chi trả từ doanh thu của mình (không trừ vào phí sàn, không thay đổi thuế khấu trừ) và được lưu cố định tại thời điểm đặt hàng (chi tiết tại khoản 11 Mục này) |
 | Dịch vụ AI agent (Bán bởi sàn) | 199.000 VNĐ/agent/30 ngày (hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị); phí token khi dùng mô hình của nền tảng = giá gốc nhà cung cấp mô hình + 25%; dùng khóa API riêng (BYOK) không thu phí token |
 | Dịch vụ Bán bởi sàn khác (API, GPU, máy chủ trò chơi) | Giá niêm yết trên trang sản phẩm theo đơn vị sử dụng (token, ký tự, phút, giờ) |
-| Phí kho ứng dụng | Không áp dụng. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tiền vào ví; mọi đơn hàng (trên website và ứng dụng) được thanh toán bằng số dư ví nên không có phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán |
-| Thuế khấu trừ | Theo loại người bán, tính trên giá trị đơn hàng sau giảm giá, khấu trừ khi đơn hàng hoàn tất (chi tiết tại Mục XII): cá nhân kinh doanh 7% (5% GTGT + 2% TNCN) đối với dịch vụ, phần mềm, sản phẩm số; 1,5% (1% GTGT + 0,5% TNCN) đối với hàng hóa vật lý; hộ kinh doanh, doanh nghiệp/tổ chức 0% (tự kê khai, xuất hóa đơn) |
+| Phí kho ứng dụng | Không áp dụng đối với đơn hàng. Apple In-App Purchase / Google Play Billing chỉ dùng để nạp tiền vào ví AI Markets; đơn hàng chỉ thanh toán bằng số dư ví; không khấu trừ phí kho ứng dụng trên đơn hàng hay từ doanh thu người bán |
+| Thuế khấu trừ | Theo loại người bán, tính trên giá sau giảm giá, khấu trừ khi đơn hàng hoàn tất (chi tiết tại khoản 3 Mục XII): cá nhân kinh doanh 7% (5% GTGT + 2% TNCN) với sản phẩm số, dịch vụ hoặc 1,5% (1% GTGT + 0,5% TNCN) với hàng hóa vật lý; hộ kinh doanh, doanh nghiệp/tổ chức 0%. Tổng khấu trừ = phí sàn 20% + thuế theo loại người bán, cộng hoa hồng affiliate 0–25% nếu người bán tham gia; người bán tự chịu trách nhiệm về nghĩa vụ thuế khác theo pháp luật |
 
-Thay đổi mức phí được thông báo ít nhất 30 ngày trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
+Thay đổi mức phí được thông báo **ít nhất 30 ngày** trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
 
 ### 7. Sổ cái và đối soát
 
@@ -489,9 +556,9 @@ Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; 
 
 ### 8. Doanh thu và chi trả cho người bán
 
-a) Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%) − hoa hồng affiliate (nếu có) − hoàn tiền/điều chỉnh. Ví dụ đơn hàng 1.000.000 đồng, tỷ lệ affiliate 25%: (i) người bán là cá nhân kinh doanh — phí sàn 200.000 đồng; thuế khấu trừ 70.000 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 480.000 đồng; (ii) người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đồng; thuế 0 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 550.000 đồng. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng. Doanh thu được ghi nhận vào số dư người bán; mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
+a) **Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20% giá sau giảm giá) − thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% (5% thuế GTGT + 2% thuế TNCN) đối với sản phẩm số, dịch vụ (mức mặc định) hoặc 1,5% (1% thuế GTGT + 0,5% thuế TNCN) đối với hàng hóa vật lý; hộ kinh doanh, doanh nghiệp/tổ chức 0%; tính trên giá sau giảm giá) − hoa hồng affiliate (nếu có, 0–25% giá sau giảm giá) − hoàn tiền/điều chỉnh; không khấu trừ phí kho ứng dụng. Ví dụ đơn hàng 1.000.000 đ, hoa hồng affiliate 25%: người bán cá nhân – phí sàn 200.000 đ, thuế 70.000 đ, hoa hồng 250.000 đ, nhận 480.000 đ; người bán là hộ kinh doanh, doanh nghiệp/tổ chức – thuế 0 đ, nhận 550.000 đ.** Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là **số dư ròng**. Doanh thu được ghi nhận vào số dư người bán; mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
 
-b) Doanh thu được tạm giữ 48 giờ kể từ khi ghi nhận để giải quyết hoàn tiền, khiếu nại; khoản liên quan đến khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
+b) Doanh thu được **tạm giữ 48 giờ** kể từ khi ghi nhận để giải quyết hoàn tiền, khiếu nại; khoản liên quan đến khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
 
 c) Người bán theo dõi doanh thu, số tạm giữ, số khả dụng, thuế đã khấu trừ và lịch sử đối soát tại Kênh người bán.
 
@@ -511,46 +578,56 @@ b) Khi đối tác thanh toán hoặc kho ứng dụng thông báo bồi hoàn (
 
 Người bán và người mua không được thỏa thuận thanh toán ngoài nền tảng cho giao dịch phát sinh trên nền tảng. Giao dịch ngoài nền tảng không được hỗ trợ khiếu nại, hoàn tiền.
 
+### 11. Chương trình Affiliate (tiếp thị liên kết)
+
+a) Tham gia: người dùng đã đăng nhập và đã hoàn tất xác minh danh tính (eKYC) mới được cấp mã giới thiệu và lấy liên kết cho từng sản phẩm hoặc gian hàng; tài khoản chưa xác minh không được cấp mã, không tạo được liên kết và không được ghi nhận hoa hồng. Người bán tự nguyện tham gia bằng cách đặt tỷ lệ hoa hồng; mặc định 0% là không tham gia.
+
+b) Tỷ lệ và người chịu chi phí: người bán đặt hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá, cho từng sản phẩm hoặc làm mức mặc định của gian hàng; hệ thống từ chối mọi tỷ lệ trên 25%. Hoa hồng do người bán chi trả từ doanh thu của mình, không trừ vào phí sàn và không thay đổi thuế khấu trừ. Tỷ lệ được chốt tại thời điểm đặt hàng; thay đổi chỉ áp dụng cho đơn hàng mới.
+
+c) Công thức: doanh thu người bán = giá trị đơn sau giảm giá − phí sàn 20% − thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%) − hoa hồng affiliate. Ví dụ đơn hàng 1.000.000 đ, hoa hồng affiliate 25%: người bán cá nhân – phí sàn 200.000 đ, thuế 70.000 đ, hoa hồng 250.000 đ, nhận 480.000 đ; người bán là hộ kinh doanh, doanh nghiệp/tổ chức – thuế 0 đ, nhận 550.000 đ.
+
+d) Ghi nhận: theo nguyên tắc nhấp chuột cuối cùng (last-click) trong thời hạn 30 ngày kể từ lượt nhấp (nền tảng có thể công bố thời hạn khác); liên kết sản phẩm chỉ ghi nhận đơn của sản phẩm đó, liên kết gian hàng ghi nhận đơn của các sản phẩm tham gia thuộc gian hàng. Không ghi nhận khi người mua là người giới thiệu, hoặc người giới thiệu là người bán của sản phẩm.
+
+đ) Ghi có và rút tiền: hoa hồng được ghi có vào ví của người giới thiệu khi đơn hàng hoàn tất, tạm giữ 48 giờ như doanh thu người bán (kéo dài khi có khiếu nại), sau đó rút được về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh. Hoa hồng được ghi có đủ (chưa khấu trừ thuế). Người giới thiệu chỉ được rút khi số dư hoa hồng khả dụng từ 2.000.000 đ trở lên và mỗi lần rút tối thiểu 2.000.000 đ. Theo Luật Thuế thu nhập cá nhân, nền tảng khấu trừ thuế TNCN 10% trên mỗi lần rút hoa hồng. Người giới thiệu là cá nhân cư trú, có mã số thuế, dự kiến tổng thu nhập trong năm chưa đến mức phải nộp thuế được nộp Bản cam kết Mẫu 08/CK-TNCN tại trang Affiliate; sau khi nền tảng duyệt, nền tảng không khấu trừ đối với các lần rút trong năm tính thuế tương ứng và người giới thiệu chịu trách nhiệm về tính trung thực của cam kết. Ví dụ rút 2.500.000 đ thì khấu trừ thuế TNCN 250.000 đ, người giới thiệu thực nhận 2.250.000 đ; số dư hoa hồng 1.500.000 đ chưa được rút. Kết thúc năm, nền tảng cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu đã bị khấu trừ.
+
+e) Hoàn tiền và thu hồi: đơn hàng bị hoàn tiền hoặc hủy (toàn bộ hay một phần) thì hoa hồng tương ứng bị đảo ngược theo tỷ lệ. Nghiêm cấm thư rác, quảng cáo sai sự thật hoặc gây nhầm lẫn, đặt giá thầu từ khóa thương hiệu khi chưa được chấp thuận, đơn hàng ảo, nhồi cookie (cookie stuffing) và tự giới thiệu; khi phát hiện vi phạm, nền tảng thu hồi toàn bộ hoa hồng liên quan (kể cả khoản đã khả dụng), tạm khóa tính năng affiliate hoặc tài khoản và xử lý theo Mục XV của Quy chế này.
+
+g) Chi tiết tại Chính sách chương trình Affiliate (phiên bản 2026.10.12, hiệu lực 12/10/2026) công bố tại https://aimarkets.vn/legal/chinh-sach-affiliate.
+
 ## XII. THUẾ, HÓA ĐƠN VÀ CHỨNG TỪ
 
 ### 1. Căn cứ
 
-Việc khấu trừ, khai, nộp thuế và lập hóa đơn, chứng từ áp dụng theo pháp luật về quản lý thuế, thuế giá trị gia tăng, thuế thu nhập cá nhân, quy định về hóa đơn điện tử đang có hiệu lực , Luật Thuế thu nhập cá nhân, Nghị định số 117/2025/NĐ-CP (tổ chức quản lý nền tảng thương mại điện tử có chức năng thanh toán khấu trừ, khai, nộp thay thuế của cá nhân kinh doanh) và Thông tư số 40/2021/TT-BTC.
+Việc khấu trừ, khai, nộp thuế và lập hóa đơn, chứng từ áp dụng theo Luật Quản lý thuế số 108/2025/QH15, pháp luật về thuế giá trị gia tăng, thuế thu nhập cá nhân và các văn bản hướng dẫn đang có hiệu lực, cụ thể: (i) hóa đơn điện tử, chứng từ điện tử theo Nghị định số 254/2026/NĐ-CP và Thông tư số 91/2026/TT-BTC (có hiệu lực từ ngày 01/7/2026, thay thế Nghị định số 123/2020/NĐ-CP, Nghị định số 70/2025/NĐ-CP và Thông tư số 32/2025/TT-BTC); (ii) khấu trừ, khai, nộp thuế thay của chủ quản nền tảng thương mại điện tử đối với hộ, cá nhân kinh doanh theo điểm a khoản 4 Điều 13 Luật Quản lý thuế số 108/2025/QH15, Nghị định số 252/2026/NĐ-CP (thay thế Nghị định số 117/2025/NĐ-CP từ ngày 01/7/2026) và Thông tư số 18/2026/TT-BTC (thay thế Thông tư số 40/2021/TT-BTC). Khi các văn bản này được sửa đổi, bổ sung hoặc thay thế, nền tảng áp dụng văn bản mới.
 
 ### 2. Phí sàn không phải thuế
 
-Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, không phải thuế giá trị gia tăng hay thuế thu nhập của người bán. Nền tảng không khấu trừ phí Google Play / App Store trên đơn hàng (Apple IAP và Google Play Billing chỉ dùng để nạp ví).
+Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán bên thứ ba) là phí dịch vụ của nền tảng, **không phải** thuế giá trị gia tăng hay thuế thu nhập của người bán. Apple In-App Purchase / Google Play Billing chỉ dùng để nạp ví; nền tảng không khấu trừ phí kho ứng dụng trên đơn hàng hay từ doanh thu người bán.
 
 ### 3. Khấu trừ thuế
 
-a) Mức khấu trừ phụ thuộc loại người bán đã khai báo và loại sản phẩm, tính trên giá trị đơn hàng sau giảm giá tại thời điểm đơn hàng hoàn tất:
+a) Nền tảng khấu trừ, khai, nộp thay thuế theo loại người bán đã khai báo, tính trên giá trị từng đơn hàng sau giảm giá tại thời điểm đơn hàng hoàn tất, theo Nghị định số 252/2026/NĐ-CP và Thông tư số 18/2026/TT-BTC:
 
-| Loại người bán | Nền tảng khấu trừ, nộp thay | Nghĩa vụ của người bán |
-|---|---|---|
-| Cá nhân kinh doanh — dịch vụ, phần mềm, sản phẩm số (mặc định trên AI Markets) | **7%** giá trị đơn hàng sau giảm giá (5% GTGT + 2% TNCN) | Không phải tự khai đối với doanh thu đã được khấu trừ |
-| Cá nhân kinh doanh — hàng hóa vật lý (nếu có danh mục) | **1,5%** (1% GTGT + 0,5% TNCN) | Như trên |
-| Hộ kinh doanh | **0%** (không khấu trừ) | Tự kê khai, nộp thuế và xuất hóa đơn |
-| Doanh nghiệp/Tổ chức | **0%** (không khấu trừ) | Tự kê khai, nộp thuế, xuất hóa đơn; nhận hóa đơn GTGT (10%) của nền tảng cho phí sàn 20% |
+- Cá nhân kinh doanh: 7% (5% thuế GTGT + 2% thuế TNCN) đối với sản phẩm số, dịch vụ – mức mặc định; 1,5% (1% thuế GTGT + 0,5% thuế TNCN) đối với hàng hóa vật lý.
+- Hộ kinh doanh: 0% – nền tảng không khấu trừ; hộ kinh doanh tự kê khai, nộp thuế theo quy định.
+- Doanh nghiệp/Tổ chức: 0% – nền tảng không khấu trừ; nền tảng lập hóa đơn GTGT thuế suất 10% đối với phí sàn 20%.
+- Ngưỡng doanh thu: đơn hàng của cá nhân kinh doanh không bị khấu trừ khi tổng doanh thu trên nền tảng trong năm dương lịch (kể cả đơn hàng đó) không vượt ngưỡng doanh thu không chịu thuế (mặc định 100.000.000 đ/năm, điều chỉnh theo quy định hiện hành); khi chưa xác định được doanh thu lũy kế, nền tảng khấu trừ.
 
-Cá nhân kinh doanh có tổng doanh thu trên nền tảng trong năm dương lịch (tính cả đơn hàng) không vượt ngưỡng không chịu thuế 100.000.000 đồng/năm thì nền tảng không khấu trừ; ngưỡng được cấu hình và điều chỉnh theo quy định pháp luật hiện hành.
+b) Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế theo loại người bán, tính trên giá sau giảm giá; không khấu trừ phí kho ứng dụng. Với đơn hàng được ghi nhận cho người giới thiệu, người bán chịu thêm hoa hồng affiliate theo tỷ lệ mình đã đặt (0–25%); hoa hồng không làm giảm phí sàn và thuế khấu trừ. Ví dụ đơn hàng 1.000.000 đ, hoa hồng affiliate 25%: người bán cá nhân – phí sàn 200.000 đ, thuế 70.000 đ, hoa hồng 250.000 đ, nhận 480.000 đ; người bán là hộ kinh doanh, doanh nghiệp/tổ chức – thuế 0 đ, nhận 550.000 đ. Số dư hiển thị của người bán là số dư ròng sau khấu trừ.
 
-b) Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế theo loại người bán (cá nhân kinh doanh 7%: tổng 27%; hộ kinh doanh, doanh nghiệp/tổ chức: 20%), không có phí kho ứng dụng. Số dư hiển thị của người bán là số dư ròng sau khấu trừ. Ví dụ đơn hàng 1.000.000 đồng, tỷ lệ affiliate 25%: (i) người bán là cá nhân kinh doanh — phí sàn 200.000 đồng; thuế khấu trừ 70.000 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 480.000 đồng; (ii) người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đồng; thuế 0 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 550.000 đồng.
-
-c) Số thuế đã khấu trừ (tách GTGT, TNCN) được hiển thị trên đối soát từng đơn hàng tại Kênh người bán. Nền tảng lập và nộp báo cáo theo quý (trong tháng 1, 4, 7, 10) cho cơ quan thuế về doanh thu của cá nhân kinh doanh, hộ kinh doanh trên nền tảng và số thuế đã khấu trừ, nộp thay (bao gồm thuế TNCN đã khấu trừ của người giới thiệu affiliate); cuối năm, nền tảng cấp chứng từ khấu trừ thuế TNCN cho cá nhân đã bị khấu trừ.
-
-d) Thu nhập của người giới thiệu (affiliate): nền tảng khấu trừ **10% thuế TNCN trên mỗi lần rút hoa hồng** (Luật Thuế TNCN; Thông tư 111/2013/TT-BTC). Hoa hồng được ghi có đủ (chưa khấu trừ thuế); người giới thiệu chỉ rút được khi số dư hoa hồng khả dụng từ **2.000.000 đồng** trở lên và mỗi lần rút tối thiểu 2.000.000 đồng. Người giới thiệu chỉ có thu nhập thuộc diện khấu trừ nhưng ước tính tổng thu nhập chịu thuế trong năm sau giảm trừ gia cảnh chưa đến mức phải nộp thuế được tải lên **Cam kết Mẫu 08/CK-TNCN** (Thông tư 80/2021/TT-BTC) tại trang Affiliate; sau khi nền tảng duyệt, không khấu trừ đối với các lần rút trong năm cam kết. Ví dụ: rút 2.500.000 đồng — thuế TNCN 250.000 đồng, thực nhận 2.250.000 đồng.
+c) Số thuế đã khấu trừ (tách thuế GTGT, thuế TNCN) được hiển thị trên đối soát từng đơn hàng tại Kênh người bán. Nền tảng khai, nộp số thuế đã khấu trừ theo quý (nộp hồ sơ trong tháng 1, 4, 7 và 10) kèm bảng kê doanh thu của người bán cá nhân, hộ kinh doanh và số thuế TNCN đã khấu trừ của người giới thiệu; kết thúc năm, nền tảng cấp chứng từ khấu trừ thuế TNCN cho người bán cá nhân và người giới thiệu đã bị khấu trừ.
 
 ### 4. Nghĩa vụ thuế khác của người bán
 
-Việc nền tảng khấu trừ, nộp thay đối với cá nhân kinh doanh không thay thế các nghĩa vụ thuế khác của người bán. Hộ kinh doanh, doanh nghiệp, tổ chức tự kê khai, nộp thuế; mọi người bán tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và xuất hóa đơn theo quy định của pháp luật.
+Việc nền tảng khấu trừ, nộp thay thuế (nếu có) không thay thế các nghĩa vụ thuế khác của người bán. Người bán (bao gồm doanh nghiệp, tổ chức) tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và lập hóa đơn cho người mua theo khoản 8, khoản 9 Mục này.
 
 ### 5. Hồ sơ thuế của người bán
 
-Người bán bắt buộc khai báo loại người bán (Cá nhân kinh doanh, Hộ kinh doanh, Doanh nghiệp/Tổ chức) và mã số thuế khi đăng ký, kèm giấy tờ CCCD / ĐKKD qua eKYC, và tình trạng cư trú tại Kênh người bán. Hồ sơ được xác minh (theo Mục VIII) và lưu theo phiên bản; người bán phải cập nhật khi có thay đổi. Thông tin sai lệch có thể dẫn đến việc áp dụng mức khấu trừ không phù hợp và người bán chịu trách nhiệm về hậu quả.
+Người bán bắt buộc khai báo loại hình (cá nhân, hộ kinh doanh, doanh nghiệp/tổ chức), mã số thuế và tình trạng cư trú tại Kênh người bán. Hồ sơ được xác minh (theo Mục VIII) và lưu theo phiên bản; người bán phải cập nhật khi có thay đổi. Thông tin sai lệch có thể dẫn đến việc áp dụng mức khấu trừ không phù hợp và người bán chịu trách nhiệm về hậu quả.
 
 ### 6. Tách khoản trên đối soát và sản phẩm Bán bởi sàn
 
-a) Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; giảm giá (nếu có); loại người bán; thuế khấu trừ (GTGT, TNCN) theo loại người bán; hoàn tiền, điều chỉnh; doanh thu người bán (cách tính tại khoản 8 Mục XI).
+a) Mỗi đơn hàng ghi nhận riêng: giá trị đơn hàng; phí sàn; giảm giá (nếu có); loại người bán và thuế khấu trừ (thuế GTGT, thuế TNCN, căn cứ áp dụng); hoàn tiền, điều chỉnh; doanh thu người bán (cách tính tại khoản 8 Mục XI).
 
 b) Doanh thu từ sản phẩm “Bán bởi sàn” (API, GPU, máy chủ trò chơi, dịch vụ AI agent) thuộc Công ty và được kê khai, nộp thuế theo chế độ của Công ty.
 
@@ -558,19 +635,39 @@ b) Doanh thu từ sản phẩm “Bán bởi sàn” (API, GPU, máy chủ trò 
 
 Khi pháp luật về thuế thay đổi, mức khấu trừ mới áp dụng cho giao dịch phát sinh từ ngày quy định mới có hiệu lực. Đơn hàng đã giao kết giữ nguyên bản chụp thuế tại thời điểm giao kết.
 
-### 8. Nguyên tắc và chủ thể xuất hóa đơn
+### 8. Nguyên tắc và chủ thể lập hóa đơn
 
-Nền tảng không phải là bên bán đối với mọi giao dịch, vì vậy hóa đơn được xuất theo đúng chủ thể cung cấp hàng hóa, dịch vụ và theo quy định về hóa đơn điện tử đang có hiệu lực.
+Mỗi đơn hàng được lập hóa đơn điện tử bởi bên bán của đơn hàng đó (Điều 26 Luật Quản lý thuế số 108/2025/QH15; Nghị định số 254/2026/NĐ-CP). Đối với sản phẩm “Bán bởi Seller”, nền tảng là bên trung gian và không lập hóa đơn bán sản phẩm của người bán, trừ trường hợp được người bán ủy nhiệm theo điểm d khoản này:
 
-a) Hóa đơn của nền tảng: Công ty xuất hóa đơn đối với sản phẩm, dịch vụ “Bán bởi sàn” (API, GPU, máy chủ trò chơi, thuê bao và phí token AI agent) cho người mua; và phí dịch vụ sàn cho người bán.
+a) **Hóa đơn của nền tảng:** Công ty lập hóa đơn điện tử đối với sản phẩm, dịch vụ do Công ty trực tiếp cung cấp, gồm: (i) sản phẩm, dịch vụ “Bán bởi sàn” (API, GPU, máy chủ trò chơi, phí sử dụng trừ dần và thuê bao AI agent 199.000 VNĐ/agent/30 ngày) cho người mua, theo lựa chọn của người mua tại khoản 9 Mục này; (ii) phí dịch vụ sàn (20%) và các phí dịch vụ khác cho người bán, lập theo kỳ đối soát, chậm nhất ngày 07 của tháng sau tháng phát sinh (điểm a khoản 4 Điều 9 Nghị định số 254/2026/NĐ-CP); người bán là doanh nghiệp/tổ chức nhận hóa đơn GTGT thuế suất 10%; (iii) khoản nạp ví: tiền nạp bằng chuyển khoản ngân hàng là khoản người mua trả trước, ghi nhận vào số dư ví; Công ty lập hóa đơn cho phần số dư được dùng để thanh toán sản phẩm, dịch vụ “Bán bởi sàn” tại thời điểm quy định tại Điều 9 Nghị định số 254/2026/NĐ-CP; phần số dư dùng thanh toán đơn hàng “Bán bởi Seller” là khoản Công ty thu hộ và do người bán lập hóa đơn; khoản nạp qua Apple In-App Purchase / Google Play Billing có biên nhận do Apple/Google phát hành.
 
-b) Hóa đơn của người bán: đối với sản phẩm “Bán bởi Seller”, người bán là doanh nghiệp, tổ chức xuất hóa đơn cho người mua theo quy định. Hộ kinh doanh tự xuất hóa đơn theo quy định. Đối với người bán là cá nhân kinh doanh mà nền tảng đã khấu trừ, nộp thay thuế, việc lập chứng từ thực hiện theo Nghị định số 117/2025/NĐ-CP. Nền tảng xuất hóa đơn GTGT (10%) cho phí dịch vụ sàn đối với người bán là doanh nghiệp, tổ chức.
+b) **Hóa đơn của người bán là doanh nghiệp/tổ chức, hộ kinh doanh:** đối với sản phẩm “Bán bởi Seller”, người bán tự lập hóa đơn điện tử (hóa đơn GTGT hoặc hóa đơn bán hàng theo phương pháp tính thuế của mình) cho từng đơn hàng và gửi cho người mua. Người bán phải đăng ký sử dụng hóa đơn điện tử với cơ quan thuế trước khi bán trên nền tảng, lập hóa đơn đúng thời điểm quy định tại Điều 9 Nghị định số 254/2026/NĐ-CP, đúng thông tin người mua đã khai theo khoản 9 Mục này, và cập nhật số, ký hiệu hóa đơn, đường dẫn tra cứu tại Kênh người bán để người mua tải về.
 
-### 9. Chứng từ giao dịch và giao dịch trong ứng dụng
+c) **Hóa đơn của người bán là cá nhân kinh doanh được nền tảng khấu trừ, nộp thay thuế:** việc nền tảng khấu trừ, khai, nộp thay thuế theo khoản 3 Mục này là nghĩa vụ thuế, không thay thế hóa đơn. Cá nhân kinh doanh có doanh thu năm trên 01 tỷ đồng phải sử dụng hóa đơn điện tử có mã của cơ quan thuế hoặc hóa đơn điện tử khởi tạo từ máy tính tiền và lập hóa đơn cho người mua như điểm b khoản này (điểm d khoản 1 Điều 6 Nghị định số 254/2026/NĐ-CP); cá nhân kinh doanh không thuộc diện bắt buộc được đăng ký sử dụng hóa đơn điện tử có mã của cơ quan thuế. Việc cơ quan thuế cấp hóa đơn điện tử theo từng lần phát sinh chỉ áp dụng cho các trường hợp quy định tại khoản 2 Điều 6 Nghị định số 254/2026/NĐ-CP (như người bán đã ngừng, tạm ngừng kinh doanh hoặc bị cưỡng chế ngừng sử dụng hóa đơn), không phải phương thức lập hóa đơn thường xuyên cho đơn hàng trên nền tảng. Gian hàng của cá nhân kinh doanh chưa đăng ký sử dụng hóa đơn điện tử hiển thị nhãn “Người bán không lập hóa đơn” trên trang sản phẩm và tại bước thanh toán; với các đơn hàng này, người mua nhận chứng từ giao dịch của nền tảng (không phải hóa đơn) và lựa chọn tại khoản 9 Mục này không áp dụng. Nền tảng cấp chứng từ khấu trừ thuế cho người bán theo điểm c khoản 3 Mục này.
 
-a) Người mua xem, tải chứng từ giao dịch tại trang đơn hàng. Người mua cần hóa đơn có thông tin doanh nghiệp gửi tên, mã số thuế, địa chỉ và mã đơn hàng tới support@aimarkets.vn.
+d) **Ủy nhiệm lập hóa đơn:** người bán có thể ủy nhiệm Công ty lập hóa đơn điện tử cho đơn hàng trên nền tảng theo khoản 5 Điều 4 Nghị định số 254/2026/NĐ-CP và Điều 9 Thông tư số 91/2026/TT-BTC: việc ủy nhiệm được lập thành thỏa thuận bằng văn bản; người bán cung cấp tên, địa chỉ, mã số thuế và thông tin đăng ký sử dụng hóa đơn; Công ty thông báo với cơ quan thuế theo Mẫu số 01/ĐKTĐ-HĐĐT; hóa đơn thể hiện tên, địa chỉ, mã số thuế của người bán (bên ủy nhiệm) và của Công ty (bên nhận ủy nhiệm); việc ủy nhiệm được niêm yết trên gian hàng. Người bán vẫn chịu trách nhiệm về nghĩa vụ thuế đối với doanh thu trên hóa đơn ủy nhiệm.
 
-b) Với khoản nạp ví qua Apple In-App Purchase / Google Play Billing, biên nhận thanh toán do Apple/Google phát hành; hóa đơn đối với sản phẩm trên nền tảng được xử lý như giao dịch trên website.
+đ) **Cung cấp thông tin để lập hóa đơn:** nền tảng cung cấp cho người bán tại Kênh người bán thông tin người mua đã khai theo khoản 9 Mục này, thông tin giao dịch, thời điểm bàn giao và trạng thái hoàn tất đơn hàng để người bán lập hóa đơn (điểm c khoản 1 Điều 17 và khoản 2 Điều 19 Nghị định số 254/2026/NĐ-CP); người bán chỉ sử dụng thông tin này để lập hóa đơn và thực hiện đơn hàng.
+
+### 9. Lựa chọn lấy hóa đơn của người mua
+
+a) **Lựa chọn:** sau khi mua thành công, tại trang xác nhận đơn hàng và trang chi tiết đơn hàng, người mua (cá nhân hoặc tổ chức) chọn “Lấy hóa đơn điện tử” hoặc “Không lấy hóa đơn”; mặc định là “Không lấy hóa đơn”. Lựa chọn áp dụng cho từng đơn hàng; người mua có thể chọn trước tại bước thanh toán hoặc lưu thông tin xuất hóa đơn mặc định trong tài khoản.
+
+b) **Người mua là tổ chức:** cung cấp tên tổ chức, mã số thuế, địa chỉ (đúng theo thông tin đăng ký doanh nghiệp, đăng ký thuế) và email nhận hóa đơn.
+
+c) **Người mua là cá nhân:** cung cấp họ và tên, địa chỉ và mã số thuế cá nhân hoặc số định danh cá nhân (số CCCD) nếu có; hóa đơn được gửi tới email tài khoản hoặc email người mua chỉ định.
+
+d) **Khi người mua không lấy hóa đơn:** bên bán (người bán có hóa đơn điện tử hoặc Công ty) vẫn lập hóa đơn điện tử cho đơn hàng; do người mua không cung cấp tên, địa chỉ, số định danh cá nhân, tiêu thức người mua trên hóa đơn ghi “Bán cho người tiêu dùng” theo điểm b khoản 4 Phụ lục ban hành kèm theo Nghị định số 254/2026/NĐ-CP. Hóa đơn không có thông tin người mua không dùng được để tổ chức, hộ kinh doanh, cá nhân kinh doanh hạch toán chi phí hoặc quyết toán thuế; người mua cần hóa đơn cho mục đích này phải chọn “Lấy hóa đơn điện tử”.
+
+đ) **Thay đổi lựa chọn:** người mua được thay đổi lựa chọn và sửa thông tin xuất hóa đơn tại trang chi tiết đơn hàng khi đơn hàng còn ở trạng thái “Chờ lập hóa đơn”, cho đến khi chuyển sang “Đã lập hóa đơn”; thời điểm lập hóa đơn do bên bán thực hiện theo Điều 9 Nghị định số 254/2026/NĐ-CP. Sau khi hóa đơn đã lập, lựa chọn không thay đổi được; trường hợp thông tin trên hóa đơn có sai sót, bên bán điều chỉnh hoặc thay thế hóa đơn theo quy định về xử lý hóa đơn điện tử có sai sót tại Nghị định số 254/2026/NĐ-CP và Thông tư số 91/2026/TT-BTC.
+
+e) **Trách nhiệm về thông tin:** người mua chịu trách nhiệm về tính chính xác của thông tin đã cung cấp để lập hóa đơn; nền tảng chỉ sử dụng thông tin này để lập, gửi, lưu trữ hóa đơn và xử lý theo Mục XVIII. Người mua tra cứu, tải hóa đơn (tệp XML/PDF hoặc đường dẫn tra cứu) tại trang chi tiết đơn hàng và qua email.
+
+### 10. Chứng từ giao dịch và giao dịch trong ứng dụng
+
+a) Người mua xem, tải chứng từ giao dịch (xác nhận đơn hàng) và hóa đơn điện tử (nếu đã lập) tại trang đơn hàng. Thông tin xuất hóa đơn được cung cấp trực tuyến theo khoản 9 Mục này; khi cần hỗ trợ, người mua liên hệ support@aimarkets.vn kèm mã đơn hàng.
+
+b) Với khoản nạp ví qua Apple In-App Purchase / Google Play Billing, biên nhận thanh toán do Apple/Google phát hành; hóa đơn đối với sản phẩm trên nền tảng (kể cả lựa chọn lấy hóa đơn theo khoản 9 Mục này) được xử lý như giao dịch trên website.
 
 ## XIII. HOÀN TIỀN VÀ CHẤM DỨT DỊCH VỤ
 
@@ -582,12 +679,17 @@ Sản phẩm trên AI Markets là hàng hóa số và dịch vụ trực tuyến
 
 Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử dụng) khi:
 
-- Bị tính tiền sai hoặc bị trừ tiền trùng;
-- Đã thanh toán nhưng không nhận được sản phẩm, dịch vụ;
-- Sản phẩm không đúng mô tả, không sử dụng được, hoặc dịch vụ gián đoạn kéo dài do lỗi của nền tảng hay người bán;
-- Người bán không thực hiện dịch vụ theo cam kết;
-- Có quyết định giải quyết khiếu nại nghiêng về người mua;
-- Pháp luật yêu cầu hoàn tiền.
+- Bị tính tiền sai hoặc bị trừ tiền trùng;
+
+- Đã thanh toán nhưng không nhận được sản phẩm, dịch vụ;
+
+- Sản phẩm không đúng mô tả, không sử dụng được, hoặc dịch vụ gián đoạn kéo dài do lỗi của nền tảng hay người bán;
+
+- Người bán không thực hiện dịch vụ theo cam kết;
+
+- Có quyết định giải quyết khiếu nại nghiêng về người mua;
+
+- Pháp luật yêu cầu hoàn tiền.
 
 Khi sản phẩm không đúng nội dung đã công bố, người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử dụng) hoặc được cung cấp lại dịch vụ; quyền truy cập liên quan bị thu hồi, khoản tiền tương ứng của người bán bị khấu trừ.
 
@@ -599,12 +701,12 @@ Khi sản phẩm không đúng nội dung đã công bố, người mua được
 | API, token (theo mức sử dụng) | Phần đã sử dụng không được hoàn, trừ trường hợp tính sai hoặc lỗi dịch vụ được xác minh. |
 | Thuê GPU, máy chủ trò chơi (theo phút) | Phút đã sử dụng không được hoàn, trừ thời gian máy không hoạt động do lỗi của nền tảng hoặc tính sai được xác minh. |
 | Thuê bao AI agent (199.000 VNĐ/30 ngày hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị) | Phí của chu kỳ đang hiệu lực không hoàn theo tỷ lệ khi người mua tự ngừng sử dụng; tắt tự động gia hạn để không bị trừ phí chu kỳ sau. Được hoàn khi agent không khả dụng do lỗi của nền tảng hoặc bị trừ phí sai. Phí token đã phát sinh không hoàn, trừ trường hợp tính sai. |
-| Dịch vụ chuyên môn trọn gói | Chỉ giai đoạn đã nghiệm thu bị thu tiền; giai đoạn chưa nghiệm thu bị hủy khi chấm dứt và không thu. Hoàn đối với giai đoạn đã nghiệm thu khi khiếu nại được chấp nhận (kết quả không đúng mô tả và không khắc phục được). Hoàn khi người bán không bàn giao kết quả hoặc kết quả không đúng mô tả đã công bố và không khắc phục được trong thời hạn giải quyết khiếu nại. |
+| Dịch vụ chuyên môn trọn gói | Chỉ giai đoạn đã nghiệm thu bị thu tiền; giai đoạn chưa nghiệm thu bị hủy khi chấm dứt và không thu. Hoàn khi người bán không bàn giao kết quả hoặc kết quả không đúng mô tả đã công bố và không khắc phục được trong thời hạn giải quyết khiếu nại. |
 | Khoản nạp ví qua Apple In-App Purchase / Google Play Billing | Một số yêu cầu hoàn tiền phải gửi qua Apple/Google theo chính sách của họ. Khi kho ứng dụng hoàn tiền, số dư ví hoặc quyền lợi tương ứng bị thu hồi. |
 
 ### 4. Thời hạn yêu cầu hoàn tiền
 
-a) Người mua nên gửi yêu cầu trong 48 giờ kể từ khi giao dịch, để khoản tiền của người bán được tạm giữ trong lúc xem xét.
+a) Người mua nên gửi yêu cầu trong **48 giờ** kể từ khi giao dịch, để khoản tiền của người bán được tạm giữ trong lúc xem xét.
 
 b) Yêu cầu gửi sau thời hạn trên vẫn được tiếp nhận; việc hoàn tiền căn cứ kết quả xác minh theo khoản 2, khoản 3 Mục này.
 
@@ -612,11 +714,11 @@ b) Yêu cầu gửi sau thời hạn trên vẫn được tiếp nhận; việc 
 
 a) Người mua gửi yêu cầu hoàn tiền hoặc khiếu nại tại trang đơn hàng hoặc https://aimarkets.vn/complaints/new.
 
-b) Nền tảng xác nhận tiếp nhận trong 24 giờ, xác minh đơn hàng, thanh toán, mức sử dụng; lấy ý kiến người bán nếu cần.
+b) Nền tảng xác nhận tiếp nhận trong **24 giờ**, xác minh đơn hàng, thanh toán, mức sử dụng; lấy ý kiến người bán nếu cần.
 
-c) Nền tảng ra quyết định trong 07 ngày làm việc kể từ khi nhận đủ hồ sơ, theo Mục XVII của Quy chế này.
+c) Nền tảng ra quyết định trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ, theo Mục XVII của Quy chế này.
 
-d) Khi được chấp thuận, tiền được hoàn ngay vào ví; trường hợp hoàn về phương thức thanh toán ban đầu, thời gian nhận tiền phụ thuộc đối tác thanh toán hoặc kho ứng dụng.
+d) Khi được chấp thuận, tiền được hoàn ngay vào ví; trường hợp hoàn về phương thức thanh toán ban đầu, thời gian nhận tiền phụ thuộc ngân hàng hoặc kho ứng dụng.
 
 ### 6. Nơi nhận tiền hoàn
 
@@ -654,28 +756,31 @@ c) Nội dung do AI tạo phải được gắn nhãn theo Luật Trí tuệ nh�
 
 ### 4. Nội dung không được đăng
 
-- Mô hình, phần mềm, mẫu website/ứng dụng không có quyền phân phối hoặc sao chép trái phép;
-- Nội dung xâm phạm quyền riêng tư, quyền tác giả, nhãn hiệu;
-- Phần mềm, image chứa mã độc;
-- Nội dung giả mạo quyền sở hữu.
+- Mô hình, phần mềm, mẫu website/ứng dụng không có quyền phân phối hoặc sao chép trái phép;
+
+- Nội dung xâm phạm quyền riêng tư, quyền tác giả, nhãn hiệu;
+
+- Phần mềm, image chứa mã độc;
+
+- Nội dung giả mạo quyền sở hữu.
 
 ### 5. Thông báo vi phạm
 
-Chủ thể quyền gửi thông báo tới support@aimarkets.vn, gồm: thông tin người yêu cầu; đối tượng được bảo hộ và căn cứ quyền; đường dẫn hoặc mã sản phẩm; mô tả hành vi vi phạm; bằng chứng; thông tin liên hệ.
+Chủ thể quyền gửi thông báo tới **support@aimarkets.vn**, gồm: thông tin người yêu cầu; đối tượng được bảo hộ và căn cứ quyền; đường dẫn hoặc mã sản phẩm; mô tả hành vi vi phạm; bằng chứng; thông tin liên hệ.
 
 ### 6. Xử lý vi phạm sở hữu trí tuệ
 
-Nền tảng có thể yêu cầu người bán giải trình, tạm ẩn sản phẩm, yêu cầu sửa thông tin, gỡ nội dung, hạn chế tài khoản và phối hợp với cơ quan có thẩm quyền. Người bán được thông báo và có quyền phản hồi, yêu cầu xem xét lại theo Mục XV của Quy chế này. Gỡ bỏ trong 24 giờ khi có yêu cầu của cơ quan nhà nước có thẩm quyền.
+Nền tảng có thể yêu cầu người bán giải trình, tạm ẩn sản phẩm, yêu cầu sửa thông tin, gỡ nội dung, hạn chế tài khoản và phối hợp với cơ quan có thẩm quyền. Người bán được thông báo và có quyền phản hồi, yêu cầu xem xét lại theo Mục XV của Quy chế này. Gỡ bỏ trong **24 giờ** khi có yêu cầu của cơ quan nhà nước có thẩm quyền.
 
 ### 7. Giấy phép của người mua
 
-a) Việc mua quyền sử dụng mô hình, agent, phần mềm, mẫu website/ứng dụng, API hoặc giọng đọc AI không chuyển quyền sở hữu trí tuệ cho người mua; việc thanh toán không tự động chuyển quyền sở hữu trí tuệ, trừ khi có thỏa thuận chuyển nhượng rõ ràng.
+a) Việc mua quyền sử dụng mô hình, agent, phần mềm, mẫu website/ứng dụng, API hoặc giọng đọc AI **không** chuyển quyền sở hữu trí tuệ cho người mua; việc thanh toán không tự động chuyển quyền sở hữu trí tuệ, trừ khi có thỏa thuận chuyển nhượng rõ ràng.
 
-b) Người mua chỉ nhận quyền sử dụng theo giấy phép của từng sản phẩm. Mỗi sản phẩm cấp một khóa giấy phép riêng; khóa của sản phẩm này không dùng cho sản phẩm khác, kể cả cùng cửa hàng.
+b) Người mua chỉ nhận quyền sử dụng theo giấy phép của **từng sản phẩm**. Mỗi sản phẩm cấp một khóa giấy phép riêng; khóa của sản phẩm này không dùng cho sản phẩm khác, kể cả cùng cửa hàng.
 
-c) Mẫu website/ứng dụng: người mua được tạo bản sao riêng để chỉnh sửa và triển khai cho mục đích của mình; bản sao lưu thông tin mẫu gốc và người bán; không được đăng bán lại thành mẫu mới.
+c) **Mẫu website/ứng dụng:** người mua được tạo bản sao riêng để chỉnh sửa và triển khai cho mục đích của mình; bản sao lưu thông tin mẫu gốc và người bán; không được đăng bán lại thành mẫu mới.
 
-d) Kết quả dịch vụ chuyên môn trọn gói: quyền đối với kết quả bàn giao theo điều kiện người bán công bố trên trang dịch vụ hoặc thỏa thuận giữa người mua và người bán.
+d) **Kết quả dịch vụ chuyên môn trọn gói:** quyền đối với kết quả bàn giao theo điều kiện người bán công bố trên trang dịch vụ hoặc thỏa thuận giữa người mua và người bán.
 
 ### 8. Tài sản của nền tảng
 
@@ -687,33 +792,41 @@ Mục này (Chính sách sử dụng chấp nhận được – AUP) áp dụng 
 
 ### 1. Hàng hóa, dịch vụ cấm kinh doanh trên nền tảng
 
-- Hàng hóa, dịch vụ thuộc danh mục cấm kinh doanh theo pháp luật Việt Nam;
-- Nội dung chống phá Nhà nước, kích động bạo lực, khủng bố, phân biệt đối xử, xâm hại trẻ em, đồi trụy;
-- Trò chơi có thưởng, cờ bạc, cá cược và dịch vụ phát hành, vận hành trò chơi điện tử trên mạng chưa được cấp phép;
-- Dữ liệu cá nhân, cơ sở dữ liệu chứa dữ liệu cá nhân, tài khoản, thông tin xác thực bị đánh cắp;
-- Phần mềm, công cụ, agent có mục đích tấn công, gian lận hoặc vượt qua biện pháp bảo vệ;
-- Deepfake, giọng nhân bản, hình ảnh người thật khi không có sự đồng ý của người đó;
-- Sản phẩm vi phạm quyền sở hữu trí tuệ;
-- Hàng hóa, dịch vụ thuộc ngành, nghề kinh doanh có điều kiện khi chưa có giấy phép tương ứng;
-- Phim, truyện/sách vi phạm Luật Điện ảnh, Luật Xuất bản (nội dung bị cấm, không phân loại phim, thiếu cảnh báo độ tuổi).
+- Hàng hóa, dịch vụ thuộc danh mục cấm kinh doanh theo pháp luật Việt Nam;
+
+- Nội dung chống phá Nhà nước, kích động bạo lực, khủng bố, phân biệt đối xử, xâm hại trẻ em, đồi trụy;
+
+- Trò chơi có thưởng, cờ bạc, cá cược và dịch vụ phát hành, vận hành trò chơi điện tử trên mạng chưa được cấp phép;
+
+- Dữ liệu cá nhân, cơ sở dữ liệu chứa dữ liệu cá nhân, tài khoản, thông tin xác thực bị đánh cắp;
+
+- Phần mềm, công cụ, agent có mục đích tấn công, gian lận hoặc vượt qua biện pháp bảo vệ;
+
+- Deepfake, giọng nhân bản, hình ảnh người thật khi không có sự đồng ý của người đó;
+
+- Sản phẩm vi phạm quyền sở hữu trí tuệ;
+
+- Hàng hóa, dịch vụ thuộc ngành, nghề kinh doanh có điều kiện khi chưa có giấy phép tương ứng;
+
+- Phim, truyện/sách vi phạm Luật Điện ảnh, Luật Xuất bản (nội dung bị cấm, không phân loại phim, thiếu cảnh báo độ tuổi).
 
 ### 2. Hành vi bị cấm
 
 Cấm sử dụng nền tảng để: xâm nhập trái phép; phát tán mã độc; đánh cắp thông tin xác thực; gian lận, lừa đảo; khai thác trái phép tài nguyên; vi phạm quyền sở hữu trí tuệ; thu thập, mua bán dữ liệu cá nhân trái phép; tạo deepfake hoặc giọng nhân bản khi không có sự đồng ý; triển khai agent có hành vi độc hại; thanh toán ngoài nền tảng cho giao dịch phát sinh trên nền tảng; hoặc vi phạm pháp luật Việt Nam. Cụ thể:
 
-a) Tấn công và xâm nhập: mã độc, mã độc tống tiền, đánh cắp thông tin xác thực, lừa đảo trực tuyến (phishing), truy cập trái phép, tấn công từ chối dịch vụ, khai thác lỗ hổng trái phép, duy trì truy cập trái phép.
+a) **Tấn công và xâm nhập:** mã độc, mã độc tống tiền, đánh cắp thông tin xác thực, lừa đảo trực tuyến (phishing), truy cập trái phép, tấn công từ chối dịch vụ, khai thác lỗ hổng trái phép, duy trì truy cập trái phép.
 
-b) Gian lận: lừa đảo; giả mạo danh tính; spam; lạm dụng thanh toán, né bồi hoàn; tạo giao dịch, đánh giá, lượt bán giả; thanh toán ngoài nền tảng cho giao dịch phát sinh trên nền tảng.
+b) **Gian lận:** lừa đảo; giả mạo danh tính; spam; lạm dụng thanh toán, né bồi hoàn; tạo giao dịch, đánh giá, lượt bán giả; thanh toán ngoài nền tảng cho giao dịch phát sinh trên nền tảng.
 
-c) Lạm dụng hạ tầng: đào tiền mã hóa trái phép; lạm dụng proxy; botnet; quét Internet trái phép; vượt hạn mức hoặc né giới hạn số phiên; ảnh hưởng tới người dùng khác.
+c) **Lạm dụng hạ tầng:** đào tiền mã hóa trái phép; lạm dụng proxy; botnet; quét Internet trái phép; vượt hạn mức hoặc né giới hạn số phiên; ảnh hưởng tới người dùng khác.
 
-d) Sở hữu trí tuệ và dữ liệu: phân phối nội dung không có quyền; thu thập, mua bán, xử lý dữ liệu cá nhân trái phép hoặc vượt phạm vi được phép.
+d) **Sở hữu trí tuệ và dữ liệu:** phân phối nội dung không có quyền; thu thập, mua bán, xử lý dữ liệu cá nhân trái phép hoặc vượt phạm vi được phép.
 
-đ) AI agent và kênh nhắn tin: không triển khai agent có mục đích chính là đánh cắp thông tin xác thực, tự động tấn công, phát tán mã độc, né kiểm soát bảo mật, phá hoại hệ thống. Người dùng kết nối agent với Telegram, WhatsApp, Discord, Slack… chịu trách nhiệm về nội dung agent gửi đi; không dùng agent để gửi tin nhắn rác, quấy rối hay mạo danh.
+đ) **AI agent và kênh nhắn tin:** không triển khai agent có mục đích chính là đánh cắp thông tin xác thực, tự động tấn công, phát tán mã độc, né kiểm soát bảo mật, phá hoại hệ thống. Người dùng kết nối agent với Telegram, WhatsApp, Discord, Slack… chịu trách nhiệm về nội dung agent gửi đi; không dùng agent để gửi tin nhắn rác, quấy rối hay mạo danh.
 
-e) Nội dung do AI tạo: không dùng dịch vụ để tạo, phát tán nội dung vi phạm pháp luật, tin giả, nội dung mạo danh người thật. Nội dung do AI tạo phải được gắn nhãn khi pháp luật yêu cầu.
+e) **Nội dung do AI tạo:** không dùng dịch vụ để tạo, phát tán nội dung vi phạm pháp luật, tin giả, nội dung mạo danh người thật. Nội dung do AI tạo phải được gắn nhãn khi pháp luật yêu cầu.
 
-g) Tuyển dụng, cung ứng lao động: không sử dụng nền tảng để đăng tin tuyển dụng, tìm việc làm, tuyển người làm việc theo hợp đồng lao động, tư vấn, giới thiệu việc làm, cung ứng hoặc cho thuê lại lao động, thu thập hoặc cung cấp hồ sơ xin việc, thông tin thị trường lao động.
+g) **Tuyển dụng, cung ứng lao động:** không sử dụng nền tảng để đăng tin tuyển dụng, tìm việc làm, tuyển người làm việc theo hợp đồng lao động, tư vấn, giới thiệu việc làm, cung ứng hoặc cho thuê lại lao động, thu thập hoặc cung cấp hồ sơ xin việc, thông tin thị trường lao động.
 
 ### 3. Mức độ vi phạm và biện pháp xử lý
 
@@ -732,7 +845,7 @@ Người bán có thể bị cảnh báo, tạm ẩn sản phẩm, tạm ngừng
 
 Phát hiện → Thu thập bằng chứng → Phân loại mức độ → Biện pháp tạm thời (nếu cần) → Thông báo cho người vi phạm → Người vi phạm phản hồi → Quyết định → Thực hiện → Ghi nhật ký.
 
-Người bán được thông báo lý do và có thời hạn phản hồi được nêu trong thông báo (tối thiểu 02 ngày làm việc, trừ trường hợp khẩn cấp).
+Người bán được thông báo lý do và có thời hạn phản hồi được nêu trong thông báo (tối thiểu **02 ngày làm việc**, trừ trường hợp khẩn cấp).
 
 ### 5. Trường hợp khẩn cấp
 
@@ -740,7 +853,7 @@ Khi có nguy cơ an ninh nghiêm trọng – mã độc, đánh cắp thông tin
 
 ### 6. Yêu cầu của cơ quan nhà nước
 
-Nền tảng gỡ bỏ thông tin vi phạm và tạm ngừng cung cấp dịch vụ cho người bán vi phạm trong 24 giờ kể từ khi nhận yêu cầu của cơ quan nhà nước có thẩm quyền.
+Nền tảng gỡ bỏ thông tin vi phạm và tạm ngừng cung cấp dịch vụ cho người bán vi phạm trong **24 giờ** kể từ khi nhận yêu cầu của cơ quan nhà nước có thẩm quyền.
 
 ### 7. Ngăn chặn tái phạm
 
@@ -748,7 +861,7 @@ Người bán bị chấm dứt không được đăng ký lại bằng cùng th
 
 ### 8. Yêu cầu xem xét lại
 
-Mọi quyết định được thông báo lý do. Người vi phạm có thể yêu cầu xem xét lại trong 07 ngày kể từ khi nhận quyết định, kèm lý do, bằng chứng và biện pháp khắc phục. Nền tảng trả lời trong 07 ngày làm việc.
+Mọi quyết định được thông báo lý do. Người vi phạm có thể yêu cầu xem xét lại trong **07 ngày** kể từ khi nhận quyết định, kèm lý do, bằng chứng và biện pháp khắc phục. Nền tảng trả lời trong **07 ngày làm việc**.
 
 ### 9. Nhật ký xử lý
 
@@ -812,11 +925,13 @@ e) Xử lý theo Quy trình xử lý vi phạm tại Mục XV.
 
 ### 1. Kênh tiếp nhận
 
-- Biểu mẫu trực tuyến: https://aimarkets.vn/complaints/new (website) hoặc mục Khiếu nại trong ứng dụng;
-- Email: support@aimarkets.vn;
-- Hotline: 0931 881 584.
+- **Biểu mẫu trực tuyến:** https://aimarkets.vn/complaints/new (website) hoặc mục Khiếu nại trong ứng dụng;
 
-Mỗi hồ sơ có mã, trạng thái, bằng chứng đính kèm và lịch sử xử lý; người khiếu nại theo dõi tại https://aimarkets.vn/complaints.
+- **Email:** support@aimarkets.vn;
+
+- **Hotline:** 0931 881 584.
+
+Mỗi hồ sơ có mã, trạng thái, bằng chứng đính kèm và lịch sử xử lý; người khiếu nại theo dõi tại https://aimarkets.vn/complaints. Trên trang hồ sơ, người khiếu nại, người bán và Ban quản lý trao đổi và gửi thêm hình ảnh, tệp bằng chứng (tối đa 25 MB/tệp, lưu trữ riêng tư); người mua theo dõi tập trung tại Bảng điều khiển → Khiếu nại.
 
 ### 2. Nội dung hồ sơ khiếu nại
 
@@ -826,9 +941,11 @@ Không gửi mật khẩu, khóa API, khóa SSH, khóa bí mật hoặc dữ li�
 
 ### 3. Phân loại khiếu nại
 
-- Người mua – người bán;
-- Người mua – nền tảng (sản phẩm “Bán bởi sàn”, thanh toán, tài khoản);
-- Người bán – nền tảng (kiểm duyệt, xử lý vi phạm, đối soát, chi trả).
+- Người mua – người bán;
+
+- Người mua – nền tảng (sản phẩm “Bán bởi sàn”, thanh toán, tài khoản);
+
+- Người bán – nền tảng (kiểm duyệt, xử lý vi phạm, đối soát, chi trả).
 
 ### 4. Quy trình và thời hạn giải quyết
 
@@ -859,7 +976,7 @@ Nền tảng hỗ trợ giải quyết tranh chấp giữa người mua và ngư
 
 ### 7. Yêu cầu xem xét lại
 
-Các bên có quyền yêu cầu xem xét lại trong 07 ngày kể từ khi nhận quyết định, kèm lý do và bằng chứng mới. Nền tảng trả lời trong 07 ngày làm việc. Các bên vẫn có quyền đưa tranh chấp ra cơ quan, tổ chức có thẩm quyền (hòa giải, trọng tài, tòa án) theo pháp luật Việt Nam.
+Các bên có quyền yêu cầu xem xét lại trong **07 ngày** kể từ khi nhận quyết định, kèm lý do và bằng chứng mới. Nền tảng trả lời trong **07 ngày làm việc**. Các bên vẫn có quyền đưa tranh chấp ra cơ quan, tổ chức có thẩm quyền (hòa giải, trọng tài, tòa án) theo pháp luật Việt Nam.
 
 ### 8. Lưu hồ sơ
 
@@ -912,16 +1029,19 @@ c) Người dùng chỉ đưa dữ liệu cá nhân của người khác vào AI
 
 Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
 
-- Người bán: thông tin cần để thực hiện đơn hàng với người mua;
-- Đối tác thanh toán: ngân hàng nơi Công ty mở Tài khoản thanh toán, Apple, Google;
-- Nhà cung cấp hạ tầng: máy chủ ứng dụng, máy chủ cơ sở dữ liệu và lưu trữ (cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232)), GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
-- Cơ quan nhà nước có thẩm quyền: khi có yêu cầu theo quy định pháp luật.
+- **Người bán:** thông tin cần để thực hiện đơn hàng với người mua;
 
-Nền tảng không mua bán dữ liệu cá nhân.
+- **Đối tác thanh toán: ngân hàng nơi Công ty mở Tài khoản thanh toán, Apple, Google;**
+
+- **Nhà cung cấp hạ tầng:** máy chủ ứng dụng, máy chủ cơ sở dữ liệu và lưu trữ (cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232)), GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
+
+- **Cơ quan nhà nước có thẩm quyền:** khi có yêu cầu theo quy định pháp luật.
+
+Nền tảng **không mua bán dữ liệu cá nhân**.
 
 ### 7. Chuyển dữ liệu ra nước ngoài
 
-Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) (trung tâm dữ liệu của 123HOST tại TP. Hồ Chí Minh, địa chỉ IP 103.97.127.39). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (khoản 5 Mục này) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
+Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (khoản 5 Mục này) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
 
 ### 8. Biện pháp bảo vệ
 
@@ -933,9 +1053,11 @@ Người dùng có quyền: được biết; đồng ý hoặc rút lại sự �
 
 Cách thực hiện:
 
-- Tự thực hiện tại trang Cài đặt: chỉnh sửa hồ sơ, đổi mật khẩu, đăng xuất khỏi mọi thiết bị, ngắt liên kết Google, chọn ngôn ngữ thông báo, xem lịch sử hoạt động.
-- Tự xóa tài khoản: tại Hồ sơ/Cài đặt → Xóa tài khoản trên ứng dụng hoặc website (https://aimarkets.vn/settings/delete-account); người không thể đăng nhập gửi yêu cầu tại https://aimarkets.vn/account/delete và được xử lý trong 30 ngày sau khi xác minh danh tính. Việc xóa thực hiện ngay sau khi xác nhận nếu không còn số dư ví, yêu cầu rút tiền, đơn hàng chưa hoàn tất, tranh chấp, khiếu nại đang mở hoặc máy GPU đang chạy: hồ sơ cá nhân, mật khẩu, phiên đăng nhập, khóa API, giỏ hàng, danh sách yêu thích, thông báo bị xóa; gian hàng, sản phẩm bị gỡ; tài khoản được ẩn danh và không thể khôi phục.
-- Gửi yêu cầu tới support@aimarkets.vn: cung cấp bản sao dữ liệu, xóa dữ liệu, hạn chế hoặc phản đối xử lý. Nền tảng xác minh danh tính trước khi thực hiện và phản hồi trong thời hạn pháp luật quy định.
+- **Tự thực hiện tại trang Cài đặt:** chỉnh sửa hồ sơ, đổi mật khẩu, đăng xuất khỏi mọi thiết bị, ngắt liên kết Google, chọn ngôn ngữ thông báo, xem lịch sử hoạt động.
+
+- **Tự xóa tài khoản:** tại Hồ sơ → Xóa tài khoản trên ứng dụng hoặc Cài đặt → Xóa tài khoản trên website (https://aimarkets.vn/settings/delete-account); người không thể đăng nhập gửi yêu cầu tại https://aimarkets.vn/account/delete và được xử lý trong 30 ngày sau khi xác minh danh tính. Việc xóa thực hiện ngay sau khi xác nhận nếu số dư ví bằng 0 và không còn yêu cầu rút tiền, đơn hàng chưa hoàn tất, tranh chấp, khiếu nại đang mở hoặc máy GPU đang chạy: hồ sơ cá nhân, mật khẩu, phiên đăng nhập, khóa API, giỏ hàng, danh sách yêu thích, thông báo bị xóa; gian hàng, sản phẩm bị gỡ; dữ liệu cá nhân được ẩn danh và tài khoản không thể khôi phục. Dữ liệu hợp đồng, đơn hàng, giao dịch, hóa đơn, khiếu nại và hồ sơ eKYC đã nộp được lưu 03 năm theo Mục XIX rồi xóa.
+
+- **Gửi yêu cầu tới support@aimarkets.vn:** cung cấp bản sao dữ liệu, xóa dữ liệu, hạn chế hoặc phản đối xử lý. Nền tảng xác minh danh tính trước khi thực hiện và phản hồi trong thời hạn pháp luật quy định.
 
 Dữ liệu mà pháp luật buộc phải lưu (đơn hàng, hợp đồng, chứng từ thuế, hồ sơ khiếu nại) được giữ đến hết thời hạn bắt buộc rồi mới xóa.
 
@@ -945,9 +1067,9 @@ Theo Mục XIX của Quy chế này. Dữ liệu trong không gian AI agent đư
 
 ### 11. Cookie và lưu trữ trên trình duyệt
 
-a) Phạm vi: website aimarkets.vn dùng cookie và bộ nhớ của trình duyệt (localStorage). Ứng dụng di động lưu dữ liệu tương tự trong bộ nhớ bảo mật của thiết bị.
+a) **Phạm vi:** website aimarkets.vn dùng cookie và bộ nhớ của trình duyệt (localStorage). Ứng dụng di động lưu dữ liệu tương tự trong bộ nhớ bảo mật của thiết bị.
 
-b) Cookie và dữ liệu cần thiết:
+b) **Cookie và dữ liệu cần thiết:**
 
 | Dữ liệu | Mục đích |
 |---|---|
@@ -958,13 +1080,13 @@ b) Cookie và dữ liệu cần thiết:
 
 Các dữ liệu này cần thiết để nền tảng hoạt động và không dùng cho quảng cáo.
 
-c) Phân tích: nền tảng dùng công cụ phân tích truy cập do PHGroup tự vận hành (analytics.phgrouptechs.com) để đo lượt truy cập, trang được xem, lỗi và hiệu suất ở mức tổng hợp. Dữ liệu không được bán hay chia sẻ cho bên quảng cáo.
+c) **Phân tích:** nền tảng dùng công cụ phân tích truy cập do PHGroup tự vận hành (analytics.phgrouptechs.com) để đo lượt truy cập, trang được xem, lỗi và hiệu suất ở mức tổng hợp. Dữ liệu không được bán hay chia sẻ cho bên quảng cáo.
 
-d) Bên thứ ba: khi người dùng chủ động sử dụng, các dịch vụ sau có thể đặt cookie hoặc dữ liệu riêng theo chính sách của họ: Google (đăng nhập bằng Google); Apple, Google Play (thanh toán trong ứng dụng di động).
+d) **Bên thứ ba:** khi người dùng chủ động sử dụng, các dịch vụ sau có thể đặt cookie hoặc dữ liệu riêng theo chính sách của họ: Google (đăng nhập bằng Google); Apple, Google Play (thanh toán trong ứng dụng di động).
 
-đ) Quảng cáo: nền tảng hiện không dùng cookie quảng cáo hay theo dõi chéo trang. Nếu áp dụng trong tương lai, nền tảng sẽ cập nhật chính sách này và xin đồng ý của người dùng trước khi bật.
+đ) **Quảng cáo:** nền tảng hiện không dùng cookie quảng cáo hay theo dõi chéo trang. Nếu áp dụng trong tương lai, nền tảng sẽ cập nhật chính sách này và xin đồng ý của người dùng trước khi bật.
 
-e) Quản lý: người dùng có thể xóa hoặc chặn cookie, dữ liệu trang web trong cài đặt trình duyệt. Chặn cookie, dữ liệu cần thiết có thể khiến người dùng bị đăng xuất hoặc không mở được không gian làm việc, máy thuê.
+e) **Quản lý:** người dùng có thể xóa hoặc chặn cookie, dữ liệu trang web trong cài đặt trình duyệt. Chặn cookie, dữ liệu cần thiết có thể khiến người dùng bị đăng xuất hoặc không mở được không gian làm việc, máy thuê.
 
 ### 12. Sự cố dữ liệu
 
@@ -972,7 +1094,7 @@ Khi phát hiện vi phạm dữ liệu cá nhân, nền tảng cô lập, khắc
 
 ### 13. Liên hệ về dữ liệu cá nhân
 
-Mọi yêu cầu về dữ liệu cá nhân gửi tới support@aimarkets.vn hoặc hotline 0931 881 584.
+Mọi yêu cầu về dữ liệu cá nhân gửi tới **support@aimarkets.vn** hoặc hotline **0931 881 584**.
 
 ## XIX. LƯU TRỮ VÀ CUNG CẤP DỮ LIỆU
 
@@ -1005,7 +1127,7 @@ Người bán có thể yêu cầu trích xuất thông tin sản phẩm đã đ
 
 ### 5. Yêu cầu của cơ quan có thẩm quyền
 
-Nền tảng cung cấp thông tin về người bán, giao dịch theo yêu cầu bằng văn bản của cơ quan nhà nước có thẩm quyền, đúng phạm vi và thủ tục pháp luật; thực hiện gỡ bỏ, tạm ngừng trong 24 giờ theo khoản 6 Mục XV. Nền tảng kết nối, báo cáo định kỳ với cơ quan quản lý khi được yêu cầu.
+Nền tảng cung cấp thông tin về người bán, giao dịch theo yêu cầu bằng văn bản của cơ quan nhà nước có thẩm quyền, đúng phạm vi và thủ tục pháp luật; thực hiện gỡ bỏ, tạm ngừng trong **24 giờ** theo khoản 6 Mục XV. Nền tảng kết nối, báo cáo định kỳ với cơ quan quản lý khi được yêu cầu.
 
 ### 6. Bảo mật khi cung cấp dữ liệu
 
@@ -1021,7 +1143,7 @@ b) Bảo vệ dữ liệu cá nhân theo Mục XVIII của Quy chế này; lưu 
 
 c) Tiếp nhận, giải quyết khiếu nại; hỗ trợ người mua khi phát sinh tranh chấp với người bán.
 
-d) Gỡ bỏ thông tin vi phạm và cung cấp thông tin về người bán, giao dịch trong 24 giờ khi có yêu cầu của cơ quan nhà nước có thẩm quyền; báo cáo hoạt động hằng năm theo quy định.
+d) Gỡ bỏ thông tin vi phạm và cung cấp thông tin về người bán, giao dịch trong **24 giờ** khi có yêu cầu của cơ quan nhà nước có thẩm quyền; báo cáo hoạt động hằng năm theo quy định.
 
 đ) Có quyền từ chối, tạm ẩn, gỡ sản phẩm; tạm ngừng hoặc chấm dứt tài khoản vi phạm theo Mục XV của Quy chế này.
 
@@ -1031,6 +1153,8 @@ g) Bảo mật thông tin của người bán; cung cấp cho cơ quan nhà nư�
 
 h) Nền tảng không trở thành chủ sở hữu hay bên cung cấp sản phẩm của người bán. Việc sử dụng nhà cung cấp hạ tầng không làm thay đổi chủ thể cung cấp sản phẩm.
 
+i) Cung cấp cho người bán thông tin người mua, thông tin giao dịch và trạng thái hoàn tất đơn hàng để lập hóa đơn; lập hóa đơn điện tử đối với sản phẩm, dịch vụ “Bán bởi sàn” và phí dịch vụ sàn theo khoản 8 Mục XII.
+
 ### 2. Giới hạn trách nhiệm
 
 Trong phạm vi pháp luật cho phép, nền tảng không chịu trách nhiệm đối với thiệt hại gián tiếp phát sinh từ việc người dùng sử dụng kết quả do AI tạo, sự cố của nhà cung cấp hạ tầng bên thứ ba ngoài khả năng kiểm soát hợp lý của nền tảng, hoặc lỗi do người dùng làm lộ thông tin xác thực. Giới hạn này không áp dụng đối với quyền lợi của người tiêu dùng mà pháp luật không cho phép loại trừ.
@@ -1039,38 +1163,53 @@ Trong phạm vi pháp luật cho phép, nền tảng không chịu trách nhiệ
 
 ### 1. Quyền của người bán
 
-- Đăng sản phẩm đủ điều kiện sau khi được kiểm duyệt; quản lý cửa hàng, sản phẩm, giá;
-- Xem đơn hàng, mức sử dụng, doanh thu, số tiền tạm giữ, thuế đã khấu trừ;
-- Được nhận thanh toán theo cơ chế đối soát, chi trả tại Mục XI của Quy chế này;
-- Phản hồi khiếu nại, cung cấp bằng chứng;
-- Được thông báo lý do và có quyền yêu cầu xem xét lại quyết định xử lý, quyết định kiểm duyệt và quyết định giải quyết khiếu nại (Mục IX, XV, XVII);
-- Được yêu cầu cung cấp dữ liệu sản phẩm, đơn hàng, hợp đồng của mình theo khoản 6 Mục VII và khoản 4 Mục XIX.
+- Đăng sản phẩm đủ điều kiện sau khi được kiểm duyệt; quản lý cửa hàng, sản phẩm, giá;
+
+- Xem đơn hàng, mức sử dụng, doanh thu, số tiền tạm giữ, thuế đã khấu trừ;
+
+- Được nhận thanh toán theo cơ chế đối soát, chi trả tại Mục XI của Quy chế này;
+
+- Phản hồi khiếu nại, cung cấp bằng chứng;
+
+- Được thông báo lý do và có quyền yêu cầu xem xét lại quyết định xử lý, quyết định kiểm duyệt và quyết định giải quyết khiếu nại (Mục IX, XV, XVII);
+
+- Được yêu cầu cung cấp dữ liệu sản phẩm, đơn hàng, hợp đồng của mình theo khoản 6 Mục VII và khoản 4 Mục XIX.
 
 ### 2. Nghĩa vụ và trách nhiệm của người bán
 
 Theo Chính sách người bán và Thỏa thuận người bán, người bán có nghĩa vụ:
 
-- Cung cấp thông tin xác minh trung thực, cập nhật khi thay đổi; khai báo chính xác tên, mô tả, danh mục, giá, đơn vị tính, gói dịch vụ, giấy phép, quyền thương mại và yêu cầu tài nguyên;
-- Bảo đảm có quyền hợp pháp (sở hữu, giấy phép, phân phối) đối với sản phẩm theo Mục XIV; với giọng nhân bản phải có văn bản đồng ý của người có giọng nói;
-- Cung cấp sản phẩm, dịch vụ đúng mô tả và cam kết; hỗ trợ người mua;
-- Giải quyết khiếu nại; phản hồi yêu cầu của nền tảng về khiếu nại trong thời hạn tại khoản 4 Mục XVII (02 ngày làm việc kể từ khi nền tảng yêu cầu);
-- Gắn nhãn nội dung do AI tạo theo Luật Trí tuệ nhân tạo số 134/2025/QH15 khi pháp luật yêu cầu;
-- Nếu dùng tài khoản nhà cung cấp hạ tầng của riêng mình, bảo đảm có quyền khai thác thương mại theo điều khoản của nhà cung cấp đó;
-- Thực hiện nghĩa vụ thuế, khai báo và cập nhật hồ sơ thuế theo Mục XII; khai báo đúng loại người bán và mã số thuế; nếu là cá nhân kinh doanh, chấp nhận việc nền tảng khấu trừ, nộp thay 7% (dịch vụ, sản phẩm số) hoặc 1,5% (hàng hóa) giá trị đơn hàng; tự chịu trách nhiệm về các nghĩa vụ thuế khác theo pháp luật và xuất hóa đơn theo quy định;
-- Bảo vệ thông tin bí mật, dữ liệu cá nhân của người mua và khóa bí mật; chỉ sử dụng dữ liệu người mua nhận được qua nền tảng để thực hiện đơn hàng;
-- Tuân thủ Chính sách người bán, AUP (Mục XV) và pháp luật;
-- Không thu tiền ngoài nền tảng cho giao dịch phát sinh trên nền tảng.
+- Cung cấp thông tin xác minh trung thực, cập nhật khi thay đổi; khai báo chính xác tên, mô tả, danh mục, giá, đơn vị tính, gói dịch vụ, giấy phép, quyền thương mại và yêu cầu tài nguyên;
+
+- Bảo đảm có quyền hợp pháp (sở hữu, giấy phép, phân phối) đối với sản phẩm theo Mục XIV; với giọng nhân bản phải có văn bản đồng ý của người có giọng nói;
+
+- Cung cấp sản phẩm, dịch vụ đúng mô tả và cam kết; hỗ trợ người mua;
+
+- Giải quyết khiếu nại; phản hồi yêu cầu của nền tảng về khiếu nại trong thời hạn tại khoản 4 Mục XVII (02 ngày làm việc kể từ khi nền tảng yêu cầu);
+
+- Gắn nhãn nội dung do AI tạo theo Luật Trí tuệ nhân tạo số 134/2025/QH15 khi pháp luật yêu cầu;
+
+- Nếu dùng tài khoản nhà cung cấp hạ tầng của riêng mình, bảo đảm có quyền khai thác thương mại theo điều khoản của nhà cung cấp đó;
+
+- Thực hiện nghĩa vụ thuế, khai báo và cập nhật hồ sơ thuế theo Mục XII; chấp nhận khoản thuế khấu trừ theo loại người bán đã khai báo (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%); tự chịu trách nhiệm về các nghĩa vụ thuế khác theo pháp luật và lập hóa đơn điện tử cho người mua theo khoản 8, khoản 9 Mục XII;
+
+- Bảo vệ thông tin bí mật, dữ liệu cá nhân của người mua và khóa bí mật; chỉ sử dụng dữ liệu người mua nhận được qua nền tảng để thực hiện đơn hàng;
+
+- Tuân thủ Chính sách người bán, AUP (Mục XV) và pháp luật;
+
+- Không thu tiền ngoài nền tảng cho giao dịch phát sinh trên nền tảng.
 
 ## XXII. THỎA THUẬN CUNG CẤP DỊCH VỤ NGƯỜI BÁN
 
 ### 1. Bản chất và giao kết Thỏa thuận
 
-Thỏa thuận cung cấp dịch vụ người bán (Thỏa thuận người bán) là hợp đồng điện tử giữa Công ty TNHH giải pháp công nghệ PHGroup (Nền tảng) và tổ chức, hộ kinh doanh, cá nhân đăng ký bán hàng trên AI Markets (Người bán). Thỏa thuận được giao kết khi người bán đánh dấu xác nhận đồng ý trong quy trình mở cửa hàng; thời điểm và phiên bản xác nhận được hệ thống lưu lại. Phiên bản Thỏa thuận hiện hành là v2026.10.05, theo hiển thị tại bước xác minh người bán trên website.
+Thỏa thuận cung cấp dịch vụ người bán (Thỏa thuận người bán) là hợp đồng điện tử giữa Công ty TNHH giải pháp công nghệ PHGroup (Nền tảng) và tổ chức, hộ kinh doanh, cá nhân đăng ký bán hàng trên AI Markets (Người bán). Thỏa thuận được giao kết khi người bán đánh dấu xác nhận đồng ý trong quy trình mở cửa hàng; thời điểm và phiên bản xác nhận được hệ thống lưu lại. Phiên bản Thỏa thuận hiện hành là **v2026.10.05**, theo hiển thị tại bước xác minh người bán trên website.
 
 ### 2. Thông tin các bên
 
-- Nền tảng: theo thông tin tại khoản 1 Mục I.
-- Người bán: thông tin định danh, giấy chứng nhận đăng ký kinh doanh (giấy phép kinh doanh) đối với hộ kinh doanh, doanh nghiệp, tổ chức, mã số thuế, người đại diện, địa chỉ, tài khoản nhận tiền do người bán khai báo và được xác minh trên hệ thống.
+- **Nền tảng:** theo thông tin tại khoản 1 Mục I.
+
+- **Người bán:** thông tin định danh, giấy chứng nhận đăng ký kinh doanh (giấy phép kinh doanh) đối với hộ kinh doanh, doanh nghiệp, tổ chức, mã số thuế, người đại diện, địa chỉ, tài khoản nhận tiền do người bán khai báo và được xác minh trên hệ thống.
 
 ### 3. Đối tượng của Thỏa thuận
 
@@ -1090,7 +1229,7 @@ c) Sau khi chấm dứt, số dư khả dụng được chi trả sau khi bù tr
 
 ### 6. Sửa đổi Thỏa thuận
 
-Nền tảng thông báo sửa đổi Thỏa thuận ít nhất 30 ngày trước khi có hiệu lực. Người bán không đồng ý có quyền chấm dứt theo khoản 5 Mục này trước ngày hiệu lực.
+Nền tảng thông báo sửa đổi Thỏa thuận **ít nhất 30 ngày** trước khi có hiệu lực. Người bán không đồng ý có quyền chấm dứt theo khoản 5 Mục này trước ngày hiệu lực.
 
 ### 7. Luật áp dụng
 
@@ -1104,19 +1243,29 @@ Người bán xác nhận đã đọc và đồng ý: Quy chế hoạt động; 
 
 ### 1. Quyền của người mua
 
-- Được cung cấp đầy đủ thông tin sản phẩm, giá, đơn vị tính, phí, điều kiện sử dụng, giấy phép và thông tin người bán trước khi mua;
-- Phân biệt rõ sản phẩm “Bán bởi sàn” và “Bán bởi Seller – tên cửa hàng”;
-- Nhận email xác nhận đơn hàng; xem lịch sử đơn hàng, mức sử dụng, số dư ví và chứng từ giao dịch;
-- Được hoàn tiền theo Mục XIII, được khiếu nại theo Mục XVII của Quy chế này;
-- Được bảo vệ dữ liệu cá nhân và thực hiện các quyền của chủ thể dữ liệu theo Mục XVIII, Mục XIX;
-- Đánh giá sản phẩm đã mua một cách trung thực.
+- Được cung cấp đầy đủ thông tin sản phẩm, giá, đơn vị tính, phí, điều kiện sử dụng, giấy phép và thông tin người bán trước khi mua;
+
+- Phân biệt rõ sản phẩm “Bán bởi sàn” và “Bán bởi Seller – tên cửa hàng”;
+
+- Nhận email xác nhận đơn hàng; xem lịch sử đơn hàng, mức sử dụng, số dư ví và chứng từ giao dịch;
+
+- Chọn lấy hoặc không lấy hóa đơn điện tử cho từng đơn hàng (mặc định không lấy), thay đổi lựa chọn trước khi hóa đơn được lập và tra cứu, tải hóa đơn theo khoản 9 Mục XII;
+
+- Được hoàn tiền theo Mục XIII, được khiếu nại theo Mục XVII của Quy chế này;
+
+- Được bảo vệ dữ liệu cá nhân và thực hiện các quyền của chủ thể dữ liệu theo Mục XVIII, Mục XIX;
+
+- Đánh giá sản phẩm đã mua một cách trung thực.
 
 ### 2. Nghĩa vụ của người mua
 
-- Cung cấp thông tin đăng ký chính xác và thanh toán đầy đủ;
-- Sử dụng sản phẩm đúng giấy phép và Chính sách sử dụng chấp nhận được (AUP) tại Mục XV;
-- Không chia sẻ khóa API, tài khoản trái phép; không dịch ngược nhằm vượt qua cơ chế bảo mật; không lạm dụng GPU, API;
-- Duy trì đủ số dư ví với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
+- Cung cấp thông tin đăng ký và thông tin xuất hóa đơn chính xác và thanh toán đầy đủ;
+
+- Sử dụng sản phẩm đúng giấy phép và Chính sách sử dụng chấp nhận được (AUP) tại Mục XV;
+
+- Không chia sẻ khóa API, tài khoản trái phép; không dịch ngược nhằm vượt qua cơ chế bảo mật; không lạm dụng GPU, API;
+
+- Duy trì đủ số dư ví với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
 ## XXIV. BÊN CUNG CẤP DỊCH VỤ HỖ TRỢ
 
@@ -1126,7 +1275,7 @@ Ngân hàng nơi Công ty mở Tài khoản thanh toán, Apple, Google, nhà cun
 
 1. Quy chế, Điều khoản sử dụng và các chính sách được quản lý theo phiên bản; mỗi phiên bản ghi rõ số phiên bản và ngày hiệu lực. Phiên bản hiện hành của bộ chính sách là 2.0, hiệu lực từ ngày 04/10/2026; phiên bản 2.1, hiệu lực từ ngày 05/10/2026, áp dụng đối với Quy chế hoạt động, Chính sách người bán, Chính sách sử dụng chấp nhận được và Chính sách kiểm duyệt sản phẩm AI (mở lại phim AI và truyện/sách AI); Thỏa thuận cung cấp dịch vụ người bán áp dụng phiên bản v2026.10.05.
 
-2. Thay đổi được thông báo trên nền tảng (và qua email với thay đổi ảnh hưởng tới quyền, nghĩa vụ của người dùng) ít nhất 30 ngày trước khi có hiệu lực, trừ thay đổi bắt buộc theo yêu cầu pháp luật hoặc cơ quan có thẩm quyền.
+2. Thay đổi được thông báo trên nền tảng (và qua email với thay đổi ảnh hưởng tới quyền, nghĩa vụ của người dùng) **ít nhất 30 ngày** trước khi có hiệu lực, trừ thay đổi bắt buộc theo yêu cầu pháp luật hoặc cơ quan có thẩm quyền.
 
 3. Người dùng tiếp tục sử dụng sau ngày hiệu lực được coi là đồng ý; nếu không đồng ý, người dùng có thể ngừng sử dụng và đóng tài khoản.
 
@@ -1138,12 +1287,22 @@ Mọi tổ chức, cá nhân tham gia giao dịch trên AI Markets cam kết ch�
 
 Mọi thắc mắc, khiếu nại, yêu cầu hỗ trợ hoặc pháp lý xin vui lòng liên hệ:
 
-- Nền tảng: AI Markets – https://aimarkets.vn
-- Công ty: Công ty TNHH giải pháp công nghệ PHGroup
-- Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam
-- Email hỗ trợ / pháp lý: support@aimarkets.vn
-- Hotline: 0931 881 584
-- Khiếu nại trực tuyến: https://aimarkets.vn/complaints
+- Nền tảng: AI Markets – https://aimarkets.vn
 
-|  | ĐẠI DIỆN CÔNG TY; (Ký, ghi rõ họ tên và đóng dấu); ……………………………………; Chức vụ: …………………… |
-|---|---|
+- Công ty: Công ty TNHH giải pháp công nghệ PHGroup
+
+- Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam
+
+- Email hỗ trợ / pháp lý: support@aimarkets.vn
+
+- Hotline: 0931 881 584
+
+- Khiếu nại trực tuyến: https://aimarkets.vn/complaints
+
+ĐẠI DIỆN CÔNG TY
+
+(Ký, ghi rõ họ tên và đóng dấu)
+
+……………………………………
+
+Chức vụ: ……………………
