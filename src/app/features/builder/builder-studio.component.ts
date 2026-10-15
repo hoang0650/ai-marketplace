@@ -26,6 +26,7 @@ import { BuilderProject, BuilderService, BuilderStreamError, ByokKey, ByokProvid
 import { ByokKeysComponent } from './byok-keys.component';
 import { GitPanelComponent } from './git-panel.component';
 import { buildZip, expoScaffold } from './zip';
+import { STUDIO_MESSAGES } from './studio.messages';
 import { DEFAULT_CHROME, DeviceChrome, DeviceFrameComponent, DeviceModel, deviceOuter } from './device-frame.component';
 
 interface Device {
@@ -56,87 +57,120 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
   styles: [
     `
       :host { display: block; }
-      .studio { min-height: calc(100vh - 4rem); }
+      .studio { height: calc(100dvh - 4rem); min-height: 560px; }
       .preview-full { position: fixed; inset: 0; z-index: 60; height: auto !important; min-height: 0 !important; border-radius: 0; }
       .bubble-user { background: rgb(99 102 241 / 0.15); }
       .selected-row { background: rgb(255 255 255 / 0.1); }
+      .seg { display: inline-flex; border: 1px solid var(--color-line, #e5e7eb); border-radius: .6rem; padding: 2px; gap: 2px; }
+      .seg > button { border-radius: .45rem; padding: .25rem .65rem; font-size: .75rem; line-height: 1.1rem; white-space: nowrap; }
+      .seg > button.on { background: var(--color-accent, #c9a45c); color: #fff; }
+      .icon-btn { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; height: 2rem; min-width: 2rem; padding: 0 .55rem; border: 1px solid var(--color-line, #e5e7eb); border-radius: .55rem; font-size: .75rem; white-space: nowrap; }
+      .icon-btn:hover { border-color: var(--color-accent, #c9a45c); }
+      .menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 70; min-width: 15rem; border-radius: .75rem; padding: .35rem; box-shadow: 0 18px 40px rgb(0 0 0 / .18); }
+      .menu > * { display: flex; width: 100%; align-items: center; gap: .5rem; padding: .5rem .65rem; border-radius: .5rem; font-size: .82rem; text-align: left; }
+      .menu > *:hover { background: rgb(127 127 127 / .12); }
+      .drawer-backdrop { position: fixed; inset: 0; z-index: 80; background: rgb(0 0 0 / .45); }
+      .drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 81; width: min(560px, 100vw); overflow-y: auto; box-shadow: -18px 0 40px rgb(0 0 0 / .2); }
+      .composer textarea { resize: none; }
+      .chip { border: 1px solid var(--color-line, #e5e7eb); border-radius: 999px; padding: .3rem .7rem; font-size: .75rem; text-align: left; }
+      .chip:hover { border-color: var(--color-accent, #c9a45c); }
+      @media (max-width: 1023px) { .studio { height: auto; } }
     `,
   ],
   template: `
     @if (project(); as p) {
-      <section class="studio flex flex-col gap-3 px-3 py-3">
-        <!-- top bar -->
-        <header class="flex flex-wrap items-center gap-2">
-          <a routerLink="/build" class="btn btn-outline text-xs">← {{ 'builder.back' | t }}</a>
+      <section class="studio flex flex-col gap-2 px-3 py-2">
+        <!-- compact header: identity left, actions right, rest in overflow menu -->
+        <header class="panel flex flex-wrap items-center gap-2 px-2 py-1.5">
+          <a routerLink="/build" class="icon-btn no-underline" [title]="'builder.back' | t" [attr.aria-label]="'builder.back' | t">←</a>
           <input
-            class="input min-w-[10rem] flex-1 py-1 font-semibold sm:max-w-xs"
+            class="input min-w-[8rem] flex-1 border-transparent bg-transparent py-1 font-semibold sm:max-w-xs"
             [ngModel]="p.name"
             (change)="rename($any($event.target).value)"
             maxlength="80"
             [attr.aria-label]="'builder.namePh' | t"
           />
-          <span class="rounded-full border border-line px-2 py-0.5 text-xs">{{ 'builder.kind.' + p.kind | t }}</span>
-          <span class="text-xs text-muted">v{{ p.version }}</span>
+          <span class="hidden rounded-full border border-line px-2 py-0.5 text-[11px] sm:inline">{{ 'builder.kind.' + p.kind | t }} · v{{ p.version }}</span>
           @if (p.template) {
-            <span class="max-w-full truncate text-xs text-muted">{{ 'builder.tpl.from' | t: { name: p.template.name } }}</span>
+            <span class="hidden max-w-[16rem] truncate text-[11px] text-muted xl:inline" [title]="'builder.tpl.from' | t: { name: p.template.name }">{{ 'builder.tpl.from' | t: { name: p.template.name } }}</span>
           }
-          <div class="flex w-full flex-wrap items-center gap-2 lg:ml-auto lg:w-auto">
+          <div class="ml-auto flex items-center gap-1.5">
             @if (activeKeys().length) {
-              <label class="flex min-w-0 flex-1 items-center gap-1 text-xs text-muted sm:flex-none" [title]="'builder.modelHint' | t">
-                {{ 'builder.provider' | t }}
-                <select class="input min-w-0 flex-1 py-1 text-xs text-ink" [ngModel]="provider()" (ngModelChange)="pickProvider($event)">
+              <div class="hidden items-center gap-1 md:flex" [title]="'builder.modelHint' | t">
+                <select class="input w-32 py-1 text-xs text-ink" [ngModel]="provider()" (ngModelChange)="pickProvider($event)" [attr.aria-label]="'builder.provider' | t">
                   @for (k of activeKeys(); track k.provider) {
                     <option [value]="k.provider">{{ providerLabel(k.provider) }}</option>
                   }
                 </select>
-              </label>
-              <label class="flex min-w-0 flex-1 items-center gap-1 text-xs text-muted sm:flex-none" [title]="'builder.modelHint' | t">
-                {{ 'builder.model' | t }}
                 <input
-                  class="input min-w-0 flex-1 py-1 text-xs text-ink sm:w-44 sm:flex-none"
+                  class="input w-40 py-1 text-xs text-ink"
                   list="builder-models"
                   [ngModel]="model()"
                   (ngModelChange)="model.set($event)"
                   (change)="saveModel()"
                   [placeholder]="defaultModel() || ('builder.modelDefault' | t)"
+                  [attr.aria-label]="'builder.model' | t"
                 />
-              </label>
-              <datalist id="builder-models">
-                @for (m of models(); track m) {
-                  <option [value]="m"></option>
-                }
-              </datalist>
-              <button type="button" class="btn btn-outline text-xs" (click)="showKeys.set(!showKeys())">{{ 'builder.keys.manage' | t }}</button>
+                <datalist id="builder-models">
+                  @for (m of models(); track m) {
+                    <option [value]="m"></option>
+                  }
+                </datalist>
+              </div>
             } @else {
-              <button type="button" class="btn btn-fill text-xs" (click)="showKeys.set(true)">{{ 'builder.keys.setup' | t }}</button>
+              <button type="button" class="btn btn-fill text-xs" (click)="openDrawer('keys')">{{ 'builder.keys.setup' | t }}</button>
             }
-            <button type="button" class="btn btn-outline text-xs" (click)="exportZip()">{{ 'builder.export' | t }}</button>
-            <a class="btn btn-outline text-xs" [href]="p.previewUrl" target="_blank" rel="noopener noreferrer">{{ 'builder.openTab' | t }}</a>
-            <button type="button" class="btn btn-outline text-xs" [class.border-accent]="showGit()" (click)="showGit.set(!showGit())">
-              {{ p.git ? ('builder.git.buttonLinked' | t: { repo: p.git.repo }) : ('builder.git.button' | t) }}
+            <a class="icon-btn no-underline" [href]="p.previewUrl" target="_blank" rel="noopener noreferrer" [title]="'builder.openTab' | t">↗<span class="hidden lg:inline">{{ 'builder.openTab' | t }}</span></a>
+            <button type="button" class="icon-btn" [class.border-accent]="drawer() === 'git'" (click)="openDrawer('git')" [title]="p.git ? ('builder.git.buttonLinked' | t: { repo: p.git.repo }) : ('builder.git.button' | t)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              <span class="hidden max-w-[10rem] truncate lg:inline">{{ p.git ? p.git.repo : ('builder.git.button' | t) }}</span>
             </button>
-            @if (canSellTemplate()) {
-              <a class="btn btn-outline text-xs" routerLink="/sell/templates" [queryParams]="{ fromProject: p.id, kind: p.kind }">
-                {{ 'builder.tpl.sellThis' | t }}
-              </a>
-            }
+            <div class="relative">
+              <button type="button" class="icon-btn" [attr.aria-expanded]="menuOpen()" aria-haspopup="menu" (click)="menuOpen.set(!menuOpen())" [title]="'builder.more' | t">⋯</button>
+              @if (menuOpen()) {
+                <div class="menu panel" role="menu">
+                  <button type="button" role="menuitem" (click)="menuOpen.set(false); openDrawer('keys')">🔑 {{ 'builder.keys.manage' | t }}</button>
+                  <button type="button" role="menuitem" (click)="menuOpen.set(false); exportZip()">⬇ {{ 'builder.export' | t }}</button>
+                  <button type="button" role="menuitem" (click)="menuOpen.set(false); copyLink()">🔗 {{ copied() ? ('builder.copied' | t) : ('builder.copyLink' | t) }}</button>
+                  @if (canSellTemplate()) {
+                    <a role="menuitem" class="no-underline" routerLink="/sell/templates" [queryParams]="{ fromProject: p.id, kind: p.kind }" (click)="menuOpen.set(false)">🏷 {{ 'builder.tpl.sellThis' | t }}</a>
+                  }
+                </div>
+              }
+            </div>
           </div>
         </header>
 
-        @if (showKeys()) {
-          <div class="panel"><app-byok-keys (changed)="onKeys($event)" /></div>
-        }
-        @if (showGit()) {
-          <div class="panel"><app-git-panel [project]="p" [generating]="generating()" (gitChange)="onGit($event)" /></div>
-        }
         @if (error()) {
           <p class="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-400">{{ error() }}</p>
         }
 
-        <div class="grid gap-3 lg:h-[calc(100vh-7rem)] lg:min-h-[560px] lg:grid-cols-[380px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
-          <!-- chat -->
-          <div class="panel flex min-h-0 min-w-0 flex-col gap-3 p-3">
-            <div #chatScroll class="max-h-[45vh] min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 lg:max-h-none">
+        <!-- small screens: switch between chat and preview -->
+        <div class="lg:hidden"><div class="seg" role="tablist">
+          <button type="button" role="tab" [class.on]="pane() === 'chat'" [attr.aria-selected]="pane() === 'chat'" (click)="pane.set('chat')">{{ 'builder.pane.chat' | t }}</button>
+          <button type="button" role="tab" [class.on]="pane() === 'preview'" [attr.aria-selected]="pane() === 'preview'" (click)="pane.set('preview')">{{ 'builder.tab.preview' | t }} / {{ 'builder.tab.code' | t }}</button>
+        </div></div>
+
+        <div class="grid min-h-0 flex-1 gap-2 lg:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
+          <!-- chat: full height, messages scroll, composer pinned -->
+          <div class="panel min-h-0 min-w-0 flex-col p-0 lg:flex" [class.flex]="pane() === 'chat'" [class.hidden]="pane() !== 'chat'" style="min-height: 60vh">
+            <div class="flex items-center justify-between border-b border-line px-3 py-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-muted">{{ 'builder.pane.chat' | t }}</span>
+              @if (activeKeys().length) {
+                <span class="truncate text-[11px] text-muted md:hidden">{{ providerLabel(provider()) }} · {{ model() || defaultModel() }}</span>
+              }
+            </div>
+            <div #chatScroll class="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-3">
+              @if (!(p.messages || []).length && !generating()) {
+                <div class="flex h-full flex-col justify-center gap-3 py-6">
+                  <p class="text-sm text-muted">{{ 'builder.chatEmpty.' + p.kind | t }}</p>
+                  <div class="flex flex-wrap gap-2">
+                    @for (s of suggestions(); track s) {
+                      <button type="button" class="chip" (click)="prompt = s">{{ s }}</button>
+                    }
+                  </div>
+                </div>
+              }
               @for (m of p.messages || []; track m.id) {
                 <div class="rounded-xl px-3 py-2 text-sm" [class.bubble-user]="m.role === 'user'" [class.border]="m.role === 'assistant'" [class.border-line]="m.role === 'assistant'">
                   <p class="whitespace-pre-wrap">{{ m.content }}</p>
@@ -151,10 +185,6 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                     <p class="mt-1 text-[11px] text-muted">{{ m.model }} · {{ m.createdAt | date: 'short' }}</p>
                   }
                 </div>
-              } @empty {
-                @if (!generating()) {
-                  <p class="text-sm text-muted">{{ 'builder.chatEmpty.' + p.kind | t }}</p>
-                }
               }
               @if (generating()) {
                 <div class="space-y-2 rounded-xl border border-accent/50 px-3 py-2 text-sm">
@@ -170,6 +200,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
               }
             </div>
 
+            <div class="space-y-2 border-t border-line p-3">
             @if (previewError(); as pe) {
               <div class="rounded-lg border border-red-500/40 bg-red-500/10 p-2 text-xs text-red-300">
                 <p class="font-semibold">{{ 'builder.previewError' | t }}</p>
@@ -180,69 +211,54 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 </div>
               </div>
             }
-
-            <form class="space-y-2" (ngSubmit)="send()">
-              <textarea
-                class="input min-h-[5rem] w-full text-sm"
-                name="prompt"
-                [(ngModel)]="prompt"
-                maxlength="8000"
-                [placeholder]="'builder.followUpPh' | t"
-                (keydown.control.enter)="send()"
-                (keydown.meta.enter)="send()"
-              ></textarea>
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] text-muted">{{ 'builder.byokNote' | t }}</span>
-                @if (generating()) {
-                  <button type="button" class="btn btn-outline text-xs text-red-400" (click)="stop()">{{ 'builder.stop' | t }}</button>
-                } @else {
-                  <button class="btn btn-fill text-xs" type="submit" [disabled]="!prompt.trim() || !canBuild()">{{ 'builder.send' | t }}</button>
-                }
-              </div>
+              <form class="composer rounded-xl border border-line p-2 focus-within:border-accent" (ngSubmit)="send()">
+                <textarea
+                  class="w-full border-0 bg-transparent text-sm outline-none"
+                  rows="4"
+                  name="prompt"
+                  [(ngModel)]="prompt"
+                  maxlength="8000"
+                  [placeholder]="'builder.followUpPh' | t"
+                  [attr.aria-label]="'builder.followUpPh' | t"
+                  (keydown.control.enter)="send()"
+                  (keydown.meta.enter)="send()"
+                ></textarea>
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-[11px] text-muted">{{ 'builder.byokNote' | t }}</span>
+                  @if (generating()) {
+                    <button type="button" class="btn btn-outline text-xs text-red-400" (click)="stop()">■ {{ 'builder.stop' | t }}</button>
+                  } @else {
+                    <button class="btn btn-fill text-xs" type="submit" [disabled]="!prompt.trim() || !canBuild()">{{ 'builder.send' | t }} ↵</button>
+                  }
+                </div>
+              </form>
               @if (!canBuild()) {
-                <p class="text-xs text-amber-400">{{ 'builder.needKey.short' | t }}</p>
+                <button type="button" class="w-full text-left text-xs text-amber-500 underline" (click)="openDrawer('keys')">{{ 'builder.needKey.short' | t }}</button>
               }
-            </form>
+            </div>
           </div>
 
           <!-- preview / code -->
-          <div class="panel flex h-[75vh] min-h-[480px] min-w-0 flex-col gap-2 p-3 lg:h-auto lg:min-h-0" [class.preview-full]="expanded()">
+          <div class="panel min-h-[70vh] min-w-0 flex-col gap-2 p-2 lg:flex lg:min-h-0" [class.flex]="pane() === 'preview'" [class.hidden]="pane() !== 'preview'" [class.preview-full]="expanded()">
             <div class="flex flex-wrap items-center gap-2">
-              <div class="flex rounded-lg border border-line p-0.5" role="tablist">
+              <div class="seg" role="tablist">
                 @for (tab of tabs; track tab) {
-                  <button
-                    type="button"
-                    role="tab"
-                    class="rounded-md px-3 py-1 text-xs"
-                    [class.bg-accent]="view() === tab"
-                    [class.text-white]="view() === tab"
-                    [attr.aria-selected]="view() === tab"
-                    (click)="view.set(tab)"
-                  >
-                    {{ 'builder.tab.' + tab | t }}
-                  </button>
+                  <button type="button" role="tab" [class.on]="view() === tab" [attr.aria-selected]="view() === tab" (click)="view.set(tab)">{{ 'builder.tab.' + tab | t }}</button>
                 }
               </div>
               @if (view() === 'preview') {
-                <div class="flex rounded-lg border border-line p-0.5">
+                <div class="seg" role="group" [attr.aria-label]="'builder.devices' | t">
                   @for (d of devices(); track d.id) {
-                    <button type="button" class="rounded-md px-2 py-1 text-xs" [class.selected-row]="device().id === d.id" (click)="deviceId.set(d.id)">
-                      {{ 'builder.device.' + d.id | t }}
-                    </button>
+                    <button type="button" [class.on]="device().id === d.id" [attr.aria-pressed]="device().id === d.id" (click)="deviceId.set(d.id)">{{ 'builder.device.' + d.id | t }}</button>
                   }
                 </div>
-                <button type="button" class="btn btn-outline ml-auto text-xs" (click)="reload()">↻ {{ 'builder.reload' | t }}</button>
-                <button type="button" class="btn btn-outline text-xs" (click)="copyLink()">{{ copied() ? ('builder.copied' | t) : ('builder.copyLink' | t) }}</button>
               }
-              <button
-                type="button"
-                class="btn btn-outline text-xs"
-                [class.ml-auto]="view() !== 'preview'"
-                [attr.aria-pressed]="expanded()"
-                (click)="expanded.set(!expanded())"
-              >
-                {{ expanded() ? ('builder.collapse' | t) : ('builder.expand' | t) }}
-              </button>
+              <div class="ml-auto flex items-center gap-1.5">
+                @if (view() === 'preview') {
+                  <button type="button" class="icon-btn" (click)="reload()" [title]="'builder.reload' | t">↻<span class="hidden xl:inline">{{ 'builder.reload' | t }}</span></button>
+                }
+                <button type="button" class="icon-btn" [attr.aria-pressed]="expanded()" (click)="expanded.set(!expanded())">{{ expanded() ? ('builder.collapse' | t) : ('builder.expand' | t) }}</button>
+              </div>
             </div>
 
             @if (view() === 'preview') {
@@ -325,6 +341,24 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           </div>
         </div>
       </section>
+
+      <!-- API keys / GitHub: right drawer instead of inline panels that push the editor down -->
+      @if (drawer(); as d) {
+        <div class="drawer-backdrop" (click)="closeDrawer()" aria-hidden="true"></div>
+        <aside class="drawer panel rounded-none" role="dialog" aria-modal="true" [attr.aria-label]="d === 'keys' ? ('builder.keys.manage' | t) : ('builder.git.button' | t)">
+          <div class="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-inherit px-4 py-3" style="background: inherit">
+            <h2 class="text-sm font-semibold">{{ d === 'keys' ? ('builder.keys.manage' | t) : ('builder.git.button' | t) }}</h2>
+            <button type="button" class="icon-btn" (click)="closeDrawer()" [attr.aria-label]="'builder.close' | t">✕</button>
+          </div>
+          <div class="p-4">
+            @if (d === 'keys') {
+              <app-byok-keys (changed)="onKeys($event)" />
+            } @else {
+              <app-git-panel [project]="p" [generating]="generating()" (gitChange)="onGit($event)" />
+            }
+          </div>
+        </aside>
+      }
     } @else {
       <section class="mx-auto max-w-3xl px-4 py-16 text-center text-sm text-muted">
         @if (error()) {
@@ -340,6 +374,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
 export class BuilderStudioComponent implements OnInit, AfterViewInit {
   private readonly api = inject(BuilderService);
   private readonly i18n = inject(I18nService);
+  private readonly _studioMessages = this.i18n.extend(STUDIO_MESSAGES);
   private readonly seo = inject(SeoService);
   private readonly auth = inject(AuthService);
   readonly canSellTemplate = computed(() => {
@@ -414,6 +449,15 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   readonly showGit = signal(false);
   readonly copied = signal(false);
   readonly expanded = signal(false);
+  /** API keys / GitHub drawer (one at a time). */
+  readonly drawer = signal<'keys' | 'git' | null>(null);
+  readonly menuOpen = signal(false);
+  /** < lg: which pane is visible. */
+  readonly pane = signal<'chat' | 'preview'>('chat');
+  readonly suggestions = computed(() => {
+    const kind = this.project()?.kind === 'app' ? 'app' : 'web';
+    return [1, 2, 3].map((i) => this.i18n.t(`builder.suggest.${kind}.${i}`));
+  });
 
   prompt = '';
   newPath = '';
@@ -440,14 +484,35 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
+    if (this.drawer()) return this.closeDrawer();
+    if (this.menuOpen()) return this.menuOpen.set(false);
     this.expanded.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(e: MouseEvent): void {
+    if (!this.menuOpen()) return;
+    const t = e.target as HTMLElement | null;
+    if (t && !t.closest('.menu') && !t.closest('[aria-haspopup="menu"]')) this.menuOpen.set(false);
+  }
+
+  openDrawer(d: 'keys' | 'git'): void {
+    this.drawer.set(d);
+    this.showKeys.set(d === 'keys');
+    this.showGit.set(d === 'git');
+  }
+
+  closeDrawer(): void {
+    this.drawer.set(null);
+    this.showKeys.set(false);
+    this.showGit.set(false);
   }
 
   ngOnInit(): void {
     if (!this.browser) return;
     const id = this.route.snapshot.paramMap.get('id') || '';
     const q = this.route.snapshot.queryParamMap;
-    if (q.get('git_connect') || q.get('git_error')) this.showGit.set(true);
+    if (q.get('git_connect') || q.get('git_error')) this.openDrawer('git');
     const initialPrompt = String((history.state as { prompt?: string } | null)?.prompt || '');
     if (initialPrompt) history.replaceState({ ...history.state, prompt: undefined }, '');
 

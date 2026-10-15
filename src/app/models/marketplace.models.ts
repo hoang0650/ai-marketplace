@@ -142,6 +142,8 @@ export interface UserProfileExtras {
 export interface UserPreferences {
   personalizeContent: boolean;
   personalizeAds: boolean;
+  /** Email a notice on each new sign-in. */
+  emailLoginAlerts?: boolean;
 }
 
 export interface AccountActivityItem {
@@ -398,6 +400,22 @@ export interface ProductStreaming {
   rentalOfferId?: string;
 }
 
+export type ProductKind = 'DIGITAL' | 'PHYSICAL';
+
+export interface ProductKindRate {
+  vat: number;
+  pit: number;
+  total: number;
+  withheldByPlatform: boolean;
+}
+
+export interface ProductKindRates {
+  sellerType: string;
+  sellerTypeDeclared: boolean;
+  rates: Record<ProductKind, ProductKindRate>;
+  policyVersion?: string;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -406,6 +424,9 @@ export interface Product {
   description: string;
   category: ProductCategory;
   productType?: string;
+  /** Seller declaration: digital product/service vs physical goods (drives withheld tax). */
+  productKind?: ProductKind;
+  productKindDefaultedAt?: string | null;
   /** Infra provider only (runpod/openrouter/…). Not the marketplace seller. */
   provider?: string;
   infraProvider?: string;

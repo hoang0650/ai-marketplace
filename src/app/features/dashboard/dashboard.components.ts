@@ -17,6 +17,8 @@ import {
   IssuedLicense,
   ContentEpisode,
   CategoryMeta,
+  ProductKind,
+  ProductKindRates,
 } from '../../models/marketplace.models';
 import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isHiddenCategory, isHireRequestCategory, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy, isTemplateCategory, templateKind } from '../../models/categories';
 import { BuilderService, TemplateBuild } from '../builder/builder.service';
@@ -27,6 +29,8 @@ import {
   runtimeFromRunpodPublicEndpoint,
 } from '../../models/runpod-public-endpoints';
 import { TPipe } from '../../i18n/t.pipe';
+import { I18nService } from '../../i18n/i18n.service';
+import { PRODUCT_KIND_MESSAGES } from '../../i18n/extra/product-kind.messages';
 
 @Component({
   selector: 'app-dashboard-shell',
@@ -390,6 +394,34 @@ export class DashboardAnalyticsComponent implements OnInit {
               }
             </optgroup>
           </select>
+          <fieldset class="mt-3" aria-required="true">
+            <legend class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'productKind.label' | t }} *</legend>
+            <div class="flex flex-wrap gap-2">
+              @for (k of productKinds; track k) {
+                <label class="input flex cursor-pointer items-center gap-2" style="width:auto" [class.border-accent]="draft.productKind === k">
+                  <input type="radio" name="productKind" [value]="k" [(ngModel)]="draft.productKind" required />
+                  <span>{{ ('productKind.' + k) | t }}</span>
+                  @if (kindRates(); as r) {
+                    <span class="text-xs text-muted">· {{ r.rates[k].total * 100 | number: '1.0-2' }}%</span>
+                  }
+                </label>
+              }
+            </div>
+            @if (draft.productKind && kindRates(); as r) {
+              <p class="mt-1 text-xs text-muted">
+                @if (r.rates[draft.productKind].withheldByPlatform) {
+                  {{ 'productKind.rateLine' | t: kindRateParams(r, draft.productKind) }}
+                } @else if (r.sellerTypeDeclared) {
+                  {{ 'productKind.selfDeclare' | t }}
+                } @else {
+                  {{ 'productKind.undeclared' | t }}
+                }
+              </p>
+            }
+            @if (kindError) {
+              <p class="mt-1 text-xs" style="color:#dc2626">{{ kindError }}</p>
+            }
+          </fieldset>
           @if (isTalentOnly()) {
             <p class="mt-1 text-xs text-muted">Tài khoản dịch vụ chuyên môn chỉ đăng được gói dịch vụ giá cố định: Làm web, Làm app, Marketing, SEO, Creator, Tự động hóa.</p>
           }
@@ -595,6 +627,16 @@ export class DashboardAnalyticsComponent implements OnInit {
             <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ categoryLabel(p.category) }}</p>
             <a [routerLink]="['/product', p.slug]" class="font-display text-xl no-underline">{{ p.name }}</a>
             <p class="text-sm text-muted">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number:'1.1-1' }}</p>
+            <label class="mt-1 flex items-center gap-2 text-xs text-muted">
+              {{ 'productKind.label' | t }}:
+              <select class="input" style="width:auto;padding:2px 8px" [ngModel]="p.productKind || 'DIGITAL'" (ngModelChange)="setKind(p, $event)" [name]="'kind-' + p.id">
+                @for (k of productKinds; track k) {
+                  <option [ngValue]="k">{{ ('productKind.' + k) | t }}</option>
+                }
+              </select>
+              @if (kindRates(); as r) { <span>{{ r.rates[p.productKind || 'DIGITAL'].total * 100 | number: '1.0-2' }}%</span> }
+              @if (p.productKindDefaultedAt) { <span class="text-[10px] uppercase">({{ 'productKind.defaulted' | t }})</span> }
+            </label>
             @if (workspaceKind(p.category) === 'voice') {
               <p class="mt-1 text-xs text-muted">
                 {{ p.category === 'voice-preset' ? 'Giọng sàn VieNeu' : 'Giọng clone VieNeu' }}
@@ -697,6 +739,9 @@ export class DashboardProductsComponent implements OnInit {
   private readonly builder = inject(BuilderService);
   private readonly route = inject(ActivatedRoute);
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly i18n = inject(I18nService);
+  private readonly i18nT = (key: string) => this.i18n.t(key);
+  private readonly _kindMessages = this.i18n.extend(PRODUCT_KIND_MESSAGES);
   readonly products = signal<Product[]>([]);
   readonly chapters = signal<ContentEpisode[]>([]);
   readonly categories = CATEGORY_META;
@@ -733,9 +778,13 @@ export class DashboardProductsComponent implements OnInit {
   chapterBusy = false;
   chapterError = '';
   draft = this.emptyDraft();
+  readonly productKinds: ProductKind[] = ['DIGITAL', 'PHYSICAL'];
+  readonly kindRates = signal<ProductKindRates | null>(null);
+  kindError = '';
 
   ngOnInit(): void {
     this.reload();
+    this.productsApi.productKindRates().subscribe({ next: (r) => this.kindRates.set(r), error: () => {} });
     if (this.isTalentOnly()) {
       this.draft.category = 'hire-build-web';
       this.onCategoryChange();
@@ -794,6 +843,7 @@ export class DashboardProductsComponent implements OnInit {
       tagline: '',
       description: '',
       category: 'text-to-text' as ProductCategory,
+      productKind: '' as ProductKind | '',
       pricingModel: 'usage' as PricingModel,
       price: 29,
       usageRate: 0.05,
@@ -955,9 +1005,31 @@ export class DashboardProductsComponent implements OnInit {
     this.productsApi.list({ creatorSlug: slug, includeHidden: true }).subscribe((items) => this.products.set(items));
   }
 
+  kindRateParams(r: ProductKindRates, kind: ProductKind): Record<string, string> {
+    const pct = (n: number) => String(Math.round(n * 10000) / 100);
+    const x = r.rates[kind];
+    return { vat: pct(x.vat), pit: pct(x.pit), total: pct(x.total) };
+  }
+
+  setKind(p: Product, kind: ProductKind): void {
+    const prev = p.productKind;
+    p.productKind = kind;
+    p.productKindDefaultedAt = null;
+    this.productsApi.update(p.id, { productKind: kind }).subscribe({
+      error: () => {
+        p.productKind = prev;
+      },
+    });
+  }
+
   create(): void {
     if (this.publishing) return;
     this.publishError = '';
+    this.kindError = '';
+    if (!this.draft.productKind) {
+      this.kindError = this.i18nT('productKind.required');
+      return;
+    }
     if (this.isVoiceDraft() && !String(this.draft.voiceSampleUrl || '').trim()) {
       this.voiceUploadError = 'Upload MP3 giọng của bạn trước — hệ thống sẽ tự clone.';
       return;
@@ -1063,6 +1135,7 @@ export class DashboardProductsComponent implements OnInit {
         creatorSlug: user?.creatorSlug || 'nova-labs',
         creatorName: user?.name || 'Creator',
         category: this.draft.category,
+        productKind: this.draft.productKind || 'DIGITAL',
         pricing,
         affiliateRate: this.draftAffiliateRate(),
         contentMeta,
@@ -1124,6 +1197,7 @@ export class DashboardProductsComponent implements OnInit {
         creatorSlug: user?.creatorSlug || 'nova-labs',
         creatorName: user?.name || 'Creator',
         category: this.draft.category,
+        productKind: this.draft.productKind || 'DIGITAL',
         pricing,
         affiliateRate: this.draftAffiliateRate(),
         coverUrl: this.draft.coverUrl || undefined,

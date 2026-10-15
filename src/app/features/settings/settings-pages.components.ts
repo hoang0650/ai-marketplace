@@ -429,6 +429,15 @@ export class SettingsConnectionsComponent extends Flash implements OnInit {
           <input type="checkbox" [(ngModel)]="personalizeAds" name="pa" [disabled]="busy()" (ngModelChange)="persist()" />
         </label>
       </div>
+      <div class="row">
+        <div>
+          <strong>{{ 'set.feed.loginMail' | t }}</strong>
+          <p>{{ 'set.feed.loginMailDesc' | t }}</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="emailLoginAlerts" name="ela" [disabled]="busy()" (ngModelChange)="persist()" />
+        </label>
+      </div>
     </section>
     @if (msg()) {
       <p class="toast" [class.error]="error()" role="status">{{ msg() }}</p>
@@ -452,6 +461,7 @@ export class SettingsFeedComponent extends Flash implements OnInit {
   readonly busy = signal(false);
   personalizeContent = false;
   personalizeAds = false;
+  emailLoginAlerts = true;
 
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('set.feed.title') });
@@ -462,7 +472,7 @@ export class SettingsFeedComponent extends Flash implements OnInit {
     this.busy.set(true);
     this.auth
       .updateProfile({
-        preferences: { personalizeContent: this.personalizeContent, personalizeAds: this.personalizeAds },
+        preferences: { personalizeContent: this.personalizeContent, personalizeAds: this.personalizeAds, emailLoginAlerts: this.emailLoginAlerts },
       })
       .subscribe({
         next: () => {
@@ -481,5 +491,6 @@ export class SettingsFeedComponent extends Flash implements OnInit {
     const prefs = this.auth.user()?.preferences;
     this.personalizeContent = !!prefs?.personalizeContent;
     this.personalizeAds = !!prefs?.personalizeAds;
+    this.emailLoginAlerts = prefs?.emailLoginAlerts !== false;
   }
 }

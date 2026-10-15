@@ -62,7 +62,7 @@ import {
   ContentEpisode,
   ContentUnlock,
 } from '../models/marketplace.models';
-import { CategoryMeta, StreamDevice } from '../models/marketplace.models';
+import { CategoryMeta, ProductKindRates, StreamDevice } from '../models/marketplace.models';
 import {
   Deployment,
   DeploymentRuntime,
@@ -153,6 +153,11 @@ export class ProductService {
 
   update(id: string, product: Partial<Product>): Observable<Product> {
     return this.http.put<Product>(`${this.base}/products/${id}`, product);
+  }
+
+  /** Withheld tax rate per product kind for the signed-in seller's type. */
+  productKindRates(): Observable<ProductKindRates> {
+    return this.http.get<ProductKindRates>(`${this.base}/sellers/me/product-kind-rates`);
   }
 
   remove(id: string): Observable<{ ok: boolean }> {
