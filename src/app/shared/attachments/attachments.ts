@@ -48,7 +48,7 @@ export function fileSize(n: number): string {
 export class AttachmentService {
   private readonly http = inject(HttpClient);
 
-  upload(file: File, scope: 'chat' | 'hire', scopeId: string): Observable<FileAttachment> {
+  upload(file: File, scope: 'chat' | 'hire' | 'complaint', scopeId: string): Observable<FileAttachment> {
     const form = new FormData();
     form.append('scope', scope);
     form.append('scopeId', scopeId);
