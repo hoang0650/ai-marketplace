@@ -335,7 +335,8 @@ export const NAV_SECTIONS: NavSection[] = ([
     titleKey: 'group.apis',
     links: [
       { path: '/models', labelKey: 'hub.models' },
-      ...(['api-endpoint', 'inference'] as ProductCategory[]).map(catLink),
+      // 'Bán API' merged into 'Suy luận' (inference) — one entry, both categories listed.
+      ...(['inference'] as ProductCategory[]).map(catLink),
       // Fine-tune + training-service listings merged into the training hub.
       { path: '/training', labelKey: 'nav.fineTuneTraining' },
     ],
@@ -382,7 +383,19 @@ export const DIGITAL_CATEGORIES: CategoryMeta[] = [];
 export const CATEGORY_META: CategoryMeta[] = [...AI_CATEGORIES];
 
 /** Categories buyers can browse and sellers can list in right now. */
-export const VISIBLE_CATEGORIES: CategoryMeta[] = CATEGORY_META.filter((c) => !isHiddenCategory(c.id));
+/** Categories folded into another for browsing (old listings keep their category; routes redirect). */
+export const MERGED_CATEGORY: Partial<Record<ProductCategory, ProductCategory>> = { 'api-endpoint': 'inference' };
+export function canonicalCategory(id?: ProductCategory | string | null): string {
+  const c = String(id || '');
+  return MERGED_CATEGORY[c as ProductCategory] || c;
+}
+/** Raw categories shown under a (canonical) browse category. */
+export function categoriesFor(id: ProductCategory | string): ProductCategory[] {
+  const c = canonicalCategory(id) as ProductCategory;
+  return [c, ...(Object.keys(MERGED_CATEGORY) as ProductCategory[]).filter((k) => MERGED_CATEGORY[k] === c)];
+}
+
+export const VISIBLE_CATEGORIES: CategoryMeta[] = CATEGORY_META.filter((c) => !isHiddenCategory(c.id) && !MERGED_CATEGORY[c.id]);
 
 export function withoutHiddenProducts<T extends { category?: string }>(items: T[] | null | undefined): T[] {
   return (items || []).filter((p) => !isHiddenCategory(p.category));
