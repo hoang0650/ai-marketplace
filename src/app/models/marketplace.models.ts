@@ -640,9 +640,10 @@ export interface ChatMessage {
   id: string;
   conversationId: string;
   senderId: string;
-  kind: 'text' | 'image';
+  kind: 'text' | 'image' | 'file';
   body: string;
   imageUrl: string;
+  attachments?: import('../shared/attachments/attachments').FileAttachment[];
   createdAt: string;
 }
 

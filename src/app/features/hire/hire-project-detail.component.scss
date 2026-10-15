@@ -209,3 +209,13 @@
 .hp-msg p { margin: .1rem 0 0; white-space: pre-line; } .hp-msg small { opacity: .6; font-size: .7rem; }
 .hp-msg--me { justify-self: end; background: rgba(201,169,97,.18); }
 .hp-chat__form { display: flex; gap: .4rem; } .hp-chat__form .input { flex: 1; min-width: 0; }
+
+.hp-files { margin-top: 6px; display: grid; gap: 4px; }
+.hp-files small { opacity: .7; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+.hp-pending { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.hp-pending__chip { display: inline-flex; gap: 6px; align-items: center; padding: 4px 8px; border-radius: 999px; font-size: 12px;
+  background: color-mix(in srgb, currentColor 8%, transparent); }
+.hp-pending__chip button { border: 0; background: none; color: inherit; cursor: pointer; font-size: 15px; }
+.hp-attach { flex: none; display: grid; place-items: center; width: 40px; border: 0; border-radius: 10px; cursor: pointer; color: inherit;
+  background: color-mix(in srgb, currentColor 8%, transparent); }
+.hp-file-input { font-size: 13px; }

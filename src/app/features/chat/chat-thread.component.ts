@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, ElementRef, OnDestroy, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ChatService, UploadService } from '../../services/api.services';
+import { ChatService } from '../../services/api.services';
 import { AuthService } from '../../services/auth.service';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
@@ -10,11 +10,12 @@ import { TPipe } from '../../i18n/t.pipe';
 import { ChatConversation, ChatMessage } from '../../models/marketplace.models';
 import { containsBlockedLink } from '../../utils/chat-security';
 import { ChatListComponent } from './chat-list.component';
+import { ATTACH_ACCEPT, AttachmentService, AttachmentsComponent, FileAttachment, attachmentProblem, fileSize } from '../../shared/attachments/attachments';
 
 @Component({
   selector: 'app-chat-thread',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule, TPipe, ChatListComponent],
+  imports: [RouterLink, DatePipe, FormsModule, TPipe, ChatListComponent, AttachmentsComponent],
   templateUrl: './chat-thread.component.html',
   styleUrl: './chat.scss',
 })
@@ -22,7 +23,7 @@ export class ChatThreadComponent implements OnInit, OnDestroy {
   @ViewChild('scroller') scroller?: ElementRef<HTMLElement>;
 
   private readonly api = inject(ChatService);
-  private readonly uploads = inject(UploadService);
+  private readonly attach = inject(AttachmentService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
@@ -38,6 +39,10 @@ export class ChatThreadComponent implements OnInit, OnDestroy {
   readonly error = signal('');
   readonly busy = signal(false);
   draft = '';
+  readonly accept = ATTACH_ACCEPT;
+  readonly pending = signal<FileAttachment[]>([]);
+  readonly uploading = signal(0);
+  readonly size = fileSize;
 
   /** Messages with day separators and sender groups (same sender within 5 minutes). */
   readonly rows = computed(() => {
@@ -104,7 +109,11 @@ export class ChatThreadComponent implements OnInit, OnDestroy {
   }
 
   canSend(): boolean {
-    return !!this.draft.trim();
+    return (!!this.draft.trim() || this.pending().length > 0) && !this.uploading();
+  }
+
+  removePending(id: string): void {
+    this.pending.update((l) => l.filter((a) => a.id !== id));
   }
 
   onEnter(ev: Event): void {
@@ -117,15 +126,17 @@ export class ChatThreadComponent implements OnInit, OnDestroy {
   send(ev?: Event): void {
     ev?.preventDefault();
     const text = this.draft.trim();
-    if (!text || this.busy() || !this.id()) return;
+    const files = this.pending();
+    if ((!text && !files.length) || this.busy() || this.uploading() || !this.id()) return;
     if (containsBlockedLink(text)) {
       this.error.set(this.i18n.t('chat.noLinks'));
       return;
     }
     this.busy.set(true);
-    this.api.send(this.id(), { body: text }).subscribe({
+    this.api.send(this.id(), { body: text || undefined, ...(files.length ? { attachmentIds: files.map((a) => a.id) } : {}) }).subscribe({
       next: (msg) => {
         this.draft = '';
+        this.pending.set([]);
         this.error.set('');
         this.messages.update((rows) => [...rows, msg]);
         this.busy.set(false);
@@ -141,32 +152,27 @@ export class ChatThreadComponent implements OnInit, OnDestroy {
 
   onFile(ev: Event): void {
     const input = ev.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const picked = Array.from(input.files || []);
     input.value = '';
-    if (!file || this.busy() || !this.id()) return;
-    this.busy.set(true);
-    this.uploads.uploadImage(file).subscribe({
-      next: (up) => {
-        this.api.send(this.id(), { imageUrl: up.url, body: this.draft.trim() || undefined }).subscribe({
-          next: (msg) => {
-            this.draft = '';
-            this.error.set('');
-            this.messages.update((rows) => [...rows, msg]);
-            this.busy.set(false);
-            this.stickToBottom = true;
-            this.scrollDown();
-          },
-          error: (err) => {
-            this.error.set(this.mapErr(err));
-            this.busy.set(false);
-          },
-        });
-      },
-      error: (err) => {
-        this.error.set(err?.error?.message || this.i18n.t('chat.err.upload'));
-        this.busy.set(false);
-      },
-    });
+    if (!picked.length || !this.id()) return;
+    for (const file of picked.slice(0, 10 - this.pending().length)) {
+      const bad = attachmentProblem(file);
+      if (bad) {
+        this.error.set(`${file.name}: ${this.i18n.t(bad)}`);
+        continue;
+      }
+      this.uploading.update((n) => n + 1);
+      this.attach.upload(file, 'chat', this.id()).subscribe({
+        next: (a) => {
+          this.pending.update((l) => [...l, a]);
+          this.uploading.update((n) => n - 1);
+        },
+        error: (err) => {
+          this.error.set(`${file.name}: ${this.mapErr(err, 'chat.err.upload')}`);
+          this.uploading.update((n) => n - 1);
+        },
+      });
+    }
   }
 
   private refresh(first: boolean): void {
