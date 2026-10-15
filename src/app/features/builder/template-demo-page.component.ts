@@ -6,15 +6,16 @@ import { I18nService } from '../../i18n/i18n.service';
 import { environment } from '../../../environments/environment';
 import { BuilderService, TemplateMeta } from './builder.service';
 import { PhoneOs, PhoneSimulatorComponent } from './phone-simulator.component';
+import { ExpoQrComponent } from './expo-qr.component';
 
 /**
  * /template-demo/:productId — full-page phone simulator for an app template demo, with a QR code
- * that opens this page on a real phone (the demo runs in the browser runtime, not Expo Go).
+ * Expo Go QR (Snack, runs natively) for app templates, plus the web-runtime QR as a fallback.
  */
 @Component({
   selector: 'app-template-demo-page',
   standalone: true,
-  imports: [TPipe, RouterLink, PhoneSimulatorComponent],
+  imports: [TPipe, RouterLink, PhoneSimulatorComponent, ExpoQrComponent],
   template: `
     <section class="td">
       <header class="td__head">
@@ -35,16 +36,16 @@ import { PhoneOs, PhoneSimulatorComponent } from './phone-simulator.component';
           <div class="td__grid">
             <app-phone-simulator [url]="m.demoUrl" [title]="name() || 'Template demo'" [initialOs]="initialOs()" [maxHeight]="820" />
             <aside class="td__side">
-              <div class="td__card">
-                <h2>{{ 'builder.sim.qrTitle' | t }}</h2>
-                <img class="td__qr" [src]="qrSrc()" width="200" height="200" [alt]="'builder.sim.qrAlt' | t" />
-                <p>{{ 'builder.sim.qrHint' | t }}</p>
-                <a class="td__open" [href]="m.demoUrl" target="_blank" rel="noopener">{{ 'builder.sim.openRaw' | t }} ↗</a>
-              </div>
-              <div class="td__card td__card--note">
-                <h3>{{ 'builder.sim.expoTitle' | t }}</h3>
-                <p>{{ 'builder.sim.expoNote' | t }}</p>
-              </div>
+              @if (m.kind === 'app') {
+                <app-expo-qr [infoUrl]="expoInfo()" [qrUrl]="expoQr()" [version]="m.version" [webQrUrl]="qrSrc()" [webUrl]="m.demoUrl" />
+              } @else {
+                <div class="td__card">
+                  <h2>{{ 'builder.sim.qrTitle' | t }}</h2>
+                  <img class="td__qr" [src]="qrSrc()" width="200" height="200" [alt]="'builder.sim.qrAlt' | t" />
+                  <p>{{ 'builder.sim.qrHint' | t }}</p>
+                  <a class="td__open" [href]="m.demoUrl" target="_blank" rel="noopener">{{ 'builder.sim.openRaw' | t }} ↗</a>
+                </div>
+              }
             </aside>
           </div>
         } @else {
@@ -62,7 +63,7 @@ import { PhoneOs, PhoneSimulatorComponent } from './phone-simulator.component';
     .td__head h1 { margin: .2rem 0; font-size: 1.6rem; font-weight: 800; }
     .td__sub { margin: 0; opacity: .75; max-width: 40rem; }
     .td__err { color: #e53935; }
-    .td__grid { display: grid; grid-template-columns: minmax(0, 1fr) 17rem; gap: 1.5rem; align-items: start; }
+    .td__grid { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; gap: 1.5rem; align-items: start; }
     .td__side { display: grid; gap: 1rem; }
     .td__card { border: 1px solid rgba(127,127,127,.3); border-radius: 16px; padding: 1rem; display: grid; gap: .6rem; justify-items: center; text-align: center; }
     .td__card h2, .td__card h3 { margin: 0; font-size: 1rem; font-weight: 700; }
@@ -85,6 +86,8 @@ export class TemplateDemoPageComponent {
   readonly initialOs = signal<PhoneOs>(this.route.snapshot.queryParamMap.get('os') === 'android' ? 'android' : 'ios');
   readonly meta = signal<TemplateMeta | null>(null);
   readonly error = signal('');
+  readonly expoInfo = computed(() => `${environment.apiUrl}/builder/templates/${this.productId}/expo`);
+  readonly expoQr = computed(() => `${environment.apiUrl}/builder/templates/${this.productId}/expo-qr.svg`);
   readonly qrSrc = computed(() => `${environment.apiUrl}/builder/templates/${this.productId}/demo-qr.svg`);
 
   constructor() {
