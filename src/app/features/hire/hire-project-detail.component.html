@@ -19,6 +19,9 @@
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <span class="hp-badge" [attr.data-status]="p.status">{{ 'hire.status.' + p.status | t }}</span>
+        @if (p.role === 'buyer' && ['active', 'completed', 'terminated'].includes(p.status)) {
+          <button type="button" class="btn btn-outline hp-danger" (click)="showComplaint = !showComplaint">⚠ {{ 'hire.complaint.btn' | t }}</button>
+        }
         @if (p.role === 'buyer') {
           <button type="button" class="btn btn-outline" (click)="openChat()">{{ 'chat.withSeller' | t }}</button>
         } @else {
@@ -27,11 +30,52 @@
       </div>
     </header>
 
+    @if (started()) {
+      <div class="hp-success" role="status">
+        <strong>✓ {{ 'hire.pkg.startedTitle' | t }}</strong>
+        <span>{{ 'hire.pkg.startedBody' | t }}</span>
+        <button type="button" (click)="dismissStarted()" aria-label="close">×</button>
+      </div>
+    }
+
     @if (actionError()) {
       <p class="hp-alert">
         {{ actionError() }}
         @if (p.role === 'buyer') { · <a routerLink="/wallet">{{ 'cart.topUp' | t }}</a> }
       </p>
+    }
+
+    @if (showComplaint && p.role === 'buyer') {
+      <section class="panel hp-complaint">
+        <h2 class="hp-h2">{{ 'hire.complaint.title' | t }}</h2>
+        <p class="text-xs text-muted">{{ 'hire.complaint.lead' | t }}</p>
+        <textarea class="input" rows="3" [(ngModel)]="complaintNote" name="complaintNote" [placeholder]="'hire.complaint.ph' | t"></textarea>
+        <div class="flex gap-2">
+          <button type="button" class="btn btn-outline hp-danger" [disabled]="busy() || complaintNote.trim().length < 8" (click)="fileComplaint()">{{ 'hire.complaint.submit' | t }}</button>
+          <button type="button" class="btn btn-outline" (click)="showComplaint = false">{{ 'train.cancel' | t }}</button>
+        </div>
+      </section>
+    }
+    @if (p.complaintId && p.status !== 'terminated') {
+      <p class="hp-note">⚠ {{ 'hire.complaint.open' | t }} · <a [routerLink]="[p.role === 'seller' ? '/sell/complaints' : '/complaints', p.complaintId]">{{ 'hire.term.complaint' | t }}</a></p>
+    }
+
+    <!-- Phase progress -->
+    @if (p.milestones.length) {
+      <section class="hp-progress" [attr.aria-label]="'hire.pkg.progress' | t">
+        <div class="hp-progress__bar"><span [style.width.%]="(p.paidTotal / (p.quote.amount || 1)) * 100"></span></div>
+        <p class="text-xs text-muted">{{ 'hire.pkg.paid' | t: { paid: ((p.paidTotal | currency: p.currency : 'symbol-narrow') || ''), total: ((p.quote.amount | currency: p.currency : 'symbol-narrow') || '') } }}</p>
+        <ol class="hp-steps">
+          @for (m of p.milestones; track m.id) {
+            <li [attr.data-status]="m.status">
+              <b>{{ $index + 1 }}</b>
+              <span class="hp-steps__t">{{ m.title }}</span>
+              <span class="hp-steps__a">{{ m.amount | currency: p.currency : 'symbol-narrow' }}</span>
+              <small>{{ 'hire.ms.status.' + m.status | t }} · {{ m.dueAt | date: 'dd/MM' }}</small>
+            </li>
+          }
+        </ol>
+      </section>
     }
 
     <div class="hp-grid">
@@ -266,6 +310,25 @@
             }
           </section>
         }
+        <section class="panel hp-chat">
+          <h2 class="hp-h2">{{ 'hire.chat.title' | t }}</h2>
+          <div class="hp-chat__log" role="log" aria-live="polite">
+            @for (m of p.messages || []; track m.id) {
+              <div class="hp-msg" [class.hp-msg--me]="m.actor === p.role">
+                <small>{{ (m.actor === 'buyer' ? p.buyerName : p.sellerName) || m.actor }} · {{ m.at | date: 'dd/MM HH:mm' }}</small>
+                <p>{{ m.body }}</p>
+              </div>
+            } @empty {
+              <p class="text-xs text-muted">{{ 'hire.chat.empty' | t }}</p>
+            }
+          </div>
+          @if (p.role) {
+            <form class="hp-chat__form" (ngSubmit)="sendMessage()">
+              <input class="input" name="msgBody" [(ngModel)]="msgBody" maxlength="4000" [placeholder]="'hire.chat.ph' | t" />
+              <button type="submit" class="btn btn-fill" [disabled]="busy() || !msgBody.trim()">{{ 'hire.chat.send' | t }}</button>
+            </form>
+          }
+        </section>
         <section class="panel">
           <h2 class="hp-h2">{{ 'hire.timeline' | t }}</h2>
           <ul class="hp-events">

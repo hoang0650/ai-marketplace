@@ -187,3 +187,25 @@
   list-style: none;
   font-size: 0.85rem;
 }
+
+.hp-success { display: flex; gap: .6rem; align-items: center; margin: 1rem 0; padding: .8rem 1rem; border-radius: 12px; background: rgba(47,143,91,.12); color: #22714a; font-size: .9rem; }
+.hp-success button { margin-left: auto; border: 0; background: none; font-size: 1.2rem; cursor: pointer; color: inherit; }
+.hp-note { margin: .6rem 0; font-size: .85rem; color: #a86f00; }
+.hp-complaint { display: grid; gap: .6rem; margin: 1rem 0; border-color: rgba(208,69,58,.4); }
+.hp-progress { margin: 1rem 0; padding: 1rem; border: 1px solid var(--color-line, #e5e2da); border-radius: 14px; background: var(--color-surface, #fff); }
+.hp-progress__bar { height: 6px; border-radius: 99px; background: rgba(127,127,127,.15); overflow: hidden; }
+.hp-progress__bar span { display: block; height: 100%; background: #c9a961; }
+.hp-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .6rem; margin: .8rem 0 0; padding: 0; list-style: none; }
+.hp-steps li { display: grid; grid-template-columns: auto 1fr auto; gap: .1rem .5rem; align-items: center; padding: .6rem .7rem; border-radius: 10px; border: 1px solid var(--color-line, #e5e2da); font-size: .82rem; }
+.hp-steps li b { grid-row: span 2; width: 1.6rem; height: 1.6rem; border-radius: 50%; display: grid; place-items: center; background: rgba(127,127,127,.15); font-size: .75rem; }
+.hp-steps li small { grid-column: 2 / 4; opacity: .65; }
+.hp-steps__a { font-weight: 700; }
+.hp-steps li[data-status='approved'] { border-color: rgba(47,143,91,.45); } .hp-steps li[data-status='approved'] b { background: #2f8f5b; color: #fff; }
+.hp-steps li[data-status='in_progress'] b, .hp-steps li[data-status='submitted'] b { background: #c9a961; color: #111; }
+.hp-steps li[data-status='submitted'] { border-color: #c9a961; }
+.hp-steps li[data-status='cancelled'] { opacity: .5; }
+.hp-chat__log { display: grid; gap: .5rem; max-height: 320px; overflow: auto; margin: .5rem 0; }
+.hp-msg { max-width: 85%; padding: .45rem .7rem; border-radius: 12px; background: rgba(127,127,127,.1); font-size: .85rem; }
+.hp-msg p { margin: .1rem 0 0; white-space: pre-line; } .hp-msg small { opacity: .6; font-size: .7rem; }
+.hp-msg--me { justify-self: end; background: rgba(201,169,97,.18); }
+.hp-chat__form { display: flex; gap: .4rem; } .hp-chat__form .input { flex: 1; min-width: 0; }

@@ -890,6 +890,28 @@ export class ProductDetailComponent implements OnInit {
     );
   }
 
+  /** Opens the phase workspace for a service package (no charge until a phase is approved). */
+  startServicePackage(): void {
+    const p = this.product();
+    if (!p || this.hireBusy()) return;
+    if (!this.auth.user()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+    this.hireBusy.set(true);
+    this.hireError.set('');
+    this.hireService.startPackage(p.id, this.hireBrief.trim() || undefined).subscribe({
+      next: (project) => {
+        this.hireBusy.set(false);
+        void this.router.navigate(['/hire/projects', project.id], { queryParams: project.existing ? {} : { started: '1' } });
+      },
+      error: (err) => {
+        this.hireBusy.set(false);
+        this.hireError.set(err?.error?.message || this.i18n.t('hire.err.generic'));
+      },
+    });
+  }
+
   submitHireRequest(): void {
     const p = this.product();
     if (!p || this.hireBusy()) return;
@@ -1018,9 +1040,9 @@ export class ProductDetailComponent implements OnInit {
       this.launchOpenClaw();
       return;
     }
-    // Professional services are fixed packages paid from the wallet (Quy chế 2.1) — no quote flow.
+    // Professional services: fixed package paid per phase after the buyer approves each one (Đề án / Quy chế).
     if (isHireRequestCategory(p.category)) {
-      this.checkout();
+      this.startServicePackage();
       return;
     }
     if (isHireCategory(p.category)) {
