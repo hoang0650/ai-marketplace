@@ -857,7 +857,7 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
     if (p.streaming?.platformRental) {
-      void this.router.navigate(['/gpu'], { queryParams: offer ? { offer } : {} });
+      void this.router.navigate(['/training/gpu'], { queryParams: offer ? { offer } : {} });
       return;
     }
     if (!this.streamOnPc(p)) {

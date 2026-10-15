@@ -1,3 +1,4 @@
+import { WalletBalanceService } from '../../services/wallet-balance.service';
 import { Component, DestroyRef, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -433,7 +434,9 @@ export class TrainingStudioComponent implements OnInit {
   readonly uploads = signal<UploadRow[]>([]);
   readonly jobs = signal<TrainingJob[]>([]);
   readonly offers = signal<GpuOffer[]>([]);
-  readonly available = signal(0);
+  /** Same source as /wallet and the header: /wallet/summary.available (works even when GPU offers fail). */
+  private readonly walletBalance = inject(WalletBalanceService);
+  readonly available = this.walletBalance.available;
   readonly minPrepayHours = signal(1);
   readonly taskSel = signal<TrainingTask>('action-recognition');
   readonly tasks = computed(() => TASKS[this.source()]);
@@ -481,6 +484,7 @@ export class TrainingStudioComponent implements OnInit {
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('train.title') });
     if (!this.browser) return;
+    this.walletBalance.refresh();
     this.loadDatasets();
     this.loadJobs();
     this.gpu.offers().subscribe({
@@ -488,7 +492,6 @@ export class TrainingStudioComponent implements OnInit {
         const offers = [...(r.offers || [])].sort((a, b) => a.pricePerHour - b.pricePerHour);
         this.offers.set(offers);
         this.offerId = offers.find((o) => o.availability !== 'unknown')?.id || offers[0]?.id || '';
-        this.available.set(r.wallet?.available ?? 0);
         this.minPrepayHours.set(r.limits?.minPrepayHours ?? 1);
       },
       error: (e) => this.fail(e),

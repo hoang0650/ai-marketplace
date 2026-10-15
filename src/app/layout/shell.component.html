@@ -233,36 +233,26 @@
                 </div>
                 <ul class="user-menu__list">
                   <li><a routerLink="/profile" (click)="closeUserMenu()">{{ 'nav.profile' | t }}</a></li>
-                  <li><a routerLink="/wallet" (click)="closeUserMenu()">{{ 'nav.wallet' | t }}</a></li>
-                  <li><a routerLink="/usage" (click)="closeUserMenu()">{{ 'nav.usage' | t }}</a></li>
-                  <li><a routerLink="/gpu" (click)="closeUserMenu()">{{ 'nav.gpuRent' | t }}</a></li>
-                  <li><a routerLink="/training" (click)="closeUserMenu()">{{ 'nav.training' | t }}</a></li>
-                  <li><a routerLink="/build" (click)="closeUserMenu()">{{ 'nav.builder' | t }}</a></li>
+                  <li>
+                    <a routerLink="/wallet" class="user-menu__wallet" (click)="closeUserMenu()">
+                      <span>{{ 'nav.wallet' | t }}</span>
+                      @if (walletBalance.loaded()) {
+                        <span class="user-menu__bal">{{ walletBalance.available() | currency: walletBalance.currency() : 'symbol-narrow' : '1.2-2' }}</span>
+                      }
+                    </a>
+                  </li>
                   <li><a routerLink="/messages" (click)="closeUserMenu()">{{ 'nav.messages' | t }}</a></li>
-                  @if (auth.isAdmin()) {
-                    <li><a routerLink="/admin" (click)="closeUserMenu()">{{ 'nav.admin' | t }}</a></li>
-                    <li><a routerLink="/admin/finance" (click)="closeUserMenu()">{{ 'admin.finance.title' | t }}</a></li>
-                    <li><a routerLink="/admin/kyc" (click)="closeUserMenu()">{{ 'admin.kyc.title' | t }}</a></li>
-                    <li><a routerLink="/admin/invoices" (click)="closeUserMenu()">{{ 'admin.inv.title' | t }}</a></li>
-                    <li><a routerLink="/admin/agent-purges" (click)="closeUserMenu()">{{ 'admin.agentPurge.title' | t }}</a></li>
-                    <li><a routerLink="/admin/community-agents" (click)="closeUserMenu()">{{ 'admin.cvote.menu' | t }}</a></li>
-                  }
-                  @if (auth.isTaxStaff()) {
-                    <li><a routerLink="/admin/tax" (click)="closeUserMenu()">{{ 'admin.tax.title' | t }}</a></li>
-                  }
                   @if (auth.isSeller()) {
                     <li><a routerLink="/sell" (click)="closeUserMenu()">{{ 'nav.shop' | t }}</a></li>
                   } @else if (auth.isTalent() || auth.isFreelancer() || auth.isEmployer()) {
                     <li><a routerLink="/sell" (click)="closeUserMenu()">{{ ('sell.ws.' + auth.user()?.role + '.title') | t }}</a></li>
                   }
-                  @if (workEnabled && auth.isTalent()) {
-                    <li><a routerLink="/work/talents" (click)="closeUserMenu()">{{ 'signup.role.talent' | t }}</a></li>
-                  }
-                  @if (workEnabled && (auth.isFreelancer() || auth.isEmployer())) {
-                    <li><a routerLink="/work/manage" (click)="closeUserMenu()">{{ 'work.title' | t }}</a></li>
-                  }
-                  <li><a routerLink="/affiliate" (click)="closeUserMenu()">{{ 'aff.nav' | t }}</a></li>
                   <li><a routerLink="/settings" (click)="closeUserMenu()">{{ 'nav.settings' | t }}</a></li>
+                  @if (auth.isAdmin()) {
+                    <li><a routerLink="/admin" (click)="closeUserMenu()">{{ 'nav.adminHub' | t }}</a></li>
+                  } @else if (auth.isTaxStaff()) {
+                    <li><a routerLink="/admin/tax" (click)="closeUserMenu()">{{ 'nav.adminHub' | t }}</a></li>
+                  }
                 </ul>
                 <div class="user-menu__foot">
                   <button type="button" class="user-menu__logout" (click)="logout()">{{ 'nav.logout' | t }}</button>

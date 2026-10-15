@@ -1168,3 +1168,7 @@
   white-space: nowrap;
   border: 0;
 }
+
+.user-menu__list a.user-menu__wallet { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.user-menu__list a.user-menu__wallet span { width: auto; text-align: left; opacity: 1; }
+.user-menu__list a.user-menu__wallet .user-menu__bal { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.8rem; opacity: 0.8; }
