@@ -641,6 +641,15 @@ export const routes: Routes = [
           import('./features/usage/usage.component').then((m) => m.UsageComponent),
       },
       {
+        path: 'handoff/:code',
+        loadComponent: () => import('./features/handoff/handoff-claim.component').then((m) => m.HandoffClaimComponent),
+      },
+      {
+        path: 'account/devices',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/handoff/devices-page.component').then((m) => m.DevicesPageComponent),
+      },
+      {
         path: 'account/console',
         canActivate: [authGuard],
         loadComponent: () =>

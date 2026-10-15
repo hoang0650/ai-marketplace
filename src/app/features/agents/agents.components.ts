@@ -1,3 +1,4 @@
+import { HandoffButtonComponent } from '../handoff/handoff-button.component';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, NgClass } from '@angular/common';
@@ -315,7 +316,7 @@ export class AgentMarketplaceComponent implements OnInit {
 @Component({
   selector: 'app-agent-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule, NanoclawProviderComponent],
+  imports: [RouterLink, DatePipe, FormsModule, NanoclawProviderComponent, HandoffButtonComponent],
   styleUrl: './agents.styles.scss',
   template: `
     <section class="agents-page agents-detail route-enter">
@@ -325,6 +326,9 @@ export class AgentMarketplaceComponent implements OnInit {
           <div class="agents-header__title">
             <img class="agent-icon agent-icon--lg" [src]="a.logoUrl" [alt]="a.name" width="48" height="48" />
             <h1 class="agents-title">{{ hired()?.name || a.name }}</h1>
+            @if (hired() || plan()?.active) {
+              <app-handoff-button kind="agent" [targetId]="hired()?.agentId || a.id" />
+            }
           </div>
           <div class="agents-header__actions">
             @if (isLaunchable()) {
