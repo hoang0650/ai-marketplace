@@ -133,6 +133,7 @@ export class ComplaintDetailComponent implements OnInit {
       'seller_response',
       'appeal',
       'skip_seller',
+      'message',
     ];
     return known.includes(action) ? this.i18n.t(`complaint.event.${action}`) : action;
   }
