@@ -8,6 +8,8 @@ import { firstValueFrom } from 'rxjs';
 import {
   GpuOffer,
   GpuRentalService,
+  LicensedDataset,
+  LicensedVoice,
   TrainingDataset,
   TrainingFile,
   TrainingJob,
@@ -125,6 +127,40 @@ interface UploadRow {
               <p class="text-sm text-muted">{{ 'train.noDatasets' | t }}</p>
             }
           </div>
+
+          @if (licensed().datasets.length || (source() === 'audio' && licensed().voices.length)) {
+            <div class="space-y-2 rounded-xl border border-dashed border-line p-3">
+              <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ 'train.owned.title' | t }}</p>
+              @for (l of licensed().datasets; track l.productId) {
+                <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                  <div class="min-w-0">
+                    <a class="font-semibold hover:underline" [routerLink]="['/product', l.slug]">{{ l.name }}</a>
+                    <span class="block text-xs text-muted">
+                      {{ l.fileCount }} {{ 'train.files' | t }} · {{ bytes(l.totalBytes) }} · {{ 'train.owned.expires' | t: { d: ((l.expiresAt | date: 'dd/MM/yyyy') || '') } }}
+                    </span>
+                  </div>
+                  @if (l.importedDatasetId) {
+                    <button type="button" class="btn btn-outline text-xs" (click)="openImported(l.importedDatasetId)">{{ 'train.owned.open' | t }}</button>
+                  } @else if (!l.fileCount) {
+                    <span class="text-xs text-muted">{{ 'train.owned.noFiles' | t }}</span>
+                  } @else {
+                    <button type="button" class="btn btn-fill text-xs" [disabled]="busy()" (click)="useLicensed(l.productId)">{{ 'train.owned.use' | t }}</button>
+                  }
+                </div>
+              }
+              @if (source() === 'audio') {
+                @for (v of licensed().voices; track v.productId) {
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                    <div class="min-w-0">
+                      <span class="font-semibold">🎙️ {{ v.name }}</span>
+                      <span class="block text-xs text-muted">{{ ('cat.' + v.category + '.label') | t }} · {{ 'train.owned.expires' | t: { d: ((v.expiresAt | date: 'dd/MM/yyyy') || '') } }}</span>
+                    </div>
+                    <a class="btn btn-outline text-xs" [routerLink]="['/product', v.slug]">{{ 'train.owned.useVoice' | t }}</a>
+                  </div>
+                }
+              }
+            </div>
+          }
 
           <form class="grid gap-2 sm:grid-cols-[1fr_auto]" (ngSubmit)="createDataset()">
             <input class="input" name="newName" [(ngModel)]="newName" maxlength="80" [placeholder]="'train.newDatasetPh.' + source() | t" />
@@ -486,6 +522,7 @@ export class TrainingStudioComponent implements OnInit {
     if (!this.browser) return;
     this.walletBalance.refresh();
     this.loadDatasets();
+    this.loadLicensed();
     this.loadJobs();
     this.gpu.offers().subscribe({
       next: (r) => {
@@ -538,12 +575,44 @@ export class TrainingStudioComponent implements OnInit {
     this.loadDatasets();
   }
 
+  readonly licensed = signal<{ datasets: LicensedDataset[]; voices: LicensedVoice[] }>({ datasets: [], voices: [] });
+
+  loadLicensed(): void {
+    this.api.licensed().subscribe({ next: (r) => this.licensed.set({ datasets: r.datasets || [], voices: r.voices || [] }), error: () => undefined });
+  }
+
+  /** Copy a licensed marketplace dataset into the user's training storage (once), then select it. */
+  useLicensed(productId: string): void {
+    this.busy.set(true);
+    this.api.importLicensed(productId).subscribe({
+      next: (r) => {
+        this.busy.set(false);
+        this.loadLicensed();
+        this.openImported(r.dataset.id, r.dataset.source);
+      },
+      error: (e) => {
+        this.busy.set(false);
+        this.fail(e);
+      },
+    });
+  }
+
+  openImported(id: string, source?: TrainingSource): void {
+    this.pendingSelect = id;
+    if (source && source !== this.source()) this.switchSource(source);
+    else this.loadDatasets();
+  }
+  private pendingSelect = '';
+
   loadDatasets(): void {
     this.api.listDatasets(this.source()).subscribe({
       next: (r) => {
         this.datasets.set(r.datasets || []);
         this.limits.set(r.limits);
-        if (!this.selected() && r.datasets?.length) this.selectedId.set(r.datasets[0].id);
+        if (this.pendingSelect && r.datasets?.some((d) => d.id === this.pendingSelect)) {
+          this.selectedId.set(this.pendingSelect);
+          this.pendingSelect = '';
+        } else if (!this.selected() && r.datasets?.length) this.selectedId.set(r.datasets[0].id);
       },
       error: (e) => this.fail(e),
     });

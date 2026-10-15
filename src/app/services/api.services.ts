@@ -1028,6 +1028,28 @@ export interface TrainingFile {
   createdAt: string;
 }
 
+export interface LicensedItem {
+  productId: string;
+  slug: string;
+  name: string;
+  category: string;
+  coverUrl: string;
+  sellerName: string;
+  term: 'day' | 'month' | 'year';
+  expiresAt: string;
+}
+export interface LicensedDataset extends LicensedItem {
+  fileCount: number;
+  totalBytes: number;
+  importedDatasetId: string | null;
+}
+export interface LicensedVoice extends LicensedItem {
+  voiceSource: 'clone' | 'preset';
+  voiceModes: string[];
+  sampleUrl: string;
+  ready: boolean;
+}
+
 export interface TrainingDataset {
   id: string;
   name: string;
@@ -1097,6 +1119,15 @@ export class TrainingService {
   listDatasets(source?: TrainingSource): Observable<{ datasets: TrainingDataset[]; limits: TrainingLimits }> {
     const params: Record<string, string> = source ? { source } : {};
     return this.http.get<{ datasets: TrainingDataset[]; limits: TrainingLimits }>(this.datasetsBase, { params });
+  }
+
+  /** Datasets / voices the user bought a license for on the marketplace. */
+  licensed(): Observable<{ datasets: LicensedDataset[]; voices: LicensedVoice[] }> {
+    return this.http.get<{ datasets: LicensedDataset[]; voices: LicensedVoice[] }>(`${this.datasetsBase}/licensed`);
+  }
+
+  importLicensed(productId: string): Observable<{ dataset: TrainingDataset; imported: boolean }> {
+    return this.http.post<{ dataset: TrainingDataset; imported: boolean }>(`${this.datasetsBase}/licensed/${productId}/import`, {});
   }
 
   createDataset(body: { name: string; source: TrainingSource; description?: string; hfDataset?: string }): Observable<{ dataset: TrainingDataset }> {

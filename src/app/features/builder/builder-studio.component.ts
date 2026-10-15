@@ -1,3 +1,4 @@
+import { CodeEditorComponent } from './code-editor.component';
 import {
   AfterViewInit,
   Component,
@@ -61,7 +62,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
 @Component({
   selector: 'app-builder-studio',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent, ExpoQrComponent, HandoffButtonComponent],
+  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent, ExpoQrComponent, HandoffButtonComponent, CodeEditorComponent],
   styles: [
     `
       :host { display: block; }
@@ -341,14 +342,13 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                         <button type="button" class="btn btn-fill text-xs" [disabled]="generating() || !dirty()" (click)="saveFile()">{{ 'builder.saveFile' | t }}</button>
                       </div>
                     </div>
-                    <textarea
-                      class="input min-h-0 flex-1 resize-none font-mono text-xs leading-relaxed"
-                      spellcheck="false"
-                      [readonly]="generating()"
-                      [ngModel]="draft()"
-                      (ngModelChange)="draft.set($event)"
-                      (keydown.control.s)="$event.preventDefault(); saveFile()"
-                    ></textarea>
+                    <app-code-editor
+                      [value]="draft()"
+                      [path]="selectedPath()"
+                      [readOnly]="generating()"
+                      (changed)="draft.set($event)"
+                      (save)="dirty() && !generating() && saveFile()"
+                    />
                   } @else {
                     <p class="text-sm text-muted">{{ 'builder.pickFile' | t }}</p>
                   }
