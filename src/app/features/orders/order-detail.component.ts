@@ -1,3 +1,6 @@
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { AuthService } from '../../services/auth.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -15,7 +18,7 @@ import { InvoiceChoiceComponent } from './invoice-choice.component';
   imports: [CurrencyPipe, DatePipe, RouterLink, TPipe, InvoiceChoiceComponent],
   template: `
     <section class="page od">
-      <p class="crumb"><a routerLink="/dashboard/orders">{{ 'od.back' | t }}</a></p>
+      <p class="crumb"><a [routerLink]="backLink()">{{ 'od.back' | t }}</a></p>
       <h1>{{ 'od.title' | t }}</h1>
       @if (data(); as d) {
         <dl class="od-facts">
@@ -26,12 +29,20 @@ import { InvoiceChoiceComponent } from './invoice-choice.component';
           <dt>{{ 'od.amount' | t }}</dt>
           <dd>{{ d.order.amount | currency: d.order.currency }}</dd>
           <dt>{{ 'od.status' | t }}</dt>
-          <dd>{{ d.order.status }}</dd>
+          <dd>{{ 'bhub.order.status.' + d.order.status | t }}</dd>
           <dt>{{ 'od.date' | t }}</dt>
           <dd>{{ d.order.createdAt | date: 'medium' }}</dd>
         </dl>
         @if (d.order.status === 'paid' || d.order.status === 'refunded') {
           <app-invoice-choice [orderId]="d.order.id" />
+        }
+        @if (d.order.status === 'paid' && dispute() === 'none') {
+          <p class="od-actions">
+            <a class="btn btn-outline" routerLink="/complaints/new" [queryParams]="{ orderId: d.order.id, kind: 'buyer_seller' }">{{ 'bhub.order.complain' | t }}</a>
+            <a class="btn btn-outline" routerLink="/complaints/new" [queryParams]="{ orderId: d.order.id, kind: 'buyer_seller', intent: 'refund' }">{{ 'bhub.order.refund' | t }}</a>
+          </p>
+        } @else if (dispute() !== 'none') {
+          <p class="od-actions"><a class="btn btn-outline" routerLink="/account/console" [queryParams]="{ tab: 'complaints' }">{{ 'bhub.order.dispute.' + dispute() | t }}</a></p>
         }
       } @else if (error()) {
         <p class="err">{{ error() }}</p>
@@ -50,6 +61,7 @@ import { InvoiceChoiceComponent } from './invoice-choice.component';
     .mono { font-family: ui-monospace, monospace; font-size: .8rem; }
     .muted { color: #666; }
     .err { color: #b42318; }
+    .od-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
   `,
 })
 export class OrderDetailComponent implements OnInit {
@@ -58,11 +70,22 @@ export class OrderDetailComponent implements OnInit {
   private readonly i18n = inject(I18nService);
   private readonly seo = inject(SeoService);
   readonly data = signal<OrderInvoiceResponse | null>(null);
+  private readonly authSvc = inject(AuthService);
+  private readonly http = inject(HttpClient);
+  /** Dispute state from /orders/disputes (the invoice payload does not carry it). */
+  readonly dispute = signal<string>('none');
+  backLink(): string {
+    return this.authSvc.isSeller() || this.authSvc.isAdmin() ? '/dashboard/orders' : '/account/console';
+  }
   readonly error = signal('');
 
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('od.title') });
     const id = this.route.snapshot.paramMap.get('id') || '';
+    this.http.get<Array<{ id: string; disputeStatus?: string }>>(`${environment.apiUrl}/orders/disputes`).subscribe({
+      next: (rows) => this.dispute.set((rows || []).find((o) => o.id === id)?.disputeStatus || 'none'),
+      error: () => this.dispute.set('none'),
+    });
     this.api.get(id).subscribe({
       next: (r) => this.data.set(r),
       error: (e) => this.error.set(e?.error?.message || this.i18n.t('inv.err')),

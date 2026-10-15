@@ -65,6 +65,7 @@ export class ComplaintFormComponent implements OnInit {
       this.kind = this.kinds()[0];
     }
     this.orderId = q.get('orderId') || '';
+    if (q.get('intent') === 'refund' && !this.requestedAction) this.requestedAction = this.i18n.t('bhub.refundAction');
     if (!workMode) {
       this.api.orders().subscribe({
         next: (list) => {

@@ -581,7 +581,17 @@ export interface ComplaintEvent {
   note: string;
 }
 
+export interface ComplaintMessage {
+  id: string;
+  authorId: string;
+  role: 'complainant' | 'seller' | 'admin';
+  body: string;
+  attachments: import('../shared/attachments/attachments').FileAttachment[];
+  at: string | null;
+}
+
 export interface Complaint {
+  messages?: ComplaintMessage[];
   id: string;
   caseRef: string;
   complainantId: string;

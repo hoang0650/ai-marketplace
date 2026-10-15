@@ -8,11 +8,14 @@ import { AuthService } from '../../services/auth.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { Complaint } from '../../models/marketplace.models';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { AttachmentService, AttachmentsComponent, ATTACH_ACCEPT, FileAttachment, attachmentProblem } from '../../shared/attachments/attachments';
 
 @Component({
   selector: 'app-complaint-detail',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, TPipe],
+  imports: [FormsModule, RouterLink, DatePipe, TPipe, AttachmentsComponent],
   templateUrl: './complaint-detail.component.html',
   styleUrl: './complaints.scss',
 })
@@ -27,6 +30,58 @@ export class ComplaintDetailComponent implements OnInit {
   readonly error = signal('');
   readonly msg = signal('');
   readonly busy = signal(false);
+  private readonly http = inject(HttpClient);
+  private readonly files = inject(AttachmentService);
+  readonly fileAccept = ATTACH_ACCEPT;
+  readonly pending = signal<FileAttachment[]>([]);
+  readonly uploading = signal(false);
+  threadBody = '';
+
+  canPost(c: Complaint): boolean {
+    return c.status !== 'closed' && (this.isComplainant() || this.isSeller() || this.auth.isAdmin());
+  }
+
+  roleLabel(role: string): string {
+    return this.i18n.t(`complaint.thread.role.${role}`);
+  }
+
+  pickFiles(ev: Event): void {
+    const c = this.item();
+    const input = ev.target as HTMLInputElement;
+    const list = Array.from(input.files || []);
+    input.value = '';
+    if (!c) return;
+    for (const f of list) {
+      const bad = attachmentProblem(f);
+      if (bad) { this.error.set(this.i18n.t(bad)); continue; }
+      this.uploading.set(true);
+      this.files.upload(f, 'complaint', c.id).subscribe({
+        next: (a) => { this.pending.update((p) => [...p, a]); this.uploading.set(false); },
+        error: (err) => { this.uploading.set(false); this.error.set(err?.error?.message || this.i18n.t('attach.err.upload')); },
+      });
+    }
+  }
+
+  removePending(id: string): void {
+    this.pending.update((p) => p.filter((a) => a.id !== id));
+  }
+
+  sendThread(): void {
+    const c = this.item();
+    if (!c || (!this.threadBody.trim() && !this.pending().length)) return;
+    this.busy.set(true);
+    this.error.set('');
+    this.http
+      .post<Complaint>(`${environment.apiUrl}/complaints/${c.id}/messages`, {
+        body: this.threadBody.trim(),
+        attachmentIds: this.pending().map((a) => a.id),
+      })
+      .subscribe({
+        next: (next) => { this.item.set(next); this.threadBody = ''; this.pending.set([]); this.busy.set(false); },
+        error: (err) => { this.busy.set(false); this.error.set(err?.error?.message || this.i18n.t('complaint.err.load')); },
+      });
+  }
+
   sellerBody = '';
   appealReason = '';
   decision: 'upheld' | 'rejected' | 'mediated' = 'mediated';
