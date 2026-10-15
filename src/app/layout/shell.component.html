@@ -233,7 +233,7 @@
                 </div>
                 <ul class="user-menu__list">
                   <li><a routerLink="/profile" (click)="closeUserMenu()">{{ 'nav.profile' | t }}</a></li>
-                  <li><a routerLink="/dashboard" (click)="closeUserMenu()">{{ 'nav.dashboard' | t }}</a></li>
+                  <li><a [routerLink]="auth.isSeller() || auth.isAdmin() ? '/dashboard' : '/account/console'" (click)="closeUserMenu()">{{ 'nav.dashboard' | t }}</a></li>
                   <li>
                     <a routerLink="/wallet" class="user-menu__wallet" (click)="closeUserMenu()">
                       <span>{{ 'nav.wallet' | t }}</span>

@@ -61,6 +61,18 @@ export const taxStaffGuard: CanActivateFn = () => {
   );
 };
 
+/** /dashboard: sellers get the creator dashboard; everyone else (signed in) gets the buyer console. Never bounces to /marketplace. */
+export const dashboardGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.ensureReady().pipe(
+    map(() => {
+      if (!auth.isAuthenticated()) return router.createUrlTree(['/auth/login'], { queryParams: { returnUrl: '/dashboard' } });
+      return auth.isSeller() || auth.isAdmin() ? true : router.createUrlTree(['/account/console']);
+    }),
+  );
+};
+
 /** @deprecated use sellerGuard — kept for existing routes. */
 export const creatorGuard = sellerGuard;
 

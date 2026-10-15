@@ -351,7 +351,6 @@ export const NAV_SECTIONS: NavSection[] = ([
       catLink('game-server'),
       { path: '/training/gpu', labelKey: 'nav.gpuRent' },
       { path: '/training', labelKey: 'nav.training' },
-      { path: '/account/console', labelKey: 'hub.console' },
     ],
   },
   {
