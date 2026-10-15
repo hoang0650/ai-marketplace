@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, creatorGuard, sellerGuard, adminGuard, listingGuard, taxStaffGuard } from './guards/auth.guards';
+import { authGuard, creatorGuard, dashboardGuard, sellerGuard, adminGuard, listingGuard, taxStaffGuard } from './guards/auth.guards';
 import { visibleCategoryGuard, workBoardGuard } from './guards/feature.guards';
 
 export const routes: Routes = [
@@ -931,7 +931,7 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        canActivate: [creatorGuard],
+        canActivate: [dashboardGuard],
         loadComponent: () =>
           import('./features/dashboard/dashboard.components').then((m) => m.DashboardShellComponent),
         children: [
