@@ -2,6 +2,9 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { newIdempotencyKey } from '../../services/idempotency';
+import { WalletBalanceService } from '../../services/wallet-balance.service';
+import { NotificationsFeedService } from '../../services/notifications-feed.service';
 import { BillingService, DashboardService, ProductService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
@@ -29,12 +32,25 @@ export class CartComponent implements OnInit {
   private readonly productsApi = inject(ProductService);
   private readonly i18n = inject(I18nService);
 
-  readonly balance = signal(0);
-  readonly walletCurrency = signal('USD');
+  private readonly walletBal = inject(WalletBalanceService);
+  readonly balance = this.walletBal.available;
+  readonly walletCurrency = this.walletBal.currency;
   readonly coupon = signal('');
   readonly couponApplied = signal(0);
   readonly msg = signal('');
   readonly paying = signal(false);
+  private readonly feed = inject(NotificationsFeedService);
+  private readonly payKeys = new Map<string, string>();
+
+  private payKey(productId: string, qty: number): string {
+    const k = `${productId}:${qty}`;
+    let v = this.payKeys.get(k);
+    if (!v) {
+      v = newIdempotencyKey();
+      this.payKeys.set(k, v);
+    }
+    return v;
+  }
   readonly paid = signal(false);
   readonly receipts = signal<
     Array<{
@@ -65,14 +81,7 @@ export class CartComponent implements OnInit {
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('cart.title') });
     this.cart.load();
-    this.walletApi.wallet().subscribe((list) => {
-      const bal = list.reduce(
-        (s, t) => s + (t.type === 'debit' || t.type === 'withdraw' ? -t.amount : t.amount),
-        0,
-      );
-      this.balance.set(bal);
-      this.walletCurrency.set(list[0]?.currency || 'USD');
-    });
+    this.walletBal.refresh();
     this.productsApi.list({ featured: true }).subscribe({
       next: (items) => this.suggested.set(items.slice(0, 4)),
       error: () =>
@@ -100,6 +109,7 @@ export class CartComponent implements OnInit {
   }
 
   pay(): void {
+    if (this.paying()) return;
     const selected = this.cart.selectedLines();
     if (!selected.length) {
       this.msg.set(this.i18n.t('cart.err.selectProduct'));
@@ -120,6 +130,8 @@ export class CartComponent implements OnInit {
             ? line.product.contentMeta.licenseTerm
             : 'month'
           : undefined,
+        // Same key for a retried pay of the same line, so a lost response never charges twice.
+        idempotencyKey: this.payKey(line.product.id, line.qty),
       }),
     );
     forkJoin(requests).subscribe({
@@ -127,7 +139,10 @@ export class CartComponent implements OnInit {
         this.paying.set(false);
         const units = selected.reduce((s, l) => s + l.qty, 0);
         const last = rows[rows.length - 1];
-        if (typeof last?.balance === 'number') this.balance.set(last.balance);
+        if (last) this.walletBal.apply(last);
+        else this.walletBal.refresh();
+        this.payKeys.clear();
+        this.feed.refreshSoon();
         this.receipts.set(
           rows.map((row, i) => ({
             name: selected[i]?.product.name || 'Sản phẩm',
@@ -151,6 +166,8 @@ export class CartComponent implements OnInit {
       },
       error: (err) => {
         this.paying.set(false);
+        this.walletBal.refresh();
+        this.feed.refreshSoon();
         this.msg.set(err?.error?.message || this.i18n.t('cart.err.payFail'));
       },
     });

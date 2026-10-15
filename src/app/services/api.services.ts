@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -612,6 +612,28 @@ export class DeploymentService {
   }
 }
 
+export interface CheckoutResult {
+  checkoutId: string;
+  provider: string;
+  status: string;
+  productName?: string;
+  category?: string;
+  quantity?: number;
+  amount?: number;
+  currency?: string;
+  couponCode?: string;
+  couponDiscount?: number;
+  balance?: number;
+  available?: number;
+  duplicate?: boolean;
+  alreadyPurchased?: boolean;
+  license?: IssuedLicense | null;
+  emailSent?: boolean;
+  emailTo?: string | null;
+  emailReason?: string;
+  orderId?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BillingService {
   private readonly http = inject(HttpClient);
@@ -623,46 +645,23 @@ export class BillingService {
     quantity?: number;
     licenseTerm?: 'day' | 'month' | 'year';
     couponCode?: string;
-  }): Observable<{
-    checkoutId: string;
-    provider: string;
-    status: string;
-    quantity?: number;
-    amount?: number;
-    currency?: string;
-    couponCode?: string;
-    couponDiscount?: number;
-    balance?: number;
-    license?: IssuedLicense | null;
-    emailSent?: boolean;
-    emailTo?: string | null;
-    emailReason?: string;
-    orderId?: string;
-  }> {
-    return this.http.post<{
-      checkoutId: string;
-      provider: string;
-      status: string;
-      quantity?: number;
-      amount?: number;
-      currency?: string;
-      couponCode?: string;
-      couponDiscount?: number;
-      balance?: number;
-      license?: IssuedLicense | null;
-      emailSent?: boolean;
-      emailTo?: string | null;
-      emailReason?: string;
-      orderId?: string;
-    }>(`${this.base}/billing/checkout`, {
-      productId: input.productId,
-      quantity: input.quantity,
-      licenseTerm: input.licenseTerm,
-      couponCode: input.couponCode,
-      // Last-click referral (cookie set by AffiliateService); the API validates window/self-referral.
-      affiliateClickId: this.affiliate.currentClickId(),
-      provider: 'wallet',
-    });
+    /** Same key on a retry = same order, never a second charge. */
+    idempotencyKey?: string;
+  }): Observable<CheckoutResult> {
+    const headers = input.idempotencyKey ? new HttpHeaders({ 'Idempotency-Key': input.idempotencyKey }) : undefined;
+    return this.http.post<CheckoutResult>(
+      `${this.base}/billing/checkout`,
+      {
+        productId: input.productId,
+        quantity: input.quantity,
+        licenseTerm: input.licenseTerm,
+        couponCode: input.couponCode,
+        // Last-click referral (cookie set by AffiliateService); the API validates window/self-referral.
+        affiliateClickId: this.affiliate.currentClickId(),
+        provider: 'wallet',
+      },
+      headers ? { headers } : {},
+    );
   }
 }
 

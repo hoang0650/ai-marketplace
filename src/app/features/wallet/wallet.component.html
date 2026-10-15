@@ -6,7 +6,7 @@
     </div>
     <div class="wallet-hero__bal">
       <p class="label">{{ 'wallet.available' | t }}</p>
-      <p class="amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.0-0' }}</p>
+      <p class="amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.2-2' }}</p>
       @if (currency() === 'USD' && fx.currency() !== 'USD') {
         <p class="label">≈ {{ fx.formatFromUsd(balance()) }}</p>
       }
@@ -251,7 +251,7 @@
             {{ 'wallet.mini.label' | t: { currency: currency() } }}
             <em>{{ 'wallet.mini.available' | t }}</em>
           </p>
-          <p class="mini-card__amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.0-0' }}</p>
+          <p class="mini-card__amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.2-2' }}</p>
         </div>
       </div>
       <div class="mini-card__actions">

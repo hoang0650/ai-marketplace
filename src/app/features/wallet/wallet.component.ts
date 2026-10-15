@@ -3,6 +3,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, computed, inject, signal }
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { WalletBalanceService } from '../../services/wallet-balance.service';
 import { DashboardService, KycService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import {
@@ -49,6 +50,7 @@ const GPAY_POLL_MAX = 225;
 })
 export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly api = inject(DashboardService);
+  private readonly walletBal = inject(WalletBalanceService);
   /** Display currency (VND / USD / CNY) for the balance equivalent. */
   readonly fx = inject(CurrencyService);
   private readonly seo = inject(SeoService);
@@ -456,9 +458,15 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   reload(): void {
     this.api.wallet().subscribe((list) => {
       this.txs.set(list);
-      const bal = list.reduce((s, t) => s + this.txDelta(t), 0);
-      this.balance.set(bal);
       this.currency.set(list[0]?.currency || 'USD');
+    });
+    this.api.walletSummary().subscribe({
+      next: (s) => {
+        this.walletBal.apply(s);
+        this.balance.set(s.available);
+        if (s.currency) this.currency.set(s.currency);
+      },
+      error: () => undefined,
     });
   }
 
@@ -493,16 +501,6 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   railHint(): string {
     return this.i18n.t('wallet.deposit.paypalHint');
-  }
-
-  private txDelta(t: WalletTx): number {
-    const st = t.status || 'completed';
-    if (st === 'failed' || st === 'cancelled') return 0;
-    if (t.type === 'deposit' || t.type === 'credit') {
-      return st === 'completed' ? t.amount : 0;
-    }
-    if (st === 'pending' || st === 'completed') return -t.amount;
-    return 0;
   }
 
   private currentMonthKey(): string {

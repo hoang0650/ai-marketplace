@@ -263,6 +263,11 @@ export const routes: Routes = [
           import('./features/training/training-studio.component').then((m) => m.TrainingStudioComponent),
       },
       {
+        path: 'template-demo/:productId',
+        loadComponent: () =>
+          import('./features/builder/template-demo-page.component').then((m) => m.TemplateDemoPageComponent),
+      },
+      {
         path: 'build',
         canActivate: [authGuard],
         loadComponent: () => import('./features/builder/builder-home.component').then((m) => m.BuilderHomeComponent),

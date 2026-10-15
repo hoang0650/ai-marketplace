@@ -1283,3 +1283,13 @@
     </div>
   }
 }
+
+<app-purchase-notice
+  [notice]="purchaseNotice()"
+  (closed)="closePurchaseNotice()"
+  (retry)="retryPurchase()"
+  (topUp)="noticeTopUp()"
+  (orders)="noticeOrders()"
+  (openBuilder)="noticeUseTemplate(false)"
+  (download)="noticeUseTemplate(true)"
+/>
