@@ -46,7 +46,8 @@ Nền tảng không nhận đăng tin tuyển dụng, vị trí việc làm, h�
 ## Điều 5. Quy định riêng theo loại sản phẩm
 
 - **Mẫu website/ứng dụng:** tải mã nguồn (tệp nén hoặc kho GitHub); hệ thống tự build, bản build lỗi không được cập nhật vào sản phẩm; demo chạy trong môi trường cách ly; người mua không được đăng bán lại mẫu.
-- **Dịch vụ chuyên môn trọn gói:** mô tả rõ phạm vi công việc, kết quả bàn giao, thời hạn và giá theo gói (không tính theo giờ, ngày hay tháng làm việc); không chứa tin tuyển dụng, vị trí việc làm, tiền lương, hồ sơ xin việc; tuân thủ khoản 6 Mục X của [Quy chế hoạt động](01-quy-che-hoat-dong-san-tmdt.md).
+- **Dataset, giọng đọc AI:** công bố rõ giấy phép có cho phép dùng để huấn luyện, tinh chỉnh mô hình hay không; người mua chỉ dùng cho huấn luyện khi giấy phép cho phép.
+- **Dịch vụ chuyên môn trọn gói:** chia gói thành các giai đoạn (mặc định 30% – 40% – 30%); bàn giao từng giai đoạn trong không gian dự án, chỉnh sửa khi người mua yêu cầu; tiền được ghi nhận khi người mua nghiệm thu từng giai đoạn và tạm giữ 48 giờ; khi người mua chấm dứt, giai đoạn chưa nghiệm thu bị hủy; người bán phản hồi khiếu nại trong thời hạn quy định. Mô tả rõ phạm vi công việc, kết quả bàn giao, thời hạn và giá theo gói (không tính theo giờ, ngày hay tháng làm việc); không chứa tin tuyển dụng, vị trí việc làm, tiền lương, hồ sơ xin việc; tuân thủ khoản 6 Mục X của [Quy chế hoạt động](01-quy-che-hoat-dong-san-tmdt.md).
 - **Dataset:** khai báo nguồn gốc, quyền phân phối và giấy phép sử dụng; không chứa dữ liệu cá nhân hoặc dữ liệu thu thập trái phép.
 - **API, compute, máy chủ trò chơi:** khai báo đơn giá theo đơn vị sử dụng; tích hợp qua cổng (gateway) của nền tảng để mức sử dụng được đo cho từng người mua; máy chủ trò chơi chỉ cho thuê máy, không phát hành, vận hành trò chơi.
 
