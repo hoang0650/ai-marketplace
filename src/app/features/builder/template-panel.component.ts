@@ -1,7 +1,8 @@
 import { Component, PLATFORM_ID, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { PhoneSimulatorComponent } from './phone-simulator.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { AuthService } from '../../services/auth.service';
@@ -14,7 +15,7 @@ type Device = 'desktop' | 'phone';
 @Component({
   selector: 'app-template-panel',
   standalone: true,
-  imports: [TPipe],
+  imports: [TPipe, RouterLink, PhoneSimulatorComponent],
   template: `
     <section class="tp">
       <div class="tp__head">
@@ -31,7 +32,12 @@ type Device = 'desktop' | 'phone';
             <button type="button" class="btn btn-fill" (click)="buy.emit()">{{ 'builder.tpl.buyToUse' | t }}</button>
           }
           @if (meta()?.demoUrl) {
-            <a class="btn btn-outline" [href]="meta()!.demoUrl" target="_blank" rel="noopener">{{ 'builder.tpl.demo' | t }} ↗</a>
+            @if (kind() === 'app') {
+              <!-- App templates open the phone simulator page (iOS/Android frame + QR for a real phone). -->
+              <a class="btn btn-outline" [routerLink]="['/template-demo', product().id]" [queryParams]="{ name: product().name, from: product().slug }" target="_blank" rel="noopener">{{ 'builder.tpl.demo' | t }} ↗</a>
+            } @else {
+              <a class="btn btn-outline" [href]="meta()!.demoUrl" target="_blank" rel="noopener">{{ 'builder.tpl.demo' | t }} ↗</a>
+            }
           }
         </div>
       </div>
@@ -56,14 +62,18 @@ type Device = 'desktop' | 'phone';
                   <button type="button" [class.on]="device() === d" (click)="device.set(d)">{{ 'builder.tpl.device.' + d | t }}</button>
                 }
               </div>
-              <div class="tp__frame" [class.tp__frame--phone]="device() === 'phone'">
-                <iframe
-                  [src]="src"
-                  title="Template demo"
-                  sandbox="allow-scripts allow-forms allow-modals allow-popups"
-                  loading="lazy"
-                ></iframe>
-              </div>
+              @if (device() === 'phone') {
+                <app-phone-simulator [url]="meta()!.demoUrl" [title]="product().name" [maxHeight]="700" />
+              } @else {
+                <div class="tp__frame">
+                  <iframe
+                    [src]="src"
+                    title="Template demo"
+                    sandbox="allow-scripts allow-forms allow-modals allow-popups"
+                    loading="lazy"
+                  ></iframe>
+                </div>
+              }
             } @else {
               <div class="tp__nodemo">{{ (m.ready ? 'builder.tpl.noDemo' : 'builder.tpl.noFiles') | t }}</div>
             }
@@ -97,7 +107,6 @@ type Device = 'desktop' | 'phone';
     .tp__devices button { border: 1px solid rgba(127,127,127,.35); border-radius: 999px; padding: .25rem .8rem; font-size: .8rem; background: transparent; color: inherit; cursor: pointer; }
     .tp__devices button.on { border-color: currentColor; font-weight: 700; }
     .tp__frame { height: 560px; border: 1px solid rgba(127,127,127,.3); border-radius: 14px; overflow: hidden; background: #fff; }
-    .tp__frame--phone { width: 390px; max-width: 100%; height: 720px; margin: 0 auto; border: 10px solid #111; border-radius: 40px; }
     .tp__frame iframe { width: 100%; height: 100%; border: 0; display: block; }
     .tp__nodemo { height: 240px; display: grid; place-items: center; border: 1px dashed rgba(127,127,127,.4); border-radius: 14px; opacity: .7; text-align: center; padding: 1rem; }
     .tp__files ul { list-style: none; margin: .4rem 0; padding: 0; max-height: 420px; overflow: auto; display: grid; gap: .2rem; font-size: .8rem; }

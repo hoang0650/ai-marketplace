@@ -27,6 +27,8 @@ import { ByokKeysComponent } from './byok-keys.component';
 import { GitPanelComponent } from './git-panel.component';
 import { buildZip, expoScaffold } from './zip';
 import { STUDIO_MESSAGES } from './studio.messages';
+import { LocalProviderError, LocalProviderService } from './local-provider.service';
+import { LocalProviderCardComponent } from './local-provider-card.component';
 import { DEFAULT_CHROME, DeviceChrome, DeviceFrameComponent, DeviceModel, deviceOuter } from './device-frame.component';
 
 interface Device {
@@ -36,6 +38,9 @@ interface Device {
   /** Emulator shell; none = full-width desktop preview. */
   model: DeviceModel | null;
 }
+
+/** Browser-side provider id (see LocalProviderService); the API stores it as project.provider. */
+const LOCAL_ID = 'local';
 
 const DEVICES: Record<'web' | 'app', Device[]> = {
   web: [
@@ -53,7 +58,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
 @Component({
   selector: 'app-builder-studio',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, GitPanelComponent, DeviceFrameComponent],
+  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent],
   styles: [
     `
       :host { display: block; }
@@ -352,6 +357,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           </div>
           <div class="p-4">
             @if (d === 'keys') {
+              <app-local-provider-card (changed)="onLocalChanged()" />
               <app-byok-keys (changed)="onKeys($event)" />
             } @else {
               <app-git-panel [project]="p" [generating]="generating()" (gitChange)="onGit($event)" />
@@ -394,11 +400,23 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   readonly project = signal<BuilderProject | null>(null);
   readonly providers = signal<ByokProvider[]>([]);
   readonly keys = signal<ByokKey[]>([]);
-  readonly activeKeys = computed(() => this.keys().filter((k) => k.status === 'active'));
+  private readonly local = inject(LocalProviderService);
+  /** Server-stored BYOK keys plus the browser-only localhost endpoint (never sent to the server). */
+  readonly activeKeys = computed<ByokKey[]>(() => {
+    const list = this.keys().filter((k) => k.status === 'active');
+    const c = this.local.config();
+    if (!c) return list;
+    return [
+      { provider: LOCAL_ID, last4: '', baseUrl: c.baseUrl, model: c.model, status: 'active', lastVerifiedAt: null, lastUsedAt: null, updatedAt: c.updatedAt },
+      ...list,
+    ];
+  });
   readonly provider = signal('');
   readonly model = signal('');
   readonly models = signal<string[]>([]);
-  readonly defaultModel = computed(() => this.providers().find((p) => p.id === this.provider())?.defaultModel || '');
+  readonly defaultModel = computed(() =>
+    this.provider() === LOCAL_ID ? this.local.config()?.model || '' : this.providers().find((p) => p.id === this.provider())?.defaultModel || '',
+  );
   readonly canBuild = computed(() => this.activeKeys().some((k) => k.provider === this.provider()));
   readonly view = signal<'preview' | 'code'>('preview');
   readonly deviceId = signal('');
@@ -558,6 +576,8 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
         setTimeout(() => this.observeStage());
         this.scrollChat();
         if (initialPrompt && this.canBuild()) this.run(initialPrompt);
+        // "Tải về" from the purchase notice: export the freshly created project once.
+        if (q.get('export') === 'zip') setTimeout(() => this.exportZip());
       })
       .catch((e) => this.error.set(e?.error?.message || this.i18n.t('builder.err.notFound')));
   }
@@ -567,7 +587,20 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   }
 
   providerLabel(id: string): string {
+    if (id === LOCAL_ID) return `Localhost · ${this.local.config()?.baseUrl.replace(/^https?:\/\//, '') || ''}`;
     return this.providers().find((p) => p.id === id)?.label || id;
+  }
+
+  onLocalChanged(): void {
+    if (this.local.config()) {
+      this.pickProvider(LOCAL_ID);
+      return;
+    }
+    if (this.provider() === LOCAL_ID) {
+      const first = this.activeKeys()[0]?.provider || '';
+      if (first) this.pickProvider(first);
+      else this.provider.set('');
+    }
   }
 
   onKeys(keys: ByokKey[]): void {
@@ -629,6 +662,10 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
     this.abort = new AbortController();
     this.scrollChat();
     try {
+      if (this.provider() === LOCAL_ID) {
+        await this.runLocal(p.id, prompt, previewError);
+        return;
+      }
       const result = await this.api.generate(
         p.id,
         { prompt, previewError: previewError || undefined, provider: this.provider(), model: this.model().trim() || undefined },
@@ -646,7 +683,13 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
       else if (result.rejected.length) this.error.set(this.i18n.t('builder.err.rejected', { files: result.rejected.join(', ') }));
       this.view.set('preview');
     } catch (e) {
-      if ((e as Error)?.name === 'AbortError') {
+      if (e instanceof LocalProviderError) {
+        const key = `builder.local.err.${e.code}`;
+        const t = this.i18n.t(key);
+        this.error.set(t !== key ? (e.code === 'LOCAL_HTTP' ? `${t} (${e.message})` : t) : e.message);
+        if (prompt && !this.prompt) this.prompt = prompt;
+        if (!prompt && previewError) this.previewError.set(previewError);
+      } else if ((e as Error)?.name === 'AbortError') {
         this.error.set(this.i18n.t('builder.stopped'));
       } else if (e instanceof BuilderStreamError) {
         const key = `builder.err.${e.code}`;
@@ -655,7 +698,7 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
         if (!prompt && previewError) this.previewError.set(previewError);
         else if (prompt && !this.prompt) this.prompt = prompt;
       } else {
-        this.error.set(this.i18n.t('builder.err.generic'));
+        this.error.set((e as { error?: { message?: string } })?.error?.message || this.i18n.t('builder.err.generic'));
         if (prompt && !this.prompt) this.prompt = prompt;
       }
     } finally {
@@ -664,6 +707,30 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
       this.abort = null;
       this.scrollChat();
     }
+  }
+
+  /**
+   * Localhost provider: the server builds the prompt, the BROWSER streams it to the user's local
+   * OpenAI-compatible endpoint, and only the model's reply text goes back to be applied.
+   */
+  private async runLocal(id: string, prompt: string, previewError: string): Promise<void> {
+    const body = { prompt, previewError: previewError || undefined };
+    const { messages } = await firstValueFrom(this.api.localPrompt(id, body));
+    const model = this.model().trim() || this.local.config()?.model || '';
+    this.streamModel.set(model);
+    const out = await this.local.chat(messages, {
+      model,
+      signal: this.abort?.signal,
+      onDelta: (text) => {
+        this.streamText.update((t) => t + text);
+        this.scrollChat();
+      },
+    });
+    const result = await firstValueFrom(this.api.localApply(id, { ...body, text: out.text, model: out.model, finishReason: out.finishReason }));
+    this.applyProject(result.project);
+    if (result.truncated) this.error.set(this.i18n.t('builder.err.truncated'));
+    else if (result.rejected.length) this.error.set(this.i18n.t('builder.err.rejected', { files: result.rejected.join(', ') }));
+    this.view.set('preview');
   }
 
   reload(): void {
@@ -759,6 +826,15 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   }
 
   private loadModels(provider: string): void {
+    if (provider === LOCAL_ID) {
+      this.local
+        .listModels()
+        .then((list) => {
+          if (this.provider() === LOCAL_ID) this.models.set(list);
+        })
+        .catch(() => undefined);
+      return;
+    }
     this.api.models(provider).subscribe({
       next: (r) => {
         if (this.provider() !== provider) return;

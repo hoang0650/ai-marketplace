@@ -7,10 +7,11 @@ import { DashboardService, WishlistService } from '../services/api.services';
 import { environment } from '../../environments/environment';
 import { NAV_SECTIONS } from '../models/categories';
 import { WORK_BOARD_ENABLED } from '../models/feature-flags';
-import { CatalogLane, NotificationItem } from '../models/marketplace.models';
+import { CatalogLane } from '../models/marketplace.models';
 import { I18nService } from '../i18n/i18n.service';
 import { TPipe } from '../i18n/t.pipe';
 import { AppLang } from '../i18n/messages';
+import { NotificationsFeedService } from '../services/notifications-feed.service';
 import { CartService } from '../features/cart/cart.service';
 import { AffiliateService } from '../services/affiliate.service';
 import { GoogleSignInComponent } from '../features/auth/google-sign-in.component';
@@ -67,7 +68,8 @@ export class ShellComponent {
   readonly notiOpen = signal(false);
   readonly langOpen = signal(false);
   readonly currencyOpen = signal(false);
-  readonly notifications = signal<NotificationItem[]>([]);
+  private readonly feed = inject(NotificationsFeedService);
+  readonly notifications = this.feed.items;
   readonly notiTab = signal<NotiTab>('all');
 
   readonly initials = computed(() => {
@@ -101,9 +103,9 @@ export class ShellComponent {
       const authed = this.auth.isAuthenticated();
       if (!isPlatformBrowser(this.platformId)) return;
       if (authed) {
-        this.loadNotifications();
+        this.feed.start();
       } else {
-        this.notifications.set([]);
+        this.feed.stop();
       }
       this.cart.load();
       this.wishlist.load();
@@ -111,10 +113,7 @@ export class ShellComponent {
   }
 
   loadNotifications(): void {
-    this.api.notifications().subscribe({
-      next: (items) => this.notifications.set(items),
-      error: () => this.notifications.set([]),
-    });
+    this.feed.refresh();
   }
 
   toggleTheme(): void {

@@ -1,6 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { WalletBalanceService } from '../../services/wallet-balance.service';
 import { DashboardService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
@@ -18,6 +19,7 @@ import { TPipe } from '../../i18n/t.pipe';
 export class ProfileComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly api = inject(DashboardService);
+  private readonly walletBal = inject(WalletBalanceService);
   private readonly seo = inject(SeoService);
 
   readonly brand = environment.brandName;
@@ -46,12 +48,7 @@ export class ProfileComponent implements OnInit {
     return map[role || ''] || 'Thành viên';
   });
 
-  readonly balance = computed(() =>
-    this.wallet().reduce(
-      (sum, t) => sum + (t.type === 'debit' || t.type === 'withdraw' ? -t.amount : t.amount),
-      0,
-    ),
-  );
+  readonly balance = this.walletBal.available;
 
   readonly walletCurrency = computed(() => this.wallet()[0]?.currency || 'USD');
 
@@ -80,6 +77,7 @@ export class ProfileComponent implements OnInit {
     this.user.set(this.auth.user());
     this.api.orders().subscribe((list) => this.orders.set(list));
     this.api.wallet().subscribe((list) => this.wallet.set(list));
+    this.walletBal.refresh();
   }
 
   statusLabel(status: Order['status']): string {
