@@ -2,24 +2,23 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build -- --configuration=production",
   "outputDirectory": "dist/ai-marketplace/browser",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/((?!assets/)(?!.*\\.[A-Za-z0-9]{1,8}$).*)",
-      "destination": "/index.html"
-    }
-  ],
-  "headers": [
+      "src": "/(main|chunk|polyfills|styles)-[A-Za-z0-9]+\\.(js|css)",
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" },
+      "continue": true
+    },
+    { "handle": "filesystem" },
     {
-      "source": "/((?!assets/)(?!.*\\.[A-Za-z0-9]{1,8}$).*)",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
+      "src": "/.*\\.[A-Za-z0-9]{1,8}",
+      "status": 404,
+      "headers": { "Cache-Control": "no-store" },
+      "dest": "/404-missing-asset"
     },
     {
-      "source": "/index.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
-    },
-    {
-      "source": "/(main|chunk|polyfills|styles)-(.*)\\.(js|css)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "src": "/(.*)",
+      "headers": { "Cache-Control": "no-cache, must-revalidate" },
+      "dest": "/index.html"
     }
   ]
 }
