@@ -67,7 +67,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 Nền tảng không kinh doanh hàng hóa hữu hình. Sản phẩm, dịch vụ được bàn giao trực tuyến (khóa API, quyền truy cập, tệp tải về, phiên máy chủ), gồm:
 
-a) Dịch vụ API trí tuệ nhân tạo (văn bản, hình ảnh, video, giọng nói, suy luận), tính phí theo mức sử dụng.
+a) Dịch vụ API trí tuệ nhân tạo (văn bản, hình ảnh, video, giọng nói), tính phí theo mức sử dụng. Các dịch vụ suy luận (API mô hình, endpoint suy luận, hạ tầng suy luận) được gộp chung vào một danh mục **“Suy luận”** trên sàn.
 
 b) Mô hình AI, AI agent, gói kỹ năng (skill pack), phần mềm, giọng đọc AI có giấy phép sử dụng. Giọng nhân bản chỉ được bán khi có văn bản đồng ý của người có giọng nói.
 
@@ -77,11 +77,11 @@ d) Dịch vụ AI agent do Công ty trực tiếp cung cấp (OpenClaw, Hermes A
 
 đ) Cho thuê hạ tầng tính toán GPU theo thời gian, môi trường chạy agent, máy chủ trò chơi (chỉ cho thuê máy, người dùng tự cài đặt và vận hành trò chơi có quyền sử dụng hợp pháp), huấn luyện và tinh chỉnh mô hình.
 
-e) Dịch vụ chuyên môn trọn gói do người bán cung cấp theo kết quả bàn giao, gồm các nhóm: làm website, làm ứng dụng, marketing, SEO, sáng tạo nội dung (creator) và tự động hóa quy trình; điều kiện cung cấp tại khoản 6 Mục X.
+e) Dịch vụ chuyên môn trọn gói do người bán cung cấp theo kết quả bàn giao và thanh toán theo giai đoạn (milestone), gồm các nhóm: làm website, làm ứng dụng, marketing, SEO, sáng tạo nội dung (creator) và tự động hóa quy trình; điều kiện cung cấp tại khoản 6 Mục X.
 
 g) Phim AI nhiều tập và truyện/sách AI do người bán đăng tải, cấp quyền xem/đọc theo thời hạn (license key ngày/tháng/năm). Người bán chịu trách nhiệm về quyền tác giả, phân loại phim, cảnh báo độ tuổi và các nghĩa vụ khác theo pháp luật về điện ảnh, xuất bản.
 
-h) Dataset (bộ dữ liệu) do người bán đăng bán theo giấy phép sử dụng do người bán công bố; không được chứa dữ liệu cá nhân hoặc dữ liệu thu thập trái phép (khoản 1 Mục XV).
+h) Dataset (bộ dữ liệu) do người bán đăng bán theo giấy phép sử dụng do người bán công bố; không được chứa dữ liệu cá nhân hoặc dữ liệu thu thập trái phép (khoản 1 Mục XV). Dataset, giọng đọc AI chỉ được dùng để huấn luyện, tinh chỉnh mô hình khi giấy phép đã mua cho phép mục đích huấn luyện; tại trang Huấn luyện (Training), người mua chỉ chọn được dataset/giọng đọc mình đã được cấp phép, và mô hình tạo ra phải tuân thủ phạm vi giấy phép đó.
 
 Danh mục hàng hóa, dịch vụ cấm kinh doanh trên nền tảng được quy định tại khoản 1 Mục XV của Quy chế này.
 
@@ -131,25 +131,51 @@ Người bán phải hoàn tất Quy trình xác minh người bán và xác nh�
 
 ## V. QUY TRÌNH GIAO DỊCH TRÊN WEBSITE
 
-Các bước dưới đây mô tả thao tác thực tế trên website https://aimarkets.vn. Hình minh họa được chụp từ giao diện website (ngôn ngữ hiển thị tiếng Anh) bằng tài khoản thử nghiệm; số liệu trên hình chỉ mang tính minh họa. Quy định chi tiết áp dụng theo các Mục được dẫn chiếu của Quy chế này.
+Các bước dưới đây mô tả thao tác thực tế trên website https://aimarkets.vn. Hình minh họa được chụp từ giao diện website (ngôn ngữ hiển thị tiếng Anh) bằng tài khoản thử nghiệm (giao diện tiếng Việt, cập nhật tháng 10/2026); số liệu trên hình chỉ mang tính minh họa. Quy định chi tiết áp dụng theo các Mục được dẫn chiếu của Quy chế này.
 
 ### 1. Quy trình dành cho Người mua
 
+![Hình 1. Trang chủ AI Markets](assets/legal/img/h01-trang-chu.jpg)
+
+![Hình 2. Chân trang: thông tin doanh nghiệp, liên kết chính sách](assets/legal/img/h02-chan-trang.jpg)
+
 Bước 1: Đăng ký, đăng nhập tài khoản. Người mua truy cập https://aimarkets.vn, chọn “Log in” (Đăng nhập) hoặc “Register” (Đăng ký); đăng nhập bằng email và mật khẩu hoặc chọn “Continue with Google” (theo Mục IV).
 
-Bước 2: Tìm kiếm sản phẩm. Tại mục “Marketplace”, người mua lọc sản phẩm theo danh mục (Generate, APIs & Inference, Platform…), sắp xếp (Featured, Best sellers, Low price, High price, Newest) hoặc nhập từ khóa vào ô tìm kiếm. Mỗi sản phẩm ghi rõ “Sold by platform” (Bán bởi sàn) hoặc “Sold by seller – tên cửa hàng” (Bán bởi Seller) và giá theo đơn vị tính.
+Bước 2: Tìm kiếm sản phẩm. Tại mục “Marketplace”, người mua lọc sản phẩm theo danh mục (Generate, APIs & Inference, Platform…), sắp xếp (Featured, Best sellers, Low price, High price, Newest) hoặc nhập từ khóa vào ô tìm kiếm. Mỗi sản phẩm ghi rõ “Sold by platform” (Bán bởi sàn) hoặc “Sold by seller – tên cửa hàng” (Bán bởi Seller) và giá theo đơn vị tính. Danh mục “Suy luận” gom các dịch vụ API mô hình và hạ tầng suy luận.
+
+![Hình 3. Sàn giao dịch – lọc theo danh mục](assets/legal/img/h03-san-giao-dich.jpg)
+
+![Hình 4. Danh mục Suy luận (gộp)](assets/legal/img/h06-danh-muc-suy-luan.jpg)
 
 Bước 3: Xem chi tiết sản phẩm. Trang sản phẩm hiển thị mô tả, đánh giá, các gói dịch vụ (package) và giá theo đơn vị tính, số lượng, thời hạn sử dụng/giấy phép (ngày/tháng/năm), khung thanh toán bằng ví AI Markets (số dư, nút nạp tiền “Top up”) và các nút “Add to cart” (Thêm vào giỏ hàng), “Chat with seller” (Trao đổi với người bán).
+
+![Hình 5. Chi tiết sản phẩm](assets/legal/img/h04-chi-tiet-san-pham.jpg)
 
 Người mua có thể xem trang cửa hàng của người bán: nhãn “Verified seller” (người bán đã xác minh), số sản phẩm, lượt bán, đánh giá và chính sách cửa hàng (thanh toán qua ví AI Markets; khiếu nại, tranh chấp được giải quyết trên nền tảng, không gửi đường dẫn ra ngoài nền tảng trong tin nhắn).
 
 Bước 4: Đặt hàng và thanh toán. Người mua thêm sản phẩm vào giỏ hàng và thanh toán theo khoản 1 Mục VI. Khi thanh toán thành công, hợp đồng được giao kết, hệ thống tạo mã đơn hàng và gửi email xác nhận (khoản 1 Mục X).
+
+Bước 4a: Dịch vụ chuyên môn theo giai đoạn. Với gói dịch vụ chuyên môn, người mua chọn “Bắt đầu dự án”, nhập yêu cầu; hệ thống mở không gian dự án với các giai đoạn (mặc định 30% – 40% – 30%) và chưa trừ tiền. Người mua trao đổi, gửi tệp với người bán, xem bàn giao từng giai đoạn, chọn “Nghiệm thu” (ví bị trừ giá trị giai đoạn) hoặc “Yêu cầu chỉnh sửa”; có thể chấm dứt hoặc khiếu nại (khoản 6 Mục X).
+
+![Hình 6. Trang gói dịch vụ chuyên môn](assets/legal/img/h07-goi-dich-vu-chuyen-mon.jpg)
+
+![Hình 7. Không gian dự án: các giai đoạn, trao đổi và tệp](assets/legal/img/h08-khong-gian-du-an.jpg)
+
+![Hình 8. Bàn giao giai đoạn – Nghiệm thu / Yêu cầu chỉnh sửa](assets/legal/img/h09-nghiem-thu-giai-doan.jpg)
+
+![Hình 9. Dự án đã chấm dứt: giai đoạn chưa nghiệm thu bị hủy, khiếu nại được tạo](assets/legal/img/h10-cham-dut-khieu-nai.jpg)
 
 Bước 5: Nhận và sử dụng dịch vụ. Sản phẩm được bàn giao trực tuyến (khóa API, quyền truy cập, tệp tải về, phiên máy chủ). Với dịch vụ theo mức sử dụng, người mua theo dõi tại trang “AI usage”: số tiền đã trừ, tổng token, token đầu vào/đầu ra, số lượt gọi và lịch sử từng lượt sử dụng (khoản 2, khoản 3 Mục X).
 
 Bước 6: Quản lý đơn hàng. Tại trang hồ sơ, người mua xem số đơn hàng, giao dịch thành công, tranh chấp, số dư ví, tổng quan mua hàng và danh sách đơn hàng gần đây (trạng thái “Đã thanh toán”), kèm nút “Khiếu nại” cho từng đơn.
 
 Bước 7: Khiếu nại (nếu có). Tại mục “Complaints” → “File a complaint”, người mua điền tên/tài khoản, email, loại khiếu nại (Người mua – Người bán; Người mua – Nền tảng; Người bán – Nền tảng), mã đơn hàng, sản phẩm, nội dung khiếu nại, yêu cầu xử lý và bằng chứng (mỗi dòng một đường dẫn https). Không gửi mật khẩu, khóa API hoặc thông tin bí mật không cần thiết. Hồ sơ được xử lý theo Mục XVII.
+
+Trong mục “Tin nhắn”, người mua và người bán có thể gửi hình ảnh (xem trước) và tệp (tải về) tối đa 25 MB/tệp theo khoản 6 Mục X.
+
+![Hình 10. Tin nhắn kèm hình ảnh và tệp](assets/legal/img/h11-tin-nhan-tep.jpg)
+
+![Hình 11. Huấn luyện mô hình với dataset/giọng đọc đã được cấp phép](assets/legal/img/h12-huan-luyen-du-lieu-co-giay-phep.jpg)
 
 Bước 8: Quản lý tài khoản. Trang cài đặt gồm: hồ sơ (Profile), xác minh danh tính (eKYC – giao diện ghi chú “bắt buộc trước khi rút tiền”), lịch sử hoạt động, bảo mật (mật khẩu, phiên đăng nhập), thông báo (ngôn ngữ thông báo), tài khoản liên kết (theo khoản 2 Mục IV).
 
@@ -167,7 +193,13 @@ Bước 5: Tạo mã giảm giá (nếu có). Tại “Coupons”, người bán
 
 Bước 6: Theo dõi đơn hàng. Tại “Orders”, người bán xem mã đơn hàng, sản phẩm, người mua, số tiền, trạng thái (ví dụ “Paid” – đã thanh toán) và ngày giao dịch; cung cấp sản phẩm, dịch vụ theo cam kết.
 
-Bước 7: Xử lý khiếu nại. Tại “Complaints”, người bán theo dõi khiếu nại của người mua theo quy trình: tiếp nhận, xác minh, phân loại, người bán phản hồi, xem xét bằng chứng, quyết định và đóng hồ sơ; thời hạn phản hồi theo khoản 4 Mục XVII.
+Bước 7: Xử lý khiếu nại. Tại “Complaints”, người bán theo dõi khiếu nại của người mua theo quy trình: tiếp nhận, xác minh, phân loại, người bán phản hồi, xem xét bằng chứng, quyết định và đóng hồ sơ; thời hạn phản hồi theo khoản 4 Mục XVII. Với dịch vụ chuyên môn theo giai đoạn, người bán bàn giao từng giai đoạn trong không gian dự án và phản hồi khiếu nại tại trang chi tiết khiếu nại.
+
+![Hình 12. Người bán bàn giao giai đoạn](assets/legal/img/h14-nguoi-ban-ban-giao.jpg)
+
+![Hình 13. Người bán xem và phản hồi khiếu nại](assets/legal/img/h13-nguoi-ban-phan-hoi-khieu-nai.jpg)
+
+![Hình 14. Trung tâm pháp lý trên website](assets/legal/img/h05-quy-che.jpg)
 
 ## VI. QUY TRÌNH THANH TOÁN
 
@@ -371,13 +403,23 @@ Người mua xem demo trực tiếp trước khi mua. Sau khi thanh toán, ngư�
 
 ### 6. Dịch vụ chuyên môn trọn gói (làm website, làm ứng dụng, marketing, SEO, sáng tạo nội dung, tự động hóa quy trình)
 
-a) Là dịch vụ do người bán cung cấp cho người mua theo hợp đồng dịch vụ quy định tại Điều 513 Bộ luật Dân sự 2015, giao kết khi người mua đặt mua và thanh toán theo khoản 1 Mục này. Phạm vi công việc, kết quả bàn giao, thời hạn và giá do người bán công bố trên trang dịch vụ.
+a) Là dịch vụ do người bán cung cấp cho người mua theo hợp đồng dịch vụ quy định tại Điều 513 Bộ luật Dân sự 2015, giao kết khi người mua bắt đầu dự án từ gói dịch vụ do người bán công bố. Phạm vi công việc, kết quả bàn giao, thời hạn và giá do người bán công bố trên trang dịch vụ.
 
 b) Giá được xác định theo gói hoặc theo kết quả bàn giao, không tính theo giờ, ngày hay tháng làm việc. Người bán tự quyết định phương pháp, thời gian, công cụ, nhân sự thực hiện và chịu trách nhiệm về kết quả bàn giao.
 
 c) Giữa người mua với người bán và nhân sự của người bán không phát sinh quan hệ lao động. Nền tảng không tuyển dụng, không tư vấn, giới thiệu việc làm, không cung ứng hay cho thuê lại lao động; trang dịch vụ không được chứa tin tuyển dụng, vị trí việc làm, tiền lương hoặc hồ sơ xin việc.
 
-d) Phí sàn, khấu trừ thuế, tạm giữ, hoàn tiền và giải quyết khiếu nại áp dụng như đối với các sản phẩm khác theo Mục XI, Mục XII, Mục XIII và Mục XVII của Quy chế này.
+d) Thanh toán theo giai đoạn (milestone). Mỗi gói dịch vụ được chia thành các giai đoạn với tỷ lệ giá trị do người bán công bố; mặc định 3 giai đoạn 30% – 40% – 30% giá gói. Khi người mua bắt đầu dự án, hệ thống tạo không gian dự án riêng (trao đổi, tệp, bàn giao) và **chưa trừ tiền**.
+
+đ) Người bán bàn giao từng giai đoạn (ghi chú, tệp, bản demo). Người mua chọn **Nghiệm thu** hoặc **Yêu cầu chỉnh sửa**; người bán chỉnh sửa và bàn giao lại không giới hạn số lần trong phạm vi đã công bố. Chỉ người mua được nghiệm thu; người bán không thể tự nghiệm thu.
+
+e) Ví của người mua chỉ bị trừ giá trị của giai đoạn **tại thời điểm người mua nghiệm thu** giai đoạn đó; nếu số dư không đủ, việc nghiệm thu bị từ chối và không phát sinh giao dịch. Mỗi giai đoạn chỉ được thu một lần (thao tác nghiệm thu lặp lại không bị trừ tiền lần hai). Phí sàn và thuế tính trên giá trị từng giai đoạn; phần thực nhận của người bán được **tạm giữ 48 giờ** kể từ khi nghiệm thu.
+
+g) Người mua có thể **chấm dứt** dự án hoặc gửi **khiếu nại** đối với giai đoạn đang thực hiện. Khi chấm dứt, các giai đoạn chưa nghiệm thu bị hủy và không bị thu tiền; các giai đoạn đã nghiệm thu không bị ảnh hưởng, trừ khi có kết luận khác khi giải quyết khiếu nại. Khiếu nại được tạo ở trạng thái chờ người bán phản hồi, hiển thị cho người mua, người bán và Ban quản lý; khoản tạm giữ liên quan được giữ nguyên đến khi có kết quả theo quy trình giải quyết khiếu nại.
+
+h) Trao đổi và tệp trong dự án: người mua và người bán gửi tin nhắn, hình ảnh và tệp (PDF, ZIP, DOCX, XLSX, PPTX… tối đa 25 MB/tệp, theo danh sách định dạng cho phép; tệp thực thi bị từ chối). Tệp được lưu riêng tư, chỉ người tham gia và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn; nội dung trao đổi là căn cứ khi giải quyết khiếu nại.
+
+i) Phí sàn, khấu trừ thuế, tạm giữ, hoàn tiền và giải quyết khiếu nại áp dụng theo Mục XI, Mục XII, Mục XIII và Mục XVII của Quy chế này, tính trên giá trị từng giai đoạn.
 
 ### 7. Giới hạn dịch vụ
 
@@ -557,7 +599,7 @@ Khi sản phẩm không đúng nội dung đã công bố, người mua được
 | API, token (theo mức sử dụng) | Phần đã sử dụng không được hoàn, trừ trường hợp tính sai hoặc lỗi dịch vụ được xác minh. |
 | Thuê GPU, máy chủ trò chơi (theo phút) | Phút đã sử dụng không được hoàn, trừ thời gian máy không hoạt động do lỗi của nền tảng hoặc tính sai được xác minh. |
 | Thuê bao AI agent (199.000 VNĐ/30 ngày hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị) | Phí của chu kỳ đang hiệu lực không hoàn theo tỷ lệ khi người mua tự ngừng sử dụng; tắt tự động gia hạn để không bị trừ phí chu kỳ sau. Được hoàn khi agent không khả dụng do lỗi của nền tảng hoặc bị trừ phí sai. Phí token đã phát sinh không hoàn, trừ trường hợp tính sai. |
-| Dịch vụ chuyên môn trọn gói | Hoàn khi người bán không bàn giao kết quả hoặc kết quả không đúng mô tả đã công bố và không khắc phục được trong thời hạn giải quyết khiếu nại. |
+| Dịch vụ chuyên môn trọn gói | Chỉ giai đoạn đã nghiệm thu bị thu tiền; giai đoạn chưa nghiệm thu bị hủy khi chấm dứt và không thu. Hoàn đối với giai đoạn đã nghiệm thu khi khiếu nại được chấp nhận (kết quả không đúng mô tả và không khắc phục được). Hoàn khi người bán không bàn giao kết quả hoặc kết quả không đúng mô tả đã công bố và không khắc phục được trong thời hạn giải quyết khiếu nại. |
 | Khoản nạp ví qua Apple In-App Purchase / Google Play Billing | Một số yêu cầu hoàn tiền phải gửi qua Apple/Google theo chính sách của họ. Khi kho ứng dụng hoàn tiền, số dư ví hoặc quyền lợi tương ứng bị thu hồi. |
 
 ### 4. Thời hạn yêu cầu hoàn tiền
@@ -860,7 +902,7 @@ b) Người dùng có thể rút lại sự đồng ý đối với xử lý kh�
 
 ### 5. Nội dung gửi tới AI
 
-a) Nền tảng không dùng nội dung người dùng gửi vào API, agent để huấn luyện mô hình.
+a) Nền tảng không dùng nội dung người dùng gửi vào API, agent để huấn luyện mô hình. Việc huấn luyện, tinh chỉnh chỉ dùng dữ liệu do chính người dùng tải lên hoặc dataset, giọng đọc mà người dùng đã được cấp giấy phép cho phép mục đích huấn luyện.
 
 b) Để trả kết quả, nội dung được chuyển tới nhà cung cấp mô hình AI tương ứng (có thể ở nước ngoài) và xử lý theo điều khoản của nhà cung cấp đó. Khi dùng BYOK, nội dung đi trực tiếp tới nhà cung cấp theo tài khoản của người dùng.
 

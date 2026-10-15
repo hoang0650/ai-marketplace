@@ -143,6 +143,12 @@ export const routes: Routes = [
           import('./features/chat/chat-inbox.component').then((m) => m.ChatInboxComponent),
       },
       {
+        path: 'complaints/:id',
+        data: { inbox: 'seller' },
+        loadComponent: () =>
+          import('./features/complaints/complaint-detail.component').then((m) => m.ComplaintDetailComponent),
+      },
+      {
         path: 'complaints',
         data: { inbox: 'seller' },
         loadComponent: () =>

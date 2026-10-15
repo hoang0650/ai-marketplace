@@ -41,7 +41,8 @@ Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; x
 
 ## Điều 5. Nội dung gửi tới AI
 
-1. Nền tảng **không** dùng nội dung người dùng gửi vào API, agent để huấn luyện mô hình.
+1. Nền tảng **không** dùng nội dung người dùng gửi vào API, agent để huấn luyện mô hình. Việc huấn luyện, tinh chỉnh chỉ dùng dữ liệu do chính người dùng tải lên hoặc dataset, giọng đọc đã được cấp giấy phép cho phép mục đích huấn luyện.
+4. Tệp, hình ảnh gửi trong tin nhắn và không gian dự án được lưu trữ riêng tư, chỉ người tham gia hội thoại/dự án và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn.
 2. Để trả kết quả, nội dung được chuyển tới nhà cung cấp mô hình AI tương ứng (có thể ở nước ngoài) và xử lý theo điều khoản của nhà cung cấp đó. Khi dùng BYOK, nội dung đi trực tiếp tới nhà cung cấp theo tài khoản của người dùng.
 3. Người dùng chỉ đưa dữ liệu cá nhân của người khác vào AI khi có cơ sở pháp lý phù hợp.
 
