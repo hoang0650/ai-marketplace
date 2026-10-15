@@ -1244,75 +1244,6 @@ export class DashboardProductsComponent implements OnInit {
 }
 
 @Component({
-  selector: 'app-dashboard-withdraw',
-  standalone: true,
-  imports: [FormsModule, CurrencyPipe, DatePipe],
-  template: `
-    <div class="grid gap-6 lg:grid-cols-2">
-      <form class="panel grid gap-3" (ngSubmit)="withdraw()">
-        <h2 class="font-display text-2xl">Withdraw</h2>
-        @if (summary(); as s) {
-          <p class="text-sm text-muted">Ledger {{ s.balance | currency: s.currency }}</p>
-          <p class="text-sm text-muted">Held (48h / dispute, per order) {{ s.held | currency: s.currency }}</p>
-          <p class="font-display text-2xl">Available {{ s.available | currency: s.currency }}</p>
-        }
-        <input class="input" type="number" min="1" [(ngModel)]="amount" name="amount" />
-        <button class="btn btn-fill w-fit" type="submit">Request payout</button>
-        @if (msg()) { <p class="text-sm text-accent">{{ msg() }}</p> }
-        @if (summary()?.holds?.length) {
-          <ul class="mt-2 space-y-2 text-xs text-muted">
-            @for (h of summary()!.holds; track h.orderId) {
-              <li>
-                {{ h.productName }} · {{ h.amount | currency: h.currency }} ·
-                {{ h.kind === 'dispute' ? 'Khiếu nại' : 'Chờ 48h' }}
-              </li>
-            }
-          </ul>
-        }
-      </form>
-      <div class="panel">
-        <h2 class="font-display text-2xl">Wallet history</h2>
-        <ul class="mt-4 space-y-3 text-sm">
-          @for (t of txs(); track t.id) {
-            <li class="flex justify-between border-b border-line pb-2">
-              <span>{{ t.type }} · {{ t.status || 'completed' }} · {{ t.note }}</span>
-              <span>{{ t.amount | currency: t.currency }} · {{ t.createdAt | date:'shortDate' }}</span>
-            </li>
-          }
-        </ul>
-      </div>
-    </div>
-  `,
-})
-export class DashboardWithdrawComponent implements OnInit {
-  private readonly api = inject(DashboardService);
-  readonly txs = signal<WalletTx[]>([]);
-  readonly summary = signal<WalletSummary | null>(null);
-  readonly msg = signal('');
-  amount = 100;
-
-  ngOnInit(): void {
-    this.reload();
-  }
-
-  reload(): void {
-    this.api.wallet().subscribe((t) => this.txs.set(t));
-    this.api.walletSummary().subscribe((s) => this.summary.set(s));
-  }
-
-  withdraw(): void {
-    this.api.withdraw(this.amount).subscribe({
-      next: (tx) => {
-        this.txs.update((list) => [tx, ...list]);
-        this.msg.set(`Withdraw ${tx.amount} pending admin confirmation`);
-        this.api.walletSummary().subscribe((s) => this.summary.set(s));
-      },
-      error: (err) => this.msg.set(err?.error?.message || 'Withdraw failed'),
-    });
-  }
-}
-
-@Component({
   selector: 'app-dashboard-licenses',
   standalone: true,
   imports: [DatePipe],
@@ -1360,3 +1291,5 @@ export class DashboardLicensesComponent implements OnInit {
     this.api.licenses().subscribe((rows) => this.keys.set(rows));
   }
 }
+
+export { DashboardWithdrawComponent } from './dashboard-withdraw.component';

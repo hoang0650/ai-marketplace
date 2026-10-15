@@ -451,10 +451,10 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
       {
+        // 'Bán API' merged into 'Suy luận'.
         path: 'api-endpoint',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'api-endpoint', title: 'Sell API' },
+        redirectTo: 'inference',
+        pathMatch: 'full',
       },
       {
         path: 'openrouter',

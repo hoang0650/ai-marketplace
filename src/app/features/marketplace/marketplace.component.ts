@@ -1,3 +1,4 @@
+import { canonicalCategory } from '../../models/categories';
 import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -83,7 +84,7 @@ export class MarketplaceComponent implements OnInit {
     // Slider end = no upper limit (hire listings cost thousands).
     const max = upper === this.priceCeiling ? Infinity : upper;
 
-    if (cat) rows = rows.filter((p) => p.category === cat);
+    if (cat) rows = rows.filter((p) => canonicalCategory(p.category) === cat);
     if (q) {
       rows = rows.filter((p) =>
         `${p.name} ${p.tagline} ${p.creatorName} ${p.tags.join(' ')}`.toLowerCase().includes(q),
@@ -148,7 +149,7 @@ export class MarketplaceComponent implements OnInit {
       .subscribe((items) => this.catalog.set(items));
 
     this.route.paramMap.subscribe((params) => {
-      const cat = params.get('category') || '';
+      const cat = canonicalCategory(params.get('category') || '');
       this.selectedCategory.set(cat);
       this.draftCategory = cat;
     });
@@ -169,7 +170,7 @@ export class MarketplaceComponent implements OnInit {
   }
 
   categoryCount(id: string): number {
-    return this.catalog().filter((p) => p.category === id).length;
+    return this.catalog().filter((p) => canonicalCategory(p.category) === id).length;
   }
 
   setSort(id: SortId): void {
