@@ -31,8 +31,15 @@ export interface ExpoSnackInfo {
         @if (loading()) {
           <div class="eq__qr eq__qr--wait" aria-busy="true">{{ 'builder.expo.publishing' | t }}</div>
         } @else if (info()?.url) {
-          <img class="eq__qr" [src]="qrUrl() + '?v=' + bust()" width="180" height="180" [alt]="'builder.expo.qrAlt' | t" />
-          <a class="eq__btn" [href]="info()!.url">{{ 'builder.expo.open' | t }}</a>
+          @if (mobile()) {
+            <a class="eq__btn eq__btn--big" [href]="info()!.url">{{ 'builder.expo.open' | t }}</a>
+            <p class="eq__scan">{{ 'builder.expo.mobileHint' | t }}</p>
+          } @else {
+            <p class="eq__scan">{{ 'builder.expo.scan' | t }}</p>
+            <img class="eq__qr" [src]="qrUrl() + '?v=' + bust()" width="240" height="240" [alt]="'builder.expo.qrAlt' | t" />
+            <a class="eq__btn" [href]="info()!.url">{{ 'builder.expo.open' | t }}</a>
+          }
+          <p class="eq__warn">{{ 'builder.expo.fallback' | t }}</p>
         } @else {
           <div class="eq__qr eq__qr--wait">{{ 'builder.expo.err.' + (info()?.error || 'SNACK_SAVE_FAILED') | t }}</div>
           <button type="button" class="eq__link" (click)="load()">{{ 'builder.expo.retry' | t }}</button>
@@ -81,10 +88,13 @@ export interface ExpoSnackInfo {
     .eq--row { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
     .eq__main { display: grid; gap: .5rem; justify-items: center; text-align: center; }
     .eq h3 { margin: 0; font-size: 1rem; font-weight: 700; }
-    .eq__qr { background: #fff; border-radius: 12px; padding: 6px; width: 180px; height: 180px; box-sizing: border-box; }
+    .eq__qr { background: #fff; border-radius: 12px; padding: 6px; width: 240px; height: 240px; max-width: 100%; box-sizing: border-box; }
     .eq__qr--small { width: 120px; height: 120px; }
     .eq__qr--wait { display: grid; place-items: center; color: #555; font-size: .78rem; padding: .8rem; text-align: center; }
     .eq__btn { display: inline-block; border-radius: 999px; padding: .35rem .9rem; background: #4630eb; color: #fff; font-weight: 700; text-decoration: none; }
+    .eq__btn--big { font-size: 1rem; padding: .7rem 1.4rem; width: 100%; box-sizing: border-box; text-align: center; }
+    .eq__scan { margin: 0; font-weight: 700; font-size: .9rem; }
+    .eq__warn { margin: 0; font-size: .74rem; opacity: .65; }
     .eq__info { display: grid; gap: .45rem; }
     .eq__info ol { margin: 0; padding-left: 1.1rem; display: grid; gap: .25rem; opacity: .85; }
     .eq__sdk { margin: 0; opacity: .7; font-size: .76rem; }
@@ -112,8 +122,11 @@ export class ExpoQrComponent {
   readonly info = signal<ExpoSnackInfo | null>(null);
   readonly loading = signal(false);
   readonly bust = signal('');
+  /** Phone/tablet visitor: a QR is useless, show the exp:// button instead. */
+  readonly mobile = signal(false);
 
   constructor() {
+    if (this.browser) this.mobile.set(window.matchMedia('(pointer: coarse) and (max-width: 900px)').matches);
     effect(() => {
       this.infoUrl();
       this.version();

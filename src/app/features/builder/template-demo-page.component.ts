@@ -65,6 +65,7 @@ import { ExpoQrComponent } from './expo-qr.component';
     .td__err { color: #e53935; }
     .td__grid { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; gap: 1.5rem; align-items: start; }
     .td__side { display: grid; gap: 1rem; }
+    @media (max-width: 860px) { .td__side { order: -1; } }
     .td__card { border: 1px solid rgba(127,127,127,.3); border-radius: 16px; padding: 1rem; display: grid; gap: .6rem; justify-items: center; text-align: center; }
     .td__card h2, .td__card h3 { margin: 0; font-size: 1rem; font-weight: 700; }
     .td__card p { margin: 0; font-size: .82rem; opacity: .75; }
@@ -98,11 +99,8 @@ export class TemplateDemoPageComponent {
     }
     this.api.template(this.productId).subscribe({
       next: (r) => {
-        // On a real phone (QR scan) the simulator frame is pointless: open the demo full-screen.
-        if (r.template.demoUrl && window.matchMedia('(max-width: 600px) and (pointer: coarse)').matches) {
-          location.replace(r.template.demoUrl);
-          return;
-        }
+        // Phones used to be redirected to the web demo here, which hid the Expo Go QR/button;
+        // now app templates show the Expo Go card first on small screens.
         this.meta.set(r.template);
       },
       error: (e) => this.error.set(e?.error?.message || this.i18n.t('builder.tpl.noDemo')),
