@@ -1,3 +1,4 @@
+import { WalletBalanceService } from '../../services/wallet-balance.service';
 import { Component, DestroyRef, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -149,7 +150,9 @@ export class GpuRentComponent implements OnInit {
 
   readonly offers = signal<GpuOffer[]>([]);
   readonly limits = signal<GpuOffersResponse['limits'] | null>(null);
-  readonly available = signal(0);
+  /** Same source as /wallet and the header: /wallet/summary.available (works even when GPU offers fail). */
+  private readonly walletBalance = inject(WalletBalanceService);
+  readonly available = this.walletBalance.available;
   readonly rentals = signal<GpuRental[]>([]);
   readonly selected = signal<GpuOffer | null>(null);
   readonly loadingOffers = signal(true);
@@ -168,6 +171,7 @@ export class GpuRentComponent implements OnInit {
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('gpu.rent.title') });
     if (!this.browser) return;
+    this.walletBalance.refresh();
     this.loadOffers();
     this.refresh();
     this.timer = setInterval(() => {
@@ -196,7 +200,6 @@ export class GpuRentComponent implements OnInit {
         const match = preset ? (r.offers || []).find((o) => o.id === preset) : undefined;
         if (match && !this.selected()) this.select(match);
         this.limits.set(r.limits);
-        this.available.set(r.wallet?.available ?? 0);
         this.volumeGb = r.limits?.volumeGb?.default ?? 20;
         this.loadingOffers.set(false);
       },

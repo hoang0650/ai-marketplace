@@ -250,17 +250,47 @@ export const routes: Routes = [
             (m) => m.ProductDetailComponent,
           ),
       },
-      {
-        path: 'gpu',
-        canActivate: [authGuard],
-        loadComponent: () =>
-          import('./features/gpu/gpu-rent.component').then((m) => m.GpuRentComponent),
-      },
+      // Old entry points now live as tabs of the training hub (query params such as ?offer= are kept).
+      { path: 'gpu', pathMatch: 'full', redirectTo: 'training/gpu' },
+      { path: 'voice-clone', pathMatch: 'full', redirectTo: 'training/voice-clone' },
+      { path: 'voice-preset', pathMatch: 'full', redirectTo: 'training/voice-preset' },
+      { path: 'dataset', pathMatch: 'full', redirectTo: 'training/dataset' },
       {
         path: 'training',
-        canActivate: [authGuard],
-        loadComponent: () =>
-          import('./features/training/training-studio.component').then((m) => m.TrainingStudioComponent),
+        loadComponent: () => import('./features/training/training-hub.component').then((m) => m.TrainingHubComponent),
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            canActivate: [authGuard],
+            loadComponent: () =>
+              import('./features/training/training-studio.component').then((m) => m.TrainingStudioComponent),
+          },
+          {
+            path: 'dataset',
+            canActivate: [visibleCategoryGuard],
+            loadComponent: () =>
+              import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+            data: { category: 'dataset', title: 'Dataset' },
+          },
+          {
+            path: 'voice-clone',
+            loadComponent: () =>
+              import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+            data: { category: 'voice-clone', title: 'Voice clone' },
+          },
+          {
+            path: 'voice-preset',
+            loadComponent: () =>
+              import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+            data: { category: 'voice-preset', title: 'Voice presets' },
+          },
+          {
+            path: 'gpu',
+            canActivate: [authGuard],
+            loadComponent: () => import('./features/gpu/gpu-rent.component').then((m) => m.GpuRentComponent),
+          },
+        ],
       },
       {
         path: 'expo/p/:projectId/:token',
@@ -310,18 +340,6 @@ export const routes: Routes = [
         data: { category: 'image-to-video', title: 'Image to Video' },
       },
       {
-        path: 'voice-clone',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'voice-clone', title: 'Voice clone' },
-      },
-      {
-        path: 'voice-preset',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'voice-preset', title: 'Voice presets' },
-      },
-      {
         path: 'ai-film-series',
         canActivate: [visibleCategoryGuard],
         loadComponent: () =>
@@ -352,13 +370,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'fine-tune', title: 'Fine-tune' },
-      },
-      {
-        path: 'dataset',
-        canActivate: [visibleCategoryGuard],
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'dataset', title: 'Dataset' },
       },
       {
         path: 'inference',

@@ -45,6 +45,7 @@ export class SettingsShellComponent {
       { path: '/settings/kyc', title: this.i18n.t('settings.kyc'), desc: this.i18n.t('settings.kycDesc'), icon: '🆔' },
       { path: '/settings/activity', title: this.i18n.t('settings.activity'), desc: this.i18n.t('settings.activityDesc'), icon: '🕒' },
       { path: '/settings/security', title: this.i18n.t('settings.security'), desc: this.i18n.t('settings.securityDesc'), icon: '🔒' },
+      { path: '/account/devices', title: this.i18n.t('devices.title'), desc: this.i18n.t('devices.sub'), icon: '📱' },
       { path: '/settings/notifications', title: this.i18n.t('settings.noti'), desc: this.i18n.t('settings.notiDesc'), icon: '🔔' },
       { path: '/settings/connections', title: this.i18n.t('settings.conn'), desc: this.i18n.t('settings.connDesc'), icon: '🔗' },
       { path: '/settings/feed', title: this.i18n.t('settings.feed'), desc: this.i18n.t('settings.feedDesc'), icon: '📰' },

@@ -1,4 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
+import { CurrencyPipe, isPlatformBrowser } from '@angular/common';
+import { WalletBalanceService } from '../services/wallet-balance.service';
 import { Component, ElementRef, HostListener, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
@@ -22,7 +23,7 @@ type NotiTab = 'all' | 'tx' | 'system' | 'promo';
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe, GoogleSignInComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe, GoogleSignInComponent, CurrencyPipe],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
@@ -41,6 +42,7 @@ export class ShellComponent {
   readonly year = new Date().getFullYear();
   readonly navSections = NAV_SECTIONS;
   readonly workEnabled = WORK_BOARD_ENABLED;
+  readonly walletBalance = inject(WalletBalanceService);
   readonly footerNav = [
     { path: '/', key: 'footer.nav.about' },
     { path: '/marketplace', key: 'nav.marketplace' },
@@ -104,8 +106,10 @@ export class ShellComponent {
       if (!isPlatformBrowser(this.platformId)) return;
       if (authed) {
         this.feed.start();
+        this.walletBalance.refresh();
       } else {
         this.feed.stop();
+        this.walletBalance.reset();
       }
       this.cart.load();
       this.wishlist.load();
@@ -170,6 +174,7 @@ export class ShellComponent {
   toggleUserMenu(event: Event): void {
     event.stopPropagation();
     this.userMenuOpen.update((v) => !v);
+    if (this.userMenuOpen()) this.walletBalance.refresh();
     this.categoryOpen.set(false);
     this.workOpen.set(false);
     this.docsOpen.set(false);
