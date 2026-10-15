@@ -56,6 +56,8 @@ export interface HireProject {
   terminationNote: string;
   complaintId: string | null;
   events: { at: string; actor: string; action: string; note: string }[];
+  messages?: { id: string; at: string; actor: 'buyer' | 'seller' | 'admin' | 'system'; body: string; link: string }[];
+  origin?: 'quote' | 'package';
   createdAt: string;
   updatedAt: string;
 }
@@ -79,6 +81,19 @@ export class HireService {
 
   get(id: string): Observable<HireProject> {
     return this.http.get<HireProject>(`${this.base}/${id}`);
+  }
+
+  /** Start a fixed-price service package: opens the phase workspace; nothing is charged until a phase is approved. */
+  startPackage(productId: string, brief?: string): Observable<HireProject & { existing?: boolean }> {
+    return this.http.post<HireProject & { existing?: boolean }>(`${environment.apiUrl}/hire/packages`, { productId, brief });
+  }
+
+  message(id: string, body: string, link?: string): Observable<HireProject> {
+    return this.http.post<HireProject>(`${this.base}/${id}/messages`, { body, ...(link ? { link } : {}) });
+  }
+
+  complain(id: string, note: string, requestedAction?: string): Observable<HireProject> {
+    return this.http.post<HireProject>(`${this.base}/${id}/complaint`, { note, requestedAction });
   }
 
   request(payload: { productId: string; brief: string; budget?: number; desiredDeadline?: string }): Observable<HireProject> {

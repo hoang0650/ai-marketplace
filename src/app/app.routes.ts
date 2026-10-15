@@ -634,14 +634,15 @@ export const routes: Routes = [
           import('./features/wallet/wallet.component').then((m) => m.WalletComponent),
       },
       {
+        // Service packages are paid per phase in this workspace (Đề án / Quy chế), so it stays open.
         path: 'hire/projects/:id',
-        canActivate: [workBoardGuard, authGuard],
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/hire/hire-project-detail.component').then((m) => m.HireProjectDetailComponent),
       },
       {
         path: 'hire/projects',
-        canActivate: [workBoardGuard, authGuard],
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/hire/hire-projects.component').then((m) => m.HireProjectsComponent),
       },

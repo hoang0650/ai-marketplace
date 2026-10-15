@@ -243,6 +243,7 @@
                     </a>
                   </li>
                   <li><a routerLink="/messages" (click)="closeUserMenu()">{{ 'nav.messages' | t }}</a></li>
+                  <li><a routerLink="/hire/projects" (click)="closeUserMenu()">{{ 'nav.serviceProjects' | t }}</a></li>
                   @if (auth.isSeller()) {
                     <li><a routerLink="/sell" (click)="closeUserMenu()">{{ 'nav.shop' | t }}</a></li>
                   } @else if (auth.isTalent() || auth.isFreelancer() || auth.isEmployer()) {

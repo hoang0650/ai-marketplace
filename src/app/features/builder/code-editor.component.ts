@@ -39,8 +39,14 @@ const DARK_KEY = 'aim.builder.editorDark';
     .ce__lang { font-weight: 700; text-transform: uppercase; opacity: .7; }
     .ce__status { opacity: .75; } .ce__status--err { color: #e5534b; opacity: 1; font-weight: 600; }
     .ce__btn { margin-left: auto; border: 1px solid rgba(127,127,127,.35); border-radius: 6px; padding: .1rem .5rem; background: transparent; color: inherit; cursor: pointer; }
-    .ce__host { flex: 1; min-height: 12rem; overflow: hidden; display: flex; }
-    .ce__host > :first-child { flex: 1; }
+    .ce__host { flex: 1; min-height: 12rem; overflow: hidden; display: flex; position: relative; }
+    /* CodeMirror's DOM is created outside Angular's encapsulation: reach it with ::ng-deep. */
+    :host ::ng-deep .ce__host > .cm-editor { position: absolute; inset: 0; width: 100%; height: 100%; }
+    :host ::ng-deep .ce__host .cm-scroller { overflow: auto; scrollbar-width: thin; scrollbar-color: rgba(127,127,127,.45) transparent; }
+    :host ::ng-deep .ce__host .cm-scroller::-webkit-scrollbar { width: 10px; height: 10px; }
+    :host ::ng-deep .ce__host .cm-scroller::-webkit-scrollbar-track { background: transparent; }
+    :host ::ng-deep .ce__host .cm-scroller::-webkit-scrollbar-thumb { background: rgba(127,127,127,.4); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+    :host ::ng-deep .ce__host .cm-scroller::-webkit-scrollbar-corner { background: transparent; }
     .ce__fallback { flex: 1; resize: none; border: 0; padding: .5rem; font: 12px ui-monospace, monospace; background: transparent; color: inherit; }
     .ce__problems { margin: 0; padding: .25rem 0; list-style: none; max-height: 7.5rem; overflow: auto; border-top: 1px solid rgba(127,127,127,.25); font: 12px ui-monospace, monospace; }
     .ce__problems button { width: 100%; text-align: left; padding: .15rem .6rem; background: none; border: 0; color: inherit; cursor: pointer; }

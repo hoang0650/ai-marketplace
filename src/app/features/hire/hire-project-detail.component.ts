@@ -69,6 +69,10 @@ export class HireProjectDetailComponent implements OnInit {
   terminateReason: HireTerminateReason = 'not_as_requested';
   terminateNote = '';
   showTerminate = false;
+  readonly started = signal(false);
+  msgBody = '';
+  complaintNote = '';
+  showComplaint = false;
 
   readonly role = computed(() => this.project()?.role || null);
   readonly current = computed<HireMilestone | null>(() => {
@@ -94,6 +98,7 @@ export class HireProjectDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.started.set(this.route.snapshot.queryParamMap.get('started') === '1');
     this.route.paramMap.subscribe((pm) => this.load(pm.get('id') || ''));
   }
 
@@ -172,6 +177,27 @@ export class HireProjectDetailComponent implements OnInit {
 
   touchRows(): void {
     this.rows.update((r) => [...r]);
+  }
+
+  sendMessage(): void {
+    const p = this.project();
+    const body = this.msgBody.trim();
+    if (!p || !body) return;
+    this.run(this.hire.message(p.id, body), () => (this.msgBody = ''));
+  }
+
+  fileComplaint(): void {
+    const p = this.project();
+    if (!p || this.complaintNote.trim().length < 8) return;
+    this.run(this.hire.complain(p.id, this.complaintNote.trim()), () => {
+      this.complaintNote = '';
+      this.showComplaint = false;
+    });
+  }
+
+  dismissStarted(): void {
+    this.started.set(false);
+    void this.router.navigate([], { queryParams: {}, replaceUrl: true });
   }
 
   private run(call: Observable<HireProject>, after?: (p: HireProject) => void): void {

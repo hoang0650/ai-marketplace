@@ -231,9 +231,11 @@
         @if (isHireRequest(p.category)) {
           <p class="pd-hire-note">{{ 'svc.priceNote' | t: { price: displayPrice(p, 1) } }}</p>
         }
+        @if (!isHireRequest(p.category)) {
         <button type="button" class="pd-buy__cart" (click)="addToCart()">
           🛒 {{ (inCart() ? 'cart.view' : 'lux.addToCart') | t }}
         </button>
+        }
 
         <div class="pd-coupon">
           <label class="pd-coupon__check">
@@ -462,8 +464,9 @@
           </ol>
           @if (!isContentOwner()) {
             <div class="pg-actions">
-              <button type="button" class="btn btn-run" (click)="checkout()">{{ 'svc.cta' | t }}</button>
+              <button type="button" class="btn btn-run" (click)="startServicePackage()" [disabled]="hireBusy()">{{ 'svc.cta' | t }}</button>
             </div>
+            @if (hireError()) { <p class="cost-hint" style="color:#d0453a">{{ hireError() }}</p> }
           }
         </section>
         <aside class="pg-pane">

@@ -1,40 +1,8 @@
-<section class="chat-page page route-enter">
-  <h1>{{ 'chat.title' | t }}</h1>
-  <p class="chat-lede">{{ 'chat.lede' | t }}</p>
-  @if (loading()) {
-    <p class="chat-meta">{{ 'chat.loading' | t }}</p>
-  } @else if (error()) {
-    <p class="chat-error">{{ error() }}</p>
-  } @else if (!items().length) {
-    <p class="chat-meta">{{ 'chat.empty' | t }}</p>
-  } @else {
-    <ul class="chat-list">
-      @for (c of items(); track c.id) {
-        <li>
-          <a class="chat-card" [routerLink]="threadLink(c.id)">
-            @if (c.productCover) {
-              <img class="chat-card__cover" [src]="c.productCover" [alt]="c.productName" />
-            } @else {
-              <span class="chat-card__cover chat-card__cover--empty"></span>
-            }
-            <div>
-              <p class="chat-card__name">{{ c.productName || ('chat.product' | t) }}</p>
-              <p class="chat-card__preview">
-                {{ c.otherName }}
-                @if (c.lastKind === 'image') {
-                  · {{ 'chat.image' | t }}
-                }
-                @if (c.lastMessage) {
-                  · {{ c.lastMessage }}
-                }
-              </p>
-            </div>
-            @if (c.unread > 0) {
-              <span class="chat-card__unread">{{ c.unread }}</span>
-            }
-          </a>
-        </li>
-      }
-    </ul>
-  }
+<section class="chat-shell route-enter">
+  <aside class="chat-shell__list"><app-chat-list /></aside>
+  <div class="chat-shell__pane chat-empty">
+    <div class="chat-empty__icon" aria-hidden="true">💬</div>
+    <p class="chat-empty__title">{{ 'chat.pick' | t }}</p>
+    <p class="chat-empty__sub">{{ 'chat.lede' | t }}</p>
+  </div>
 </section>
