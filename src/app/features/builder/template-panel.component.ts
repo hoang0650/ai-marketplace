@@ -3,6 +3,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { PhoneSimulatorComponent } from './phone-simulator.component';
+import { ExpoQrComponent } from './expo-qr.component';
+import { environment } from '../../../environments/environment';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { AuthService } from '../../services/auth.service';
@@ -15,7 +17,7 @@ type Device = 'desktop' | 'phone';
 @Component({
   selector: 'app-template-panel',
   standalone: true,
-  imports: [TPipe, RouterLink, PhoneSimulatorComponent],
+  imports: [TPipe, RouterLink, PhoneSimulatorComponent, ExpoQrComponent],
   template: `
     <section class="tp">
       <div class="tp__head">
@@ -63,7 +65,12 @@ type Device = 'desktop' | 'phone';
                 }
               </div>
               @if (device() === 'phone') {
-                <app-phone-simulator [url]="meta()!.demoUrl" [title]="product().name" [maxHeight]="700" />
+                <div class="tp__phone">
+                  <app-phone-simulator [url]="meta()!.demoUrl" [title]="product().name" [maxHeight]="700" />
+                  @if (m.kind === 'app') {
+                    <app-expo-qr class="tp__expo" [infoUrl]="expoInfo()" [qrUrl]="expoQr()" [version]="m.version" [webQrUrl]="webQr()" [webUrl]="m.demoUrl" />
+                  }
+                </div>
               } @else {
                 <div class="tp__frame">
                   <iframe
@@ -103,6 +110,8 @@ type Device = 'desktop' | 'phone';
     .tp__meta { margin: 0; opacity: .8; font-size: .85rem; }
     .tp__grid { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr) 15rem; }
     .tp__stage { display: grid; gap: .5rem; }
+    .tp__phone { display: grid; grid-template-columns: minmax(0, 1fr) 16rem; gap: 1rem; align-items: start; }
+    @media (max-width: 900px) { .tp__phone { grid-template-columns: 1fr; } }
     .tp__devices { display: flex; gap: .4rem; }
     .tp__devices button { border: 1px solid rgba(127,127,127,.35); border-radius: 999px; padding: .25rem .8rem; font-size: .8rem; background: transparent; color: inherit; cursor: pointer; }
     .tp__devices button.on { border-color: currentColor; font-weight: 700; }
@@ -134,6 +143,10 @@ export class TemplatePanelComponent {
   readonly busy = signal(false);
   readonly error = signal('');
   readonly kind = computed(() => (this.product().category === 'template-app' ? 'app' : 'web'));
+  private readonly tplApi = computed(() => `${environment.apiUrl}/builder/templates/${this.meta()?.productId || ''}`);
+  readonly expoInfo = computed(() => `${this.tplApi()}/expo`);
+  readonly expoQr = computed(() => `${this.tplApi()}/expo-qr.svg`);
+  readonly webQr = computed(() => `${this.tplApi()}/demo-qr.svg`);
   readonly demoSrc = computed<SafeResourceUrl | null>(() => {
     const url = this.meta()?.demoUrl;
     return url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : null;

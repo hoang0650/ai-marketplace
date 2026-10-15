@@ -29,6 +29,7 @@ import { buildZip, expoScaffold } from './zip';
 import { STUDIO_MESSAGES } from './studio.messages';
 import { LocalProviderError, LocalProviderService } from './local-provider.service';
 import { LocalProviderCardComponent } from './local-provider-card.component';
+import { ExpoQrComponent } from './expo-qr.component';
 import { DEFAULT_CHROME, DeviceChrome, DeviceFrameComponent, DeviceModel, deviceOuter } from './device-frame.component';
 
 interface Device {
@@ -58,7 +59,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
 @Component({
   selector: 'app-builder-studio',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent],
+  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent, ExpoQrComponent],
   styles: [
     `
       :host { display: block; }
@@ -298,6 +299,9 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 }
               </div>
               <p class="text-[11px] text-muted">{{ 'builder.phoneHint.' + p.kind | t }}</p>
+              @if (p.kind === 'app' && expoInfo(); as ei) {
+                <app-expo-qr [infoUrl]="ei" [qrUrl]="ei + '.svg'" [version]="p.version" [webUrl]="p.previewUrl" [compact]="true" />
+              }
             } @else {
               <div class="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-2 md:grid-cols-[220px_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)]">
                 <div class="flex min-h-0 flex-col gap-2">
@@ -398,6 +402,12 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
 
   readonly tabs = ['preview', 'code'] as const;
   readonly project = signal<BuilderProject | null>(null);
+  /** Expo Go (Snack) info endpoint for app projects — same capability token as the web preview. */
+  readonly expoInfo = computed(() => {
+    const url = this.project()?.previewUrl || '';
+    const m = url.match(/^(.*)\/preview\/([a-f0-9]{24})\/([A-Za-z0-9_-]{16,64})\/?$/);
+    return m ? `${m[1]}/preview-expo/${m[2]}/${m[3]}` : '';
+  });
   readonly providers = signal<ByokProvider[]>([]);
   readonly keys = signal<ByokKey[]>([]);
   private readonly local = inject(LocalProviderService);
