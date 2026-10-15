@@ -102,7 +102,7 @@ const IDEAS: Record<BuilderKind, string[]> = {
                       <a class="btn btn-fill px-2 py-1 text-xs" [routerLink]="['/product', row.product.slug]">{{ 'builder.tpl.buy' | t }}</a>
                     }
                     @if (row.template.demoUrl) {
-                      <a class="btn btn-outline px-2 py-1 text-xs" [href]="row.template.demoUrl" target="_blank" rel="noopener">{{ 'builder.tpl.demo' | t }}</a>
+                      <a class="btn btn-outline px-2 py-1 text-xs" [href]="row.template.kind === 'app' && row.template.simulatorUrl ? row.template.simulatorUrl : row.template.demoUrl" target="_blank" rel="noopener">{{ 'builder.tpl.demo' | t }}</a>
                     }
                   </div>
                 </div>

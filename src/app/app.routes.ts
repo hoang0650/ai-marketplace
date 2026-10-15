@@ -263,6 +263,14 @@ export const routes: Routes = [
           import('./features/training/training-studio.component').then((m) => m.TrainingStudioComponent),
       },
       {
+        path: 'expo/p/:projectId/:token',
+        loadComponent: () => import('./features/builder/expo-landing.component').then((m) => m.ExpoLandingComponent),
+      },
+      {
+        path: 'expo/:productId',
+        loadComponent: () => import('./features/builder/expo-landing.component').then((m) => m.ExpoLandingComponent),
+      },
+      {
         path: 'template-demo/:productId',
         loadComponent: () =>
           import('./features/builder/template-demo-page.component').then((m) => m.TemplateDemoPageComponent),
