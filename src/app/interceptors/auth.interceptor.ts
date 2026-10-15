@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../environments/environment';
+import { deviceId, deviceName } from '../services/device-id';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
@@ -14,7 +15,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = auth.token();
   const authed = req.clone({
     withCredentials: true,
-    setHeaders: token ? { Authorization: `Bearer ${token}` } : {},
+    setHeaders: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      // Only the handoff/devices endpoints read these (cross-device sync).
+      ...(token && req.url.includes('/handoff') && deviceId()
+        ? { 'X-Device-Id': deviceId(), 'X-Device-Platform': 'web', 'X-Device-Name': encodeURIComponent(deviceName()) }
+        : {}),
+    },
   });
 
   const skipRefresh =
