@@ -303,11 +303,13 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                     [title]="p.name"
                   ></iframe>
                 }
+                @if (p.kind === 'app' && expoInfo(); as ei) {
+                  <div class="absolute right-3 top-3 z-10 max-h-full">
+                    <app-expo-qr [infoUrl]="ei" [qrUrl]="ei + '.svg'" [version]="p.version" [webUrl]="p.previewUrl" [dock]="true" />
+                  </div>
+                }
               </div>
               <p class="text-[11px] text-muted">{{ 'builder.phoneHint.' + p.kind | t }}</p>
-              @if (p.kind === 'app' && expoInfo(); as ei) {
-                <app-expo-qr [infoUrl]="ei" [qrUrl]="ei + '.svg'" [version]="p.version" [webUrl]="p.previewUrl" [compact]="true" />
-              }
             } @else {
               <div class="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-2 md:grid-cols-[220px_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)]">
                 <div class="flex min-h-0 flex-col gap-2">
@@ -447,7 +449,8 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
     const { width: w, height: h } = this.outer();
     const { width, height } = this.stageSize();
     if (!w || !width || !height) return 1;
-    return Math.min(1, (width - 40) / w, (height - 40) / h);
+    // Fill the available height (up to 1.6x) — the Expo panel floats in the corner instead of stealing rows.
+    return Math.min(1.6, (width - 40) / w, (height - 32) / h);
   });
   readonly nonce = signal(0);
   readonly chrome = signal<DeviceChrome>(DEFAULT_CHROME);
