@@ -121,6 +121,7 @@
 
         <a routerLink="/hire-agent/marketplace" routerLinkActive="active" class="nav-link">{{ 'nav.agent' | t }}</a>
         <a routerLink="/models" routerLinkActive="active" class="nav-link">{{ 'nav.model' | t }}</a>
+        <a routerLink="/ai-film" routerLinkActive="active" class="nav-link" data-testid="nav-ai-film">🎬 {{ 'nav.aiFilm' | t }}</a>
 
         @if (workEnabled) {
         <div class="nav-dd work-dd" [class.open]="workOpen()">
@@ -234,6 +235,7 @@
                 <ul class="user-menu__list">
                   <li><a routerLink="/profile" (click)="closeUserMenu()">{{ 'nav.profile' | t }}</a></li>
                   <li><a [routerLink]="auth.isSeller() || auth.isAdmin() ? '/dashboard' : '/account/console'" (click)="closeUserMenu()">{{ 'nav.dashboard' | t }}</a></li>
+                  <li><a routerLink="/ai-film" (click)="closeUserMenu()" data-testid="menu-ai-film">🎬 {{ 'nav.aiFilm' | t }}</a></li>
                   <li><a routerLink="/account/console" [queryParams]="{ tab: 'orders' }" (click)="closeUserMenu()">{{ 'bhub.menu.orders' | t }}</a></li>
                   <li><a routerLink="/account/console" [queryParams]="{ tab: 'complaints' }" (click)="closeUserMenu()">{{ 'bhub.menu.complaints' | t }}</a></li>
                   <li>

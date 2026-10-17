@@ -13,6 +13,7 @@ export const TRAINING_TABS = [
   { id: 'dataset', path: '/training/dataset', labelKey: 'train.tab.dataset', exact: false },
   { id: 'voice-clone', path: '/training/voice-clone', labelKey: 'cat.voice-clone.label', exact: false },
   { id: 'voice-preset', path: '/training/voice-preset', labelKey: 'cat.voice-preset.label', exact: false },
+  { id: 'ai-film', path: '/training/ai-film', labelKey: 'nav.aiFilm', exact: false },
   { id: 'gpu', path: '/training/gpu', labelKey: 'nav.gpuRent', exact: false },
 ] as const;
 
