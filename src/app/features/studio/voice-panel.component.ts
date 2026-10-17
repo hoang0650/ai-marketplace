@@ -41,7 +41,7 @@ interface Quota { promo?: { active: boolean }; tts: { used: number; free: number
             @if (mode === 'preset' && lang !== 'zh') {
               <label class="text-sm">{{ 'voice.preset' | t }}
                 <select class="input mt-1" [(ngModel)]="voice" data-testid="voice-preset">
-                  @for (v of voices(); track v.id) { <option [value]="v.label">{{ v.label }}</option> }
+                  @for (v of voices(); track v.id) { <option [value]="v.id">{{ v.label }}</option> }
                 </select>
               </label>
             }
@@ -93,7 +93,7 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
     this.loadQuota();
     if (this.mode === 'preset') {
       this.http.get<{ vi: Voice[] }>(`${API}/studio/voices`).subscribe({
-        next: (r) => { this.voices.set(r.vi || []); this.voice = this.voice || r.vi?.[0]?.label || ''; },
+        next: (r) => { this.voices.set(r.vi || []); this.voice = this.voice || r.vi?.[0]?.id || ''; },
         error: (e: HttpErrorResponse) => this.error.set(e.error?.message || this.i18n.t('studio.failed')),
       });
     }
