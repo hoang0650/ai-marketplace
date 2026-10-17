@@ -810,6 +810,13 @@
             </div>
           }
 
+          @if (isVoice(p.category) && voicePlayMode === 'tts') {
+            <div class="field" data-testid="pd-voice-fx">
+              <span class="field-label">Điều chỉnh giọng</span>
+              <app-voice-controls [(value)]="voiceFx" />
+            </div>
+          }
+
           @if (isVoice(p.category) && voicePlayMode === 'stt') {
             <div class="field">
               <div class="field-label-row">

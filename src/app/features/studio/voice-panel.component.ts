@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { TPipe } from '../../i18n/t.pipe';
+import { VoiceControlsComponent, VoiceFx, DEFAULT_VOICE_FX, voiceFxBody } from './voice-controls.component';
 import { I18nService } from '../../i18n/i18n.service';
 
 const API = environment.apiUrl;
@@ -15,7 +16,7 @@ interface Quota { promo?: { active: boolean }; tts: { used: number; free: number
 @Component({
   selector: 'app-voice-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, TPipe],
+  imports: [FormsModule, RouterLink, TPipe, VoiceControlsComponent],
   template: `
     <div class="panel" data-testid="voice-panel">
       <div class="flex flex-wrap items-start justify-between gap-3">
@@ -33,12 +34,8 @@ interface Quota { promo?: { active: boolean }; tts: { used: number; free: number
       } @else {
         <div class="mt-4 grid gap-3">
           <div class="flex flex-wrap gap-3">
-            <label class="text-sm">{{ 'studio.lang' | t }}
-              <select class="input mt-1" [(ngModel)]="lang" data-testid="voice-lang">
-                <option value="vi">Tiếng Việt</option><option value="en">English</option><option value="zh">中文</option>
-              </select>
-            </label>
-            @if (mode === 'preset' && lang !== 'zh') {
+            <app-voice-controls class="min-w-[16rem] flex-1" [(value)]="fx" />
+            @if (mode === 'preset' && (fx.lang === 'vi' || fx.lang === 'en')) {
               <label class="text-sm">{{ 'voice.preset' | t }}
                 <select class="input mt-1" [(ngModel)]="voice" data-testid="voice-preset">
                   @for (v of voices(); track v.id) { <option [value]="v.id">{{ v.label }}</option> }
@@ -76,7 +73,7 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
   private readonly i18n = inject(I18nService);
   @Input() mode: 'preset' | 'clone' = 'preset';
   text = '';
-  lang: 'vi' | 'en' | 'zh' = 'vi';
+  fx: VoiceFx = { ...DEFAULT_VOICE_FX };
   voice = '';
   sample = '';
   readonly voices = signal<Voice[]>([]);
@@ -114,7 +111,8 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
   submit(): void {
     this.busy.set(true); this.error.set(''); this.status.set(this.i18n.t('studio.status.queued'));
     if (this.audio()) { URL.revokeObjectURL(this.audio()); this.audio.set(''); }
-    const body = { text: this.text, lang: this.lang, voice: this.mode === 'preset' && this.lang !== 'zh' ? this.voice : undefined, voiceBase64: this.mode === 'clone' ? this.sample : undefined };
+    const vieneu = this.fx.lang === 'vi' || this.fx.lang === 'en';
+    const body = { text: this.text, ...voiceFxBody(this.fx), voice: this.mode === 'preset' && vieneu ? this.voice : undefined, voiceBase64: this.mode === 'clone' ? this.sample : undefined };
     const t0 = Date.now();
     this.http.post<{ id: string }>(`${API}/studio/tts`, body).subscribe({
       next: (j) => {

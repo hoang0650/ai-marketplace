@@ -29,6 +29,7 @@ import { PurchaseNotice, PurchaseNoticeComponent } from '../../shared/components
 import { isHiddenCategory, isHireCategory, isHireRequestCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { TemplatePanelComponent } from '../builder/template-panel.component';
 import { SeriesPlayerComponent } from './series-player.component';
+import { VoiceControlsComponent, VoiceFx, DEFAULT_VOICE_FX, voiceFxBody } from '../studio/voice-controls.component';
 import { BuilderService } from '../builder/builder.service';
 import { CartService } from '../cart/cart.service';
 import { I18nService } from '../../i18n/i18n.service';
@@ -74,7 +75,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent, VoiceControlsComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -300,6 +301,7 @@ export class ProductDetailComponent implements OnInit {
   lastLatencyMs = 0;
   lastCost = 0;
   voicePlayMode: 'tts' | 'stt' = 'tts';
+  voiceFx: VoiceFx = { ...DEFAULT_VOICE_FX };
   sttAudioBase64 = '';
   sttAudioName = '';
 
@@ -1560,6 +1562,7 @@ export class ProductDetailComponent implements OnInit {
             voice: preset || 'Adam',
             format: 'wav',
             action: 'tts',
+            ...voiceFxBody(this.voiceFx),
           };
         }
         return {
@@ -1567,6 +1570,7 @@ export class ProductDetailComponent implements OnInit {
           audio_url: p.contentMeta?.voiceSampleUrl,
           format: 'wav',
           action: 'voice_clone',
+          ...voiceFxBody(this.voiceFx),
         };
       }
       if (p.category === 'fine-tune') {
