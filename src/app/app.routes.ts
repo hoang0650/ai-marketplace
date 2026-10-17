@@ -292,6 +292,11 @@ export const routes: Routes = [
             data: { category: 'voice-preset', title: 'Voice presets' },
           },
           {
+            path: 'ai-film',
+            loadComponent: () => import('./features/studio/ai-film.component').then((m) => m.AiFilmComponent),
+            data: { title: 'Làm phim AI' },
+          },
+          {
             path: 'gpu',
             canActivate: [authGuard],
             loadComponent: () => import('./features/gpu/gpu-rent.component').then((m) => m.GpuRentComponent),
