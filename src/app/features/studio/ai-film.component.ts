@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
+import { VoiceControlsComponent, VoiceFx, DEFAULT_VOICE_FX, voiceFxBody } from './voice-controls.component';
 import { SeoService } from '../../services/seo.service';
 
 const API = environment.apiUrl;
@@ -41,7 +42,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 @Component({
   selector: 'app-ai-film',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, VoiceControlsComponent],
   template: `
 <div class="ed" data-testid="film-editor">
   <header class="ed-top">
@@ -167,6 +168,9 @@ const uid = () => Math.random().toString(36).slice(2, 10);
             @for (v of voices(); track v.id) { <option [value]="v.id">{{ v.label }}</option> }
           </select>
         </label>
+        <div class="ed-vc"><span class="ed-vc-h">Giọng kể (cả phim)</span>
+          <app-voice-controls [dark]="true" [value]="fx" (valueChange)="fx = $event; save()" speedNote="Tốc độ lời kể do GPU áp dụng khi dựng phim để khớp cảnh." />
+        </div>
         <div class="ed-2">
           <label>Thời lượng: {{ c.duration }}s
             <input type="range" min="2" max="8" step="0.5" [(ngModel)]="c.duration" (ngModelChange)="touch()" />
@@ -247,6 +251,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 </div>
 `,
   styles: [`
+.ed-vc{border-top:1px solid var(--b, #2a2c33);padding-top:10px;margin-top:4px}.ed-vc-h{display:block;font-weight:600;margin-bottom:6px}
 :host{display:block}
 .ed{--bg:#0f1012;--p:#17181c;--p2:#1f2026;--b:#2a2c33;--t:#e9e9ec;--m:#8b8d98;--a:#22d3ee;--a2:#c9a961;background:var(--bg);color:var(--t);border-radius:14px;overflow:hidden;font-size:13px;min-height:calc(100vh - 140px);display:flex;flex-direction:column}
 .ed button,.ed select,.ed input,.ed textarea{font:inherit;color:inherit}
@@ -343,6 +348,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
 
   title = '';
   subtitles = true;
+  fx: VoiceFx = { ...DEFAULT_VOICE_FX };
   pps = 48;
   dragFrom = -1;
   readonly lib = signal<string>('scenes');
@@ -420,14 +426,14 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   save(): void {
     try {
       const clips = this.clips().map(({ video, thumb, ...c }) => ({ ...c, thumb: thumb?.startsWith('blob:') ? undefined : thumb, state: c.state === 'ready' && video?.startsWith('blob:') ? 'draft' : c.state }));
-      localStorage.setItem(STORE, JSON.stringify({ title: this.title, subtitles: this.subtitles, clips }));
+      localStorage.setItem(STORE, JSON.stringify({ title: this.title, subtitles: this.subtitles, fx: this.fx, clips }));
     } catch { /* storage full or disabled */ }
   }
   private restore(): void {
     try {
       const p = JSON.parse(localStorage.getItem(STORE) || 'null');
       if (!p) return;
-      this.title = p.title || ''; this.subtitles = p.subtitles !== false;
+      this.title = p.title || ''; this.subtitles = p.subtitles !== false; this.fx = { ...DEFAULT_VOICE_FX, ...(p.fx || {}) };
       this.clips.set((p.clips || []).map((c: Clip) => ({ ...this.newClip(), ...c, state: c.state === 'queued' || c.state === 'running' ? 'draft' : c.state })));
       this.selId.set(this.clips()[0]?.id || '');
     } catch { /* ignore */ }
@@ -480,7 +486,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     if (!scenes.length) return this.note('Cần ít nhất một cảnh có mô tả hình ảnh.', true);
     this.rendering.set(true); this.pct.set(3); this.note('Đang gửi phim vào hàng đợi GPU…');
     const t0 = Date.now(); const est = 22 * scenes.length + 6;
-    this.http.post<{ id: string }>(`${API}/studio/film`, { title: this.title.trim(), lang: 'vi', voice: this.sel()?.voice || this.clips()[0]?.voice, scenes }).subscribe({
+    this.http.post<{ id: string }>(`${API}/studio/film`, { title: this.title.trim(), ...voiceFxBody(this.fx), voice: this.sel()?.voice || this.clips()[0]?.voice, scenes }).subscribe({
       next: (j) => this.poll(j.id, (s) => {
         const sec = Math.round((Date.now() - t0) / 1000);
         if (s.status === 'queued') this.note(`Đang xếp hàng${s.position ? ` (vị trí ${s.position})` : ''} · ${sec}s`);

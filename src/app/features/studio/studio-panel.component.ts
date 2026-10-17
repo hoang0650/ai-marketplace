@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { TPipe } from '../../i18n/t.pipe';
+import { VoiceControlsComponent, VoiceFx, DEFAULT_VOICE_FX, voiceFxBody } from './voice-controls.component';
 import { I18nService } from '../../i18n/i18n.service';
 
 const API = environment.apiUrl;
@@ -16,7 +17,7 @@ interface Job { id: string; status: string; position?: number | null; timings?: 
 @Component({
   selector: 'app-studio-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, TPipe],
+  imports: [FormsModule, RouterLink, TPipe, VoiceControlsComponent],
   template: `
     <div class="panel studio" data-testid="studio-panel">
       <div class="flex flex-wrap items-start justify-between gap-3">
@@ -47,11 +48,7 @@ interface Job { id: string; status: string; position?: number | null; timings?: 
             <label class="text-sm">{{ 'studio.text' | t }}
               <textarea class="input mt-1 w-full" rows="3" maxlength="600" [(ngModel)]="text" data-testid="studio-text" [placeholder]="'studio.textPh' | t"></textarea>
             </label>
-            <label class="text-sm">{{ 'studio.lang' | t }}
-              <select class="input mt-1" [(ngModel)]="lang" data-testid="studio-lang">
-                <option value="vi">Tiếng Việt</option><option value="en">English</option><option value="zh">中文</option>
-              </select>
-            </label>
+            <app-voice-controls [(value)]="fx" speedNote="Video giữ khẩu hình: tốc độ do GPU xử lý trực tiếp khi hỗ trợ." />
           }
           @if (mode !== 't2v') {
             <label class="text-sm">{{ (mode === 'talking' ? 'studio.face' : 'studio.image') | t }}
@@ -102,7 +99,7 @@ export class StudioPanelComponent implements OnInit, OnDestroy {
 
   prompt = '';
   text = '';
-  lang: 'vi' | 'en' | 'zh' = 'vi';
+  fx: VoiceFx = { ...DEFAULT_VOICE_FX };
   private imageB64 = '';
   private voiceB64 = '';
   readonly imagePreview = signal('');
@@ -167,7 +164,7 @@ export class StudioPanelComponent implements OnInit, OnDestroy {
     if (this.videoSrc()) { URL.revokeObjectURL(this.videoSrc()); this.videoSrc.set(''); }
     const url = this.mode === 'talking' ? `${API}/studio/video/talking` : `${API}/studio/video/fast`;
     const body = this.mode === 'talking'
-      ? { text: this.text, lang: this.lang, imageBase64: this.imageB64, voiceBase64: this.voiceB64 || undefined }
+      ? { text: this.text, ...voiceFxBody(this.fx), imageBase64: this.imageB64, voiceBase64: this.voiceB64 || undefined }
       : { prompt: this.prompt, imageBase64: this.mode === 'i2v' ? this.imageB64 : undefined };
     this.http.post<Job>(url, body).subscribe({
       next: (j) => { this.job.set(j); this.started = Date.now(); this.poll(j.id); },
