@@ -697,11 +697,30 @@ export class DashboardAnalyticsComponent implements OnInit {
                   ? 'Chọn nhiều ảnh trong một lần — mỗi ảnh là một trang/frame của chương. File lưu riêng, buyer chỉ đọc khi license còn hạn.'
                   : 'File lưu riêng, không public. Buyer chỉ stream/tải khi license còn hạn. Tải xuống là file .aimc mã hóa.' }}
               </p>
+              @if (p.category !== 'story-book') {
+                <div class="mb-3 grid gap-2 rounded-md border border-line p-2" data-testid="series-meta">
+                  <label class="block text-xs uppercase text-muted">Cốt truyện cả series</label>
+                  <textarea class="input" rows="2" [(ngModel)]="seriesSynopsis" name="seriesSynopsis" placeholder="Giới thiệu ngắn hiển thị ở trình phát"></textarea>
+                  <label class="block text-xs uppercase text-muted">Thể loại (cách nhau bằng dấu phẩy)</label>
+                  <input class="input" [(ngModel)]="seriesGenres" name="seriesGenres" placeholder="Tình cảm, Cổ trang, Việt Nam" />
+                  <div class="flex items-center gap-2">
+                    <button type="button" class="btn btn-outline text-xs" (click)="saveSeries(p)">Lưu thông tin series</button>
+                    @if (seriesMsg) { <span class="text-xs text-muted">{{ seriesMsg }}</span> }
+                  </div>
+                </div>
+              }
               <div class="mb-3 flex flex-wrap items-end gap-2">
                 <div class="min-w-[12rem] flex-1">
                   <label class="mb-1 block text-xs uppercase text-muted">Tiêu đề</label>
                   <input class="input" [(ngModel)]="chapterTitle" name="chapterTitle" [placeholder]="p.category === 'story-book' ? 'Chương 1 — Phố cổ' : 'Tập 1 / Chương 1'" />
                 </div>
+                @if (p.category !== 'story-book') {
+                  <div class="min-w-[12rem] flex-1">
+                    <label class="mb-1 block text-xs uppercase text-muted">Cốt truyện tập</label>
+                    <input class="input" [(ngModel)]="chapterSynopsis" name="chapterSynopsis" placeholder="Tóm tắt tập này" />
+                  </div>
+                  <label class="flex items-center gap-1 text-xs"><input type="checkbox" [(ngModel)]="chapterFree" name="chapterFree" /> Miễn phí</label>
+                }
                 <label class="btn btn-fill cursor-pointer">
                   {{ chapterBusy ? 'Đang tải…' : (p.category === 'story-book' ? 'Chọn nhiều trang' : 'Chọn file') }}
                   <input type="file" class="hidden" [attr.multiple]="p.category === 'story-book' ? '' : null" accept="video/*,image/*,audio/*,.mp4,.webm,.jpg,.jpeg,.png,.webp,.gif,.mp3,.wav,.txt" (change)="onChapterFile($event, p)" [disabled]="chapterBusy" />
@@ -713,7 +732,14 @@ export class DashboardAnalyticsComponent implements OnInit {
               <ul class="grid gap-2">
                 @for (ep of chapters(); track ep.id) {
                   <li class="flex items-center justify-between gap-2 text-sm">
-                    <span>{{ ep.index }}. {{ ep.title }} · {{ ep.kind }}@if ((ep.pageCount || 0) > 1) { · {{ ep.pageCount }} trang }</span>
+                    <span class="min-w-0 flex-1">{{ ep.index }}. {{ ep.title }} · {{ ep.kind }}@if ((ep.pageCount || 0) > 1) { · {{ ep.pageCount }} trang }
+                      @if (p.category !== 'story-book') {
+                        <input class="input mt-1 text-xs" [ngModel]="ep.synopsis || ''" (change)="saveEpisodeSynopsis(ep, $event)" [name]="'syn-' + ep.id" placeholder="Cốt truyện tập" />
+                      }
+                    </span>
+                    @if (p.category !== 'story-book') {
+                      <button type="button" class="btn btn-outline text-xs" (click)="toggleEpisodeFree(ep)" [attr.data-testid]="'ep-free-' + ep.index">{{ ep.free ? 'Miễn phí ✓' : 'Cần license' }}</button>
+                    }
                     <button type="button" class="btn btn-outline text-xs" (click)="removeChapter(ep, p)">Xóa</button>
                   </li>
                 }
@@ -775,6 +801,11 @@ export class DashboardProductsComponent implements OnInit {
   voiceUploadError = '';
   managingId = '';
   chapterTitle = '';
+  chapterSynopsis = '';
+  chapterFree = false;
+  seriesSynopsis = '';
+  seriesGenres = '';
+  seriesMsg = '';
   chapterBusy = false;
   chapterError = '';
   draft = this.emptyDraft();
@@ -913,9 +944,41 @@ export class DashboardProductsComponent implements OnInit {
     this.managingId = p.id;
     this.chapterError = '';
     this.chapterTitle = '';
-    this.contentApi.episodes(p.slug).subscribe({
-      next: (rows) => this.chapters.set(rows),
-      error: () => this.chapters.set([]),
+    this.seriesMsg = '';
+    this.contentApi.series(p.slug).subscribe({
+      next: (s) => {
+        this.chapters.set(s.episodes || []);
+        this.seriesSynopsis = p.contentMeta?.synopsis || s.synopsis || '';
+        this.seriesGenres = (s.genres || []).join(', ');
+      },
+      error: () =>
+        this.contentApi.episodes(p.slug).subscribe({
+          next: (rows) => this.chapters.set(rows),
+          error: () => this.chapters.set([]),
+        }),
+    });
+  }
+
+  saveSeries(p: Product): void {
+    const genres = this.seriesGenres.split(',').map((g) => g.trim()).filter(Boolean);
+    this.contentApi.updateSeries(p.id, { synopsis: this.seriesSynopsis.trim(), genres }).subscribe({
+      next: () => (this.seriesMsg = 'Đã lưu'),
+      error: (err) => (this.seriesMsg = err?.error?.message || 'Lưu thất bại'),
+    });
+  }
+
+  toggleEpisodeFree(ep: ContentEpisode): void {
+    this.contentApi.updateEpisode(ep.id, { free: !ep.free }).subscribe({
+      next: (row) => this.chapters.update((list) => list.map((x) => (x.id === row.id ? row : x))),
+      error: (err) => (this.chapterError = err?.error?.message || 'Cập nhật tập thất bại'),
+    });
+  }
+
+  saveEpisodeSynopsis(ep: ContentEpisode, ev: Event): void {
+    const synopsis = String((ev.target as HTMLInputElement).value || '').trim();
+    this.contentApi.updateEpisode(ep.id, { synopsis }).subscribe({
+      next: (row) => this.chapters.update((list) => list.map((x) => (x.id === row.id ? row : x))),
+      error: (err) => (this.chapterError = err?.error?.message || 'Cập nhật tập thất bại'),
     });
   }
 
@@ -927,11 +990,14 @@ export class DashboardProductsComponent implements OnInit {
     this.chapterBusy = true;
     this.chapterError = '';
     const title = this.chapterTitle.trim() || files[0].name.replace(/\.[^.]+$/, '');
-    const payload = files.length > 1 ? { title, files } : { title, file: files[0] };
+    const extra = { synopsis: this.chapterSynopsis.trim() || undefined, free: this.chapterFree || undefined };
+    const payload = files.length > 1 ? { title, files, ...extra } : { title, file: files[0], ...extra };
     this.contentApi.createEpisode(p.id, payload).subscribe({
       next: (ep) => {
         this.chapterBusy = false;
         this.chapterTitle = '';
+        this.chapterSynopsis = '';
+        this.chapterFree = false;
         this.chapters.update((list) => [...list, ep].sort((a, b) => a.index - b.index));
         this.reload();
       },

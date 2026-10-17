@@ -60,6 +60,7 @@ import {
   ChatConversation,
   ChatMessage,
   ContentEpisode,
+  SeriesInfo,
   ContentUnlock,
 } from '../models/marketplace.models';
 import { CategoryMeta, ProductKindRates, StreamDevice } from '../models/marketplace.models';
@@ -191,9 +192,11 @@ export class ContentService {
     return this.http.get<ContentEpisode[]>(`${this.base}/content/products/${slug}/episodes`);
   }
 
-  createEpisode(productId: string, input: { title: string; file?: File; files?: File[]; sourceUrl?: string }): Observable<ContentEpisode> {
+  createEpisode(productId: string, input: { title: string; file?: File; files?: File[]; sourceUrl?: string; synopsis?: string; free?: boolean }): Observable<ContentEpisode> {
     const form = new FormData();
     form.append('title', input.title);
+    if (input.synopsis) form.append('synopsis', input.synopsis);
+    if (input.free) form.append('free', 'true');
     const many = input.files?.filter(Boolean) || [];
     if (many.length) {
       for (const file of many) form.append('files', file, file.name);
@@ -202,6 +205,26 @@ export class ContentService {
     }
     if (input.sourceUrl) form.append('sourceUrl', input.sourceUrl);
     return this.http.post<ContentEpisode>(`${this.base}/content/products/${productId}/episodes`, form);
+  }
+
+  series(slug: string): Observable<SeriesInfo> {
+    return this.http.get<SeriesInfo>(`${this.base}/content/products/${slug}/series`);
+  }
+
+  react(slug: string, kind: 'like' | 'save', on: boolean): Observable<{ likes: number; saves: number; liked: boolean; saved: boolean }> {
+    return this.http.post<{ likes: number; saves: number; liked: boolean; saved: boolean }>(`${this.base}/content/products/${slug}/reactions`, { kind, on });
+  }
+
+  progress(slug: string, episodeId: string, positionSec: number): Observable<{ ok: boolean }> {
+    return this.http.put<{ ok: boolean }>(`${this.base}/content/products/${slug}/progress`, { episodeId, positionSec });
+  }
+
+  updateEpisode(id: string, patch: Partial<Pick<ContentEpisode, 'title' | 'synopsis' | 'free' | 'index' | 'posterUrl' | 'published'>>): Observable<ContentEpisode> {
+    return this.http.patch<ContentEpisode>(`${this.base}/content/episodes/${id}`, patch);
+  }
+
+  updateSeries(productId: string, patch: { synopsis?: string; genres?: string[] }): Observable<{ ok: boolean; synopsis: string; genres: string[] }> {
+    return this.http.patch<{ ok: boolean; synopsis: string; genres: string[] }>(`${this.base}/content/products/${productId}/series`, patch);
   }
 
   removeEpisode(id: string): Observable<{ ok: boolean }> {
