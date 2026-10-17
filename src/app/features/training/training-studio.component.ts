@@ -74,7 +74,10 @@ interface UploadRow {
       <header class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 class="font-display text-3xl">{{ 'train.title' | t }}</h1>
-          <p class="mt-1 max-w-2xl text-sm text-muted">{{ 'train.subtitle' | t }}</p>
+          <p class="mt-1 max-w-2xl text-sm text-muted">{{ (promo()?.active ? 'train.subtitlePromo' : 'train.subtitle') | t }}</p>
+          @if (promo()?.active) {
+            <p class="mt-2 inline-block rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-500" data-testid="gpu-promo-top">🎁 {{ 'gpu.promo.title' | t }}</p>
+          }
         </div>
         <div class="rounded-xl border border-line px-4 py-3 text-right">
           <p class="text-xs text-muted">{{ 'gpu.rent.balance' | t }}</p>
