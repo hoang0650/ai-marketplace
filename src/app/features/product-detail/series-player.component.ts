@@ -287,6 +287,7 @@ export class SeriesPlayerComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (typeof document !== 'undefined') document.removeEventListener('keydown', this.keyHandler, true);
     this.saveProgress(true);
     this.cancelNext();
   }
@@ -436,8 +437,14 @@ export class SeriesPlayerComponent implements OnChanges, OnDestroy {
     if (pv) this.select(pv, true);
   }
 
-  @HostListener('window:keydown', ['$event'])
+  /** Capture-phase listener: some global shortcuts stop propagation before window handlers run. */
+  private readonly keyHandler = (ev: KeyboardEvent) => this.onKey(ev);
+  constructor() {
+    if (typeof document !== 'undefined') document.addEventListener('keydown', this.keyHandler, true);
+  }
+
   onKey(ev: KeyboardEvent): void {
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
     const t = ev.target as HTMLElement | null;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
     const v = this.vid?.nativeElement;
