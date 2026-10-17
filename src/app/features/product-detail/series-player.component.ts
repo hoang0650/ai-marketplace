@@ -1,5 +1,5 @@
 import {
-  Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, computed, inject, signal,
+  AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, computed, inject, signal,
 } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ContentService } from '../../services/api.services';
@@ -221,7 +221,14 @@ const LS = (slug: string) => `aimarkets.watch.${slug}`;
 }
   `],
 })
-export class SeriesPlayerComponent implements OnChanges, OnDestroy {
+export class SeriesPlayerComponent implements OnChanges, AfterViewInit, OnDestroy {
+  private readonly host = inject(ElementRef<HTMLElement>);
+
+  /** Portal to <body> so no transformed ancestor or site header can clip the theater. */
+  ngAfterViewInit(): void {
+    if (typeof document !== 'undefined') document.body.appendChild(this.host.nativeElement);
+  }
+
   @Input({ required: true }) product!: Product;
   @Input() canPlay = false;
   @Input() licenseKey = '';
@@ -290,6 +297,7 @@ export class SeriesPlayerComponent implements OnChanges, OnDestroy {
     if (typeof document !== 'undefined') {
       document.removeEventListener('keydown', this.keyHandler, true);
       document.body.style.overflow = this.prevOverflow;
+      this.host.nativeElement.remove();
     }
     this.saveProgress(true);
     this.cancelNext();
