@@ -7,6 +7,8 @@ import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
   GpuOffer,
+  GpuPromo,
+  SharedGpuOffer,
   GpuRentalService,
   LicensedDataset,
   LicensedVoice,
@@ -365,9 +367,18 @@ interface UploadRow {
             </div>
           }
 
+          @if (promo()?.active) {
+            <p class="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-500" data-testid="gpu-promo">
+              🎁 {{ 'gpu.promo.title' | t }}
+              <span class="block text-xs opacity-80">{{ 'gpu.promo.train' | t: { minutes: sharedMax() } }}</span>
+            </p>
+          }
           <label class="block text-sm">
             <span class="text-muted">{{ 'train.gpu' | t }}</span>
-            <select class="input mt-1 w-full" name="offer" [(ngModel)]="offerId">
+            <select class="input mt-1 w-full" name="offer" [(ngModel)]="offerId" data-testid="train-gpu">
+              @if (shared(); as sh) {
+                <option [value]="sh.id">{{ sh.name }} · {{ sh.memoryGb }} GB · {{ sh.promo.active ? ('gpu.promo.title' | t) : money(sh.pricePerHour) + '/' + ('gpu.rent.hour' | t) }}</option>
+              }
               @for (o of offers(); track o.id) {
                 <option [value]="o.id">{{ o.name }} · {{ o.memoryGb }} GB · {{ money(o.pricePerHour) }}/{{ 'gpu.rent.hour' | t }}</option>
               }
@@ -382,7 +393,11 @@ interface UploadRow {
           @if (readiness(); as msg) {
             <p class="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-400">{{ msg }}</p>
           }
-          <p class="text-xs text-muted">{{ 'train.billingNote' | t: { hours: minPrepayHours() } }}</p>
+          @if (isShared()) {
+            <p class="text-xs text-muted">{{ (promo()?.active ? 'gpu.shared.noteFree' : 'gpu.shared.notePaid') | t: { minutes: sharedMax() } }}</p>
+          } @else {
+            <p class="text-xs text-muted">{{ 'train.billingNote' | t: { hours: minPrepayHours() } }}</p>
+          }
           <button class="btn btn-fill w-full" type="submit" [disabled]="starting() || !!readiness() || !offerId">
             {{ starting() ? ('train.starting' | t) : ('train.startBtn' | t) }}
           </button>
@@ -404,7 +419,7 @@ interface UploadRow {
                   <p class="mt-1 text-xs text-muted">
                     {{ j.gpuType }} · {{ j.createdAt | date: 'short' }}
                     @if (j.pricePerHour != null) { · {{ money(j.pricePerHour) }}/{{ 'gpu.rent.hour' | t }} }
-                    · {{ 'gpu.rent.spent' | t }} {{ money(j.cost || 0) }}
+                    @if (j.freePromo) { · <span class="text-emerald-500">{{ 'gpu.promo.title' | t }}</span> } @else { · {{ 'gpu.rent.spent' | t }} {{ money(j.cost || 0) }} }
                   </p>
                   <p class="mt-2 text-sm">
                     <span class="rounded-full px-2 py-0.5 text-xs" [class]="statusClass(j)">{{ 'train.status.' + j.status | t }}</span>
@@ -474,6 +489,10 @@ export class TrainingStudioComponent implements OnInit {
   private readonly walletBalance = inject(WalletBalanceService);
   readonly available = this.walletBalance.available;
   readonly minPrepayHours = signal(1);
+  readonly shared = signal<SharedGpuOffer | null>(null);
+  readonly promo = signal<GpuPromo | null>(null);
+  readonly sharedMax = signal(30);
+  isShared(): boolean { return !!this.shared() && this.offerId === this.shared()!.id; }
   readonly taskSel = signal<TrainingTask>('action-recognition');
   readonly tasks = computed(() => TASKS[this.source()]);
   readonly accept = computed(() => ACCEPT[this.source()]);
@@ -524,12 +543,16 @@ export class TrainingStudioComponent implements OnInit {
     this.loadDatasets();
     this.loadLicensed();
     this.loadJobs();
-    this.gpu.offers().subscribe({
+    this.api.gpuOptions().subscribe({
       next: (r) => {
         const offers = [...(r.offers || [])].sort((a, b) => a.pricePerHour - b.pricePerHour);
         this.offers.set(offers);
-        this.offerId = offers.find((o) => o.availability !== 'unknown')?.id || offers[0]?.id || '';
+        this.shared.set(r.shared);
+        this.promo.set(r.promo);
+        this.sharedMax.set(r.limits?.maxMinutes ?? 30);
+        this.offerId = r.shared?.id || offers.find((o) => o.availability !== 'unknown')?.id || offers[0]?.id || '';
         this.minPrepayHours.set(r.limits?.minPrepayHours ?? 1);
+        if (!r.shared && !offers.length && r.offersError) this.error.set(this.i18n.t('gpu.err.' + r.offersError));
       },
       error: (e) => this.fail(e),
     });

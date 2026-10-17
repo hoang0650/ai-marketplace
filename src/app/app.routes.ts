@@ -340,6 +340,11 @@ export const routes: Routes = [
         data: { category: 'text-to-video', title: 'Text to Video' },
       },
       {
+        path: 'talking-avatar',
+        loadComponent: () =>
+          import('./features/studio/talking-avatar.component').then((m) => m.TalkingAvatarComponent),
+      },
+      {
         path: 'image-to-video',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),

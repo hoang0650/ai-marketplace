@@ -924,6 +924,22 @@ export interface GpuOffer {
   availability: 'high' | 'medium' | 'low' | 'unknown';
 }
 
+export interface GpuPromo { active: boolean; until: string | null; label: string }
+export interface SharedGpuOffer extends Omit<GpuOffer, 'availability'> {
+  availability: string;
+  shared: true;
+  listPricePerHour: number;
+  promo: GpuPromo;
+  maxMinutes: number;
+}
+export interface TrainingGpuOptions {
+  shared: SharedGpuOffer | null;
+  offers: GpuOffer[];
+  offersError: string;
+  promo: GpuPromo;
+  limits: { minPrepayHours: number; pricePerHour: number; maxMinutes: number; perUserDaily: number; perUserActive: number };
+}
+
 export interface GpuOffersResponse {
   offers: GpuOffer[];
   currency: 'USD';
@@ -1076,6 +1092,8 @@ export interface TrainingLimits {
 
 export interface TrainingJob {
   jobId: string;
+  shared?: boolean;
+  freePromo?: boolean;
   source: TrainingSource;
   task: TrainingTask;
   modelId: string;
@@ -1183,6 +1201,10 @@ export class TrainingService {
 
   createJob(body: CreateTrainingJobBody): Observable<TrainingJob> {
     return this.http.post<TrainingJob>(this.jobsBase, body);
+  }
+
+  gpuOptions(): Observable<TrainingGpuOptions> {
+    return this.http.get<TrainingGpuOptions>(`${this.jobsBase}/gpu-options`);
   }
 
   cancelJob(jobId: string): Observable<TrainingJob> {
