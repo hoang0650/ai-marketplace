@@ -315,6 +315,8 @@ export interface ProductContentMeta {
   creditUnit?: 'character' | 'word' | '';
   charactersPerCredit?: number;
   episodeCount?: number;
+  synopsis?: string;
+  genres?: string[];
   licenseTerm?: 'day' | 'month' | 'year' | '';
   licensePrices?: { day?: number; month?: number; year?: number };
 }
@@ -347,6 +349,24 @@ export interface ContentEpisode {
   previewUrl: string;
   published: boolean;
   pageCount?: number;
+  free?: boolean;
+  synopsis?: string;
+  posterUrl?: string;
+}
+
+export interface SeriesInfo {
+  productId: string;
+  slug: string;
+  title: string;
+  synopsis: string;
+  genres: string[];
+  episodeCount: number;
+  likes: number;
+  saves: number;
+  liked: boolean;
+  saved: boolean;
+  progress: { episodeId: string; positionSec: number; updatedAt?: string } | null;
+  episodes: ContentEpisode[];
 }
 
 export interface ContentUnlock {

@@ -28,6 +28,7 @@ import { newIdempotencyKey } from '../../services/idempotency';
 import { PurchaseNotice, PurchaseNoticeComponent } from '../../shared/components/purchase-notice.component';
 import { isHiddenCategory, isHireCategory, isHireRequestCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { TemplatePanelComponent } from '../builder/template-panel.component';
+import { SeriesPlayerComponent } from './series-player.component';
 import { BuilderService } from '../builder/builder.service';
 import { CartService } from '../cart/cart.service';
 import { I18nService } from '../../i18n/i18n.service';
@@ -73,7 +74,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -774,6 +775,17 @@ export class ProductDetailComponent implements OnInit {
       ev.preventDefault();
       this.prevPage();
     }
+  }
+
+  /** Series player back button: leave theater mode. */
+  exitTheater(): void {
+    this.setWorkspace('overview');
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
+  }
+
+  goLogin(): void {
+    const p = this.product();
+    void this.router.navigate(['/auth/login'], { queryParams: { redirect: p ? `/product/${p.slug}` : '/' } });
   }
 
   onMediaError(): void {
@@ -1769,7 +1781,7 @@ export class ProductDetailComponent implements OnInit {
       if (isWatchContentCategory(p.category)) {
         this.setWorkspace('watch');
         const first = this.episodes()[0];
-        if (first) this.playEpisode(first);
+        if (first && isStoryCategory(p.category)) this.playEpisode(first);
       }
       if (isTemplateCategory(p.category)) {
         this.purchaseNotice.set({ state: 'already', productName: p.name, template: true, available: this.walletBalance() });
@@ -1823,7 +1835,7 @@ export class ProductDetailComponent implements OnInit {
           if (isWatchContentCategory(p.category)) {
             this.setWorkspace('watch');
             const first = this.episodes()[0];
-            if (first) this.playEpisode(first);
+            if (first && isStoryCategory(p.category)) this.playEpisode(first);
           } else if (isSkillCategory(p.category) || isDatasetCategory(p.category)) {
             this.setWorkspace('install');
           }

@@ -599,7 +599,20 @@
       </div>
     }
 
-    @if (workspaceTab() === 'watch') {
+    @if (workspaceTab() === 'watch' && !isStory(p.category)) {
+      <app-series-player
+        [product]="p"
+        [canPlay]="canPlayContent()"
+        [licenseKey]="issuedLicense()?.licenseKey || ''"
+        [priceLabel]="(licensePrice(p) | currency: displayCurrency:'symbol-narrow':'1.0-2') || ''"
+        [checkingOut]="checkingOut()"
+        (checkout)="checkout()"
+        (back)="exitTheater()"
+        (login)="goLogin()"
+      />
+    }
+
+    @if (workspaceTab() === 'watch' && isStory(p.category)) {
       <div class="playground watch-layout">
         <section class="pg-pane">
           <div class="pg-pane__head">
