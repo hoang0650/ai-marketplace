@@ -140,16 +140,16 @@ const LS = (slug: string) => `aimarkets.watch.${slug}`;
 </div>
   `,
   styles: [`
-:host{display:block;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw}
-.sp{--bg:#0b0b0f;--p:#15151c;--b:#262633;--t:#f1f1f4;--m:#9a9aab;--a:#ff3d6e;background:var(--bg);color:var(--t);min-height:calc(100vh - 60px);user-select:none;-webkit-user-select:none}
+:host{display:block;position:fixed;inset:0;z-index:1000;overflow:auto;background:#0b0b0f}
+.sp{--bg:#0b0b0f;--p:#15151c;--b:#262633;--t:#f1f1f4;--m:#9a9aab;--a:#ff3d6e;background:var(--bg);color:var(--t);min-height:100vh;user-select:none;-webkit-user-select:none}
 .sp-top{display:flex;align-items:center;gap:14px;padding:12px 28px;border-bottom:1px solid var(--b)}
 .sp-back{background:none;border:0;color:var(--t);font-size:22px;cursor:pointer;display:flex;align-items:center;gap:6px}
 .sp-back span{font-size:14px}
 .sp-crumb{color:var(--m);font-size:14px}.sp-crumb em{font-style:normal;color:var(--t)}
 .sp-body{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;padding:22px 28px 36px;max-width:1500px;margin:0 auto}
 .sp-stage{display:flex;flex-direction:column;align-items:center;min-width:0}
-.sp-frame{position:relative;width:100%;aspect-ratio:16/9;max-height:76vh;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px #0008}
-.sp-frame.portrait{aspect-ratio:9/16;width:auto;height:76vh}
+.sp-frame{position:relative;width:100%;aspect-ratio:16/9;max-height:80vh;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px #0008}
+.sp-frame.portrait{aspect-ratio:9/16;width:auto;height:80vh}
 .sp-video{width:100%;height:100%;object-fit:contain;background:#000;display:block;cursor:pointer}
 .sp-poster{position:absolute;inset:0;background:#111 center/cover no-repeat;display:flex;align-items:center;justify-content:center}
 .sp-poster::after{content:'';position:absolute;inset:0;background:linear-gradient(#0003,#000b)}
@@ -167,7 +167,7 @@ const LS = (slug: string) => `aimarkets.watch.${slug}`;
 .sp-err{color:#ff8a8a;margin-top:10px}
 .sp-note{color:var(--m);font-size:12px;margin-top:12px;text-align:center}
 .sp-rail,.sp-mtitle,.sp-grab{display:none}
-.sp-side{background:var(--p);border:1px solid var(--b);border-radius:14px;padding:18px;align-self:start;max-height:calc(100vh - 140px);overflow:auto}
+.sp-side{background:var(--p);border:1px solid var(--b);border-radius:14px;padding:18px;align-self:start;max-height:calc(100vh - 100px);overflow:auto}
 .sp-title{font-size:22px;font-weight:800;margin:0 0 12px}
 .sp-side h3{font-size:15px;font-weight:700;margin:0 0 6px}
 .sp-syn{color:#cfcfda;font-size:14px;line-height:1.55;margin:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -197,14 +197,14 @@ const LS = (slug: string) => `aimarkets.watch.${slug}`;
 .sp-hint{color:var(--m);font-size:12px;margin-top:8px}
 .sp-scrim{display:none}
 @media (max-width:820px){
-  :host{position:fixed;inset:0;z-index:80;margin:0;width:auto}
+  :host{overflow:hidden}
   .sp{height:100dvh;min-height:0;overflow:hidden;position:relative}
   .sp-top{position:absolute;top:0;left:0;right:0;z-index:5;border:0;padding:10px 12px;background:linear-gradient(#000a,#0000)}
   .sp-crumb{display:none}
   .sp-body{display:block;padding:0;height:100%}
   .sp-stage{height:100%}
   .sp-frame,.sp-frame.portrait{width:100%;height:100dvh;max-height:none;aspect-ratio:auto;border-radius:0}
-  .sp-sub{bottom:24%;font-size:22px}
+  .sp-sub{bottom:22%;left:12px;transform:none;width:calc(100% - 84px);font-size:21px}
   .sp-note,.sp-err{position:absolute;bottom:4px;left:8px;right:8px;font-size:10px;z-index:4}
   .sp-err{bottom:120px}
   .sp-rail{display:flex;flex-direction:column;gap:16px;position:absolute;right:10px;bottom:150px;z-index:4}
@@ -287,7 +287,10 @@ export class SeriesPlayerComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (typeof document !== 'undefined') document.removeEventListener('keydown', this.keyHandler, true);
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('keydown', this.keyHandler, true);
+      document.body.style.overflow = this.prevOverflow;
+    }
     this.saveProgress(true);
     this.cancelNext();
   }
@@ -440,8 +443,13 @@ export class SeriesPlayerComponent implements OnChanges, OnDestroy {
   /** Capture-phase listener: some global shortcuts stop propagation before window handlers run. */
   private readonly keyHandler = (ev: KeyboardEvent) => this.onKey(ev);
   constructor() {
-    if (typeof document !== 'undefined') document.addEventListener('keydown', this.keyHandler, true);
+    if (typeof document !== 'undefined') {
+      document.addEventListener('keydown', this.keyHandler, true);
+      this.prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+    }
   }
+  private prevOverflow = '';
 
   onKey(ev: KeyboardEvent): void {
     if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
