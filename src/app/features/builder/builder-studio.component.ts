@@ -1,4 +1,5 @@
 import { CodeEditorComponent } from './code-editor.component';
+import { MobileIdeComponent } from './mobile-ide.component';
 import {
   AfterViewInit,
   Component,
@@ -62,7 +63,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
 @Component({
   selector: 'app-builder-studio',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent, ExpoQrComponent, HandoffButtonComponent, CodeEditorComponent],
+  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent, ExpoQrComponent, HandoffButtonComponent, CodeEditorComponent, MobileIdeComponent],
   styles: [
     `
       :host { display: block; }
@@ -78,19 +79,41 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
       .menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 70; min-width: 15rem; border-radius: .75rem; padding: .35rem; box-shadow: 0 18px 40px rgb(0 0 0 / .18); }
       .menu > * { display: flex; width: 100%; align-items: center; gap: .5rem; padding: .5rem .65rem; border-radius: .5rem; font-size: .82rem; text-align: left; }
       .menu > *:hover { background: rgb(127 127 127 / .12); }
-      .drawer-backdrop { position: fixed; inset: 0; z-index: 80; background: rgb(0 0 0 / .45); }
-      .drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 81; width: min(560px, 100vw); overflow-y: auto; box-shadow: -18px 0 40px rgb(0 0 0 / .2); }
+      .drawer-backdrop { position: fixed; inset: 0; z-index: 1080; background: rgb(0 0 0 / .45); }
+      .drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 1081; width: min(560px, 100vw); overflow-y: auto; box-shadow: -18px 0 40px rgb(0 0 0 / .2); }
       .composer textarea { resize: none; }
       .chip { border: 1px solid var(--color-line, #e5e7eb); border-radius: 999px; padding: .3rem .7rem; font-size: .75rem; text-align: left; }
       .chip:hover { border-color: var(--color-accent, #c9a45c); }
       @media (max-width: 1023px) { .studio { height: auto; } }
+      /* < lg: full-screen app shell (header · pane · bottom tabs), sized to the visual viewport so the
+         composer / key bar sit right above the soft keyboard. */
+      .m-studio { position: fixed; left: 0; right: 0; top: var(--vvt, 0px); height: var(--vvh, 100dvh); min-height: 0; z-index: 1000; margin: 0;
+        padding: max(.375rem, env(safe-area-inset-top)) max(.5rem, env(safe-area-inset-right)) 0 max(.5rem, env(safe-area-inset-left));
+        gap: .375rem; overflow: hidden; background: var(--color-bg, #0b0f17); overscroll-behavior: contain; }
+      .m-studio .icon-btn { height: 44px; min-width: 44px; font-size: .85rem; }
+      .m-studio .chip { min-height: 44px; }
+      .m-studio .btn { min-height: 44px; }
+      .m-studio .seg > button { min-height: 40px; }
+      .m-studio input, .m-studio textarea, .m-studio select { font-size: 16px; } /* no iOS zoom-on-focus */
+      .m-hide { display: none !important; }
+      .m-p0 { padding: 0 !important; }
+      .m-pane { min-height: 0 !important; flex: 1 1 auto; }
+      .m-tabs { flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 calc(-1 * max(.5rem, env(safe-area-inset-left))); padding-bottom: env(safe-area-inset-bottom);
+        border-top: 1px solid var(--color-line, #1f2937); background: var(--color-panel, #0f1520); }
+      .m-tabs > button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; font-size: 11px; font-weight: 600; color: var(--color-muted, #9ca3af); position: relative; }
+      .m-tabs > button .ic { font-size: 18px; line-height: 1; }
+      .m-tabs > button.on { color: var(--color-accent, #c9a45c); }
+      .m-tabs > button.on::before { content: ''; position: absolute; top: 0; left: 25%; right: 25%; height: 2px; border-radius: 2px; background: currentColor; }
+      .m-tabs .badge { position: absolute; top: 8px; left: calc(50% + 8px); min-width: 8px; height: 8px; border-radius: 999px; background: #3b82f6; }
+      .m-kb .m-tabs { display: none; }
+      .m-fab { position: absolute; right: 12px; bottom: 12px; z-index: 5; min-height: 44px; padding: 0 16px; border-radius: 999px; background: #0e639c; color: #fff; font-weight: 600; font-size: 14px; box-shadow: 0 8px 24px rgb(0 0 0 / .35); }
     `,
   ],
   template: `
     @if (project(); as p) {
-      <section class="studio flex flex-col gap-2 px-3 py-2">
+      <section class="studio flex flex-col gap-2 px-3 py-2" [class.m-studio]="mobile()" [class.m-kb]="mobile() && kb()" [style.--vvh]="mobile() ? vvh() + 'px' : null" [style.--vvt]="mobile() ? vvt() + 'px' : null" data-testid="builder-studio">
         <!-- compact header: identity left, actions right, rest in overflow menu -->
-        <header class="panel flex flex-wrap items-center gap-2 px-2 py-1.5">
+        <header class="panel flex items-center gap-2 px-2 py-1.5" [class.flex-wrap]="!mobile()">
           <a routerLink="/build" class="icon-btn no-underline" [title]="'builder.back' | t" [attr.aria-label]="'builder.back' | t">←</a>
           <input
             class="input min-w-[8rem] flex-1 border-transparent bg-transparent py-1 font-semibold sm:max-w-xs"
@@ -129,9 +152,9 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
             } @else {
               <button type="button" class="btn btn-fill text-xs" (click)="openDrawer('keys')">{{ 'builder.keys.setup' | t }}</button>
             }
-            <app-handoff-button kind="builder" [targetId]="p.id" [compact]="true" />
+            @if (!mobile()) { <app-handoff-button kind="builder" [targetId]="p.id" [compact]="true" /> }
             <a class="icon-btn no-underline" [href]="p.previewUrl" target="_blank" rel="noopener noreferrer" [title]="'builder.openTab' | t">↗<span class="hidden lg:inline">{{ 'builder.openTab' | t }}</span></a>
-            <button type="button" class="icon-btn" [class.border-accent]="drawer() === 'git'" (click)="openDrawer('git')" [title]="p.git ? ('builder.git.buttonLinked' | t: { repo: p.git.repo }) : ('builder.git.button' | t)">
+            <button type="button" class="icon-btn" [class.hidden]="mobile()" [class.border-accent]="drawer() === 'git'" (click)="openDrawer('git')" [title]="p.git ? ('builder.git.buttonLinked' | t: { repo: p.git.repo }) : ('builder.git.button' | t)">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
               <span class="hidden max-w-[10rem] truncate lg:inline">{{ p.git ? p.git.repo : ('builder.git.button' | t) }}</span>
             </button>
@@ -140,6 +163,9 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
               @if (menuOpen()) {
                 <div class="menu panel" role="menu">
                   <button type="button" role="menuitem" (click)="menuOpen.set(false); openDrawer('keys')">🔑 {{ 'builder.keys.manage' | t }}</button>
+                  @if (mobile()) {
+                    <button type="button" role="menuitem" (click)="menuOpen.set(false); openDrawer('git')">⎇ {{ p.git ? p.git.repo : ('builder.git.button' | t) }}</button>
+                  }
                   <button type="button" role="menuitem" (click)="menuOpen.set(false); exportZip()">⬇ {{ 'builder.export' | t }}</button>
                   <button type="button" role="menuitem" (click)="menuOpen.set(false); copyLink()">🔗 {{ copied() ? ('builder.copied' | t) : ('builder.copyLink' | t) }}</button>
                   @if (canSellTemplate()) {
@@ -159,14 +185,14 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
         }
 
         <!-- small screens: switch between chat and preview -->
-        <div class="lg:hidden"><div class="seg" role="tablist">
+        <div class="lg:hidden" [class.m-hide]="mobile()"><div class="seg" role="tablist">
           <button type="button" role="tab" [class.on]="pane() === 'chat'" [attr.aria-selected]="pane() === 'chat'" (click)="pane.set('chat')">{{ 'builder.pane.chat' | t }}</button>
           <button type="button" role="tab" [class.on]="pane() === 'preview'" [attr.aria-selected]="pane() === 'preview'" (click)="pane.set('preview')">{{ 'builder.tab.preview' | t }} / {{ 'builder.tab.code' | t }}</button>
         </div></div>
 
         <div class="grid min-h-0 flex-1 gap-2 lg:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
           <!-- chat: full height, messages scroll, composer pinned -->
-          <div class="panel min-h-0 min-w-0 flex-col p-0 lg:flex" [class.flex]="pane() === 'chat'" [class.hidden]="pane() !== 'chat'" style="min-height: 60vh">
+          <div class="panel min-h-0 min-w-0 flex-col p-0 lg:flex" [class.flex]="pane() === 'chat'" [class.hidden]="pane() !== 'chat'" [class.m-pane]="mobile()" [style.min-height]="mobile() ? null : '60vh'">
             <div class="flex items-center justify-between border-b border-line px-3 py-2">
               <span class="text-xs font-semibold uppercase tracking-wider text-muted">{{ 'builder.pane.chat' | t }}</span>
               @if (activeKeys().length) {
@@ -227,7 +253,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
               <form class="composer rounded-xl border border-line p-2 focus-within:border-accent" (ngSubmit)="send()">
                 <textarea
                   class="w-full border-0 bg-transparent text-sm outline-none"
-                  rows="4"
+                  [rows]="mobile() ? 2 : 4"
                   name="prompt"
                   [(ngModel)]="prompt"
                   maxlength="8000"
@@ -252,14 +278,14 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           </div>
 
           <!-- preview / code -->
-          <div class="panel min-h-[70vh] min-w-0 flex-col gap-2 p-2 lg:flex lg:min-h-0" [class.flex]="pane() === 'preview'" [class.hidden]="pane() !== 'preview'" [class.preview-full]="expanded()">
-            <div class="flex flex-wrap items-center gap-2">
-              <div class="seg" role="tablist">
+          <div class="panel min-h-[70vh] min-w-0 flex-col gap-2 p-2 lg:flex lg:min-h-0" [class.flex]="pane() === 'preview'" [class.hidden]="pane() !== 'preview'" [class.preview-full]="expanded()" [class.m-pane]="mobile()" [class.m-p0]="mobile() && view() === 'code'" [class.relative]="mobile()">
+            <div class="flex flex-wrap items-center gap-2" [class.m-hide]="mobile() && view() === 'code'">
+              <div class="seg" role="tablist" [class.m-hide]="mobile()">
                 @for (tab of tabs; track tab) {
                   <button type="button" role="tab" [class.on]="view() === tab" [attr.aria-selected]="view() === tab" (click)="view.set(tab)">{{ 'builder.tab.' + tab | t }}</button>
                 }
               </div>
-              @if (view() === 'preview') {
+              @if (view() === 'preview' && !mobile()) {
                 <div class="seg" role="group" [attr.aria-label]="'builder.devices' | t">
                   @for (d of devices(); track d.id) {
                     <button type="button" [class.on]="device().id === d.id" [attr.aria-pressed]="device().id === d.id" (click)="deviceId.set(d.id)">{{ 'builder.device.' + d.id | t }}</button>
@@ -281,7 +307,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 [class.items-center]="!device().model"
                 [style.background]="device().model ? 'radial-gradient(ellipse at 50% 30%, #3a3f4b 0%, #1b1e25 60%, #111317 100%)' : 'rgb(0 0 0 / 0.3)'"
               >
-                @if (device().model; as model) {
+                @if (!mobile() && device().model; as model) {
                   <div class="relative self-center" [style.width.px]="outer().width * scale()" [style.height.px]="outer().height * scale()">
                     <div class="absolute left-1/2 top-0 origin-top" [style.transform]="'translateX(-50%) scale(' + scale() + ')'">
                       <app-device-frame [model]="model" [width]="device().width" [height]="device().height" [chrome]="chrome()">
@@ -310,7 +336,16 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                   </div>
                 }
               </div>
-              <p class="text-[11px] text-muted">{{ 'builder.phoneHint.' + p.kind | t }}</p>
+              @if (!mobile()) { <p class="text-[11px] text-muted">{{ 'builder.phoneHint.' + p.kind | t }}</p> }
+              @else if (!expanded()) { <button type="button" class="m-fab" (click)="mtabSet('code')" data-testid="m-fab-code">&lt;/&gt; {{ 'builder.tab.code' | t }}</button> }
+            } @else if (mobile()) {
+              <app-mobile-ide class="flex min-h-0 flex-1"
+                [mode]="mtab() === 'files' ? 'files' : 'code'"
+                [files]="filePaths()" [tabs]="openTabs()" [path]="selectedPath()" [draft]="draft()" [dirty]="dirty()"
+                [generating]="generating()" [kind]="p.kind" [version]="p.version"
+                (open)="openFile($event); mtabSet('code')" (closeTab)="closeTab($event)" (changed)="draft.set($event)"
+                (save)="dirty() && !generating() && saveFile()" (remove)="deleteFile()" (create)="newPath = $event; newFile(); mtabSet('code')"
+                (preview)="mtabSet('preview')" />
             } @else {
               <div class="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-2 md:grid-cols-[220px_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)]">
                 <div class="flex min-h-0 flex-col gap-2">
@@ -357,6 +392,17 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
             }
           </div>
         </div>
+        @if (mobile()) {
+          <nav class="m-tabs" role="tablist" [attr.aria-label]="'builder.m.nav' | t" data-testid="m-tabs">
+            @for (t of mtabs; track t.id) {
+              <button type="button" role="tab" [class.on]="mtab() === t.id" [attr.aria-selected]="mtab() === t.id" (click)="mtabSet(t.id)" [attr.data-testid]="'m-tab-' + t.id">
+                <span class="ic" aria-hidden="true">{{ t.icon }}</span>{{ t.label | t }}
+                @if (t.id === 'chat' && generating() && mtab() !== 'chat') { <span class="badge"></span> }
+                @if (t.id === 'code' && dirty() && mtab() !== 'code') { <span class="badge" style="background:#e2c08d"></span> }
+              </button>
+            }
+          </nav>
+        }
       </section>
 
       <!-- API keys / GitHub: right drawer instead of inline panels that push the editor down -->
@@ -494,6 +540,23 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   readonly menuOpen = signal(false);
   /** < lg: which pane is visible. */
   readonly pane = signal<'chat' | 'preview'>('chat');
+  /** < lg: full-screen mobile shell with bottom tabs (Chat · Code · Preview · Files). */
+  readonly mobile = signal(false);
+  readonly mtab = signal<'chat' | 'code' | 'preview' | 'files'>('chat');
+  readonly mtabs = [
+    { id: 'chat', icon: '✦', label: 'builder.m.tab.chat' },
+    { id: 'code', icon: '</>', label: 'builder.tab.code' },
+    { id: 'preview', icon: '▶', label: 'builder.tab.preview' },
+    { id: 'files', icon: '🗂', label: 'builder.m.tab.files' },
+  ] as const;
+  /** Visual viewport height/top (px) and whether the soft keyboard is up. */
+  readonly vvh = signal(0);
+  readonly vvt = signal(0);
+  readonly kb = signal(false);
+  readonly openTabs = signal<string[]>([]);
+  readonly filePaths = computed(() => (this.project()?.files || []).map((f) => f.path));
+  /** Unsaved edits per open tab, so switching tabs doesn't lose work. */
+  private readonly drafts = new Map<string, string>();
   readonly suggestions = computed(() => {
     const kind = this.project()?.kind === 'app' ? 'app' : 'web';
     return [1, 2, 3].map((i) => this.i18n.t(`builder.suggest.${kind}.${i}`));
@@ -511,7 +574,17 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
       if (this.browser) setTimeout(() => this.observeStage());
     });
     effect(() => {
-      if (this.browser) document.body.style.overflow = this.expanded() ? 'hidden' : '';
+      if (this.browser) document.body.style.overflow = this.expanded() || this.mobile() ? 'hidden' : '';
+    });
+    // Keep the mobile bottom tab in sync when code elsewhere flips pane/view (e.g. after a build → preview).
+    effect(() => {
+      if (!this.mobile()) return;
+      const pane = this.pane(), view = this.view();
+      untracked(() => {
+        const cur = this.mtab();
+        const want = pane === 'chat' ? 'chat' : view === 'preview' ? 'preview' : cur === 'files' ? 'files' : 'code';
+        if (cur !== want) this.mtab.set(want);
+      });
     });
     effect(() => {
       this.frameSrc();
@@ -550,6 +623,7 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     if (!this.browser) return;
+    this.initMobile();
     const id = this.route.snapshot.paramMap.get('id') || '';
     const q = this.route.snapshot.queryParamMap;
     if (q.get('git_connect') || q.get('git_error')) this.openDrawer('git');
@@ -788,14 +862,74 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   openFile(path: string): void {
     const f = this.project()?.files?.find((x) => x.path === path);
     if (!f) return;
+    this.stashDraft();
     this.selectedPath.set(path);
-    this.draft.set(f.content);
+    this.draft.set(this.drafts.get(path) ?? f.content);
+    this.drafts.delete(path);
+    this.addTab(path);
     this.view.set('code');
+    if (this.mobile() && this.mtab() !== 'code') this.mtabSet('code');
+  }
+
+  private stashDraft(): void {
+    const cur = this.selectedPath();
+    if (cur && this.dirty()) this.drafts.set(cur, this.draft());
+  }
+
+  private addTab(path: string): void {
+    if (!this.openTabs().includes(path)) this.openTabs.set([...this.openTabs(), path].slice(-12));
+  }
+
+  closeTab(path: string): void {
+    if (path === this.selectedPath() && this.dirty() && !confirm(this.i18n.t('builder.m.discard', { file: path }))) return;
+    if (path !== this.selectedPath()) this.drafts.delete(path);
+    const tabs = this.openTabs(), i = tabs.indexOf(path);
+    const next = tabs.filter((t) => t !== path);
+    this.openTabs.set(next);
+    if (path === this.selectedPath()) {
+      const n = next[Math.min(i, next.length - 1)];
+      if (n) { this.selectedPath.set(''); this.openFile(n); } else { this.selectedPath.set(''); this.draft.set(''); }
+    }
+  }
+
+  mtabSet(t: 'chat' | 'code' | 'preview' | 'files'): void {
+    this.mtab.set(t);
+    this.pane.set(t === 'chat' ? 'chat' : 'preview');
+    this.view.set(t === 'preview' ? 'preview' : 'code');
+    if (t === 'code' && !this.selectedPath()) {
+      const files = this.project()?.files || [];
+      const first = files.find((f) => /(^|\/)(App|index)\.(tsx|jsx|html)$/.test(f.path)) || files[0];
+      if (first) this.openFile(first.path);
+    }
+  }
+
+  private initMobile(): void {
+    const mq = window.matchMedia('(max-width: 1023px)');
+    const vv = window.visualViewport;
+    const sync = () => {
+      const h = vv ? vv.height : window.innerHeight;
+      this.vvh.set(Math.round(h));
+      this.vvt.set(Math.round(vv ? vv.offsetTop : 0));
+      this.kb.set(window.innerHeight - h > 140);
+    };
+    const apply = () => {
+      this.mobile.set(mq.matches);
+      if (mq.matches) this.mtabSet(this.pane() === 'chat' ? 'chat' : this.view() === 'code' ? 'code' : 'preview');
+      document.body.style.overflow = mq.matches || this.expanded() ? 'hidden' : '';
+      sync();
+    };
+    apply();
+    mq.addEventListener('change', apply);
+    vv?.addEventListener('resize', sync);
+    vv?.addEventListener('scroll', sync);
+    this.destroyRef.onDestroy(() => { mq.removeEventListener('change', apply); vv?.removeEventListener('resize', sync); vv?.removeEventListener('scroll', sync); });
   }
 
   newFile(): void {
     const path = this.newPath.trim();
     if (!path) return;
+    this.stashDraft();
+    this.addTab(path);
     this.selectedPath.set(path);
     this.draft.set('');
     this.newPath = '';
@@ -823,6 +957,7 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
     this.api.deleteFile(p.id, path).subscribe({
       next: (r) => {
         this.selectedPath.set('');
+        this.openTabs.set(this.openTabs().filter((t) => t !== path));
         this.applyProject(r.project);
       },
       error: (e) => this.error.set(e?.error?.message || this.i18n.t('builder.err.generic')),

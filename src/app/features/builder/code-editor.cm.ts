@@ -11,9 +11,11 @@ import { markdown } from '@codemirror/lang-markdown';
 import { syntaxTree } from '@codemirror/language';
 import { Diagnostic, linter, lintGutter, forEachDiagnostic } from '@codemirror/lint';
 import { oneDark } from '@codemirror/theme-one-dark';
+import { indentMore, indentLess, redo, undo } from '@codemirror/commands';
+import { openSearchPanel } from '@codemirror/search';
 
 export interface CmProblem { line: number; col: number; message: string; severity: 'error' | 'warning'; from: number }
-export interface CmHooks { onChange(doc: string): void; onSave(): void; onProblems(p: CmProblem[]): void }
+export interface CmHooks { onChange(doc: string): void; onSave(): void; onProblems(p: CmProblem[]): void; onCursor?(line: number, col: number): void }
 
 function language(path: string): Extension {
   const ext = (path.split('.').pop() || '').toLowerCase();
@@ -79,6 +81,10 @@ export function createEditor(parent: HTMLElement, doc: string, path: string, dar
         EditorView.updateListener.of((u) => {
           if (u.docChanged && !silent) hooks.onChange(u.state.doc.toString());
           if (u.transactions.length) report(u.state);
+          if (hooks.onCursor && (u.selectionSet || u.docChanged)) {
+            const head = u.state.selection.main.head, ln = u.state.doc.lineAt(head);
+            hooks.onCursor(ln.number, head - ln.from + 1);
+          }
         }),
       ],
     }),
@@ -94,6 +100,28 @@ export function createEditor(parent: HTMLElement, doc: string, path: string, dar
     setReadOnly: (r: boolean) => view.dispatch({ effects: ro.reconfigure(EditorState.readOnly.of(r)) }),
     goTo(pos: number) { view.dispatch({ selection: { anchor: pos }, scrollIntoView: true }); view.focus(); },
     destroy: () => view.destroy(),
+    /** Mobile key bar: insert text at the cursor; a pair like "()" wraps the selection / lands the cursor inside. */
+    insert(text: string) {
+      const pair = text.length === 2 && ['()', '[]', '{}', '<>', '""', "''", '``'].includes(text);
+      const { from, to } = view.state.selection.main;
+      if (pair) {
+        const inner = view.state.sliceDoc(from, to);
+        view.dispatch({ changes: { from, to, insert: text[0] + inner + text[1] }, selection: { anchor: from + 1, head: from + 1 + inner.length }, scrollIntoView: true, userEvent: 'input' });
+      } else {
+        view.dispatch({ changes: { from, to, insert: text }, selection: { anchor: from + text.length }, scrollIntoView: true, userEvent: 'input' });
+      }
+      view.focus();
+    },
+    tab(shift = false) {
+      const sel = view.state.selection.main;
+      if (shift || !sel.empty) (shift ? indentLess : indentMore)(view);
+      else view.dispatch({ changes: { from: sel.from, insert: '  ' }, selection: { anchor: sel.from + 2 }, userEvent: 'input' });
+      view.focus();
+    },
+    undo: () => { undo(view); view.focus(); },
+    redo: () => { redo(view); view.focus(); },
+    find: () => { openSearchPanel(view); },
+    focus: () => view.focus(),
   };
 }
 export type CmEditor = ReturnType<typeof createEditor>;

@@ -11,7 +11,8 @@ const DARK_KEY = 'aim.builder.editorDark';
   standalone: true,
   imports: [TPipe],
   template: `
-    <div class="ce" [class.ce--dark]="dark()">
+    <div class="ce" [class.ce--dark]="dark() || mobile()" [class.ce--mobile]="mobile()">
+      @if (!mobile()) {
       <div class="ce__bar">
         <span class="ce__lang">{{ lang() }}</span>
         <span class="ce__status" [class.ce__status--err]="problems().length">
@@ -19,10 +20,11 @@ const DARK_KEY = 'aim.builder.editorDark';
         </span>
         <button type="button" class="ce__btn" (click)="toggleDark()" [attr.aria-pressed]="dark()">{{ dark() ? '☀️' : '🌙' }} {{ (dark() ? 'builder.editor.light' : 'builder.editor.dark') | t }}</button>
       </div>
+      }
       <div class="ce__host" #host>
         @if (!ready()) { <textarea class="ce__fallback" spellcheck="false" [value]="value()" [readOnly]="readOnly()" (input)="changed.emit($any($event.target).value)"></textarea> }
       </div>
-      @if (problems().length) {
+      @if (problems().length && (!mobile() || showProblems())) {
         <ul class="ce__problems" [attr.aria-label]="'builder.editor.problems' | t">
           @for (p of problems(); track $index) {
             <li><button type="button" (click)="editor?.goTo(p.from)"><b>{{ p.severity === 'error' ? '⛔' : '⚠️' }}</b> {{ p.message }} <small>[{{ p.line }}:{{ p.col }}]</small></button></li>
@@ -35,6 +37,12 @@ const DARK_KEY = 'aim.builder.editorDark';
     :host { display: flex; min-height: 0; flex: 1; }
     .ce { display: flex; flex-direction: column; flex: 1; min-height: 0; border: 1px solid rgba(127,127,127,.3); border-radius: 10px; overflow: hidden; background: #fff; color: #1f2328; }
     .ce--dark { background: #282c34; color: #abb2bf; }
+    .ce--mobile { border: 0; border-radius: 0; background: #1e1e1e; }
+    .ce--mobile .ce__host { min-height: 0; }
+    :host ::ng-deep .ce--mobile .cm-editor { font-size: 13.5px; }
+    :host ::ng-deep .ce--mobile .cm-gutters { background: #1e1e1e; }
+    :host ::ng-deep .ce--mobile .cm-panels { font-size: 14px; }
+    :host ::ng-deep .ce--mobile .cm-panel.cm-search input, :host ::ng-deep .ce--mobile .cm-panel.cm-search button { min-height: 36px; font-size: 14px; }
     .ce__bar { display: flex; align-items: center; gap: .6rem; padding: .25rem .6rem; font-size: .72rem; border-bottom: 1px solid rgba(127,127,127,.25); }
     .ce__lang { font-weight: 700; text-transform: uppercase; opacity: .7; }
     .ce__status { opacity: .75; } .ce__status--err { color: #e5534b; opacity: 1; font-weight: 600; }
@@ -60,6 +68,10 @@ export class CodeEditorComponent implements OnDestroy {
   readonly readOnly = input(false);
   readonly changed = output<string>();
   readonly save = output<void>();
+  /** Mobile IDE: always dark, no toolbar, problems list shown only on demand. */
+  readonly mobile = input(false);
+  readonly showProblems = input(false);
+  readonly cursor = output<{ line: number; col: number }>();
 
   readonly host = viewChild.required<ElementRef<HTMLElement>>('host');
   readonly ready = signal(false);
@@ -95,7 +107,8 @@ export class CodeEditorComponent implements OnDestroy {
     await Promise.resolve();
     host.innerHTML = '';
     this.loadedPath = this.path();
-    this.editor = cm.createEditor(host, this.value(), this.path(), this.dark(), this.readOnly(), {
+    this.editor = cm.createEditor(host, this.value(), this.path(), this.dark() || this.mobile(), this.readOnly(), {
+      onCursor: (line, col) => this.cursor.emit({ line, col }),
       onChange: (d) => this.changed.emit(d),
       onSave: () => this.save.emit(),
       onProblems: (p) => this.problems.set(p),
