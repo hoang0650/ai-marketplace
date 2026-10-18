@@ -528,10 +528,13 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
       this.colW.set(Math.max(200, sc.clientWidth - 2 * m));
       this.gapPx.set(2 * m);
       setTimeout(() => {
-        this.pages.set(Math.max(1, Math.round(sc.scrollWidth / sc.clientWidth)));
+        // multicol overflow omits the trailing padding (m), so add it back before dividing
+        const art = this.cols?.nativeElement;
+        this.pages.set(Math.max(1, Math.round(((art ? art.scrollWidth : sc.scrollWidth) + m) / sc.clientWidth)));
         this.goPage(Math.min(this.page(), this.pages() - 1), false);
       });
     } else {
+      if (this.cols) this.cols.nativeElement.style.transform = '';
       this.onScroll();
     }
   }
@@ -566,7 +569,10 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     if (user && p < 0) { const pc = this.prevChapter(); if (pc) { this.resume = { episodeId: pc.id, fraction: 1, page: 9999 }; this.save(true); this.open(pc, true); } return; }
     const q = Math.min(n - 1, Math.max(0, p));
     this.page.set(q);
-    sc.scrollLeft = q * sc.clientWidth;
+    // translate instead of scrollLeft: the browser clamps scrollLeft short of the last page
+    sc.scrollLeft = 0;
+    const art = this.cols?.nativeElement;
+    if (art) art.style.transform = q ? `translateX(${-q * sc.clientWidth}px)` : '';
     this.fraction.set(n > 1 ? q / (n - 1) : 1);
     if (user) this.save(false);
   }
