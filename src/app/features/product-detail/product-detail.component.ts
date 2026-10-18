@@ -29,6 +29,7 @@ import { PurchaseNotice, PurchaseNoticeComponent } from '../../shared/components
 import { isHiddenCategory, isHireCategory, isHireRequestCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { TemplatePanelComponent } from '../builder/template-panel.component';
 import { SeriesPlayerComponent } from './series-player.component';
+import { StoryReaderComponent } from './story-reader.component';
 import { VoiceControlsComponent, VoiceFx, DEFAULT_VOICE_FX, voiceFxBody } from '../studio/voice-controls.component';
 import { BuilderService } from '../builder/builder.service';
 import { CartService } from '../cart/cart.service';
@@ -75,7 +76,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent, VoiceControlsComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent, StoryReaderComponent, VoiceControlsComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -1785,7 +1786,7 @@ export class ProductDetailComponent implements OnInit {
       if (isWatchContentCategory(p.category)) {
         this.setWorkspace('watch');
         const first = this.episodes()[0];
-        if (first && isStoryCategory(p.category)) this.playEpisode(first);
+        void first; // story-book: the reader opens / resumes chapters itself
       }
       if (isTemplateCategory(p.category)) {
         this.purchaseNotice.set({ state: 'already', productName: p.name, template: true, available: this.walletBalance() });
@@ -1839,7 +1840,7 @@ export class ProductDetailComponent implements OnInit {
           if (isWatchContentCategory(p.category)) {
             this.setWorkspace('watch');
             const first = this.episodes()[0];
-            if (first && isStoryCategory(p.category)) this.playEpisode(first);
+            void first; // story-book: the reader opens / resumes chapters itself
           } else if (isSkillCategory(p.category) || isDatasetCategory(p.category)) {
             this.setWorkspace('install');
           }
