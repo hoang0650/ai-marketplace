@@ -120,18 +120,19 @@ export function fileIcon(path: string): string {
     .mi__tabs::-webkit-scrollbar { display: none; }
     .mi__tab { flex: none; display: flex; align-items: center; max-width: 11rem; border-right: 1px solid #2b2b2b; background: #2d2d2d; color: #969696; }
     .mi__tab.on { background: #1e1e1e; color: #ffffff; box-shadow: inset 0 2px 0 #0078d4; }
-    .mi__tabname { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px 0 12px; background: none; border: 0; color: inherit; font: 13px system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mi__tabname { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px 0 12px; background: none; border: 0; color: inherit; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .mi__tabx { width: 32px; min-height: 44px; background: none; border: 0; color: inherit; opacity: .7; font-size: 12px; }
     .mi__dot { color: #e2c08d; font-size: 10px; }
     .mi__fi { display: inline-block; min-width: 1.2em; text-align: center; font: 700 10px ui-monospace, monospace; color: #519aba; }
-    .mi__crumb { padding: 3px 12px; font: 12px system-ui, sans-serif; color: #8b8b8b; background: #1e1e1e; border-bottom: 1px solid #2b2b2b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mi__crumb { padding: 3px 12px; font-size: 12px; color: #8b8b8b; background: #1e1e1e; border-bottom: 1px solid #2b2b2b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .mi__ed { flex: 1; min-height: 0; }
     .mi__keys { display: flex; gap: 4px; padding: 4px; overflow-x: auto; background: #252526; border-top: 1px solid #2b2b2b; scrollbar-width: none; }
     .mi__keys::-webkit-scrollbar { display: none; }
     .mi__keys button { flex: none; min-width: 44px; min-height: 44px; padding: 0 8px; border: 1px solid #3c3c3c; border-radius: 8px; background: #333333; color: #e7e7e7; font: 600 15px ui-monospace, monospace; touch-action: manipulation; }
     .mi__keys button:active { background: #0078d4; }
-    .mi__status { display: flex; align-items: center; gap: 10px; min-height: 26px; padding: 0 10px; background: #0078d4; color: #fff; font: 12px system-ui, sans-serif; white-space: nowrap; overflow: hidden; }
-    .mi__prob { background: none; border: 0; color: inherit; font: inherit; min-height: 26px; padding: 0 2px; }
+    .mi__status { display: flex; align-items: center; gap: 10px; min-height: 26px; padding: 0 10px; background: #0078d4; color: #fff; font-size: 12px; white-space: nowrap; overflow: hidden; }
+    .mi__prob { position: relative; background: none; border: 0; color: inherit; font: inherit; min-height: 26px; padding: 0 2px; }
+    .mi__prob::after { content: ''; position: absolute; inset: -9px -6px; } /* 44px hit area */
     .mi__prob.err { font-weight: 700; }
     .mi__grow { flex: 1; }
     @media (max-width: 380px) { .mi__hide-xs { display: none; } }
@@ -142,10 +143,10 @@ export function fileIcon(path: string): string {
     .mi__drawer { position: absolute; top: 0; bottom: 0; left: 0; z-index: 6; width: min(85%, 320px); display: flex; flex-direction: column; background: #181818; border-right: 1px solid #2b2b2b; overflow-y: auto; animation: mi-slide .18s ease-out; box-shadow: 12px 0 30px rgb(0 0 0 / .45); }
     @keyframes mi-slide { from { transform: translateX(-100%); } to { transform: none; } }
     @keyframes mi-fade { from { opacity: 0; } }
-    .mi__head { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding-left: 12px; font: 700 11px system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #bbbbbb; }
+    .mi__head { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding-left: 12px; font-weight: 700; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #bbbbbb; }
     .mi__head small { padding-right: 12px; font-weight: 400; letter-spacing: 0; text-transform: none; color: #8b8b8b; }
     .mi__tree { list-style: none; margin: 0; padding: 0; }
-    .mi__row { display: flex; align-items: center; gap: 4px; width: 100%; min-height: 44px; padding-right: 12px; background: none; border: 0; color: #cccccc; font: 14px system-ui, sans-serif; text-align: left; }
+    .mi__row { display: flex; align-items: center; gap: 4px; width: 100%; min-height: 44px; padding-right: 12px; background: none; border: 0; color: #cccccc; font-size: 14px; text-align: left; }
     .mi__row.on { background: #37373d; color: #fff; }
     .mi__row:active { background: #2a2d2e; }
     .mi__chev { width: 14px; font-size: 11px; color: #8b8b8b; }

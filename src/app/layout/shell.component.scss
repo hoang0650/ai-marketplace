@@ -1172,3 +1172,13 @@
 .user-menu__list a.user-menu__wallet { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .user-menu__list a.user-menu__wallet span { width: auto; text-align: left; opacity: 1; }
 .user-menu__list a.user-menu__wallet .user-menu__bal { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.8rem; opacity: 0.8; }
+
+/* Component display rules (.icon-btn / .btn-post) beat Tailwind's .hidden: re-apply the responsive hide so the header fits 390px phones. */
+@media (max-width: 639.98px) {
+  .site-header__actions > .hidden.sm\:inline-flex { display: none; }
+  .site-header__inner { gap: 0.5rem; padding-left: 0.75rem; padding-right: 0.75rem; }
+}
+@media (max-width: 767.98px) {
+  .site-header__actions > .hidden.md\:inline-flex { display: none; }
+}
+
