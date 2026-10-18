@@ -354,7 +354,20 @@ export interface ContentEpisode {
   posterUrl?: string;
 }
 
+export interface ReaderBookmark {
+  id: string;
+  episodeId: string;
+  fraction: number;
+  page: number;
+  kind: 'bookmark' | 'highlight';
+  quote: string;
+  note: string;
+  color: string;
+  createdAt: string;
+}
+
 export interface SeriesInfo {
+  bookmarks?: ReaderBookmark[];
   productId: string;
   slug: string;
   title: string;
@@ -365,7 +378,7 @@ export interface SeriesInfo {
   saves: number;
   liked: boolean;
   saved: boolean;
-  progress: { episodeId: string; positionSec: number; updatedAt?: string } | null;
+  progress: { episodeId: string; positionSec: number; fraction?: number; page?: number; updatedAt?: string } | null;
   episodes: ContentEpisode[];
 }
 

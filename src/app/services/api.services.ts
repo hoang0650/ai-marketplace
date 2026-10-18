@@ -62,6 +62,7 @@ import {
   ContentEpisode,
   SeriesInfo,
   ContentUnlock,
+  ReaderBookmark,
 } from '../models/marketplace.models';
 import { CategoryMeta, ProductKindRates, StreamDevice } from '../models/marketplace.models';
 import {
@@ -217,6 +218,19 @@ export class ContentService {
 
   progress(slug: string, episodeId: string, positionSec: number): Observable<{ ok: boolean }> {
     return this.http.put<{ ok: boolean }>(`${this.base}/content/products/${slug}/progress`, { episodeId, positionSec });
+  }
+
+  /** Reader resume point (chapter + fraction / page). */
+  readProgress(slug: string, body: { episodeId: string; fraction: number; page: number }): Observable<{ ok: boolean }> {
+    return this.http.put<{ ok: boolean }>(`${this.base}/content/products/${slug}/progress`, body);
+  }
+
+  addBookmark(slug: string, body: { episodeId: string; fraction: number; page: number; kind: 'bookmark' | 'highlight'; quote?: string; note?: string }): Observable<{ bookmark: ReaderBookmark }> {
+    return this.http.post<{ bookmark: ReaderBookmark }>(`${this.base}/content/products/${slug}/bookmarks`, body);
+  }
+
+  removeBookmark(slug: string, id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/content/products/${slug}/bookmarks/${id}`);
   }
 
   updateEpisode(id: string, patch: Partial<Pick<ContentEpisode, 'title' | 'synopsis' | 'free' | 'index' | 'posterUrl' | 'published'>>): Observable<ContentEpisode> {

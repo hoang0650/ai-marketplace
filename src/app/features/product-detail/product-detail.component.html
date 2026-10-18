@@ -613,116 +613,17 @@
     }
 
     @if (workspaceTab() === 'watch' && isStory(p.category)) {
-      <div class="playground watch-layout">
-        <section class="pg-pane">
-          <div class="pg-pane__head">
-            <h2>{{ isStory(p.category) ? ('pd.tabRead' | t) : ('pd.tabWatch' | t) }}</h2>
-          </div>
-          <p class="text-sm text-muted">{{ 'pd.drmHint' | t }}</p>
-          @if (issuedLicense(); as lic) {
-            <p class="mt-2 font-mono text-xs text-muted">
-              {{ lic.licenseKey }} · {{ 'pd.licenseUntil' | t }} {{ lic.expiresAt | date: 'short' }}
-            </p>
-          }
-          @if (unlockError()) {
-            <p class="mt-2 text-sm" style="color:#c62828">{{ unlockError() }}</p>
-          }
-          @if (!canPlayContent()) {
-            <p class="mt-3 text-sm">{{ 'pd.payToUnlock' | t }}</p>
-            <button type="button" class="btn btn-fill mt-2" (click)="checkout()" [disabled]="checkingOut()">
-              {{ checkingOut() ? ('cart.paying' | t) : (isStory(p.category) ? ('pd.ctaRead' | t) : ('pd.ctaWatch' | t)) }}
-              · {{ licensePrice(p) | currency: displayCurrency:'symbol-narrow':'1.0-2' }}
-            </button>
-          }
-          <ul class="episode-list">
-            @for (ep of episodes(); track ep.id) {
-              <li class="episode-row" [class.active]="selectedEpisode()?.id === ep.id">
-                <button type="button" class="episode-row__play" (click)="playEpisode(ep)" [disabled]="unlocking() || !canPlayContent()">
-                  <span class="episode-row__idx">{{ ep.index }}</span>
-                  <span>
-                    {{ ep.title }}
-                    @if ((ep.pageCount || 0) > 1) {
-                      <em class="episode-row__pages">{{ 'pd.storyPages' | t: { n: ep.pageCount || 0 } }}</em>
-                    }
-                  </span>
-                </button>
-                <button type="button" class="btn btn-outline text-xs" (click)="downloadEpisode(ep)" [disabled]="!canPlayContent()">
-                  {{ 'pd.downloadAimc' | t }}
-                </button>
-              </li>
-            }
-          </ul>
-          @if (!episodes().length) {
-            <p class="mt-4 text-sm text-muted">{{ 'pd.noEpisodes' | t }}</p>
-          }
-        </section>
-        <section class="pg-pane">
-          <div class="pg-pane__head">
-            <h2>{{ selectedEpisode()?.title || ('pd.playerIdle' | t) }}</h2>
-          </div>
-          @if (playUrl(); as src) {
-            @if (playKind() === 'video') {
-              <video
-                class="watch-media"
-                [src]="src"
-                controls
-                playsinline
-                preload="auto"
-                controlslist="nodownload noremoteplayback"
-                disablepictureinpicture
-                (loadedmetadata)="lockPlayback($event)"
-                (contextmenu)="blockCapture($event)"
-                (error)="onMediaError()"
-              ></video>
-            } @else if (playKind() === 'audio') {
-              <audio class="w-full" [src]="src" controls preload="auto" controlslist="nodownload" (error)="onMediaError()"></audio>
-            } @else if (playKind() === 'text') {
-              <iframe class="watch-text" [src]="src" title="chapter" (contextmenu)="blockCapture($event)"></iframe>
-            } @else {
-              <div class="story-reader">
-                <button type="button" class="story-reader__frame" (click)="nextPage()" [attr.aria-label]="'pd.storyNext' | t">
-                  <img
-                    class="watch-media"
-                    [src]="src"
-                    [alt]="selectedEpisode()?.title || ''"
-                    draggable="false"
-                    (contextmenu)="blockCapture($event)"
-                    (dragstart)="blockCapture($event)"
-                    (error)="onMediaError()"
-                  />
-                </button>
-                @if (playPages().length > 1) {
-                  <div class="story-reader__nav">
-                    <button type="button" class="btn btn-outline" (click)="prevPage()" [disabled]="pageIndex() <= 0">
-                      {{ 'pd.storyPrev' | t }}
-                    </button>
-                    <span>{{ 'pd.storyPage' | t: { n: pageIndex() + 1, total: playPages().length } }}</span>
-                    <button type="button" class="btn btn-outline" (click)="nextPage()" [disabled]="pageIndex() >= playPages().length - 1">
-                      {{ 'pd.storyNext' | t }}
-                    </button>
-                  </div>
-                  <div class="story-reader__thumbs" role="list">
-                    @for (thumb of playPages(); track $index) {
-                      <button
-                        type="button"
-                        class="story-reader__thumb"
-                        [class.active]="pageIndex() === $index"
-                        (click)="goPage($index)"
-                        [attr.aria-label]="'pd.storyPage' | t: { n: $index + 1, total: playPages().length }"
-                      >
-                        <img [src]="thumb" alt="" draggable="false" (contextmenu)="blockCapture($event)" (dragstart)="blockCapture($event)" />
-                      </button>
-                    }
-                  </div>
-                }
-              </div>
-            }
-            <p class="mt-2 text-sm text-muted">{{ 'pd.captureHint' | t }}</p>
-          } @else {
-            <p class="pg-empty">{{ 'pd.playerIdle' | t }}</p>
-          }
-        </section>
-      </div>
+      <app-story-reader
+        [product]="p"
+        [canPlay]="canPlayContent()"
+        [licenseKey]="issuedLicense()?.licenseKey || ''"
+        [priceLabel]="(licensePrice(p) | currency: displayCurrency:'symbol-narrow':'1.0-2') || ''"
+        [checkingOut]="checkingOut()"
+        (checkout)="checkout()"
+        (back)="exitTheater()"
+        (login)="goLogin()"
+        (download)="downloadEpisode($event)"
+      />
     }
 
     @if (workspaceTab() === 'playground') {
