@@ -83,7 +83,7 @@ export class CodeEditorComponent implements OnDestroy {
 
   lang(): string {
     const e = (this.path().split('.').pop() || '').toLowerCase();
-    return ({ tsx: 'TypeScript JSX', ts: 'TypeScript', jsx: 'JavaScript JSX', js: 'JavaScript', json: 'JSON', md: 'Markdown' } as Record<string, string>)[e] || e || 'text';
+    return ({ tsx: 'TypeScript JSX', ts: 'TypeScript', jsx: 'JavaScript JSX', js: 'JavaScript', json: 'JSON', md: 'Markdown', html: 'HTML', htm: 'HTML', css: 'CSS' } as Record<string, string>)[e] || e || 'text';
   }
 
   constructor() {

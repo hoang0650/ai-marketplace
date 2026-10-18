@@ -8,6 +8,8 @@ import { EditorView, keymap } from '@codemirror/view';
 import { javascript } from '@codemirror/lang-javascript';
 import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
+import { html } from '@codemirror/lang-html';
+import { css } from '@codemirror/lang-css';
 import { syntaxTree } from '@codemirror/language';
 import { Diagnostic, linter, lintGutter, forEachDiagnostic } from '@codemirror/lint';
 import { oneDark } from '@codemirror/theme-one-dark';
@@ -21,6 +23,8 @@ function language(path: string): Extension {
   const ext = (path.split('.').pop() || '').toLowerCase();
   if (ext === 'json') return json();
   if (ext === 'md' || ext === 'mdx') return markdown();
+  if (ext === 'html' || ext === 'htm') return html();
+  if (ext === 'css') return css();
   if (['ts', 'tsx', 'js', 'jsx', 'mjs', 'cjs'].includes(ext)) {
     return javascript({ typescript: ext.startsWith('t'), jsx: ext.endsWith('x') || ext === 'js' });
   }
@@ -75,6 +79,8 @@ export function createEditor(parent: HTMLElement, doc: string, path: string, dar
         keymap.of([{ key: 'Mod-s', preventDefault: true, run: () => { hooks.onSave(); return true; } }]),
         basicSetup, // line numbers, bracket matching, folding, search, autocomplete, history
         lintGutter(),
+        // Mobile IDE: soft-wrap long lines instead of horizontal scrolling.
+        parent.closest('.ce--mobile') ? EditorView.lineWrapping : [],
         lang.of(language(path)), lint.of(syntaxLinter(path)),
         theme.of(dark ? oneDark : []), ro.of(EditorState.readOnly.of(readOnly)),
         EditorView.theme({ '&': { height: '100%', fontSize: '12.5px' }, '.cm-scroller': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' } }),

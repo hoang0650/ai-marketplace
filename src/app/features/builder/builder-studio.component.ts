@@ -96,6 +96,10 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
       .m-studio .seg > button { min-height: 40px; }
       .m-studio input, .m-studio textarea, .m-studio select { font-size: 16px; } /* no iOS zoom-on-focus */
       .m-hide { display: none !important; }
+      .m-tap { min-height: 44px; }
+      .m-studio header { min-width: 0; }
+      .m-studio header > * { flex-shrink: 0; }
+      .m-studio header > input { flex-shrink: 1; }
       .m-p0 { padding: 0 !important; }
       .m-pane { min-height: 0 !important; flex: 1 1 auto; }
       .m-tabs { flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 calc(-1 * max(.5rem, env(safe-area-inset-left))); padding-bottom: env(safe-area-inset-bottom);
@@ -116,7 +120,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
         <header class="panel flex items-center gap-2 px-2 py-1.5" [class.flex-wrap]="!mobile()">
           <a routerLink="/build" class="icon-btn no-underline" [title]="'builder.back' | t" [attr.aria-label]="'builder.back' | t">←</a>
           <input
-            class="input min-w-[8rem] flex-1 border-transparent bg-transparent py-1 font-semibold sm:max-w-xs"
+            class="input min-w-0 flex-1 border-transparent bg-transparent py-1 font-semibold sm:max-w-xs"
             [ngModel]="p.name"
             (change)="rename($any($event.target).value)"
             maxlength="80"
@@ -150,11 +154,12 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 </datalist>
               </div>
             } @else {
-              <button type="button" class="btn btn-fill text-xs" (click)="openDrawer('keys')">{{ 'builder.keys.setup' | t }}</button>
+              <button type="button" class="btn btn-fill text-xs" [class.m-hide]="mobile()" (click)="openDrawer('keys')">{{ 'builder.keys.setup' | t }}</button>
+              @if (mobile()) { <button type="button" class="icon-btn" (click)="openDrawer('keys')" [title]="'builder.keys.setup' | t" [attr.aria-label]="'builder.keys.setup' | t">🔑</button> }
             }
             @if (!mobile()) { <app-handoff-button kind="builder" [targetId]="p.id" [compact]="true" /> }
-            <a class="icon-btn no-underline" [href]="p.previewUrl" target="_blank" rel="noopener noreferrer" [title]="'builder.openTab' | t">↗<span class="hidden lg:inline">{{ 'builder.openTab' | t }}</span></a>
-            <button type="button" class="icon-btn" [class.hidden]="mobile()" [class.border-accent]="drawer() === 'git'" (click)="openDrawer('git')" [title]="p.git ? ('builder.git.buttonLinked' | t: { repo: p.git.repo }) : ('builder.git.button' | t)">
+            <a class="icon-btn no-underline" [class.m-hide]="mobile()" [href]="p.previewUrl" target="_blank" rel="noopener noreferrer" [title]="'builder.openTab' | t">↗<span class="hidden lg:inline">{{ 'builder.openTab' | t }}</span></a>
+            <button type="button" class="icon-btn" [class.m-hide]="mobile()" [class.border-accent]="drawer() === 'git'" (click)="openDrawer('git')" [title]="p.git ? ('builder.git.buttonLinked' | t: { repo: p.git.repo }) : ('builder.git.button' | t)">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
               <span class="hidden max-w-[10rem] truncate lg:inline">{{ p.git ? p.git.repo : ('builder.git.button' | t) }}</span>
             </button>
@@ -164,6 +169,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 <div class="menu panel" role="menu">
                   <button type="button" role="menuitem" (click)="menuOpen.set(false); openDrawer('keys')">🔑 {{ 'builder.keys.manage' | t }}</button>
                   @if (mobile()) {
+                    <a role="menuitem" class="no-underline" [href]="p.previewUrl" target="_blank" rel="noopener noreferrer" (click)="menuOpen.set(false)">↗ {{ 'builder.openTab' | t }}</a>
                     <button type="button" role="menuitem" (click)="menuOpen.set(false); openDrawer('git')">⎇ {{ p.git ? p.git.repo : ('builder.git.button' | t) }}</button>
                   }
                   <button type="button" role="menuitem" (click)="menuOpen.set(false); exportZip()">⬇ {{ 'builder.export' | t }}</button>
@@ -190,7 +196,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           <button type="button" role="tab" [class.on]="pane() === 'preview'" [attr.aria-selected]="pane() === 'preview'" (click)="pane.set('preview')">{{ 'builder.tab.preview' | t }} / {{ 'builder.tab.code' | t }}</button>
         </div></div>
 
-        <div class="grid min-h-0 flex-1 gap-2 lg:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
+        <div class="grid min-h-0 min-w-0 flex-1 grid-cols-[minmax(0,1fr)] gap-2 lg:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
           <!-- chat: full height, messages scroll, composer pinned -->
           <div class="panel min-h-0 min-w-0 flex-col p-0 lg:flex" [class.flex]="pane() === 'chat'" [class.hidden]="pane() !== 'chat'" [class.m-pane]="mobile()" [style.min-height]="mobile() ? null : '60vh'">
             <div class="flex items-center justify-between border-b border-line px-3 py-2">
@@ -272,7 +278,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 </div>
               </form>
               @if (!canBuild()) {
-                <button type="button" class="w-full text-left text-xs text-amber-500 underline" (click)="openDrawer('keys')">{{ 'builder.needKey.short' | t }}</button>
+                <button type="button" class="w-full text-left text-xs text-amber-500 underline" [class.m-tap]="mobile()" (click)="openDrawer('keys')">{{ 'builder.needKey.short' | t }}</button>
               }
             </div>
           </div>
