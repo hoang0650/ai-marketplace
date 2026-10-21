@@ -573,7 +573,7 @@ export class OpenClawGatewayService {
             window.location.href = res.url;
           }
           if (!skipApprove) {
-            this.approveDelayTimer(800, () => this.triggerAutoApprove(30, 1000));
+            this.approveDelayTimer(1500, () => this.triggerAutoApprove(12, 3000));
           }
         }
       }),
@@ -867,13 +867,29 @@ export class OpenClawGatewayService {
   }
 
   /**
-   * Blind "approve the latest pending request" polling was removed: on the shared
-   * AI Markets gateway it could approve another buyer's device, and it hammered the
-   * API once per second. Ticketed launches are paired by the gateway itself; manual
-   * approval needs the request id (setup page, step "Device & DM pairing").
+   * After launch, approve only this buyer's own pending Control UI device.
+   * The API filters by origin, so this cannot approve another buyer.
    */
-  private triggerAutoApprove(_maxAttempts: number, _intervalMs: number): void {
+  private triggerAutoApprove(maxAttempts: number, intervalMs: number): void {
     this.clearApproveTimers();
+    let left = maxAttempts;
+    const tick = () => {
+      if (left <= 0) {
+        this.clearApproveTimers();
+        return;
+      }
+      left -= 1;
+      this.getPendingPairings().subscribe((res) => {
+        const own = (res.pending || []).filter((p) => p.approvable);
+        const newest = own[own.length - 1];
+        if (!newest) return;
+        this.approvePairing(newest.requestId).subscribe((approved) => {
+          if (approved.success) this.clearApproveTimers();
+        });
+      });
+    };
+    tick();
+    this.approveInterval = setInterval(tick, intervalMs);
   }
   private approveDelayTimer(ms: number, fn: () => void): void {
     this.approveTimer = setTimeout(fn, ms);

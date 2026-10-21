@@ -49,8 +49,9 @@ const uid = () => Math.random().toString(36).slice(2, 10);
     <div class="ed-brand">🎬 <span>Làm phim AI</span></div>
     <input class="ed-title" [(ngModel)]="title" (ngModelChange)="save()" placeholder="Dự án chưa đặt tên" data-testid="film-title" />
     <div class="ed-top-r">
+      <span class="ed-count">{{ clips().length }}/6 · {{ total() }}s</span>
       @if (promo()) { <span class="ed-promo" data-testid="film-promo">🎁 Miễn phí giai đoạn đầu</span> }
-      @if (quota()?.film; as q) { <span class="ed-muted">Phim miễn phí hôm nay: {{ q.used }}/{{ q.free }}</span> }
+      @if (quota()?.film; as q) { <span class="ed-muted">Hôm nay {{ q.used }}/{{ q.free }}</span> }
       <button class="ed-btn ed-primary" (click)="render()" [disabled]="rendering() || !clips().length" data-testid="film-submit">
         {{ rendering() ? 'Đang dựng…' : '⤓ Tạo phim' }}
       </button>
@@ -168,9 +169,9 @@ const uid = () => Math.random().toString(36).slice(2, 10);
             @for (v of voices(); track v.id) { <option [value]="v.id">{{ v.label }}</option> }
           </select>
         </label>
-        <div class="ed-vc"><span class="ed-vc-h">Giọng kể (cả phim)</span>
-          <app-voice-controls [dark]="true" [value]="fx" (valueChange)="fx = $event; save()" speedNote="Tốc độ lời kể do GPU áp dụng khi dựng phim để khớp cảnh." />
-        </div>
+        <div class="ed-vc"><details class="ed-fold"><summary>Giọng kể (cả phim)</summary>
+          <app-voice-controls [dark]="true" [value]="fx" (valueChange)="fx = $event; save()" speedNote="Áp dụng khi dựng phim." />
+        </details></div>
         <div class="ed-2">
           <label>Thời lượng: {{ c.duration }}s
             <input type="range" min="2" max="8" step="0.5" [(ngModel)]="c.duration" (ngModelChange)="touch()" />
@@ -192,7 +193,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
           <button class="ed-btn" (click)="duplicate(c)">⧉ Nhân bản</button>
         </div>
         <button class="ed-btn ed-danger" (click)="removeClip(c.id)">🗑 Xoá cảnh</button>
-        <p class="ed-muted">Mô hình: Flux.1 schnell → Wan2.2 TI2V-5B → RIFE 30fps, giọng VieNeu-TTS (dùng thương mại được). Khi xuất phim, hệ thống dựng lại toàn bộ cảnh theo thứ tự trên dòng thời gian.</p>
+        <p class="ed-muted">Tối đa 6 cảnh. Tạo từng cảnh, rồi bấm “Tạo phim” để ghép theo dòng thời gian.</p>
       } @else {
         <p class="ed-muted">Chọn một cảnh trên dòng thời gian để chỉnh thuộc tính.</p>
       }
@@ -252,6 +253,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 `,
   styles: [`
 .ed-vc{border-top:1px solid var(--b, #2a2c33);padding-top:10px;margin-top:4px}.ed-vc-h{display:block;font-weight:600;margin-bottom:6px}
+.ed-fold{border:1px solid var(--b,#2a2c33);border-radius:8px;padding:8px 10px}.ed-fold summary{cursor:pointer;font-weight:600}
 :host{display:block}
 .ed{--bg:#0f1012;--p:#17181c;--p2:#1f2026;--b:#2a2c33;--t:#e9e9ec;--m:#8b8d98;--a:#22d3ee;--a2:#c9a961;background:var(--bg);color:var(--t);border-radius:14px;overflow:hidden;font-size:13px;min-height:calc(100vh - 140px);display:flex;flex-direction:column}
 .ed button,.ed select,.ed input,.ed textarea{font:inherit;color:inherit}
@@ -260,6 +262,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 .ed-title{flex:1;max-width:420px;background:transparent;border:1px solid transparent;border-radius:8px;padding:6px 10px;text-align:center}
 .ed-title:hover,.ed-title:focus{border-color:var(--b);outline:none;background:var(--p2)}
 .ed-top-r{margin-left:auto;display:flex;gap:10px;align-items:center}
+.ed-count{color:var(--m);font-variant-numeric:tabular-nums;white-space:nowrap}
 .ed-promo{background:rgba(16,185,129,.15);color:#34d399;border-radius:999px;padding:3px 10px;font-weight:600;font-size:12px}
 .ed-muted{color:var(--m);font-size:12px;line-height:1.5}
 .ed-btn{background:var(--p2);border:1px solid var(--b);border-radius:8px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center;text-decoration:none}

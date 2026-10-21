@@ -1,11 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../services/seo.service';
 import { LaunchNoticeService } from './launch-notice.service';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
-import { AgentConnectCommand, MarketplaceAgent, OpenClawSshAccess, TerminalShell } from './agents.models';
+import { AgentConnectCommand, MarketplaceAgent, OpenClawSshAccess, PendingPairing, TerminalShell } from './agents.models';
 
 export type SetupChannelId =
   | 'telegram'
@@ -418,29 +418,56 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
               <article class="oc-card" id="step-pairing">
               <h3><span>{{ stepNo('pairing') }}</span> Device &amp; DM pairing</h3>
               <p class="oc-card__desc">
-                Launching from aimarkets.vn pairs this browser automatically. If the Control UI still shows
-                <em>"pairing required"</em>, copy the <strong>request ID</strong> it displays and approve it here.
-                Only requests opened from your own workspace (<code class="oc-code">{{ host() }}</code>) can be approved.
+                Opening the Control UI from this page approves this browser automatically.
+                Only a request opened on <code class="oc-code">{{ host() }}</code> can be approved.
+                Do not paste the gateway token.
               </p>
-              <div class="oc-pair-row">
-                <input
-                  class="oc-input"
-                  [(ngModel)]="pairingCode"
-                  name="ocPair"
-                  placeholder="Pairing request ID, e.g. b1a1a3d1-e703-..."
-                  autocomplete="off"
-                  spellcheck="false"
-                />
-                <button type="button" class="oc-btn" (click)="approvePairing()" [disabled]="pairingBusy() || !pairingCode.trim()">
-                  {{ pairingBusy() ? 'Approving...' : 'Approve' }}
+              @if (pendingPairings().length) {
+                <ul class="oc-pending">
+                  @for (p of pendingPairings(); track p.requestId) {
+                    <li class="oc-pending__item">
+                      <code class="oc-code">{{ p.requestId }}</code>
+                      <button
+                        type="button"
+                        class="oc-btn oc-btn--sm"
+                        (click)="approvePairing(p.requestId)"
+                        [disabled]="pairingBusy() || !p.approvable"
+                      >
+                        {{ p.approvable ? 'Approve' : 'Not allowed' }}
+                      </button>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="oc-card__desc">No pending request yet. Open the Control UI, then come back — this page approves it for you.</p>
+              }
+              <div class="oc-row">
+                <button type="button" class="oc-btn" (click)="approveLatest()" [disabled]="pairingBusy()">
+                  {{ pairingBusy() ? 'Approving...' : 'Approve this browser' }}
+                </button>
+                <button type="button" class="oc-btn oc-btn--ghost" (click)="refreshPairings(true)" [disabled]="pairingLookupBusy()">
+                  {{ pairingLookupBusy() ? 'Looking...' : 'Refresh' }}
                 </button>
               </div>
-              <button type="button" class="oc-link" (click)="findPendingPairing(true)" [disabled]="pairingLookupBusy()">
-                {{ pairingLookupBusy() ? 'Looking for your request...' : 'Find my pending request ID' }}
-              </button>
               @if (pairingMsg(); as m) {
                 <p [class]="m.ok ? 'oc-ok-msg' : 'oc-err-msg'">{{ m.text }}</p>
               }
+              <details class="oc-details">
+                <summary>Paste a request id</summary>
+                <div class="oc-pair-row">
+                  <input
+                    class="oc-input"
+                    [(ngModel)]="pairingCode"
+                    name="ocPair"
+                    placeholder="Request id from the Control UI, not the gateway token"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <button type="button" class="oc-btn" (click)="approvePairing()" [disabled]="pairingBusy() || !pairingCode.trim()">
+                    Approve id
+                  </button>
+                </div>
+              </details>
             </article>
             }
 
@@ -581,6 +608,8 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
             } @else if (commandsError()) {
               <p class="oc-err-msg">{{ commandsError() }}</p>
             } @else {
+              <details class="oc-details">
+                <summary>Show terminal commands</summary>
               <div class="oc-shell-tabs" role="tablist" aria-label="Terminal type">
                 @for (t of shellTabs; track t.id) {
                   <button
@@ -593,21 +622,6 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                   >{{ t.label }}</button>
                 }
               </div>
-              @if (hasPlaceholderCommand()) {
-                <div class="oc-pair-row">
-                  <input
-                    class="oc-input"
-                    [(ngModel)]="pairingCode"
-                    name="ocPairCmd"
-                    placeholder="Request ID from the Control UI (filled automatically when found)"
-                    autocomplete="off"
-                    spellcheck="false"
-                  />
-                  <button type="button" class="oc-btn oc-btn--ghost oc-btn--sm" (click)="findPendingPairing(true)" [disabled]="pairingLookupBusy()">
-                    {{ pairingLookupBusy() ? 'Looking...' : 'Find' }}
-                  </button>
-                </div>
-              }
               @for (c of commands(); track c.id) {
                 <div class="oc-cmd">
                   <div class="oc-cmd__head">
@@ -631,6 +645,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                 <p class="oc-card__desc">No terminal commands for {{ profile().brand }} - use the launch button above.</p>
               }
               <button type="button" class="oc-link" (click)="loadCommands()">Refresh commands</button>
+              </details>
             }
           </article>
 
@@ -655,7 +670,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
     </div>
   `,
 })
-export class OpenClawSetupWizardComponent implements OnInit {
+export class OpenClawSetupWizardComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   readonly gateway = inject(OpenClawGatewayService);
   private readonly notice = inject(LaunchNoticeService);
@@ -709,41 +724,62 @@ export class OpenClawSetupWizardComponent implements OnInit {
     return this.commands().some((c) => Boolean(c.placeholder && c.command));
   }
 
-  /** Single-line command for the selected shell, with the request id filled in when known. */
+  /** Single-line command for the selected shell. Only a real pending request id is filled in. */
   commandText(c: AgentConnectCommand): string {
     const base = c.variants?.[this.shell()] || c.command || '';
     const rid = this.pairingCode.trim();
-    if (c.placeholder && /^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$/.test(rid)) {
-      return base.split(c.placeholder).join(rid);
-    }
+    const known = this.pendingPairings().some((p) => p.requestId === rid);
+    if (c.placeholder && known) return base.split(c.placeholder).join(rid);
     return base;
   }
 
-  /** Prefills the request id with this buyer's own pending request (server filters by owner). */
-  findPendingPairing(userInitiated = false): void {
+  /** Loads this buyer's own pending requests. Approves the newest one while the page is open. */
+  refreshPairings(userInitiated = false, autoApprove = false): void {
     const agent = this.agent();
     if (!this.profile().pairing || this.pairingLookupBusy()) return;
     this.pairingLookupBusy.set(true);
     this.gateway.getPendingPairings(agent).subscribe((res) => {
       this.pairingLookupBusy.set(false);
-      const own = (res.pending || []).filter((p) => p.approvable);
-      if (own.length >= 1) {
-        this.pairingCode = own[own.length - 1].requestId;
-        if (userInitiated) {
-          this.pairingMsg.set({
-            ok: true,
-            text: own.length === 1 ? 'Found your pending request.' : `Found ${own.length} requests; filled in the newest.`,
-          });
-        }
-      } else if (userInitiated) {
-        this.pairingMsg.set({
-          ok: false,
-          text: res.success
-            ? 'No pending request from your workspace. Open the Control UI from aimarkets.vn, then try again.'
-            : res.message || 'Could not load pairing requests.',
-        });
+      const pending = res.pending || [];
+      this.pendingPairings.set(pending);
+      const own = pending.filter((p) => p.approvable);
+      if (autoApprove && own.length && !this.pairingBusy()) {
+        this.approvePairing(own[own.length - 1].requestId, true);
+        return;
       }
+      if (!userInitiated) return;
+      this.pairingMsg.set(
+        own.length
+          ? { ok: true, text: own.length === 1 ? 'Found your pending request.' : `Found ${own.length} requests from your workspace.` }
+          : {
+              ok: false,
+              text: res.success
+                ? 'No pending request from your workspace. Open the Control UI from aimarkets.vn, then click Approve this browser.'
+                : res.message || 'Could not load pairing requests.',
+            },
+      );
     });
+  }
+
+  private startPairingWatch(): void {
+    this.stopPairingWatch();
+    if (!this.profile().pairing) return;
+    let left = 12;
+    const tick = () => {
+      if (left <= 0) {
+        this.stopPairingWatch();
+        return;
+      }
+      left -= 1;
+      this.refreshPairings(false, true);
+    };
+    tick();
+    this.pairingWatch = setInterval(tick, 4000);
+  }
+
+  private stopPairingWatch(): void {
+    if (this.pairingWatch) clearInterval(this.pairingWatch);
+    this.pairingWatch = null;
   }
 
   loadCommands(): void {
@@ -755,7 +791,7 @@ export class OpenClawSetupWizardComponent implements OnInit {
       this.commandsBusy.set(false);
       this.commands.set(res.success ? res.commands : []);
       if (!res.success) this.commandsError.set(res.message || 'Sign in to see your personal commands.');
-      if (res.success && this.hasPlaceholderCommand() && !this.pairingCode.trim()) this.findPendingPairing();
+      if (res.success && this.hasPlaceholderCommand() && !this.pendingPairings().length) this.refreshPairings();
     });
   }
 
@@ -767,6 +803,7 @@ export class OpenClawSetupWizardComponent implements OnInit {
   readonly launchError = signal('');
   readonly creds = signal<{ username: string; password: string } | null>(null);
   readonly pairingBusy = signal(false);
+  readonly pendingPairings = signal<PendingPairing[]>([]);
   /** Key of the field most recently copied to the clipboard. */
   readonly copied = signal('');
   private copyTimer: ReturnType<typeof setTimeout> | null = null;
@@ -778,6 +815,7 @@ export class OpenClawSetupWizardComponent implements OnInit {
   readonly sshUnavailable = signal(false);
   sshPlaceholder = '{userId}.openclaw.aimarkets.vn';
   pairingCode = '';
+  private pairingWatch: ReturnType<typeof setInterval> | null = null;
 
   readonly profile = signal<AgentSetupProfile>(PROFILES.openclaw);
 
@@ -808,7 +846,10 @@ export class OpenClawSetupWizardComponent implements OnInit {
 
       this.sshPlaceholder = this.gateway.sshHostHint(undefined, agent);
       this.pairingMsg.set(null);
+      this.pendingPairings.set([]);
+      this.pairingCode = '';
       this.loadCommands();
+      this.startPairingWatch();
 
       if (agent && this.gateway.supportsSsh(agent)) {
         this.gateway.getActiveSsh(agent.id).subscribe((res) => {
@@ -816,6 +857,10 @@ export class OpenClawSetupWizardComponent implements OnInit {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.stopPairingWatch();
   }
 
   selectChannel(ch: ChannelGuide): void {
@@ -902,7 +947,8 @@ export class OpenClawSetupWizardComponent implements OnInit {
         if (res.username && res.password) {
           this.creds.set({ username: res.username, password: res.password });
         }
-        this.status.set(res.rental ? 'Rented — use “Open” in the notice to start it.' : 'Opened — check the new tab.');
+        this.status.set(res.rental ? 'Rented — use “Open” in the notice to start it.' : 'Opened — this browser will be approved automatically.');
+        this.startPairingWatch();
       } else if (res.code !== 'RENT_CANCELLED') {
         const msg = res.message || 'Failed to open the dashboard';
         this.launchError.set(msg);
@@ -911,17 +957,25 @@ export class OpenClawSetupWizardComponent implements OnInit {
     });
   }
 
-  approvePairing(): void {
-    const requestId = this.pairingCode.trim();
-    if (this.pairingBusy() || !requestId) return;
+  approveLatest(): void {
+    const own = this.pendingPairings().filter((p) => p.approvable);
+    this.approvePairing(own.length ? own[own.length - 1].requestId : '');
+  }
+
+  approvePairing(requestId = this.pairingCode.trim(), silent = false): void {
+    const id = String(requestId || '').trim();
+    if (this.pairingBusy()) return;
     this.pairingBusy.set(true);
-    this.pairingMsg.set(null);
-    this.gateway.approvePairing(requestId, this.agent()).subscribe((res) => {
+    if (!silent) this.pairingMsg.set(null);
+    this.gateway.approvePairing(id || null, this.agent()).subscribe((res) => {
       this.pairingBusy.set(false);
       if (res.success) {
         this.pairingCode = '';
+        this.pendingPairings.update((list) => list.filter((p) => p.requestId !== id));
         this.pairingMsg.set({ ok: true, text: res.message || 'Device approved. Reload the Control UI tab.' });
-      } else {
+        this.stopPairingWatch();
+        this.refreshPairings();
+      } else if (!silent) {
         this.pairingMsg.set({ ok: false, text: res.message || 'Approve failed.' });
       }
     });
