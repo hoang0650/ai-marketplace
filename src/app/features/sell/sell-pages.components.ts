@@ -20,6 +20,7 @@ import { ShopProfileService } from './shop-profile.service';
 import { PayoutAccountFormComponent } from '../wallet/payout-account-form.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
+import { PersonaToggleComponent } from './persona-toggle.component';
 
 @Component({
   selector: 'app-sell-images',
@@ -293,20 +294,14 @@ export class SellPaymentComponent {
 @Component({
   selector: 'app-sell-withdraw',
   standalone: true,
-  imports: [FormsModule, CurrencyPipe, DecimalPipe, RouterLink, TPipe],
+  imports: [FormsModule, CurrencyPipe, DecimalPipe, RouterLink, TPipe, PersonaToggleComponent],
   template: `
     <section>
       <p class="crumb">{{ 'sell.nav.finance' | t }} / {{ 'sell.nav.withdraw' | t }}</p>
       <h1>{{ 'wallet.withdraw.title' | t }}</h1>
 
       @if (personas().length > 1) {
-        <div class="personas">
-          @for (p of personas(); track p) {
-            <button type="button" [class.active]="p === persona()" (click)="setPersona(p)">
-              {{ ('payout.persona.' + p) | t }}
-            </button>
-          }
-        </div>
+        <app-persona-toggle [personas]="personas()" [value]="persona()" (valueChange)="setPersona($event)" />
       }
 
       @if (policy(); as pol) {
@@ -321,10 +316,18 @@ export class SellPaymentComponent {
             <p><strong>{{ ('payout.persona.' + persona()) | t }}</strong> · {{ 'payout.feeLine' | t }}</p>
             <ul>
               <li>{{ 'payout.platformFee' | t }}: <strong>{{ pol.platformFeeRate * 100 | number: '1.0-2' }}%</strong></li>
-              @if (pol.taxRate > 0) {
-                <li>{{ 'payout.tax' | t }}: <strong>{{ pol.taxRate * 100 | number: '1.0-2' }}%</strong></li>
+              @if (pol.taxMode === 'unknown') {
+                <li class="taxwarn">{{ wl('unknown') }} <a routerLink="/sell/verification" class="link">{{ wl('complete') }} →</a></li>
+              } @else if (pol.taxMode === 'per_order') {
+                <li>{{ 'payout.tax' | t }}: <strong>{{ wl('perOrder') }}</strong>
+                  @for (b of pol.taxBreakdown || []; track b.kind) {
+                    <span class="taxrow">{{ wl(b.kind) }} {{ b.rate * 100 | number: '1.0-2' }}% → {{ 'payout.totalFee' | t }} {{ b.totalFeeRate * 100 | number: '1.0-2' }}%</span>
+                  }
+                </li>
+              } @else {
+                <li>{{ 'payout.tax' | t }}: <strong>{{ (pol.taxRate ?? 0) * 100 | number: '1.0-2' }}%</strong>@if (pol.taxMode === 'none') { <span class="taxrow">{{ wl('none') }}</span> }</li>
+                <li>{{ 'payout.totalFee' | t }}: <strong>{{ (pol.totalFeeRate ?? pol.platformFeeRate) * 100 | number: '1.0-2' }}%</strong></li>
               }
-              <li>{{ 'payout.totalFee' | t }}: <strong>{{ pol.totalFeeRate * 100 | number: '1.0-2' }}%</strong></li>
               @if (!pol.chargeAtWithdraw) {
                 <li class="note">{{ 'payout.netAtSource' | t }}</li>
               }
@@ -413,12 +416,9 @@ export class SellPaymentComponent {
   styles: `
     .crumb { margin: 0; color: #888; font-size: .8rem; }
     h1 { margin: .3rem 0 1rem; font-size: 1.45rem; font-weight: 800; }
-    .personas { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .personas button { border: 1px solid #e5e5e5; background: #fff; border-radius: 999px; padding: .35rem .9rem; font: inherit; font-weight: 700; cursor: pointer; }
-    .personas button.active { background: #111; color: #fff; border-color: #111; }
     .policy { background: #f7f7f5; border: 1px solid #ececec; border-radius: 12px; padding: .85rem 1rem; margin-bottom: 1rem; }
     .policy p { margin: 0 0 .4rem; font-weight: 700; }
-    .policy ul { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+    .taxwarn{color:#b45309;font-weight:600}.taxrow{display:block;font-size:.8rem;color:#555;font-weight:400}.policy ul { display: flex; gap: 1.25rem; flex-wrap: wrap; }
     .policy ul li { border: 0; padding: 0; }
     .policy ul li.note { color: #666; font-size: .8rem; width: 100%; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -453,6 +453,16 @@ export class SellWithdrawComponent implements OnInit {
   readonly summary = signal<WalletSummary | null>(null);
   readonly kyc = signal<KycProfile | null>(null);
   readonly policy = signal<PayoutPolicy | null>(null);
+  /** Labels for the seller tax line (follows the seller's declared type and product kinds). */
+  private static readonly WL: Record<string, Record<string, string>> = {
+    vi: { unknown: 'Thuế: chưa xác định – bạn chưa khai báo loại người bán (cá nhân / hộ kinh doanh / doanh nghiệp).', complete: 'Hoàn tất hồ sơ thuế', perOrder: 'theo từng đơn', DIGITAL: 'Sản phẩm số/dịch vụ', GOODS: 'Hàng hóa vật lý', none: '(hộ kinh doanh/doanh nghiệp tự kê khai)' },
+    en: { unknown: 'Tax: not determined – you have not declared your seller type (individual / household business / company).', complete: 'Complete tax profile', perOrder: 'per order', DIGITAL: 'Digital/services', GOODS: 'Physical goods', none: '(household business/company self-declares)' },
+    zh: { unknown: '税：未确定——您尚未声明卖家类型（个人 / 个体工商户 / 企业）。', complete: '完善税务资料', perOrder: '按订单', DIGITAL: '数字产品/服务', GOODS: '实物商品', none: '（个体户/企业自行申报）' },
+  };
+  wl(k: string): string {
+    const t = SellWithdrawComponent.WL[this.i18n.lang()] || SellWithdrawComponent.WL['en'];
+    return t[k] ?? k;
+  }
   readonly personas = signal<PayoutPersona[]>([]);
   readonly persona = signal<PayoutPersona | ''>('');
   readonly quote = signal<PayoutQuote | null>(null);

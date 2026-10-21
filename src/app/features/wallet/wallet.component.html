@@ -6,7 +6,7 @@
     </div>
     <div class="wallet-hero__bal">
       <p class="label">{{ 'wallet.available' | t }}</p>
-      <p class="amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.0-0' }}</p>
+      <p class="amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.2-2' }}</p>
       @if (currency() === 'USD' && fx.currency() !== 'USD') {
         <p class="label">≈ {{ fx.formatFromUsd(balance()) }}</p>
       }
@@ -25,7 +25,7 @@
     @if (tab() === 'deposit') {
       <div class="tab-body">
         <h2>{{ 'wallet.deposit.title' | t }}</h2>
-        <div class="methods">
+        <div class="methods" [hidden]="!paypalVisible">
           @if (paypalVisible) {
             <button
               type="button"
@@ -40,17 +40,17 @@
               </div>
             </button>
           }
-          @if (gpayAvailable() || !paypalVisible) {
+          @if (paypalVisible) {
             <button
               type="button"
               class="method method--gpay"
               [class.selected]="depositMethod() === 'gpay'"
               (click)="setDepositMethod('gpay')"
             >
-              <span class="method__icon method__icon--gpay" aria-hidden="true">G</span>
+              <span class="method__icon method__icon--gpay" aria-hidden="true">QR</span>
               <div>
-                <strong>{{ 'wallet.gpay.name' | t }}</strong>
-                <p>{{ 'wallet.gpay.desc' | t }}</p>
+                <strong>{{ topupLabels().vietqr }}</strong>
+                <p>{{ topupLabels().vietqrDesc }}</p>
               </div>
             </button>
           }
@@ -86,63 +86,38 @@
             }
           </div>
         } @else {
-          <p class="hint">{{ 'wallet.gpay.hint' | t }}</p>
-
-          @if (!gpayEnabled()) {
-            <p class="offline">{{ 'wallet.gpay.offline' | t }}</p>
-          } @else if (gpayQr()) {
-            <div class="gpay-box">
-              <div class="gpay-box__info">
-                <p class="gpay-box__bank">
-                  {{ 'wallet.gpay.qrTitle' | t: { amount: gpayQr()!.order.amountVnd.toLocaleString('vi-VN') } }}
-                </p>
-                @if (gpayQr()!.accountNumber) {
-                  <p class="gpay-box__label">{{ gpayQr()!.provider }} · {{ gpayQr()!.accountName }}</p>
-                  <code class="gpay-box__num">{{ gpayQr()!.accountNumber }}</code>
-                }
-                <p class="gpay-box__bal">{{ 'wallet.gpay.qrWaiting' | t }}</p>
-                <button type="button" class="gpay-box__copy" (click)="closeGpayQr()">
-                  {{ 'wallet.gpay.qrClose' | t }}
-                </button>
-              </div>
-              @if (gpayQrSrc()) {
-                <img class="gpay-box__qr" [src]="gpayQrSrc()" [alt]="'wallet.gpay.qrAlt' | t" />
-              }
+          @if (gpayVisible) {
+            <div class="topup-switch" role="tablist">
+              <button type="button" role="tab" [class.on]="topupMethod() === 'vietqr'" [attr.aria-selected]="topupMethod() === 'vietqr'" (click)="setTopupMethod('vietqr')">
+                <span class="topup-switch__icon topup-switch__icon--qr" aria-hidden="true">QR</span>
+                <span class="topup-switch__txt"><strong>{{ topupLabels().vietqr }}</strong><small>{{ topupLabels().vietqrDesc }}</small></span>
+              </button>
+              <button type="button" role="tab" [class.on]="topupMethod() === 'gpay'" [attr.aria-selected]="topupMethod() === 'gpay'" (click)="setTopupMethod('gpay')">
+                <span class="topup-switch__icon topup-switch__icon--gpay" aria-hidden="true">G</span>
+                <span class="topup-switch__txt"><strong>{{ topupLabels().gpay }}</strong><small>{{ topupLabels().gpayDesc }}</small></span>
+              </button>
             </div>
+          }
+          @if (gpayVisible && topupMethod() === 'gpay') {
+            <app-gpay-topup
+              [enabled]="gpayEnabled()"
+              [portalEnabled]="gpayPortalEnabled()"
+              [qrEnabled]="gpayQrEnabled()"
+              [busy]="gpayBusy()"
+              [polling]="gpayPolling()"
+              [qr]="gpayQr()"
+              [qrSrc]="gpayQrSrc()"
+              [quickAmounts]="gpayQuickAmounts()"
+              [vndPerUsd]="gpayVndPerUsd()"
+              [minVnd]="gpayMinTopupVnd()"
+              [amountVnd]="depositVnd"
+              (amountVndChange)="onTopupVnd($event)"
+              (checkout)="gpayCheckout()"
+              (createQr)="gpayCreateQr()"
+              (closeQr)="closeGpayQr()"
+            />
           } @else {
-            <div class="amount-row">
-              <label>
-                <span>{{ 'wallet.gpay.amount' | t }}</span>
-                <input type="number" min="1" [(ngModel)]="depositVnd" name="depositVnd" />
-              </label>
-              <div class="quick">
-                <span>{{ 'wallet.deposit.quick' | t }}</span>
-                <div class="quick__btns">
-                  @for (q of gpayQuickAmounts(); track q) {
-                    <button type="button" [class.active]="depositVnd === q" (click)="pickGpayAmount(q)">
-                      {{ q.toLocaleString('vi-VN') }}₫
-                    </button>
-                  }
-                </div>
-              </div>
-            </div>
-            <p class="note">{{ 'wallet.gpay.estimate' | t: { usd: gpayEstimateUsd() } }}</p>
-
-            <div class="actions">
-              @if (gpayPortalEnabled()) {
-                <button type="button" class="btn-dark" [disabled]="gpayBusy() || gpayPolling()" (click)="gpayCheckout()">
-                  {{ 'wallet.gpay.portalBtn' | t }}
-                </button>
-              }
-              @if (gpayQrEnabled()) {
-                <button type="button" class="btn-outline" [disabled]="gpayBusy() || gpayPolling()" (click)="gpayCreateQr()">
-                  {{ 'wallet.gpay.qrBtn' | t }}
-                </button>
-              }
-              @if (gpayPortalEnabled()) {
-                <p class="hint">{{ 'wallet.gpay.portalHint' | t }}</p>
-              }
-            </div>
+            <app-bank-topup [initialVnd]="topupVnd" (vndChange)="onTopupVnd($event)" />
           }
         }
 
@@ -276,7 +251,7 @@
             {{ 'wallet.mini.label' | t: { currency: currency() } }}
             <em>{{ 'wallet.mini.available' | t }}</em>
           </p>
-          <p class="mini-card__amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.0-0' }}</p>
+          <p class="mini-card__amount">{{ balance() | currency: currency(): 'symbol-narrow': '1.2-2' }}</p>
         </div>
       </div>
       <div class="mini-card__actions">

@@ -170,3 +170,10 @@
   gap: 0.5rem;
   margin-top: 0.75rem;
 }
+
+.complaint-thread { list-style: none; padding: 0; margin: 0.75rem 0; display: grid; gap: 0.6rem; }
+.complaint-thread__msg { border: 1px solid var(--line, rgba(0,0,0,.12)); border-radius: 8px; padding: 0.6rem 0.8rem; }
+.complaint-thread__msg.is-me { background: rgba(201, 162, 39, 0.08); }
+.complaint-thread__body { white-space: pre-wrap; margin: 0.25rem 0; }
+.complaint-thread__pending { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.85rem; }
+.complaint-thread__actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }

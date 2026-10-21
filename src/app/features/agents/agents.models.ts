@@ -69,6 +69,32 @@ export interface AgentSubscriptionStatus {
   retentionDays: number;
   fee: AgentFee;
   charged?: boolean;
+  /** Same Launch click replayed: no second charge. */
+  duplicate?: boolean;
+  walletTxId?: string | null;
+  chargedAmount?: number;
+  chargedVnd?: number;
+  chargedCurrency?: string;
+  chargedAt?: string | null;
+}
+
+/** What a Launch did to the wallet (shown in the launch notice). */
+export interface AgentRentalReceipt {
+  charged: boolean;
+  duplicate?: boolean;
+  walletTxId?: string | null;
+  chargedVnd: number;
+  periodDays: number;
+  paidUntil: string | null;
+  autoRenew: boolean;
+}
+
+export interface AgentRentalRefund {
+  refunded: boolean;
+  alreadyRefunded?: boolean;
+  feeVnd?: number;
+  /** Refund request itself failed — support must reverse the charge. */
+  failed?: boolean;
 }
 
 export const AGENT_SUBSCRIPTION_REQUIRED = 'AGENT_SUBSCRIPTION_REQUIRED';
@@ -86,6 +112,10 @@ export interface OpenClawLaunchResult {
   autoLogin?: boolean;
   audience?: string;
   userId?: string;
+  /** Set when this Launch rented the agent (wallet charge). */
+  rental?: AgentRentalReceipt;
+  /** Set when provisioning failed after a charge and the rental was refunded. */
+  refund?: AgentRentalRefund;
 }
 
 export interface OpenClawSshAccess {
@@ -109,6 +139,41 @@ export interface OpenClawSshAccess {
   note?: string;
   howTo?: string[];
   message?: string;
+  /** Machine-readable error, e.g. `ssh_not_isolated` when SSH is disabled server-side. */
+  code?: string;
   active?: boolean;
   session?: OpenClawSshAccess | null;
+}
+
+/** One copyable command on the setup page; `scope` is `<runtime>:<userId>:<action>`. */
+export interface AgentConnectCommand {
+  id: string;
+  title: string;
+  description: string;
+  command: string | null;
+  /** Single-line variants per shell (Windows cmd.exe, PowerShell, macOS/Linux). */
+  variants?: { cmd: string; powershell: string; posix: string };
+  /** Literal token in the command to replace with the pairing request id. */
+  placeholder?: string;
+  scope: string;
+  expiresAt: string | null;
+}
+
+export type TerminalShell = 'cmd' | 'powershell' | 'posix';
+
+export interface PendingPairing {
+  requestId: string;
+  deviceId?: string;
+  scopes?: string[];
+  approvable: boolean;
+  reason?: string;
+}
+
+export interface AgentConnectCommands {
+  success: boolean;
+  runtime?: string;
+  userId?: string;
+  features?: { label: string; pairing: boolean; ssh: boolean; sso: boolean };
+  commands: AgentConnectCommand[];
+  message?: string;
 }

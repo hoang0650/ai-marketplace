@@ -28,7 +28,7 @@ Chính sách được xây dựng theo Luật Bảo vệ dữ liệu cá nhân s
 | Kỹ thuật, bảo mật | Địa chỉ IP, thời điểm đăng nhập, nhật ký hoạt động tài khoản, nhật ký máy chủ và lỗi | Hệ thống |
 | Nội dung gửi tới AI | Văn bản, tệp, hình ảnh người dùng gửi vào API, agent, AI App Builder | Người dùng |
 
-Nền tảng không lưu thông tin thẻ thanh toán; dữ liệu thẻ do cổng thanh toán, Apple, Google xử lý. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm: lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập và hiển thị dạng che một phần.
+Nền tảng không lưu thông tin thẻ thanh toán; dữ liệu thanh toán trong ứng dụng do Apple, Google xử lý; khoản chuyển khoản do ngân hàng xử lý. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm: lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập và hiển thị dạng che một phần.
 
 ## Điều 3. Mục đích xử lý
 
@@ -41,7 +41,8 @@ Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; x
 
 ## Điều 5. Nội dung gửi tới AI
 
-1. Nền tảng **không** dùng nội dung người dùng gửi vào API, agent để huấn luyện mô hình.
+1. Nền tảng **không** dùng nội dung người dùng gửi vào API, agent để huấn luyện mô hình. Việc huấn luyện, tinh chỉnh chỉ dùng dữ liệu do chính người dùng tải lên hoặc dataset, giọng đọc đã được cấp giấy phép cho phép mục đích huấn luyện.
+4. Tệp, hình ảnh gửi trong tin nhắn và không gian dự án được lưu trữ riêng tư, chỉ người tham gia hội thoại/dự án và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn.
 2. Để trả kết quả, nội dung được chuyển tới nhà cung cấp mô hình AI tương ứng (có thể ở nước ngoài) và xử lý theo điều khoản của nhà cung cấp đó. Khi dùng BYOK, nội dung đi trực tiếp tới nhà cung cấp theo tài khoản của người dùng.
 3. Người dùng chỉ đưa dữ liệu cá nhân của người khác vào AI khi có cơ sở pháp lý phù hợp.
 
@@ -49,7 +50,7 @@ Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; x
 
 Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
 - **Người bán:** thông tin cần để thực hiện đơn hàng với người mua;
-- **Đối tác thanh toán:** GPay, Apple, Google;
+- **Đối tác thanh toán:** ngân hàng nơi Công ty mở Tài khoản thanh toán, Apple, Google;
 - **Nhà cung cấp hạ tầng:** máy chủ, lưu trữ, GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
 - **Cơ quan nhà nước có thẩm quyền:** khi có yêu cầu theo quy định pháp luật.
 

@@ -1,3 +1,4 @@
+import { WalletBalanceService } from '../../services/wallet-balance.service';
 import { Component, DestroyRef, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,11 @@ import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
   GpuOffer,
+  GpuPromo,
+  SharedGpuOffer,
   GpuRentalService,
+  LicensedDataset,
+  LicensedVoice,
   TrainingDataset,
   TrainingFile,
   TrainingJob,
@@ -69,7 +74,10 @@ interface UploadRow {
       <header class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 class="font-display text-3xl">{{ 'train.title' | t }}</h1>
-          <p class="mt-1 max-w-2xl text-sm text-muted">{{ 'train.subtitle' | t }}</p>
+          <p class="mt-1 max-w-2xl text-sm text-muted">{{ (promo()?.active ? 'train.subtitlePromo' : 'train.subtitle') | t }}</p>
+          @if (promo()?.active) {
+            <p class="mt-2 inline-block rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-500" data-testid="gpu-promo-top">🎁 {{ 'gpu.promo.title' | t }}</p>
+          }
         </div>
         <div class="rounded-xl border border-line px-4 py-3 text-right">
           <p class="text-xs text-muted">{{ 'gpu.rent.balance' | t }}</p>
@@ -124,6 +132,40 @@ interface UploadRow {
               <p class="text-sm text-muted">{{ 'train.noDatasets' | t }}</p>
             }
           </div>
+
+          @if (licensed().datasets.length || (source() === 'audio' && licensed().voices.length)) {
+            <div class="space-y-2 rounded-xl border border-dashed border-line p-3">
+              <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ 'train.owned.title' | t }}</p>
+              @for (l of licensed().datasets; track l.productId) {
+                <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                  <div class="min-w-0">
+                    <a class="font-semibold hover:underline" [routerLink]="['/product', l.slug]">{{ l.name }}</a>
+                    <span class="block text-xs text-muted">
+                      {{ l.fileCount }} {{ 'train.files' | t }} · {{ bytes(l.totalBytes) }} · {{ 'train.owned.expires' | t: { d: ((l.expiresAt | date: 'dd/MM/yyyy') || '') } }}
+                    </span>
+                  </div>
+                  @if (l.importedDatasetId) {
+                    <button type="button" class="btn btn-outline text-xs" (click)="openImported(l.importedDatasetId)">{{ 'train.owned.open' | t }}</button>
+                  } @else if (!l.fileCount) {
+                    <span class="text-xs text-muted">{{ 'train.owned.noFiles' | t }}</span>
+                  } @else {
+                    <button type="button" class="btn btn-fill text-xs" [disabled]="busy()" (click)="useLicensed(l.productId)">{{ 'train.owned.use' | t }}</button>
+                  }
+                </div>
+              }
+              @if (source() === 'audio') {
+                @for (v of licensed().voices; track v.productId) {
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                    <div class="min-w-0">
+                      <span class="font-semibold">🎙️ {{ v.name }}</span>
+                      <span class="block text-xs text-muted">{{ ('cat.' + v.category + '.label') | t }} · {{ 'train.owned.expires' | t: { d: ((v.expiresAt | date: 'dd/MM/yyyy') || '') } }}</span>
+                    </div>
+                    <a class="btn btn-outline text-xs" [routerLink]="['/product', v.slug]">{{ 'train.owned.useVoice' | t }}</a>
+                  </div>
+                }
+              }
+            </div>
+          }
 
           <form class="grid gap-2 sm:grid-cols-[1fr_auto]" (ngSubmit)="createDataset()">
             <input class="input" name="newName" [(ngModel)]="newName" maxlength="80" [placeholder]="'train.newDatasetPh.' + source() | t" />
@@ -328,9 +370,18 @@ interface UploadRow {
             </div>
           }
 
+          @if (promo()?.active) {
+            <p class="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-500" data-testid="gpu-promo">
+              🎁 {{ 'gpu.promo.title' | t }}
+              <span class="block text-xs opacity-80">{{ 'gpu.promo.train' | t: { minutes: sharedMax() } }}</span>
+            </p>
+          }
           <label class="block text-sm">
             <span class="text-muted">{{ 'train.gpu' | t }}</span>
-            <select class="input mt-1 w-full" name="offer" [(ngModel)]="offerId">
+            <select class="input mt-1 w-full" name="offer" [(ngModel)]="offerId" data-testid="train-gpu">
+              @if (shared(); as sh) {
+                <option [value]="sh.id">{{ sh.name }} · {{ sh.memoryGb }} GB · {{ sh.promo.active ? ('gpu.promo.title' | t) : money(sh.pricePerHour) + '/' + ('gpu.rent.hour' | t) }}</option>
+              }
               @for (o of offers(); track o.id) {
                 <option [value]="o.id">{{ o.name }} · {{ o.memoryGb }} GB · {{ money(o.pricePerHour) }}/{{ 'gpu.rent.hour' | t }}</option>
               }
@@ -345,7 +396,11 @@ interface UploadRow {
           @if (readiness(); as msg) {
             <p class="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-400">{{ msg }}</p>
           }
-          <p class="text-xs text-muted">{{ 'train.billingNote' | t: { hours: minPrepayHours() } }}</p>
+          @if (isShared()) {
+            <p class="text-xs text-muted">{{ (promo()?.active ? 'gpu.shared.noteFree' : 'gpu.shared.notePaid') | t: { minutes: sharedMax() } }}</p>
+          } @else {
+            <p class="text-xs text-muted">{{ 'train.billingNote' | t: { hours: minPrepayHours() } }}</p>
+          }
           <button class="btn btn-fill w-full" type="submit" [disabled]="starting() || !!readiness() || !offerId">
             {{ starting() ? ('train.starting' | t) : ('train.startBtn' | t) }}
           </button>
@@ -367,7 +422,7 @@ interface UploadRow {
                   <p class="mt-1 text-xs text-muted">
                     {{ j.gpuType }} · {{ j.createdAt | date: 'short' }}
                     @if (j.pricePerHour != null) { · {{ money(j.pricePerHour) }}/{{ 'gpu.rent.hour' | t }} }
-                    · {{ 'gpu.rent.spent' | t }} {{ money(j.cost || 0) }}
+                    @if (j.freePromo) { · <span class="text-emerald-500">{{ 'gpu.promo.title' | t }}</span> } @else { · {{ 'gpu.rent.spent' | t }} {{ money(j.cost || 0) }} }
                   </p>
                   <p class="mt-2 text-sm">
                     <span class="rounded-full px-2 py-0.5 text-xs" [class]="statusClass(j)">{{ 'train.status.' + j.status | t }}</span>
@@ -433,8 +488,14 @@ export class TrainingStudioComponent implements OnInit {
   readonly uploads = signal<UploadRow[]>([]);
   readonly jobs = signal<TrainingJob[]>([]);
   readonly offers = signal<GpuOffer[]>([]);
-  readonly available = signal(0);
+  /** Same source as /wallet and the header: /wallet/summary.available (works even when GPU offers fail). */
+  private readonly walletBalance = inject(WalletBalanceService);
+  readonly available = this.walletBalance.available;
   readonly minPrepayHours = signal(1);
+  readonly shared = signal<SharedGpuOffer | null>(null);
+  readonly promo = signal<GpuPromo | null>(null);
+  readonly sharedMax = signal(30);
+  isShared(): boolean { return !!this.shared() && this.offerId === this.shared()!.id; }
   readonly taskSel = signal<TrainingTask>('action-recognition');
   readonly tasks = computed(() => TASKS[this.source()]);
   readonly accept = computed(() => ACCEPT[this.source()]);
@@ -481,15 +542,20 @@ export class TrainingStudioComponent implements OnInit {
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('train.title') });
     if (!this.browser) return;
+    this.walletBalance.refresh();
     this.loadDatasets();
+    this.loadLicensed();
     this.loadJobs();
-    this.gpu.offers().subscribe({
+    this.api.gpuOptions().subscribe({
       next: (r) => {
         const offers = [...(r.offers || [])].sort((a, b) => a.pricePerHour - b.pricePerHour);
         this.offers.set(offers);
-        this.offerId = offers.find((o) => o.availability !== 'unknown')?.id || offers[0]?.id || '';
-        this.available.set(r.wallet?.available ?? 0);
+        this.shared.set(r.shared);
+        this.promo.set(r.promo);
+        this.sharedMax.set(r.limits?.maxMinutes ?? 30);
+        this.offerId = r.shared?.id || offers.find((o) => o.availability !== 'unknown')?.id || offers[0]?.id || '';
         this.minPrepayHours.set(r.limits?.minPrepayHours ?? 1);
+        if (!r.shared && !offers.length && r.offersError) this.error.set(this.i18n.t('gpu.err.' + r.offersError));
       },
       error: (e) => this.fail(e),
     });
@@ -535,12 +601,44 @@ export class TrainingStudioComponent implements OnInit {
     this.loadDatasets();
   }
 
+  readonly licensed = signal<{ datasets: LicensedDataset[]; voices: LicensedVoice[] }>({ datasets: [], voices: [] });
+
+  loadLicensed(): void {
+    this.api.licensed().subscribe({ next: (r) => this.licensed.set({ datasets: r.datasets || [], voices: r.voices || [] }), error: () => undefined });
+  }
+
+  /** Copy a licensed marketplace dataset into the user's training storage (once), then select it. */
+  useLicensed(productId: string): void {
+    this.busy.set(true);
+    this.api.importLicensed(productId).subscribe({
+      next: (r) => {
+        this.busy.set(false);
+        this.loadLicensed();
+        this.openImported(r.dataset.id, r.dataset.source);
+      },
+      error: (e) => {
+        this.busy.set(false);
+        this.fail(e);
+      },
+    });
+  }
+
+  openImported(id: string, source?: TrainingSource): void {
+    this.pendingSelect = id;
+    if (source && source !== this.source()) this.switchSource(source);
+    else this.loadDatasets();
+  }
+  private pendingSelect = '';
+
   loadDatasets(): void {
     this.api.listDatasets(this.source()).subscribe({
       next: (r) => {
         this.datasets.set(r.datasets || []);
         this.limits.set(r.limits);
-        if (!this.selected() && r.datasets?.length) this.selectedId.set(r.datasets[0].id);
+        if (this.pendingSelect && r.datasets?.some((d) => d.id === this.pendingSelect)) {
+          this.selectedId.set(this.pendingSelect);
+          this.pendingSelect = '';
+        } else if (!this.selected() && r.datasets?.length) this.selectedId.set(r.datasets[0].id);
       },
       error: (e) => this.fail(e),
     });

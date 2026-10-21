@@ -142,6 +142,8 @@ export interface UserProfileExtras {
 export interface UserPreferences {
   personalizeContent: boolean;
   personalizeAds: boolean;
+  /** Email a notice on each new sign-in. */
+  emailLoginAlerts?: boolean;
 }
 
 export interface AccountActivityItem {
@@ -313,6 +315,8 @@ export interface ProductContentMeta {
   creditUnit?: 'character' | 'word' | '';
   charactersPerCredit?: number;
   episodeCount?: number;
+  synopsis?: string;
+  genres?: string[];
   licenseTerm?: 'day' | 'month' | 'year' | '';
   licensePrices?: { day?: number; month?: number; year?: number };
 }
@@ -345,6 +349,37 @@ export interface ContentEpisode {
   previewUrl: string;
   published: boolean;
   pageCount?: number;
+  free?: boolean;
+  synopsis?: string;
+  posterUrl?: string;
+}
+
+export interface ReaderBookmark {
+  id: string;
+  episodeId: string;
+  fraction: number;
+  page: number;
+  kind: 'bookmark' | 'highlight';
+  quote: string;
+  note: string;
+  color: string;
+  createdAt: string;
+}
+
+export interface SeriesInfo {
+  bookmarks?: ReaderBookmark[];
+  productId: string;
+  slug: string;
+  title: string;
+  synopsis: string;
+  genres: string[];
+  episodeCount: number;
+  likes: number;
+  saves: number;
+  liked: boolean;
+  saved: boolean;
+  progress: { episodeId: string; positionSec: number; fraction?: number; page?: number; updatedAt?: string } | null;
+  episodes: ContentEpisode[];
 }
 
 export interface ContentUnlock {
@@ -398,6 +433,22 @@ export interface ProductStreaming {
   rentalOfferId?: string;
 }
 
+export type ProductKind = 'DIGITAL' | 'PHYSICAL';
+
+export interface ProductKindRate {
+  vat: number;
+  pit: number;
+  total: number;
+  withheldByPlatform: boolean;
+}
+
+export interface ProductKindRates {
+  sellerType: string;
+  sellerTypeDeclared: boolean;
+  rates: Record<ProductKind, ProductKindRate>;
+  policyVersion?: string;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -406,6 +457,9 @@ export interface Product {
   description: string;
   category: ProductCategory;
   productType?: string;
+  /** Seller declaration: digital product/service vs physical goods (drives withheld tax). */
+  productKind?: ProductKind;
+  productKindDefaultedAt?: string | null;
   /** Infra provider only (runpod/openrouter/…). Not the marketplace seller. */
   provider?: string;
   infraProvider?: string;
@@ -560,7 +614,17 @@ export interface ComplaintEvent {
   note: string;
 }
 
+export interface ComplaintMessage {
+  id: string;
+  authorId: string;
+  role: 'complainant' | 'seller' | 'admin';
+  body: string;
+  attachments: import('../shared/attachments/attachments').FileAttachment[];
+  at: string | null;
+}
+
 export interface Complaint {
+  messages?: ComplaintMessage[];
   id: string;
   caseRef: string;
   complainantId: string;
@@ -619,9 +683,10 @@ export interface ChatMessage {
   id: string;
   conversationId: string;
   senderId: string;
-  kind: 'text' | 'image';
+  kind: 'text' | 'image' | 'file';
   body: string;
   imageUrl: string;
+  attachments?: import('../shared/attachments/attachments').FileAttachment[];
   createdAt: string;
 }
 
@@ -689,8 +754,13 @@ export interface PayoutPolicy {
   persona: PayoutPersona;
   canWithdraw: boolean;
   platformFeeRate: number;
-  taxRate: number;
-  totalFeeRate: number;
+  /** null when the tax depends on the order (mixed product kinds) or the seller type is undeclared. */
+  taxRate: number | null;
+  totalFeeRate: number | null;
+  /** single | per_order | none | unknown | override (seller personas only). */
+  taxMode?: 'single' | 'per_order' | 'none' | 'unknown' | 'override';
+  taxBreakdown?: Array<{ kind: 'DIGITAL' | 'GOODS' | 'ALL'; rate: number; totalFeeRate: number }>;
+  taxProfileIncomplete?: boolean;
   chargeAtWithdraw: boolean;
   minAmount: number;
   minAmountCurrency: string;

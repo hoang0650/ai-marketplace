@@ -9,6 +9,12 @@ export const environment = {
   /** OpenAI-compatible AI gateway v1 */
   aiV1Url: 'https://ai.aimarkets.vn/v1',
   useMockApi: false,
+  /**
+   * Temporary feature flag: GPay top-up UI is hidden while false (default).
+   * The API also rejects new GPay payments unless GPAY_ENABLED=true on the server.
+   * Flip to true (and set GPAY_ENABLED=true on the API) to bring GPay back.
+   */
+  gpayEnabled: false,
   /** Public Web OAuth client ID — must match GOOGLE_CLIENT_ID on api.aimarkets.vn */
   googleClientId: '',
   brandName: 'AI Markets',

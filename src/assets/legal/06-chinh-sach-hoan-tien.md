@@ -34,7 +34,7 @@ Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử d�
 | API, token (theo mức sử dụng) | Phần đã sử dụng không được hoàn, trừ trường hợp tính sai hoặc lỗi dịch vụ được xác minh. |
 | Thuê GPU, máy chủ trò chơi (theo phút) | Phút đã sử dụng không được hoàn, trừ thời gian máy không hoạt động do lỗi của nền tảng hoặc tính sai được xác minh. |
 | Thuê bao AI agent (199.000 VNĐ/30 ngày hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị) | Phí của chu kỳ đang hiệu lực không hoàn theo tỷ lệ khi người mua tự ngừng sử dụng; tắt tự động gia hạn để không bị trừ phí chu kỳ sau. Được hoàn khi agent không khả dụng do lỗi của nền tảng hoặc bị trừ phí sai. Phí token đã phát sinh không hoàn, trừ trường hợp tính sai. |
-| Dịch vụ chuyên môn trọn gói | Hoàn khi người bán không bàn giao kết quả hoặc kết quả không đúng mô tả đã công bố và không khắc phục được trong thời hạn giải quyết khiếu nại. |
+| Dịch vụ chuyên môn trọn gói | Chỉ giai đoạn đã nghiệm thu bị thu tiền; giai đoạn chưa nghiệm thu bị hủy khi chấm dứt và không thu. Hoàn khi người bán không bàn giao kết quả hoặc kết quả không đúng mô tả đã công bố và không khắc phục được trong thời hạn giải quyết khiếu nại. |
 | Khoản nạp ví qua Apple In-App Purchase / Google Play Billing | Một số yêu cầu hoàn tiền phải gửi qua Apple/Google theo chính sách của họ. Khi kho ứng dụng hoàn tiền, số dư ví hoặc quyền lợi tương ứng bị thu hồi. |
 
 ## Điều 4. Thời hạn yêu cầu

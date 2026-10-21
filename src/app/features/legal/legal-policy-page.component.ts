@@ -79,7 +79,7 @@ export class LegalPolicyPageComponent implements OnInit {
     if (!this.meta) return;
     this.seo.set({
       title: `${this.policyTitle(this.meta)} | AI Markets`,
-      description: this.policySummary(this.meta),
+      description: this.i18n.t('legal.doc.seoDesc', { title: this.policyTitle(this.meta) }),
     });
   }
 

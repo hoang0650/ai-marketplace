@@ -1,55 +1,73 @@
-<section class="chat-page chat-page--thread page route-enter">
-  <div class="chat-thread__head">
-    <a class="chat-thread__back" [routerLink]="backLink()">{{ 'chat.back' | t }}</a>
-    @if (convo(); as c) {
-      <a class="chat-thread__product" [routerLink]="['/product', c.productSlug]">
-        @if (c.productCover) {
-          <img [src]="c.productCover" [alt]="c.productName" />
-        }
-        <div>
-          <strong>{{ c.productName }}</strong>
-          <span>{{ c.otherName }} · {{ (c.role === 'seller' ? 'chat.role.buyer' : 'chat.role.seller') | t }}</span>
+<section class="chat-shell chat-shell--thread route-enter">
+  <aside class="chat-shell__list"><app-chat-list [activeId]="id()" /></aside>
+  <div class="chat-shell__pane chat-thread">
+    <header class="chat-thread__head">
+      <a class="chat-thread__back" [routerLink]="backLink()" [attr.aria-label]="'chat.back' | t">←</a>
+      @if (convo(); as c) {
+        <span class="chat-thread__avatar" [style.background]="color(c.otherName)">{{ initials(c.otherName) }}</span>
+        <div class="chat-thread__who">
+          <strong>{{ c.otherName }}</strong>
+          <span>{{ (c.role === 'seller' ? 'chat.role.buyer' : 'chat.role.seller') | t }}</span>
         </div>
-      </a>
-    }
-  </div>
-
-  @if (error()) {
-    <p class="chat-error">{{ error() }}</p>
-  }
-
-  <div class="chat-msgs" #scroller>
-    @for (m of messages(); track m.id) {
-      <div class="chat-bubble" [class.chat-bubble--mine]="isMine(m)">
-        @if (m.kind === 'image' && m.imageUrl) {
-          <img [src]="m.imageUrl" alt="" />
+        @if (c.productSlug) {
+          <a class="chat-product" [routerLink]="['/product', c.productSlug]">
+            @if (c.productCover) { <img [src]="c.productCover" [alt]="c.productName" /> }
+            <span>
+              <strong>{{ c.productName }}</strong>
+              <em>{{ 'chat.viewProduct' | t }} →</em>
+            </span>
+          </a>
         }
-        @if (m.body) {
-          <p>{{ m.body }}</p>
+      }
+    </header>
+
+    @if (error()) { <p class="chat-error">{{ error() }}</p> }
+
+    <div class="chat-msgs" #scroller>
+      @for (r of rows(); track r.m.id) {
+        @if (r.sep) { <div class="chat-sep"><span>{{ r.sep }}</span></div> }
+        <div class="chat-bubble" [class.chat-bubble--mine]="r.mine" [class.chat-bubble--first]="r.first" [class.chat-bubble--last]="r.last">
+          @if (r.m.kind === 'image' && r.m.imageUrl) {
+            <a [href]="r.m.imageUrl" target="_blank" rel="noopener"><img [src]="r.m.imageUrl" alt="" /></a>
+          }
+          @if (r.m.attachments?.length) { <app-attachments [items]="r.m.attachments" /> }
+          @if (r.m.body) { <p>{{ r.m.body }}</p> }
+          @if (r.last) { <time>{{ r.m.createdAt | date: 'HH:mm' }}</time> }
+        </div>
+      } @empty {
+        <p class="chat-empty__sub chat-msgs__empty">{{ 'chat.lede' | t }}</p>
+      }
+    </div>
+
+    @if (pending().length || uploading()) {
+      <div class="chat-pending">
+        @for (a of pending(); track a.id) {
+          <span class="chat-pending__chip">
+            @if (a.kind === 'image') { <img [src]="a.url" alt="" /> } @else { <b>{{ a.name.split('.').pop() }}</b> }
+            <span>{{ a.name }} · {{ size(a.size) }}</span>
+            <button type="button" (click)="removePending(a.id)" [attr.aria-label]="'attach.remove' | t">×</button>
+          </span>
         }
-        <time>{{ m.createdAt | date: 'short' }}</time>
+        @if (uploading()) { <span class="chat-pending__chip chat-pending__chip--busy">{{ 'attach.uploading' | t }}</span> }
       </div>
     }
-  </div>
-
-  <form class="chat-compose" (submit)="send($event)">
-    <p class="chat-hint">{{ 'chat.lede' | t }}</p>
-    <div class="chat-compose__row">
-      <input #file type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onFile($event)" />
-      <button type="button" class="chat-compose__attach" (click)="file.click()" [disabled]="busy()">
-        {{ 'chat.attach' | t }}
+    <form class="chat-compose" (submit)="send($event)">
+      <input #file type="file" [accept]="accept" multiple hidden (change)="onFile($event)" />
+      <button type="button" class="chat-compose__icon" (click)="file.click()" [disabled]="busy()" [attr.aria-label]="'chat.attach' | t" [title]="'chat.attach' | t">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M16.5 6.5v9a4.5 4.5 0 0 1-9 0V6a3 3 0 0 1 6 0v8.5a1.5 1.5 0 0 1-3 0V7H9v7.5a3 3 0 0 0 6 0V6a4.5 4.5 0 0 0-9 0v9.5a6 6 0 0 0 12 0v-9h-1.5Z"/></svg>
       </button>
       <textarea
         [(ngModel)]="draft"
         name="draft"
-        rows="2"
+        rows="1"
         maxlength="2000"
         [placeholder]="'chat.placeholder' | t"
         (keydown.enter)="onEnter($event)"
       ></textarea>
-      <button type="submit" class="chat-compose__send" [disabled]="busy() || !canSend()">
-        {{ 'chat.send' | t }}
+      <button type="submit" class="chat-compose__send" [disabled]="busy() || !canSend()" [attr.aria-label]="'chat.send' | t">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg>
       </button>
-    </div>
-  </form>
+    </form>
+    <p class="chat-hint">{{ 'chat.enterHint' | t }}</p>
+  </div>
 </section>

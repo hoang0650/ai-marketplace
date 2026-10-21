@@ -99,12 +99,6 @@ const EXTRA_HOME_TILES: Array<{
     accent: 'rgba(100,220,160,0.12)',
   },
   {
-    id: 'api-endpoint',
-    hubPath: '/api-endpoint',
-    bg: 'linear-gradient(145deg, #121e28 0%, #1e3a52 55%, #162430 100%)',
-    accent: 'rgba(80,180,255,0.12)',
-  },
-  {
     id: 'hire-agent',
     hubPath: '/hire-agent',
     bg: 'linear-gradient(145deg, #222018 0%, #3d3820 55%, #2a2818 100%)',
@@ -229,7 +223,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   readonly newArrivals = signal<Product[]>([]);
   readonly promoted = signal<Product[]>([]);
   readonly bestsellers = signal<Product[]>([]);
-  readonly quickTags = ['inference', 'api-endpoint', 'text-to-image', 'gpu'];
+  readonly quickTags = ['inference', 'text-to-image', 'gpu'];
   readonly shopCoverFallback = 'linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%)';
   readonly brokenAvatars = signal<ReadonlySet<string>>(new Set());
   readonly heroIndex = signal(0);

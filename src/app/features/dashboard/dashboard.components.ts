@@ -17,6 +17,8 @@ import {
   IssuedLicense,
   ContentEpisode,
   CategoryMeta,
+  ProductKind,
+  ProductKindRates,
 } from '../../models/marketplace.models';
 import { AI_CATEGORIES, CATEGORY_META, categoryLabel, isHiddenCategory, isHireRequestCategory, isLicenseCategory, isVoiceCloneCategory, isVoiceCategory, isWatchContentCategory, isComputeStreamCategory, sellerWorkspaceKind, needsEndpointDeploy, isTemplateCategory, templateKind } from '../../models/categories';
 import { BuilderService, TemplateBuild } from '../builder/builder.service';
@@ -27,6 +29,8 @@ import {
   runtimeFromRunpodPublicEndpoint,
 } from '../../models/runpod-public-endpoints';
 import { TPipe } from '../../i18n/t.pipe';
+import { I18nService } from '../../i18n/i18n.service';
+import { PRODUCT_KIND_MESSAGES } from '../../i18n/extra/product-kind.messages';
 
 @Component({
   selector: 'app-dashboard-shell',
@@ -390,6 +394,34 @@ export class DashboardAnalyticsComponent implements OnInit {
               }
             </optgroup>
           </select>
+          <fieldset class="mt-3" aria-required="true">
+            <legend class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'productKind.label' | t }} *</legend>
+            <div class="flex flex-wrap gap-2">
+              @for (k of productKinds; track k) {
+                <label class="input flex cursor-pointer items-center gap-2" style="width:auto" [class.border-accent]="draft.productKind === k">
+                  <input type="radio" name="productKind" [value]="k" [(ngModel)]="draft.productKind" required />
+                  <span>{{ ('productKind.' + k) | t }}</span>
+                  @if (kindRates(); as r) {
+                    <span class="text-xs text-muted">· {{ r.rates[k].total * 100 | number: '1.0-2' }}%</span>
+                  }
+                </label>
+              }
+            </div>
+            @if (draft.productKind && kindRates(); as r) {
+              <p class="mt-1 text-xs text-muted">
+                @if (r.rates[draft.productKind].withheldByPlatform) {
+                  {{ 'productKind.rateLine' | t: kindRateParams(r, draft.productKind) }}
+                } @else if (r.sellerTypeDeclared) {
+                  {{ 'productKind.selfDeclare' | t }}
+                } @else {
+                  {{ 'productKind.undeclared' | t }}
+                }
+              </p>
+            }
+            @if (kindError) {
+              <p class="mt-1 text-xs" style="color:#dc2626">{{ kindError }}</p>
+            }
+          </fieldset>
           @if (isTalentOnly()) {
             <p class="mt-1 text-xs text-muted">Tài khoản dịch vụ chuyên môn chỉ đăng được gói dịch vụ giá cố định: Làm web, Làm app, Marketing, SEO, Creator, Tự động hóa.</p>
           }
@@ -595,6 +627,16 @@ export class DashboardAnalyticsComponent implements OnInit {
             <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ categoryLabel(p.category) }}</p>
             <a [routerLink]="['/product', p.slug]" class="font-display text-xl no-underline">{{ p.name }}</a>
             <p class="text-sm text-muted">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number:'1.1-1' }}</p>
+            <label class="mt-1 flex items-center gap-2 text-xs text-muted">
+              {{ 'productKind.label' | t }}:
+              <select class="input" style="width:auto;padding:2px 8px" [ngModel]="p.productKind || 'DIGITAL'" (ngModelChange)="setKind(p, $event)" [name]="'kind-' + p.id">
+                @for (k of productKinds; track k) {
+                  <option [ngValue]="k">{{ ('productKind.' + k) | t }}</option>
+                }
+              </select>
+              @if (kindRates(); as r) { <span>{{ r.rates[p.productKind || 'DIGITAL'].total * 100 | number: '1.0-2' }}%</span> }
+              @if (p.productKindDefaultedAt) { <span class="text-[10px] uppercase">({{ 'productKind.defaulted' | t }})</span> }
+            </label>
             @if (workspaceKind(p.category) === 'voice') {
               <p class="mt-1 text-xs text-muted">
                 {{ p.category === 'voice-preset' ? 'Giọng sàn VieNeu' : 'Giọng clone VieNeu' }}
@@ -655,11 +697,30 @@ export class DashboardAnalyticsComponent implements OnInit {
                   ? 'Chọn nhiều ảnh trong một lần — mỗi ảnh là một trang/frame của chương. File lưu riêng, buyer chỉ đọc khi license còn hạn.'
                   : 'File lưu riêng, không public. Buyer chỉ stream/tải khi license còn hạn. Tải xuống là file .aimc mã hóa.' }}
               </p>
+              @if (p.category !== 'story-book') {
+                <div class="mb-3 grid gap-2 rounded-md border border-line p-2" data-testid="series-meta">
+                  <label class="block text-xs uppercase text-muted">Cốt truyện cả series</label>
+                  <textarea class="input" rows="2" [(ngModel)]="seriesSynopsis" name="seriesSynopsis" placeholder="Giới thiệu ngắn hiển thị ở trình phát"></textarea>
+                  <label class="block text-xs uppercase text-muted">Thể loại (cách nhau bằng dấu phẩy)</label>
+                  <input class="input" [(ngModel)]="seriesGenres" name="seriesGenres" placeholder="Tình cảm, Cổ trang, Việt Nam" />
+                  <div class="flex items-center gap-2">
+                    <button type="button" class="btn btn-outline text-xs" (click)="saveSeries(p)">Lưu thông tin series</button>
+                    @if (seriesMsg) { <span class="text-xs text-muted">{{ seriesMsg }}</span> }
+                  </div>
+                </div>
+              }
               <div class="mb-3 flex flex-wrap items-end gap-2">
                 <div class="min-w-[12rem] flex-1">
                   <label class="mb-1 block text-xs uppercase text-muted">Tiêu đề</label>
                   <input class="input" [(ngModel)]="chapterTitle" name="chapterTitle" [placeholder]="p.category === 'story-book' ? 'Chương 1 — Phố cổ' : 'Tập 1 / Chương 1'" />
                 </div>
+                @if (p.category !== 'story-book') {
+                  <div class="min-w-[12rem] flex-1">
+                    <label class="mb-1 block text-xs uppercase text-muted">Cốt truyện tập</label>
+                    <input class="input" [(ngModel)]="chapterSynopsis" name="chapterSynopsis" placeholder="Tóm tắt tập này" />
+                  </div>
+                  <label class="flex items-center gap-1 text-xs"><input type="checkbox" [(ngModel)]="chapterFree" name="chapterFree" /> Miễn phí</label>
+                }
                 <label class="btn btn-fill cursor-pointer">
                   {{ chapterBusy ? 'Đang tải…' : (p.category === 'story-book' ? 'Chọn nhiều trang' : 'Chọn file') }}
                   <input type="file" class="hidden" [attr.multiple]="p.category === 'story-book' ? '' : null" accept="video/*,image/*,audio/*,.mp4,.webm,.jpg,.jpeg,.png,.webp,.gif,.mp3,.wav,.txt" (change)="onChapterFile($event, p)" [disabled]="chapterBusy" />
@@ -671,7 +732,14 @@ export class DashboardAnalyticsComponent implements OnInit {
               <ul class="grid gap-2">
                 @for (ep of chapters(); track ep.id) {
                   <li class="flex items-center justify-between gap-2 text-sm">
-                    <span>{{ ep.index }}. {{ ep.title }} · {{ ep.kind }}@if ((ep.pageCount || 0) > 1) { · {{ ep.pageCount }} trang }</span>
+                    <span class="min-w-0 flex-1">{{ ep.index }}. {{ ep.title }} · {{ ep.kind }}@if ((ep.pageCount || 0) > 1) { · {{ ep.pageCount }} trang }
+                      @if (p.category !== 'story-book') {
+                        <input class="input mt-1 text-xs" [ngModel]="ep.synopsis || ''" (change)="saveEpisodeSynopsis(ep, $event)" [name]="'syn-' + ep.id" placeholder="Cốt truyện tập" />
+                      }
+                    </span>
+                    @if (p.category !== 'story-book') {
+                      <button type="button" class="btn btn-outline text-xs" (click)="toggleEpisodeFree(ep)" [attr.data-testid]="'ep-free-' + ep.index">{{ ep.free ? 'Miễn phí ✓' : 'Cần license' }}</button>
+                    }
                     <button type="button" class="btn btn-outline text-xs" (click)="removeChapter(ep, p)">Xóa</button>
                   </li>
                 }
@@ -697,6 +765,9 @@ export class DashboardProductsComponent implements OnInit {
   private readonly builder = inject(BuilderService);
   private readonly route = inject(ActivatedRoute);
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly i18n = inject(I18nService);
+  private readonly i18nT = (key: string) => this.i18n.t(key);
+  private readonly _kindMessages = this.i18n.extend(PRODUCT_KIND_MESSAGES);
   readonly products = signal<Product[]>([]);
   readonly chapters = signal<ContentEpisode[]>([]);
   readonly categories = CATEGORY_META;
@@ -730,12 +801,21 @@ export class DashboardProductsComponent implements OnInit {
   voiceUploadError = '';
   managingId = '';
   chapterTitle = '';
+  chapterSynopsis = '';
+  chapterFree = false;
+  seriesSynopsis = '';
+  seriesGenres = '';
+  seriesMsg = '';
   chapterBusy = false;
   chapterError = '';
   draft = this.emptyDraft();
+  readonly productKinds: ProductKind[] = ['DIGITAL', 'PHYSICAL'];
+  readonly kindRates = signal<ProductKindRates | null>(null);
+  kindError = '';
 
   ngOnInit(): void {
     this.reload();
+    this.productsApi.productKindRates().subscribe({ next: (r) => this.kindRates.set(r), error: () => {} });
     if (this.isTalentOnly()) {
       this.draft.category = 'hire-build-web';
       this.onCategoryChange();
@@ -745,6 +825,13 @@ export class DashboardProductsComponent implements OnInit {
     const tplgit = this.route.snapshot.queryParamMap.get('tplgit') || '';
     if (tplgit === 'dash-web' || tplgit === 'dash-app') {
       this.draft.category = `template-${tplgit.slice(5)}` as ProductCategory;
+      this.onCategoryChange();
+      this.showForm = true;
+    }
+    // Deep link from /sell/integrate: /sell/products/new?category=game-server|gpu-compute
+    const cat = this.route.snapshot.queryParamMap.get('category') || '';
+    if (cat === 'game-server' || cat === 'gpu-compute') {
+      this.draft.category = cat as ProductCategory;
       this.onCategoryChange();
       this.showForm = true;
     }
@@ -787,6 +874,7 @@ export class DashboardProductsComponent implements OnInit {
       tagline: '',
       description: '',
       category: 'text-to-text' as ProductCategory,
+      productKind: '' as ProductKind | '',
       pricingModel: 'usage' as PricingModel,
       price: 29,
       usageRate: 0.05,
@@ -856,9 +944,41 @@ export class DashboardProductsComponent implements OnInit {
     this.managingId = p.id;
     this.chapterError = '';
     this.chapterTitle = '';
-    this.contentApi.episodes(p.slug).subscribe({
-      next: (rows) => this.chapters.set(rows),
-      error: () => this.chapters.set([]),
+    this.seriesMsg = '';
+    this.contentApi.series(p.slug).subscribe({
+      next: (s) => {
+        this.chapters.set(s.episodes || []);
+        this.seriesSynopsis = p.contentMeta?.synopsis || s.synopsis || '';
+        this.seriesGenres = (s.genres || []).join(', ');
+      },
+      error: () =>
+        this.contentApi.episodes(p.slug).subscribe({
+          next: (rows) => this.chapters.set(rows),
+          error: () => this.chapters.set([]),
+        }),
+    });
+  }
+
+  saveSeries(p: Product): void {
+    const genres = this.seriesGenres.split(',').map((g) => g.trim()).filter(Boolean);
+    this.contentApi.updateSeries(p.id, { synopsis: this.seriesSynopsis.trim(), genres }).subscribe({
+      next: () => (this.seriesMsg = 'Đã lưu'),
+      error: (err) => (this.seriesMsg = err?.error?.message || 'Lưu thất bại'),
+    });
+  }
+
+  toggleEpisodeFree(ep: ContentEpisode): void {
+    this.contentApi.updateEpisode(ep.id, { free: !ep.free }).subscribe({
+      next: (row) => this.chapters.update((list) => list.map((x) => (x.id === row.id ? row : x))),
+      error: (err) => (this.chapterError = err?.error?.message || 'Cập nhật tập thất bại'),
+    });
+  }
+
+  saveEpisodeSynopsis(ep: ContentEpisode, ev: Event): void {
+    const synopsis = String((ev.target as HTMLInputElement).value || '').trim();
+    this.contentApi.updateEpisode(ep.id, { synopsis }).subscribe({
+      next: (row) => this.chapters.update((list) => list.map((x) => (x.id === row.id ? row : x))),
+      error: (err) => (this.chapterError = err?.error?.message || 'Cập nhật tập thất bại'),
     });
   }
 
@@ -870,11 +990,14 @@ export class DashboardProductsComponent implements OnInit {
     this.chapterBusy = true;
     this.chapterError = '';
     const title = this.chapterTitle.trim() || files[0].name.replace(/\.[^.]+$/, '');
-    const payload = files.length > 1 ? { title, files } : { title, file: files[0] };
+    const extra = { synopsis: this.chapterSynopsis.trim() || undefined, free: this.chapterFree || undefined };
+    const payload = files.length > 1 ? { title, files, ...extra } : { title, file: files[0], ...extra };
     this.contentApi.createEpisode(p.id, payload).subscribe({
       next: (ep) => {
         this.chapterBusy = false;
         this.chapterTitle = '';
+        this.chapterSynopsis = '';
+        this.chapterFree = false;
         this.chapters.update((list) => [...list, ep].sort((a, b) => a.index - b.index));
         this.reload();
       },
@@ -948,9 +1071,31 @@ export class DashboardProductsComponent implements OnInit {
     this.productsApi.list({ creatorSlug: slug, includeHidden: true }).subscribe((items) => this.products.set(items));
   }
 
+  kindRateParams(r: ProductKindRates, kind: ProductKind): Record<string, string> {
+    const pct = (n: number) => String(Math.round(n * 10000) / 100);
+    const x = r.rates[kind];
+    return { vat: pct(x.vat), pit: pct(x.pit), total: pct(x.total) };
+  }
+
+  setKind(p: Product, kind: ProductKind): void {
+    const prev = p.productKind;
+    p.productKind = kind;
+    p.productKindDefaultedAt = null;
+    this.productsApi.update(p.id, { productKind: kind }).subscribe({
+      error: () => {
+        p.productKind = prev;
+      },
+    });
+  }
+
   create(): void {
     if (this.publishing) return;
     this.publishError = '';
+    this.kindError = '';
+    if (!this.draft.productKind) {
+      this.kindError = this.i18nT('productKind.required');
+      return;
+    }
     if (this.isVoiceDraft() && !String(this.draft.voiceSampleUrl || '').trim()) {
       this.voiceUploadError = 'Upload MP3 giọng của bạn trước — hệ thống sẽ tự clone.';
       return;
@@ -1056,6 +1201,7 @@ export class DashboardProductsComponent implements OnInit {
         creatorSlug: user?.creatorSlug || 'nova-labs',
         creatorName: user?.name || 'Creator',
         category: this.draft.category,
+        productKind: this.draft.productKind || 'DIGITAL',
         pricing,
         affiliateRate: this.draftAffiliateRate(),
         contentMeta,
@@ -1117,6 +1263,7 @@ export class DashboardProductsComponent implements OnInit {
         creatorSlug: user?.creatorSlug || 'nova-labs',
         creatorName: user?.name || 'Creator',
         category: this.draft.category,
+        productKind: this.draft.productKind || 'DIGITAL',
         pricing,
         affiliateRate: this.draftAffiliateRate(),
         coverUrl: this.draft.coverUrl || undefined,
@@ -1159,75 +1306,6 @@ export class DashboardProductsComponent implements OnInit {
 
   remove(id: string): void {
     this.productsApi.remove(id).subscribe(() => this.reload());
-  }
-}
-
-@Component({
-  selector: 'app-dashboard-withdraw',
-  standalone: true,
-  imports: [FormsModule, CurrencyPipe, DatePipe],
-  template: `
-    <div class="grid gap-6 lg:grid-cols-2">
-      <form class="panel grid gap-3" (ngSubmit)="withdraw()">
-        <h2 class="font-display text-2xl">Withdraw</h2>
-        @if (summary(); as s) {
-          <p class="text-sm text-muted">Ledger {{ s.balance | currency: s.currency }}</p>
-          <p class="text-sm text-muted">Held (48h / dispute, per order) {{ s.held | currency: s.currency }}</p>
-          <p class="font-display text-2xl">Available {{ s.available | currency: s.currency }}</p>
-        }
-        <input class="input" type="number" min="1" [(ngModel)]="amount" name="amount" />
-        <button class="btn btn-fill w-fit" type="submit">Request payout</button>
-        @if (msg()) { <p class="text-sm text-accent">{{ msg() }}</p> }
-        @if (summary()?.holds?.length) {
-          <ul class="mt-2 space-y-2 text-xs text-muted">
-            @for (h of summary()!.holds; track h.orderId) {
-              <li>
-                {{ h.productName }} · {{ h.amount | currency: h.currency }} ·
-                {{ h.kind === 'dispute' ? 'Khiếu nại' : 'Chờ 48h' }}
-              </li>
-            }
-          </ul>
-        }
-      </form>
-      <div class="panel">
-        <h2 class="font-display text-2xl">Wallet history</h2>
-        <ul class="mt-4 space-y-3 text-sm">
-          @for (t of txs(); track t.id) {
-            <li class="flex justify-between border-b border-line pb-2">
-              <span>{{ t.type }} · {{ t.status || 'completed' }} · {{ t.note }}</span>
-              <span>{{ t.amount | currency: t.currency }} · {{ t.createdAt | date:'shortDate' }}</span>
-            </li>
-          }
-        </ul>
-      </div>
-    </div>
-  `,
-})
-export class DashboardWithdrawComponent implements OnInit {
-  private readonly api = inject(DashboardService);
-  readonly txs = signal<WalletTx[]>([]);
-  readonly summary = signal<WalletSummary | null>(null);
-  readonly msg = signal('');
-  amount = 100;
-
-  ngOnInit(): void {
-    this.reload();
-  }
-
-  reload(): void {
-    this.api.wallet().subscribe((t) => this.txs.set(t));
-    this.api.walletSummary().subscribe((s) => this.summary.set(s));
-  }
-
-  withdraw(): void {
-    this.api.withdraw(this.amount).subscribe({
-      next: (tx) => {
-        this.txs.update((list) => [tx, ...list]);
-        this.msg.set(`Withdraw ${tx.amount} pending admin confirmation`);
-        this.api.walletSummary().subscribe((s) => this.summary.set(s));
-      },
-      error: (err) => this.msg.set(err?.error?.message || 'Withdraw failed'),
-    });
   }
 }
 
@@ -1279,3 +1357,5 @@ export class DashboardLicensesComponent implements OnInit {
     this.api.licenses().subscribe((rows) => this.keys.set(rows));
   }
 }
+
+export { DashboardWithdrawComponent } from './dashboard-withdraw.component';

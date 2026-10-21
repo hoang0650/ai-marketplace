@@ -1,3 +1,4 @@
+import { HandoffButtonComponent } from '../handoff/handoff-button.component';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, NgClass } from '@angular/common';
@@ -12,6 +13,12 @@ import {
 } from './agents.models';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
 import { NanoclawProviderComponent } from './nanoclaw-provider.component';
+import { AgentVoteComponent } from './agent-vote.component';
+import { CommunityAgent, CommunityAgentsService, VoteBoard } from './community-agents.service';
+import { COMMUNITY_VOTE_MESSAGES } from './community-vote.messages';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
+import { LaunchNoticeService } from './launch-notice.service';
 
 @Component({
   selector: 'app-my-agents',
@@ -63,7 +70,7 @@ import { NanoclawProviderComponent } from './nanoclaw-provider.component';
             <div class="agent-row__actions">
               @if (isOpenClawHired(a)) {
                 <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', a.agentId, 'setup']">Setup</a>
-                <button type="button" class="agents-btn agents-btn--ghost" (click)="launch(a)">Launch</button>
+                <button type="button" class="agents-btn agents-btn--ghost" (click)="launch(a)" [disabled]="!!launchingId()">{{ launchingId() === a.agentId ? '…' : 'Launch' }}</button>
               }
               <a class="agents-btn" [routerLink]="['/hire-agent', a.agentId]">Manage</a>
             </div>
@@ -86,6 +93,8 @@ import { NanoclawProviderComponent } from './nanoclaw-provider.component';
 })
 export class MyAgentsComponent implements OnInit {
   private readonly gateway = inject(OpenClawGatewayService);
+  private readonly notice = inject(LaunchNoticeService);
+  readonly launchingId = signal('');
   private readonly seo = inject(SeoService);
   readonly hired = signal<HiredAgent[]>([]);
   readonly plans = signal<AgentSubscriptionStatus[]>([]);
@@ -121,12 +130,13 @@ export class MyAgentsComponent implements OnInit {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
+    if (this.launchingId()) return;
+    this.launchingId.set(row.agentId);
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchWithPlan(agent).subscribe((res) => {
-      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
-      if (!res.success && typeof window !== 'undefined' && res.message) {
-        window.alert(res.message);
-      }
+      this.launchingId.set('');
+      this.status.set(res.success ? (res.rental && !res.refund ? `${res.rental.charged ? 'Rented' : 'Ready'} — see the notice to open it.` : 'Opened — check the new tab.') : res.message || 'Launch failed');
+      this.notice.report(agent, this.gateway.runtimeInfo(agent).label, res, () => this.launch(row));
       this.reload();
     });
   }
@@ -135,7 +145,7 @@ export class MyAgentsComponent implements OnInit {
 @Component({
   selector: 'app-agent-marketplace',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TPipe, AgentVoteComponent],
   styleUrl: './agents.styles.scss',
   template: `
     <section class="agents-page route-enter">
@@ -149,13 +159,16 @@ export class MyAgentsComponent implements OnInit {
 
       <div class="agents-tabs">
         <button type="button" class="agents-tab" [class.active]="tab() === 'public'" (click)="setTab('public')">
-          Public ({{ publicCount }})
+          {{ 'cvote.tabPublic' | t: { n: publicCount + community().length } }}
         </button>
-        <button type="button" class="agents-tab" [class.active]="tab() === 'internal'" (click)="setTab('internal')">
-          Internal ({{ internalCount }})
+        <button type="button" class="agents-tab" [class.active]="tab() === 'vote'" (click)="setTab('vote')">
+          {{ 'cvote.tab' | t: { n: board()?.leaderboard?.length || 0 } }}
         </button>
       </div>
 
+      @if (tab() === 'vote') {
+        <app-agent-vote [board]="board()" (changed)="loadBoard()" />
+      } @else {
       <div class="agents-grid">
         @for (agent of agents(); track agent.id) {
           <article class="agent-card">
@@ -178,7 +191,7 @@ export class MyAgentsComponent implements OnInit {
                 [disabled]="busyId() === agent.id || !canLaunch(agent)"
                 [attr.title]="canLaunch(agent) ? 'Open Control UI / Dashboard' : gateway.comingSoonMessage(agent)"
               >
-                {{ canLaunch(agent) ? '🚀 Launch' : 'Soon' }}
+                {{ busyId() === agent.id ? ('launchNotice.launching' | t) : canLaunch(agent) ? '🚀 Launch' : 'Soon' }}
               </button>
               <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', agent.id]">Details</a>
             </div>
@@ -191,7 +204,27 @@ export class MyAgentsComponent implements OnInit {
         } @empty {
           <p class="text-muted">No agents in this tab.</p>
         }
+        @for (c of community(); track c._id) {
+          <article class="agent-card">
+            <div class="agent-card__head">
+              <img class="agent-icon" [src]="c.avatarUrl" [alt]="c.name" width="40" height="40" loading="lazy" />
+              <h2>{{ c.name }}</h2>
+            </div>
+            <p class="agent-card__desc">{{ c.description }}</p>
+            <div class="badge-row">
+              <span class="badge badge--ok">{{ 'cvote.community' | t }}</span>
+              <span class="badge badge--ghost">★ {{ c.stars }}</span>
+              <span class="badge badge--ghost">{{ 'cvote.votes' | t: { n: c.voteCount } }}</span>
+            </div>
+            <div class="agent-card__actions">
+              <button type="button" class="agents-btn agents-btn--launch" disabled [attr.title]="'cvote.communityHint' | t">{{ 'cvote.comingSoon' | t }}</button>
+              <a class="agents-btn agents-btn--ghost" [href]="c.htmlUrl" target="_blank" rel="noopener noreferrer">{{ 'cvote.github' | t }} ↗</a>
+            </div>
+            <p class="agent-card__hint">{{ 'cvote.communityHint' | t }}</p>
+          </article>
+        }
       </div>
+      }
 
       @if (status()) {
         <p class="agents-status">{{ status() }}</p>
@@ -201,15 +234,24 @@ export class MyAgentsComponent implements OnInit {
 })
 export class AgentMarketplaceComponent implements OnInit {
   readonly gateway = inject(OpenClawGatewayService);
+  private readonly notice = inject(LaunchNoticeService);
   private readonly seo = inject(SeoService);
-  readonly tab = signal<'public' | 'internal'>('public');
+  private readonly community$ = inject(CommunityAgentsService);
+  private readonly i18n = inject(I18nService);
+  readonly tab = signal<'public' | 'vote'>('public');
+  readonly board = signal<VoteBoard | null>(null);
+  /** Community agents voted in and approved — shown in Public as catalog entries (GitHub link, coming soon). */
+  readonly community = signal<CommunityAgent[]>([]);
   readonly agents = signal<MarketplaceAgent[]>([]);
   readonly busyId = signal('');
   readonly status = signal('');
   readonly hostExample = '{userId}.openclaw.aimarkets.vn';
   readonly pricing = signal<AgentPricing[]>([]);
   publicCount = 0;
-  internalCount = 0;
+
+  constructor() {
+    this.i18n.extend(COMMUNITY_VOTE_MESSAGES);
+  }
 
   canLaunch(agent: MarketplaceAgent): boolean {
     return this.gateway.isLaunchableAgent(agent);
@@ -231,18 +273,28 @@ export class AgentMarketplaceComponent implements OnInit {
   ngOnInit(): void {
     this.seo.set({ title: 'Agent Marketplace' });
     this.publicCount = this.gateway.listMarketplaceAgents('public').length;
-    this.internalCount = this.gateway.listMarketplaceAgents('internal').length;
     this.refresh();
+    this.loadBoard();
     this.gateway.loadPricing().subscribe((rows) => this.pricing.set(rows));
   }
 
-  setTab(tab: 'public' | 'internal'): void {
+  setTab(tab: 'public' | 'vote'): void {
     this.tab.set(tab);
-    this.refresh();
+    if (tab === 'vote') this.loadBoard();
   }
 
   refresh(): void {
-    this.agents.set(this.gateway.listMarketplaceAgents(this.tab()));
+    this.agents.set(this.gateway.listMarketplaceAgents('public'));
+  }
+
+  loadBoard(): void {
+    this.community$.board().subscribe({
+      next: (b) => {
+        this.board.set(b);
+        this.community.set(b.listed || []);
+      },
+      error: () => this.board.set({ cycle: null as never, leaderboard: [], pending: [], listed: [] }),
+    });
   }
 
   launch(agent: MarketplaceAgent): void {
@@ -250,14 +302,13 @@ export class AgentMarketplaceComponent implements OnInit {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
+    if (this.busyId()) return;
     this.busyId.set(agent.id);
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busyId.set('');
-      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
-      if (!res.success && typeof window !== 'undefined' && res.message) {
-        window.alert(res.message);
-      }
+      this.status.set(res.success ? (res.rental && !res.refund ? `${res.rental.charged ? 'Rented' : 'Ready'} — see the notice to open it.` : 'Opened — check the new tab.') : res.message || 'Launch failed');
+      this.notice.report(agent, this.gateway.runtimeInfo(agent).label, res, () => this.launch(agent));
     });
   }
 }
@@ -265,7 +316,7 @@ export class AgentMarketplaceComponent implements OnInit {
 @Component({
   selector: 'app-agent-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule, NanoclawProviderComponent],
+  imports: [RouterLink, DatePipe, FormsModule, NanoclawProviderComponent, HandoffButtonComponent],
   styleUrl: './agents.styles.scss',
   template: `
     <section class="agents-page agents-detail route-enter">
@@ -275,6 +326,9 @@ export class AgentMarketplaceComponent implements OnInit {
           <div class="agents-header__title">
             <img class="agent-icon agent-icon--lg" [src]="a.logoUrl" [alt]="a.name" width="48" height="48" />
             <h1 class="agents-title">{{ hired()?.name || a.name }}</h1>
+            @if (hired() || plan()?.active) {
+              <app-handoff-button kind="agent" [targetId]="hired()?.agentId || a.id" />
+            }
           </div>
           <div class="agents-header__actions">
             @if (isLaunchable()) {
@@ -379,7 +433,7 @@ export class AgentMarketplaceComponent implements OnInit {
               <div class="mt-4 flex flex-wrap gap-2">
                 @if (isLaunchable()) {
                   <a class="agents-btn agents-btn--outline" [routerLink]="['/hire-agent', a.id, 'setup']">Setup Wizard</a>
-                  <button type="button" class="agents-btn agents-btn--outline" (click)="launch()">
+                  <button type="button" class="agents-btn agents-btn--outline" (click)="launch()" [disabled]="busy()">
                     {{ uiName() }}
                   </button>
                 } @else {
@@ -561,6 +615,7 @@ export class AgentDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly gateway = inject(OpenClawGatewayService);
+  private readonly notice = inject(LaunchNoticeService);
   private readonly seo = inject(SeoService);
 
   readonly agent = signal<MarketplaceAgent | null>(null);
@@ -686,16 +741,15 @@ export class AgentDetailComponent implements OnInit {
       this.status.set(this.gateway.comingSoonMessage(agent));
       return;
     }
+    if (this.busy()) return;
     this.busy.set(true);
     this.status.set(`Opening ${agent.name} at ${this.gateway.aimarketsHost(undefined, agent)}…`);
     this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busy.set(false);
       this.hired.set(this.gateway.getHired(agent.id) || null);
       this.loadPlan(agent);
-      this.status.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
-      if (!res.success && typeof window !== 'undefined' && res.message) {
-        window.alert(res.message);
-      }
+      this.status.set(res.success ? (res.rental && !res.refund ? `${res.rental.charged ? 'Rented' : 'Ready'} — see the notice to open it.` : 'Opened — check the new tab.') : res.message || 'Launch failed');
+      this.notice.report(agent, this.brandName(), res, () => this.launch());
     });
   }
 
@@ -724,15 +778,29 @@ export class AgentDetailComponent implements OnInit {
           (p.paidUntil ? '' : '\nAuto-renew from the wallet is on by default — you can turn it off anytime.'),
       );
     if (!ok) return;
+    if (this.planBusy()) return;
     this.planBusy.set(true);
-    this.gateway.subscribe(agent).subscribe((res) => {
+    this.gateway.subscribe(agent, this.gateway.newIdempotencyKey()).subscribe((res) => {
       this.planBusy.set(false);
       if (res.ok && res.status) {
-        this.plan.set(res.status);
-        this.status.set(`${label} plan active until ${String(res.status.paidUntil || '').slice(0, 10)}.`);
+        const st = res.status;
+        this.plan.set(st);
+        this.status.set(`${label} plan active until ${String(st.paidUntil || '').slice(0, 10)}.`);
+        this.notice.report(agent, label, {
+          success: true,
+          rental: {
+            charged: Boolean(st.charged),
+            duplicate: Boolean(st.duplicate),
+            walletTxId: st.walletTxId || null,
+            chargedVnd: st.chargedVnd ?? st.fee.vnd,
+            periodDays: st.fee.periodDays,
+            paidUntil: st.paidUntil,
+            autoRenew: st.autoRenew,
+          },
+        });
       } else {
         this.status.set(res.message || 'Payment failed');
-        if (typeof window !== 'undefined' && res.message) window.alert(res.message);
+        this.notice.report(agent, label, { success: false, code: res.code, message: res.message || 'Payment failed' });
       }
     });
   }
@@ -763,13 +831,15 @@ export class AgentDetailComponent implements OnInit {
     this.gateway
       .generateSsh({
         agentId: agent.id,
-        host: this.sshHost.trim() || undefined,
       })
       .subscribe((res) => {
         this.sshBusy.set(false);
         if (res.success && res.command) {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
+        } else if (res.code === 'ssh_not_isolated') {
+          this.ssh.set(null);
+          this.status.set('SSH access is not available yet for this agent (isolated sandboxes are rolling out).');
         } else {
           const prefix = this.subdomain().toUpperCase();
           const hint = `${prefix}_SSH_HOST_TEMPLATE={userId}.${this.subdomain()}.aimarkets.vn`;

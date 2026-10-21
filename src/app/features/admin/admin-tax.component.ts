@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { AffiliateService } from '../../services/affiliate.service';
 import { SeoService } from '../../services/seo.service';
 import { PitCommitment } from '../../models/marketplace.models';
+import { BackButtonComponent } from '../../shared/components/back-button.component';
 
 /**
  * Admin tax tools (tax policy 2026-10):
@@ -18,9 +19,10 @@ import { PitCommitment } from '../../models/marketplace.models';
 @Component({
   selector: 'app-admin-tax',
   standalone: true,
-  imports: [DatePipe, FormsModule, RouterLink],
+  imports: [DatePipe, FormsModule, RouterLink, BackButtonComponent],
   template: `
     <section class="page route-enter">
+      <app-back-button />
       <h1 class="section-title">Thuế &amp; báo cáo thuế</h1>
       <p class="mt-2 max-w-3xl text-muted">
         Cá nhân kinh doanh: sàn khấu trừ, nộp thay 7% (5% GTGT + 2% TNCN) cho dịch vụ/sản phẩm số, 1,5% cho hàng hóa (NĐ 117/2025/NĐ-CP).

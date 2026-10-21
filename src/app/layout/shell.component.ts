@@ -1,4 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
+import { CurrencyPipe, isPlatformBrowser } from '@angular/common';
+import { WalletBalanceService } from '../services/wallet-balance.service';
 import { Component, ElementRef, HostListener, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
@@ -7,10 +8,11 @@ import { DashboardService, WishlistService } from '../services/api.services';
 import { environment } from '../../environments/environment';
 import { NAV_SECTIONS } from '../models/categories';
 import { WORK_BOARD_ENABLED } from '../models/feature-flags';
-import { CatalogLane, NotificationItem } from '../models/marketplace.models';
+import { CatalogLane } from '../models/marketplace.models';
 import { I18nService } from '../i18n/i18n.service';
 import { TPipe } from '../i18n/t.pipe';
 import { AppLang } from '../i18n/messages';
+import { NotificationsFeedService } from '../services/notifications-feed.service';
 import { CartService } from '../features/cart/cart.service';
 import { AffiliateService } from '../services/affiliate.service';
 import { GoogleSignInComponent } from '../features/auth/google-sign-in.component';
@@ -21,7 +23,7 @@ type NotiTab = 'all' | 'tx' | 'system' | 'promo';
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe, GoogleSignInComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe, GoogleSignInComponent, CurrencyPipe],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
@@ -40,6 +42,7 @@ export class ShellComponent {
   readonly year = new Date().getFullYear();
   readonly navSections = NAV_SECTIONS;
   readonly workEnabled = WORK_BOARD_ENABLED;
+  readonly walletBalance = inject(WalletBalanceService);
   readonly footerNav = [
     { path: '/', key: 'footer.nav.about' },
     { path: '/marketplace', key: 'nav.marketplace' },
@@ -57,8 +60,8 @@ export class ShellComponent {
     { path: '/complaints/new', key: 'complaint.cta.file' },
     { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms' },
   ];
-  readonly appStoreUrl = 'https://apps.apple.com/vn/app/phhotel/id6778220852?l=vi';
-  readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=app.rork.phhotel_pms_interface';
+  readonly appStoreUrl = 'https://apps.apple.com/vn/app/ai-markets/id6822239570?l=vi';
+  readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=app.phgroup.ai_market_vn';
   readonly categoryOpen = signal(false);
   readonly workOpen = signal(false);
   readonly docsOpen = signal(false);
@@ -67,7 +70,8 @@ export class ShellComponent {
   readonly notiOpen = signal(false);
   readonly langOpen = signal(false);
   readonly currencyOpen = signal(false);
-  readonly notifications = signal<NotificationItem[]>([]);
+  private readonly feed = inject(NotificationsFeedService);
+  readonly notifications = this.feed.items;
   readonly notiTab = signal<NotiTab>('all');
 
   readonly initials = computed(() => {
@@ -101,9 +105,11 @@ export class ShellComponent {
       const authed = this.auth.isAuthenticated();
       if (!isPlatformBrowser(this.platformId)) return;
       if (authed) {
-        this.loadNotifications();
+        this.feed.start();
+        this.walletBalance.refresh();
       } else {
-        this.notifications.set([]);
+        this.feed.stop();
+        this.walletBalance.reset();
       }
       this.cart.load();
       this.wishlist.load();
@@ -111,10 +117,7 @@ export class ShellComponent {
   }
 
   loadNotifications(): void {
-    this.api.notifications().subscribe({
-      next: (items) => this.notifications.set(items),
-      error: () => this.notifications.set([]),
-    });
+    this.feed.refresh();
   }
 
   toggleTheme(): void {
@@ -171,6 +174,7 @@ export class ShellComponent {
   toggleUserMenu(event: Event): void {
     event.stopPropagation();
     this.userMenuOpen.update((v) => !v);
+    if (this.userMenuOpen()) this.walletBalance.refresh();
     this.categoryOpen.set(false);
     this.workOpen.set(false);
     this.docsOpen.set(false);

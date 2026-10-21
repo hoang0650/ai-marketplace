@@ -57,6 +57,41 @@
       </ul>
     </article>
 
+    <article class="complaint-block panel">
+      <h2>{{ 'complaint.thread.title' | t }}</h2>
+      <p class="complaint-hint">{{ 'complaint.thread.hint' | t }}</p>
+      <ul class="complaint-thread">
+        @for (m of c.messages || []; track m.id) {
+          <li class="complaint-thread__msg" [class.is-me]="m.authorId === auth.user()?.id">
+            <p class="complaint-meta"><strong>{{ roleLabel(m.role) }}</strong> · {{ m.at | date: 'short' }}</p>
+            @if (m.body) { <p class="complaint-thread__body">{{ m.body }}</p> }
+            <app-attachments [items]="m.attachments" />
+          </li>
+        } @empty {
+          <li class="complaint-meta">{{ 'complaint.thread.empty' | t }}</li>
+        }
+      </ul>
+      @if (canPost(c)) {
+        <textarea class="input" [(ngModel)]="threadBody" name="threadBody" [placeholder]="'complaint.thread.ph' | t"></textarea>
+        @if (pending().length) {
+          <ul class="complaint-thread__pending">
+            @for (a of pending(); track a.id) {
+              <li>{{ a.name }} <button type="button" class="link-accent" (click)="removePending(a.id)">×</button></li>
+            }
+          </ul>
+        }
+        <div class="complaint-thread__actions">
+          <label class="btn btn-outline">
+            📎 {{ 'complaint.thread.attach' | t }}
+            <input type="file" multiple hidden [accept]="fileAccept" (change)="pickFiles($event)" />
+          </label>
+          <button class="btn btn-fill" type="button" [disabled]="busy() || uploading()" (click)="sendThread()">
+            {{ 'complaint.thread.send' | t }}
+          </button>
+        </div>
+      }
+    </article>
+
     @if (isSeller() && c.status === 'awaiting_seller') {
       <article class="complaint-block panel">
         <h2>{{ 'complaint.detail.sellerTitle' | t }}</h2>

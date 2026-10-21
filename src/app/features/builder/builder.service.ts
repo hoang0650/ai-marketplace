@@ -101,6 +101,8 @@ export interface TemplateMeta {
   fileCount: number;
   demoEnabled: boolean;
   demoUrl: string;
+  /** Web page with the phone simulator + QR (app templates). */
+  simulatorUrl?: string;
   useCount: number;
   updatedAt: string | null;
   access: boolean;
@@ -396,6 +398,16 @@ export class BuilderService {
     if (buffer.trim()) dispatch(buffer);
     if (!result) throw new BuilderStreamError('STREAM_INTERRUPTED', 'Stream interrupted');
     return result;
+  }
+
+  /** Local provider: the chat messages the server would send, so the browser can call localhost itself. */
+  localPrompt(id: string, body: { prompt: string; previewError?: string }): Observable<{ messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> }> {
+    return this.http.post<{ messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> }>(`${this.base}/projects/${id}/local-prompt`, body);
+  }
+
+  /** Local provider: apply the reply generated on the user's machine (no key / URL is sent). */
+  localApply(id: string, body: { prompt: string; previewError?: string; text: string; model: string; finishReason?: string }): Observable<GenerateResult> {
+    return this.http.post<GenerateResult>(`${this.base}/projects/${id}/local-apply`, body);
   }
 
   private openStream(id: string, body: object, signal?: AbortSignal): Promise<Response> {

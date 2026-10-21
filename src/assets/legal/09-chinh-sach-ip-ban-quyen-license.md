@@ -44,7 +44,8 @@ Nền tảng có thể yêu cầu người bán giải trình, tạm ẩn sản 
 
 1. Người mua chỉ nhận quyền sử dụng theo giấy phép của **từng sản phẩm**. Mỗi sản phẩm cấp một khóa giấy phép riêng; khóa của sản phẩm này không dùng cho sản phẩm khác, kể cả cùng cửa hàng.
 2. **Mẫu website/ứng dụng:** người mua được tạo bản sao riêng để chỉnh sửa và triển khai cho mục đích của mình; bản sao lưu thông tin mẫu gốc và người bán; không được đăng bán lại thành mẫu mới.
-3. **Kết quả dịch vụ chuyên môn trọn gói:** quyền đối với kết quả bàn giao theo điều kiện người bán công bố trên trang dịch vụ hoặc thỏa thuận giữa người mua và người bán.
+3. **Dataset, giọng đọc dùng để huấn luyện:** chỉ được dùng để huấn luyện, tinh chỉnh mô hình khi giấy phép đã mua cho phép mục đích này; mô hình tạo ra chịu ràng buộc phạm vi giấy phép (không phân phối lại dữ liệu gốc, không tái tạo giọng ngoài phạm vi đồng ý của người có giọng nói).
+4. **Kết quả dịch vụ chuyên môn trọn gói:** quyền đối với kết quả bàn giao theo điều kiện người bán công bố trên trang dịch vụ hoặc thỏa thuận giữa người mua và người bán.
 4. Việc thanh toán không tự động chuyển quyền sở hữu trí tuệ, trừ khi có thỏa thuận chuyển nhượng rõ ràng.
 
 ## Điều 8. Tài sản của nền tảng

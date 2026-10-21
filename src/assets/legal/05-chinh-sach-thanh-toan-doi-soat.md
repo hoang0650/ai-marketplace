@@ -14,11 +14,11 @@
 
 ## Điều 1. Đối tác và phương thức thanh toán
 
-Mọi đơn hàng trên website và ứng dụng được thanh toán **duy nhất bằng số dư ví AI Markets** (“Pay with AI Markets wallet only”). Cổng GPay/VietQR và các phương thức khác dưới đây chỉ dùng để nạp tiền vào ví, không dùng để thanh toán trực tiếp đơn hàng.
+Mọi đơn hàng trên website và ứng dụng được thanh toán **duy nhất bằng số dư ví AI Markets** (“Pay with AI Markets wallet only”). Sàn TMĐT aimarkets.vn áp dụng phương thức thanh toán trực tiếp qua Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup và Ví số dư nội bộ. Chuyển khoản ngân hàng (Mã QR VietQR) và các phương thức khác dưới đây chỉ dùng để nạp tiền vào ví, không dùng để thanh toán trực tiếp đơn hàng.
 
 | Kênh | Đối tác | Phương thức | Mục đích |
 |---|---|---|---|
-| Website | Cổng thanh toán GPay | ATM, thẻ ngân hàng, VietQR | Nạp tiền vào ví |
+| Website | Chuyển khoản ngân hàng vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup | Mã QR VietQR (chuyển khoản từ tài khoản ngân hàng của người mua) | Nạp tiền vào ví |
 | Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple của người mua | Nạp tiền vào ví |
 | Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play của người mua | Nạp tiền vào ví |
 | Website và ứng dụng | Ví AI Markets | Số dư đã nạp qua các kênh trên | Thanh toán đơn hàng |
@@ -33,7 +33,7 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ## Điều 3. Ví người mua
 
-1. Người mua nạp tiền vào ví qua cổng GPay (ATM, thẻ, VietQR) trên website hoặc hệ thống thanh toán trong ứng dụng; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp.
+1. Người mua nạp tiền vào ví bằng chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website hoặc hệ thống thanh toán trong ứng dụng; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp.
 2. Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn.
 3. Người mua **được rút số dư ví** tại mục “Withdraw” của ví sau khi hoàn tất xác minh danh tính (eKYC) bằng CCCD/hộ chiếu; khi chưa xác minh, chức năng rút tiền chưa được sử dụng. Tiền hoàn được trả về ví hoặc phương thức thanh toán ban đầu theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
 4. Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát; không phải tài khoản tiền gửi hay tài khoản thanh toán, không được trả lãi.

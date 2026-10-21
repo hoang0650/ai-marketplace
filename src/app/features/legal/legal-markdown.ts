@@ -52,6 +52,15 @@ export function renderLegalMarkdown(source: string): string {
       continue;
     }
 
+    // Figure: ![caption](assets/legal/img/file.jpg) on its own line. Only local legal assets are allowed.
+    const fig = /^!\[([^\]]*)\]\((assets\/legal\/img\/[A-Za-z0-9._-]+\.(?:png|jpe?g|webp))\)\s*$/.exec(line.trim());
+    if (fig) {
+      const cap = fig[1].replace(/"/g, '&quot;');
+      out.push(`<figure class="legal-fig"><img src="/${fig[2]}" alt="${cap}" loading="lazy" /><figcaption>${inline(fig[1])}</figcaption></figure>`);
+      i += 1;
+      continue;
+    }
+
     const heading = /^(#{1,4})\s+(.+)$/.exec(line);
     if (heading) {
       const level = heading[1].length;
@@ -114,6 +123,7 @@ export function renderLegalMarkdown(source: string): string {
       !lines[i].startsWith('#') &&
       !lines[i].startsWith('```') &&
       !lines[i].startsWith('&gt; ') &&
+      !lines[i].trim().startsWith('![') &&
       !/^\s*[-*]\s+/.test(lines[i]) &&
       !/^\s*\d+\.\s+/.test(lines[i]) &&
       !(lines[i].startsWith('---') && lines[i].replace(/-/g, '') === '')

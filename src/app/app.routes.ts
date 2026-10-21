@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, creatorGuard, sellerGuard, adminGuard, listingGuard, taxStaffGuard } from './guards/auth.guards';
+import { authGuard, creatorGuard, dashboardGuard, sellerGuard, adminGuard, listingGuard, taxStaffGuard } from './guards/auth.guards';
 import { visibleCategoryGuard, workBoardGuard } from './guards/feature.guards';
 
 export const routes: Routes = [
@@ -143,6 +143,12 @@ export const routes: Routes = [
           import('./features/chat/chat-inbox.component').then((m) => m.ChatInboxComponent),
       },
       {
+        path: 'complaints/:id',
+        data: { inbox: 'seller' },
+        loadComponent: () =>
+          import('./features/complaints/complaint-detail.component').then((m) => m.ComplaintDetailComponent),
+      },
+      {
         path: 'complaints',
         data: { inbox: 'seller' },
         loadComponent: () =>
@@ -172,9 +178,8 @@ export const routes: Routes = [
       },
       {
         path: 'ledger',
-        data: { page: 'ledger' },
         loadComponent: () =>
-          import('./features/sell/sell-pages.components').then((m) => m.SellPlaceholderComponent),
+          import('./features/sell/sell-ledger.component').then((m) => m.SellLedgerComponent),
       },
       {
         path: 'docs/api-usage',
@@ -251,17 +256,65 @@ export const routes: Routes = [
             (m) => m.ProductDetailComponent,
           ),
       },
-      {
-        path: 'gpu',
-        canActivate: [authGuard],
-        loadComponent: () =>
-          import('./features/gpu/gpu-rent.component').then((m) => m.GpuRentComponent),
-      },
+      // Old entry points now live as tabs of the training hub (query params such as ?offer= are kept).
+      { path: 'gpu', pathMatch: 'full', redirectTo: 'training/gpu' },
+      { path: 'voice-clone', pathMatch: 'full', redirectTo: 'training/voice-clone' },
+      { path: 'voice-preset', pathMatch: 'full', redirectTo: 'training/voice-preset' },
+      { path: 'dataset', pathMatch: 'full', redirectTo: 'training/dataset' },
       {
         path: 'training',
-        canActivate: [authGuard],
+        loadComponent: () => import('./features/training/training-hub.component').then((m) => m.TrainingHubComponent),
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            canActivate: [authGuard],
+            loadComponent: () =>
+              import('./features/training/training-studio.component').then((m) => m.TrainingStudioComponent),
+          },
+          {
+            path: 'dataset',
+            canActivate: [visibleCategoryGuard],
+            loadComponent: () =>
+              import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+            data: { category: 'dataset', title: 'Dataset' },
+          },
+          {
+            path: 'voice-clone',
+            loadComponent: () =>
+              import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+            data: { category: 'voice-clone', title: 'Voice clone' },
+          },
+          {
+            path: 'voice-preset',
+            loadComponent: () =>
+              import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+            data: { category: 'voice-preset', title: 'Voice presets' },
+          },
+          {
+            path: 'ai-film',
+            loadComponent: () => import('./features/studio/ai-film.component').then((m) => m.AiFilmComponent),
+            data: { title: 'Làm phim AI' },
+          },
+          {
+            path: 'gpu',
+            canActivate: [authGuard],
+            loadComponent: () => import('./features/gpu/gpu-rent.component').then((m) => m.GpuRentComponent),
+          },
+        ],
+      },
+      {
+        path: 'expo/p/:projectId/:token',
+        loadComponent: () => import('./features/builder/expo-landing.component').then((m) => m.ExpoLandingComponent),
+      },
+      {
+        path: 'expo/:productId',
+        loadComponent: () => import('./features/builder/expo-landing.component').then((m) => m.ExpoLandingComponent),
+      },
+      {
+        path: 'template-demo/:productId',
         loadComponent: () =>
-          import('./features/training/training-studio.component').then((m) => m.TrainingStudioComponent),
+          import('./features/builder/template-demo-page.component').then((m) => m.TemplateDemoPageComponent),
       },
       {
         path: 'build',
@@ -292,22 +345,23 @@ export const routes: Routes = [
         data: { category: 'text-to-video', title: 'Text to Video' },
       },
       {
+        path: 'ai-film',
+        loadComponent: () => import('./features/studio/ai-film.component').then((m) => m.AiFilmComponent),
+      },
+      {
+        path: 'lam-phim-ai',
+        redirectTo: 'ai-film',
+      },
+      {
+        path: 'talking-avatar',
+        loadComponent: () =>
+          import('./features/studio/talking-avatar.component').then((m) => m.TalkingAvatarComponent),
+      },
+      {
         path: 'image-to-video',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'image-to-video', title: 'Image to Video' },
-      },
-      {
-        path: 'voice-clone',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'voice-clone', title: 'Voice clone' },
-      },
-      {
-        path: 'voice-preset',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'voice-preset', title: 'Voice presets' },
       },
       {
         path: 'ai-film-series',
@@ -340,13 +394,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
         data: { category: 'fine-tune', title: 'Fine-tune' },
-      },
-      {
-        path: 'dataset',
-        canActivate: [visibleCategoryGuard],
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'dataset', title: 'Dataset' },
       },
       {
         path: 'inference',
@@ -428,10 +475,10 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
       {
+        // 'Bán API' merged into 'Suy luận'.
         path: 'api-endpoint',
-        loadComponent: () =>
-          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
-        data: { category: 'api-endpoint', title: 'Sell API' },
+        redirectTo: 'inference',
+        pathMatch: 'full',
       },
       {
         path: 'openrouter',
@@ -496,6 +543,14 @@ export const routes: Routes = [
       {
         path: 'auth/login',
         loadComponent: () => import('./features/auth/auth.components').then((m) => m.LoginComponent),
+      },
+      {
+        path: 'auth/forgot-password',
+        loadComponent: () => import('./features/auth/password-reset.components').then((m) => m.ForgotPasswordComponent),
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () => import('./features/auth/password-reset.components').then((m) => m.ResetPasswordComponent),
       },
       {
         path: 'auth/google/callback',
@@ -603,14 +658,15 @@ export const routes: Routes = [
           import('./features/wallet/wallet.component').then((m) => m.WalletComponent),
       },
       {
+        // Service packages are paid per phase in this workspace (Đề án / Quy chế), so it stays open.
         path: 'hire/projects/:id',
-        canActivate: [workBoardGuard, authGuard],
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/hire/hire-project-detail.component').then((m) => m.HireProjectDetailComponent),
       },
       {
         path: 'hire/projects',
-        canActivate: [workBoardGuard, authGuard],
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/hire/hire-projects.component').then((m) => m.HireProjectsComponent),
       },
@@ -619,6 +675,15 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () =>
           import('./features/usage/usage.component').then((m) => m.UsageComponent),
+      },
+      {
+        path: 'handoff/:code',
+        loadComponent: () => import('./features/handoff/handoff-claim.component').then((m) => m.HandoffClaimComponent),
+      },
+      {
+        path: 'account/devices',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/handoff/devices-page.component').then((m) => m.DevicesPageComponent),
       },
       {
         path: 'account/console',
@@ -681,6 +746,12 @@ export const routes: Routes = [
           import('./features/admin/admin-finance.component').then((m) => m.AdminFinanceComponent),
       },
       {
+        path: 'admin/bank-deposits',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/admin-bank-deposits.component').then((m) => m.AdminBankDepositsComponent),
+      },
+      {
         path: 'admin/tax',
         canActivate: [taxStaffGuard],
         loadComponent: () => import('./features/admin/admin-tax.component').then((m) => m.AdminTaxComponent),
@@ -699,6 +770,12 @@ export const routes: Routes = [
         path: 'admin/kyc',
         canActivate: [adminGuard],
         loadComponent: () => import('./features/admin/admin-kyc.component').then((m) => m.AdminKycComponent),
+      },
+      {
+        path: 'admin/community-agents',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/admin-community-agents.component').then((m) => m.AdminCommunityAgentsComponent),
       },
       {
         path: 'admin/agent-purges',
@@ -872,7 +949,7 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        canActivate: [creatorGuard],
+        canActivate: [dashboardGuard],
         loadComponent: () =>
           import('./features/dashboard/dashboard.components').then((m) => m.DashboardShellComponent),
         children: [

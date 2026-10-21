@@ -205,7 +205,7 @@ function pickFiles(input: HTMLInputElement): Picked {
                     {{ 'builder.tpl.demoToggle' | t }}
                   </label>
                   @if (row.template.demoUrl) {
-                    <a class="ghost" [href]="row.template.demoUrl" target="_blank" rel="noopener">{{ 'builder.tpl.demo' | t }} ↗</a>
+                    <a class="ghost" [href]="row.template.kind === 'app' && row.template.simulatorUrl ? row.template.simulatorUrl : row.template.demoUrl" target="_blank" rel="noopener">{{ 'builder.tpl.demo' | t }} ↗</a>
                   }
                   <button type="button" class="ghost" (click)="tryInBuilder(row)">{{ 'builder.tpl.try' | t }}</button>
                 }

@@ -1,10 +1,11 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../services/seo.service';
+import { LaunchNoticeService } from './launch-notice.service';
 import { OpenClawGatewayService } from './openclaw-gateway.service';
-import { MarketplaceAgent, OpenClawSshAccess } from './agents.models';
+import { AgentConnectCommand, MarketplaceAgent, OpenClawSshAccess, TerminalShell } from './agents.models';
 
 export type SetupChannelId =
   | 'telegram'
@@ -264,7 +265,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
 @Component({
   selector: 'app-openclaw-setup-wizard',
   standalone: true,
-  imports: [RouterLink, NgClass, FormsModule],
+  imports: [RouterLink, NgClass, FormsModule, DatePipe],
   styleUrl: './setup-wizard.styles.scss',
   template: `
     <div class="oc-setup">
@@ -296,9 +297,17 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
         } @else {
           <p class="oc-setup__lead">{{ profile().lead }}</p>
 
+          <nav class="oc-steps" aria-label="Setup steps">
+            @for (st of steps(); track st.id; let i = $index) {
+              <a class="oc-steps__item" [href]="'#step-' + st.id" (click)="scrollTo($event, st.id)">
+                <span class="oc-steps__num">{{ i + 1 }}</span>{{ st.title }}
+              </a>
+            }
+          </nav>
+
           <!-- ========== LAUNCH ========== -->
-          <article class="oc-card">
-            <h3><span>1</span> Launch {{ profile().brand }}</h3>
+          <article class="oc-card" id="step-launch">
+            <h3><span>{{ stepNo('launch') }}</span> Launch {{ profile().brand }}</h3>
             <p class="oc-card__desc">{{ profile().launchBlurb }}</p>
             <p class="oc-card__desc">
               Host: <code class="oc-code">{{ host() }}</code>
@@ -324,8 +333,8 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
           <!-- ========== CHANNELS (OpenClaw / SpaceBot) ========== -->
           @if (profile().channels) {
             @if (!selectedChannel()) {
-              <article class="oc-card">
-                <h3><span>2</span> Messaging channels</h3>
+              <article class="oc-card" id="step-channels">
+                <h3><span>{{ stepNo('channels') }}</span> Messaging channels</h3>
                 <p class="oc-card__desc">
                   @if (profile().channelSet === 'spacebot') {
                     Choose a channel for step-by-step instructions. Channels are configured on the SpaceBot dashboard
@@ -406,40 +415,55 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
 
           <!-- ========== PAIRING (OpenClaw only) ========== -->
           @if (profile().pairing) {
-              <article class="oc-card">
-              <h3><span>3</span> Device &amp; DM pairing</h3>
-                <p class="oc-card__desc">
-                New browsers/nodes must be approved. Approve the pending request, or enter the pairing code your bot
-                replied with (DM policy “pairing”).
-                </p>
-                <div class="oc-pair-row">
-                <input class="oc-input" [(ngModel)]="pairingCode" name="ocPair" placeholder="Enter pairing code (optional)" />
-                <button type="button" class="oc-btn" (click)="approvePairing()" [disabled]="pairingBusy()">
-                    Approve
-                  </button>
-                </div>
-              <button type="button" class="oc-link" (click)="checkPending()" [disabled]="pairingBusy()">
-                Check pending requests
+              <article class="oc-card" id="step-pairing">
+              <h3><span>{{ stepNo('pairing') }}</span> Device &amp; DM pairing</h3>
+              <p class="oc-card__desc">
+                Launching from aimarkets.vn pairs this browser automatically. If the Control UI still shows
+                <em>"pairing required"</em>, copy the <strong>request ID</strong> it displays and approve it here.
+                Only requests opened from your own workspace (<code class="oc-code">{{ host() }}</code>) can be approved.
+              </p>
+              <div class="oc-pair-row">
+                <input
+                  class="oc-input"
+                  [(ngModel)]="pairingCode"
+                  name="ocPair"
+                  placeholder="Pairing request ID, e.g. b1a1a3d1-e703-..."
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+                <button type="button" class="oc-btn" (click)="approvePairing()" [disabled]="pairingBusy() || !pairingCode.trim()">
+                  {{ pairingBusy() ? 'Approving...' : 'Approve' }}
                 </button>
-              </article>
+              </div>
+              <button type="button" class="oc-link" (click)="findPendingPairing(true)" [disabled]="pairingLookupBusy()">
+                {{ pairingLookupBusy() ? 'Looking for your request...' : 'Find my pending request ID' }}
+              </button>
+              @if (pairingMsg(); as m) {
+                <p [class]="m.ok ? 'oc-ok-msg' : 'oc-err-msg'">{{ m.text }}</p>
+              }
+            </article>
             }
 
           <!-- ========== SSH ========== -->
           @if (profile().sshAuth) {
-          <article class="oc-card oc-ssh">
-            <h3><span>{{ sshStep() }}</span> SSH access</h3>
+          <article class="oc-card oc-ssh" id="step-ssh">
+            <h3><span>{{ stepNo('ssh') }}</span> SSH access</h3>
             <p class="oc-card__desc">
               @if (profile().sshAuth === 'key') {
-                Connect from your desktop to this user’s {{ profile().brand }} sandbox with a temporary SSH key. The key
+                Connect from your desktop to <strong>your own</strong> {{ profile().brand }} sandbox with a temporary SSH key. The key
                 is installed on the instance automatically and is valid for 60 minutes.
               } @else {
-                Connect from your desktop to this user’s {{ profile().brand }} server/sandbox. Credentials are valid for
+                Connect from your desktop to <strong>your own</strong> {{ profile().brand }} server/sandbox. Credentials are valid for
                 60 minutes.
               }
             </p>
-            <label class="oc-label">Server host (optional)</label>
-            <input class="oc-input" [(ngModel)]="sshHost" name="setupSshHost" [placeholder]="sshPlaceholder" />
-            <button type="button" class="oc-btn" (click)="generateSsh()" [disabled]="sshBusy()">
+            @if (sshUnavailable()) {
+              <p class="oc-card__desc oc-ssh-unavailable" role="status">
+                SSH access isn't available for {{ profile().brand }} yet. We're rolling out isolated per-buyer sandboxes; until
+                then, use the dashboard instead.
+              </p>
+            }
+            <button type="button" class="oc-btn" (click)="generateSsh()" [disabled]="sshBusy() || sshUnavailable()">
               {{ sshBusy() ? 'Generating…' : profile().sshAuth === 'key' ? 'Generate SSH key' : 'Generate SSH command' }}
                 </button>
             @if (ssh(); as s) {
@@ -479,7 +503,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
                 <div class="oc-field">
                   <p class="oc-label">Password</p>
                   <div class="oc-copy-row">
-                    <pre class="oc-ssh-cmd oc-ssh-cmd--select">{{ s.password }}</pre>
+                    <pre class="oc-ssh-cmd oc-ssh-cmd--select">{{ s.password || 'Shown only once when generated. Generate again if you lost it.' }}</pre>
                 <button
                   type="button"
                       class="oc-btn oc-btn--ghost oc-btn--sm"
@@ -545,9 +569,74 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
           </article>
           }
 
+          <!-- ========== CONNECT FROM TERMINAL (all agent types) ========== -->
+          <article class="oc-card" id="step-commands">
+            <h3><span>{{ stepNo('commands') }}</span> Connect from your terminal</h3>
+            <p class="oc-card__desc">
+              Personal commands for <strong>your</strong> {{ profile().brand }} only. Each one carries a short-lived token
+              bound to your account and this agent - it cannot touch other users or the platform. Do not share them.
+            </p>
+            @if (commandsBusy()) {
+              <p class="oc-card__desc">Loading your commands...</p>
+            } @else if (commandsError()) {
+              <p class="oc-err-msg">{{ commandsError() }}</p>
+            } @else {
+              <div class="oc-shell-tabs" role="tablist" aria-label="Terminal type">
+                @for (t of shellTabs; track t.id) {
+                  <button
+                    type="button"
+                    role="tab"
+                    class="oc-shell-tab"
+                    [class.oc-shell-tab--active]="shell() === t.id"
+                    [attr.aria-selected]="shell() === t.id"
+                    (click)="shell.set(t.id)"
+                  >{{ t.label }}</button>
+                }
+              </div>
+              @if (hasPlaceholderCommand()) {
+                <div class="oc-pair-row">
+                  <input
+                    class="oc-input"
+                    [(ngModel)]="pairingCode"
+                    name="ocPairCmd"
+                    placeholder="Request ID from the Control UI (filled automatically when found)"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <button type="button" class="oc-btn oc-btn--ghost oc-btn--sm" (click)="findPendingPairing(true)" [disabled]="pairingLookupBusy()">
+                    {{ pairingLookupBusy() ? 'Looking...' : 'Find' }}
+                  </button>
+                </div>
+              }
+              @for (c of commands(); track c.id) {
+                <div class="oc-cmd">
+                  <div class="oc-cmd__head">
+                    <p class="oc-cmd__title">{{ c.title }}</p>
+                    @if (c.expiresAt) {
+                      <span class="oc-cmd__exp">expires {{ c.expiresAt | date: 'HH:mm' }}</span>
+                    }
+                  </div>
+                  <p class="oc-card__desc">{{ c.description }}</p>
+                  @if (c.command) {
+                    <div class="oc-copy-row">
+                      <pre class="oc-ssh-cmd oc-ssh-cmd--select oc-ssh-cmd--wrap">{{ commandText(c) }}</pre>
+                      <button type="button" class="oc-btn oc-btn--ghost oc-btn--sm" (click)="copyValue(commandText(c), 'cmd-' + c.id, 'Command copied.')">
+                        {{ copied() === 'cmd-' + c.id ? 'Copied' : 'Copy' }}
+                      </button>
+                    </div>
+                  }
+                  <p class="oc-cmd__scope">Scope: <code class="oc-code">{{ c.scope }}</code></p>
+                </div>
+              } @empty {
+                <p class="oc-card__desc">No terminal commands for {{ profile().brand }} - use the launch button above.</p>
+              }
+              <button type="button" class="oc-link" (click)="loadCommands()">Refresh commands</button>
+            }
+          </article>
+
           <!-- ========== CONFIG / ABOUT ========== -->
-          <article class="oc-card">
-            <h3><span>{{ configStep() }}</span> Configuration</h3>
+          <article class="oc-card" id="step-config">
+            <h3><span>{{ stepNo('config') }}</span> Configuration</h3>
             <p class="oc-card__desc">{{ profile().configNote }}</p>
             <a class="oc-link" [href]="profile().docsUrl" target="_blank" rel="noopener">Documentation ↗</a>
             <a class="oc-link oc-link--spaced" routerLink="/hire-agent">My Agents</a>
@@ -560,8 +649,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
       </main>
 
       <footer class="oc-setup__foot">
-        <span class="oc-setup__feather" aria-hidden="true">✦</span>
-        featherless.ai style · PH AI Market
+        AI Markets
         <a routerLink="/hire-agent" class="oc-setup__foot-link">My Agents</a>
       </footer>
     </div>
@@ -570,6 +658,7 @@ const PROFILES: Record<AgentSetupProfile['id'], AgentSetupProfile> = {
 export class OpenClawSetupWizardComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   readonly gateway = inject(OpenClawGatewayService);
+  private readonly notice = inject(LaunchNoticeService);
   private readonly seo = inject(SeoService);
 
   readonly channels = OPENCLAW_CHANNELS;
@@ -577,9 +666,98 @@ export class OpenClawSetupWizardComponent implements OnInit {
   readonly activeChannels = computed<ChannelGuide[]>(() =>
     this.profile().channelSet === 'spacebot' ? SPACEBOT_CHANNELS : OPENCLAW_CHANNELS,
   );
-  /** Step number offset — the pairing card only exists for OpenClaw. */
-  readonly sshStep = computed(() => (this.profile().pairing ? 4 : this.profile().channels ? 3 : 2));
-  readonly configStep = computed(() => (this.profile().sshAuth ? this.sshStep() + 1 : this.sshStep()));
+  /** Same step list for every agent type; cards that do not apply are simply omitted. */
+  readonly steps = computed<{ id: string; title: string }[]>(() => {
+    const p = this.profile();
+    const list = [{ id: 'launch', title: 'Launch' }];
+    if (p.channels) list.push({ id: 'channels', title: 'Channels' });
+    if (p.pairing) list.push({ id: 'pairing', title: 'Device & DM pairing' });
+    if (p.sshAuth) list.push({ id: 'ssh', title: 'SSH access' });
+    list.push({ id: 'commands', title: 'Terminal' });
+    list.push({ id: 'config', title: 'Configuration' });
+    return list;
+  });
+
+  stepNo(id: string): number {
+    return this.steps().findIndex((s) => s.id === id) + 1;
+  }
+
+  scrollTo(event: Event, id: string): void {
+    event.preventDefault();
+    document.getElementById(`step-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  readonly commands = signal<AgentConnectCommand[]>([]);
+  readonly commandsBusy = signal(false);
+  readonly commandsError = signal('');
+  readonly pairingMsg = signal<{ ok: boolean; text: string } | null>(null);
+
+  readonly shellTabs: { id: TerminalShell; label: string }[] = [
+    { id: 'cmd', label: 'Windows (cmd)' },
+    { id: 'powershell', label: 'PowerShell' },
+    { id: 'posix', label: 'macOS / Linux' },
+  ];
+  readonly shell = signal<TerminalShell>(this.detectShell());
+  readonly pairingLookupBusy = signal(false);
+
+  private detectShell(): TerminalShell {
+    const ua = typeof navigator === 'undefined' ? '' : `${navigator.userAgent} ${navigator.platform || ''}`;
+    return /Win/i.test(ua) ? 'cmd' : 'posix';
+  }
+
+  hasPlaceholderCommand(): boolean {
+    return this.commands().some((c) => Boolean(c.placeholder && c.command));
+  }
+
+  /** Single-line command for the selected shell, with the request id filled in when known. */
+  commandText(c: AgentConnectCommand): string {
+    const base = c.variants?.[this.shell()] || c.command || '';
+    const rid = this.pairingCode.trim();
+    if (c.placeholder && /^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$/.test(rid)) {
+      return base.split(c.placeholder).join(rid);
+    }
+    return base;
+  }
+
+  /** Prefills the request id with this buyer's own pending request (server filters by owner). */
+  findPendingPairing(userInitiated = false): void {
+    const agent = this.agent();
+    if (!this.profile().pairing || this.pairingLookupBusy()) return;
+    this.pairingLookupBusy.set(true);
+    this.gateway.getPendingPairings(agent).subscribe((res) => {
+      this.pairingLookupBusy.set(false);
+      const own = (res.pending || []).filter((p) => p.approvable);
+      if (own.length >= 1) {
+        this.pairingCode = own[own.length - 1].requestId;
+        if (userInitiated) {
+          this.pairingMsg.set({
+            ok: true,
+            text: own.length === 1 ? 'Found your pending request.' : `Found ${own.length} requests; filled in the newest.`,
+          });
+        }
+      } else if (userInitiated) {
+        this.pairingMsg.set({
+          ok: false,
+          text: res.success
+            ? 'No pending request from your workspace. Open the Control UI from aimarkets.vn, then try again.'
+            : res.message || 'Could not load pairing requests.',
+        });
+      }
+    });
+  }
+
+  loadCommands(): void {
+    const agent = this.agent();
+    if (!agent || !this.isLaunchable()) return;
+    this.commandsBusy.set(true);
+    this.commandsError.set('');
+    this.gateway.getConnectCommands(agent).subscribe((res) => {
+      this.commandsBusy.set(false);
+      this.commands.set(res.success ? res.commands : []);
+      if (!res.success) this.commandsError.set(res.message || 'Sign in to see your personal commands.');
+      if (res.success && this.hasPlaceholderCommand() && !this.pairingCode.trim()) this.findPendingPairing();
+    });
+  }
 
   readonly agent = signal<MarketplaceAgent | null>(null);
   readonly selectedChannel = signal<ChannelGuide | null>(null);
@@ -596,7 +774,8 @@ export class OpenClawSetupWizardComponent implements OnInit {
 
   readonly ssh = signal<OpenClawSshAccess | null>(null);
   readonly sshBusy = signal(false);
-  sshHost = '';
+  /** Server answered 403 `ssh_not_isolated`: SSH is off until per-buyer sandboxes exist. */
+  readonly sshUnavailable = signal(false);
   sshPlaceholder = '{userId}.openclaw.aimarkets.vn';
   pairingCode = '';
 
@@ -628,8 +807,8 @@ export class OpenClawSetupWizardComponent implements OnInit {
       });
 
       this.sshPlaceholder = this.gateway.sshHostHint(undefined, agent);
-      const hint = this.sshPlaceholder;
-      this.sshHost = hint.includes('{userId}') ? '' : hint;
+      this.pairingMsg.set(null);
+      this.loadCommands();
 
       if (agent && this.gateway.supportsSsh(agent)) {
         this.gateway.getActiveSsh(agent.id).subscribe((res) => {
@@ -711,18 +890,20 @@ export class OpenClawSetupWizardComponent implements OnInit {
       this.launchError.set(this.gateway.comingSoonMessage(agent));
       return;
     }
+    if (this.busy()) return;
     this.busy.set(true);
     this.launchError.set('');
     this.status.set(`Opening ${agent.name} at ${this.host()}…`);
     this.gateway.launchWithPlan(agent).subscribe((res) => {
       this.busy.set(false);
+      this.notice.report(agent, this.gateway.runtimeInfo(agent).label, res, () => this.openUi());
       if (res.success) {
         this.launched.set(true);
         if (res.username && res.password) {
           this.creds.set({ username: res.username, password: res.password });
         }
-        this.status.set('Opened — check the new tab.');
-      } else {
+        this.status.set(res.rental ? 'Rented — use “Open” in the notice to start it.' : 'Opened — check the new tab.');
+      } else if (res.code !== 'RENT_CANCELLED') {
         const msg = res.message || 'Failed to open the dashboard';
         this.launchError.set(msg);
         this.status.set(msg);
@@ -731,34 +912,20 @@ export class OpenClawSetupWizardComponent implements OnInit {
   }
 
   approvePairing(): void {
-    if (this.pairingBusy()) return;
+    const requestId = this.pairingCode.trim();
+    if (this.pairingBusy() || !requestId) return;
     this.pairingBusy.set(true);
-    this.status.set('Approving pairing request…');
-    this.gateway.approvePairing(this.pairingCode.trim() || null, this.agent()).subscribe((res) => {
+    this.pairingMsg.set(null);
+    this.gateway.approvePairing(requestId, this.agent()).subscribe((res) => {
       this.pairingBusy.set(false);
       if (res.success) {
         this.pairingCode = '';
-        this.status.set(res.message || 'Pairing approved.');
+        this.pairingMsg.set({ ok: true, text: res.message || 'Device approved. Reload the Control UI tab.' });
       } else {
-        this.status.set(res.message || 'Approve failed.');
+        this.pairingMsg.set({ ok: false, text: res.message || 'Approve failed.' });
       }
     });
   }
-
-  checkPending(): void {
-    if (this.pairingBusy()) return;
-    this.pairingBusy.set(true);
-    this.status.set('Checking pending pairing requests…');
-    this.gateway.approvePairing(null, this.agent()).subscribe((res) => {
-      this.pairingBusy.set(false);
-      this.status.set(
-        res.success
-          ? res.message || 'Pending request approved.'
-          : res.message || 'No pending requests (or approve failed).',
-      );
-    });
-  }
-
   generateSsh(): void {
     const agent = this.agent() || this.gateway.getAgent('openclaw');
     if (!agent || !this.gateway.isLaunchableAgent(agent)) {
@@ -767,12 +934,17 @@ export class OpenClawSetupWizardComponent implements OnInit {
     }
     this.sshBusy.set(true);
     this.gateway
-      .generateSsh({ agentId: agent.id, host: this.sshHost.trim() || undefined })
+      .generateSsh({ agentId: agent.id })
       .subscribe((res) => {
         this.sshBusy.set(false);
         if (res.success && res.command) {
           this.ssh.set(res);
           this.status.set('SSH command ready — valid 60 minutes.');
+          this.loadCommands();
+        } else if (res.code === 'ssh_not_isolated') {
+          this.sshUnavailable.set(true);
+          this.ssh.set(null);
+          this.status.set('SSH access is not available yet for this agent.');
         } else {
           this.status.set(res.message || 'SSH generate failed. Login required, or the host template is not set.');
         }

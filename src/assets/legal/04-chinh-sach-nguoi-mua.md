@@ -31,7 +31,7 @@
 ## Điều 3. Đặt hàng và thanh toán
 
 1. Người mua có thể lưu sản phẩm vào giỏ hàng, danh sách yêu thích (đồng bộ giữa website và ứng dụng), kiểm tra tổng giá rồi xác nhận thanh toán.
-2. Đơn hàng được thanh toán **duy nhất bằng số dư ví AI Markets**. Cổng GPay (ATM, thẻ, VietQR) trên website và Apple In-App Purchase / Google Play Billing trên ứng dụng chỉ dùng để nạp tiền vào ví.
+2. Đơn hàng được thanh toán **duy nhất bằng số dư ví AI Markets**. Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website và Apple In-App Purchase / Google Play Billing trên ứng dụng chỉ dùng để nạp tiền vào ví.
 3. Giá và số dư ví được hiển thị bằng VNĐ, USD hoặc Nhân dân tệ (CNY) theo đơn vị tiền tệ người dùng lựa chọn; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp. Người mua thanh toán giá sau giảm (nếu có).
 4. Người mua được rút số dư ví tại mục “Withdraw” của ví sau khi hoàn tất xác minh danh tính (eKYC) bằng CCCD/hộ chiếu. Chi tiết tại [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
 
@@ -61,10 +61,17 @@ Người mua xem demo trực tiếp trước khi mua. Sau khi thanh toán, ngư�
 
 ## Điều 8. Dịch vụ chuyên môn trọn gói (làm website, làm ứng dụng, marketing, SEO, sáng tạo nội dung, tự động hóa quy trình)
 
-1. Là dịch vụ do người bán cung cấp cho người mua theo hợp đồng dịch vụ quy định tại Điều 513 Bộ luật Dân sự 2015, giao kết khi người mua đặt mua và thanh toán bằng số dư ví. Phạm vi công việc, kết quả bàn giao, thời hạn và giá do người bán công bố trên trang dịch vụ.
+1. Là dịch vụ do người bán cung cấp cho người mua theo hợp đồng dịch vụ quy định tại Điều 513 Bộ luật Dân sự 2015, giao kết khi người mua bắt đầu dự án từ gói dịch vụ. Phạm vi công việc, kết quả bàn giao, thời hạn và giá do người bán công bố trên trang dịch vụ.
 2. Giá được xác định theo gói hoặc theo kết quả bàn giao, không tính theo giờ, ngày hay tháng làm việc. Người bán tự quyết định phương pháp, thời gian, công cụ, nhân sự thực hiện và chịu trách nhiệm về kết quả bàn giao.
-3. Giữa người mua với người bán và nhân sự của người bán không phát sinh quan hệ lao động. Nền tảng không tuyển dụng, không tư vấn, giới thiệu việc làm, không cung ứng hay cho thuê lại lao động; trang dịch vụ không được chứa tin tuyển dụng, vị trí việc làm, tiền lương hoặc hồ sơ xin việc.
-4. Phí sàn, khấu trừ thuế, tạm giữ, hoàn tiền và giải quyết khiếu nại áp dụng như đối với các sản phẩm khác.
+3. Giữa người mua với người bán và nhân sự của người bán không phát sinh quan hệ lao động. Nền tảng không tuyển dụng, không tư vấn, giới thiệu việc làm, không cung ứng hay cho thuê lại lao động.
+4. Thanh toán theo giai đoạn (milestone). Mỗi gói dịch vụ được chia thành các giai đoạn với tỷ lệ giá trị do người bán công bố; mặc định 3 giai đoạn 30% – 40% – 30% giá gói. Khi người mua bắt đầu dự án, hệ thống tạo không gian dự án riêng (trao đổi, tệp, bàn giao) và **chưa trừ tiền**.
+5. Người bán bàn giao từng giai đoạn (ghi chú, tệp, bản demo). Người mua chọn **Nghiệm thu** hoặc **Yêu cầu chỉnh sửa**; người bán chỉnh sửa và bàn giao lại không giới hạn số lần trong phạm vi đã công bố. Chỉ người mua được nghiệm thu; người bán không thể tự nghiệm thu.
+6. Ví của người mua chỉ bị trừ giá trị của giai đoạn **tại thời điểm người mua nghiệm thu** giai đoạn đó; nếu số dư không đủ, việc nghiệm thu bị từ chối và không phát sinh giao dịch. Mỗi giai đoạn chỉ được thu một lần (thao tác nghiệm thu lặp lại không bị trừ tiền lần hai). Phí sàn và thuế tính trên giá trị từng giai đoạn; phần thực nhận của người bán được **tạm giữ 48 giờ** kể từ khi nghiệm thu.
+7. Người mua có thể **chấm dứt** dự án hoặc gửi **khiếu nại** đối với giai đoạn đang thực hiện. Khi chấm dứt, các giai đoạn chưa nghiệm thu bị hủy và không bị thu tiền; các giai đoạn đã nghiệm thu không bị ảnh hưởng, trừ khi có kết luận khác khi giải quyết khiếu nại. Khiếu nại được tạo ở trạng thái chờ người bán phản hồi, hiển thị cho người mua, người bán và Ban quản lý; khoản tạm giữ liên quan được giữ nguyên đến khi có kết quả theo quy trình giải quyết khiếu nại.
+8. Trao đổi và tệp trong dự án: người mua và người bán gửi tin nhắn, hình ảnh và tệp (PDF, ZIP, DOCX, XLSX, PPTX… tối đa 25 MB/tệp, theo danh sách định dạng cho phép; tệp thực thi bị từ chối). Tệp được lưu riêng tư, chỉ người tham gia và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn; nội dung trao đổi là căn cứ khi giải quyết khiếu nại.
+9. Phí sàn, khấu trừ thuế, tạm giữ, hoàn tiền và giải quyết khiếu nại áp dụng như đối với các sản phẩm khác, tính trên giá trị từng giai đoạn.
+
+![Không gian dự án theo giai đoạn](assets/legal/img/h08-khong-gian-du-an.jpg)
 
 ## Điều 9. Khóa API và bảo mật
 

@@ -89,7 +89,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     id: 'voice-clone',
     label: 'Voice clone',
     description: 'Seller uploads an .mp3; VieNeu clones that voice. Buyers pay per character and/or day / month / year license. STT uses PhoWhisper-large.',
-    hubPath: '/voice-clone',
+    hubPath: '/training/voice-clone',
     group: 'models',
     navGroup: 'generate',
     lane: 'ai',
@@ -98,7 +98,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     id: 'voice-preset',
     label: 'Voice presets',
     description: 'AI Markets sells VieNeu preset voices directly. Same billing: per character and/or day / month / year license. STT uses PhoWhisper-large.',
-    hubPath: '/voice-preset',
+    hubPath: '/training/voice-preset',
     group: 'models',
     navGroup: 'generate',
     lane: 'ai',
@@ -134,7 +134,7 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     id: 'dataset',
     label: 'Dataset',
     description: 'Download training and evaluation datasets. Unlocked with a day / month / year license key.',
-    hubPath: '/dataset',
+    hubPath: '/training/dataset',
     group: 'models',
     navGroup: 'generate',
     lane: 'ai',
@@ -335,7 +335,10 @@ export const NAV_SECTIONS: NavSection[] = ([
     titleKey: 'group.apis',
     links: [
       { path: '/models', labelKey: 'hub.models' },
-      ...(['api-endpoint', 'inference', 'fine-tune', 'training-service'] as ProductCategory[]).map(catLink),
+      // 'Bán API' merged into 'Suy luận' (inference) — one entry, both categories listed.
+      ...(['inference'] as ProductCategory[]).map(catLink),
+      // Fine-tune + training-service listings merged into the training hub.
+      { path: '/training', labelKey: 'nav.fineTuneTraining' },
     ],
   },
   {
@@ -346,9 +349,8 @@ export const NAV_SECTIONS: NavSection[] = ([
       catLink('agent-runtime'),
       catLink('gpu-compute'),
       catLink('game-server'),
-      { path: '/gpu', labelKey: 'nav.gpuRent' },
+      { path: '/training/gpu', labelKey: 'nav.gpuRent' },
       { path: '/training', labelKey: 'nav.training' },
-      { path: '/account/console', labelKey: 'hub.console' },
     ],
   },
   {
@@ -380,7 +382,19 @@ export const DIGITAL_CATEGORIES: CategoryMeta[] = [];
 export const CATEGORY_META: CategoryMeta[] = [...AI_CATEGORIES];
 
 /** Categories buyers can browse and sellers can list in right now. */
-export const VISIBLE_CATEGORIES: CategoryMeta[] = CATEGORY_META.filter((c) => !isHiddenCategory(c.id));
+/** Categories folded into another for browsing (old listings keep their category; routes redirect). */
+export const MERGED_CATEGORY: Partial<Record<ProductCategory, ProductCategory>> = { 'api-endpoint': 'inference' };
+export function canonicalCategory(id?: ProductCategory | string | null): string {
+  const c = String(id || '');
+  return MERGED_CATEGORY[c as ProductCategory] || c;
+}
+/** Raw categories shown under a (canonical) browse category. */
+export function categoriesFor(id: ProductCategory | string): ProductCategory[] {
+  const c = canonicalCategory(id) as ProductCategory;
+  return [c, ...(Object.keys(MERGED_CATEGORY) as ProductCategory[]).filter((k) => MERGED_CATEGORY[k] === c)];
+}
+
+export const VISIBLE_CATEGORIES: CategoryMeta[] = CATEGORY_META.filter((c) => !isHiddenCategory(c.id) && !MERGED_CATEGORY[c.id]);
 
 export function withoutHiddenProducts<T extends { category?: string }>(items: T[] | null | undefined): T[] {
   return (items || []).filter((p) => !isHiddenCategory(p.category));

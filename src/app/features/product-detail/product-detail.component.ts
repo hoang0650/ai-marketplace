@@ -22,14 +22,23 @@ import { environment } from '../../../environments/environment';
 import { switchMap } from 'rxjs';
 import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, CouponPreview, StreamDevice } from '../../models/marketplace.models';
 import { HireService } from '../../services/hire.service';
+import { WalletBalanceService } from '../../services/wallet-balance.service';
+import { NotificationsFeedService } from '../../services/notifications-feed.service';
+import { newIdempotencyKey } from '../../services/idempotency';
+import { PurchaseNotice, PurchaseNoticeComponent } from '../../shared/components/purchase-notice.component';
 import { isHiddenCategory, isHireCategory, isHireRequestCategory, isSkillCategory, isComputeStreamCategory, isGpuComputeCategory, isLicenseCategory, isVoiceCategory, isVoiceCloneCategory, isVoicePresetCategory, isFilmCategory, isDatasetCategory, isDownloadLicenseCategory, isWatchContentCategory, isStoryCategory, isTemplateCategory, needsEndpointDeploy as categoryNeedsEndpointDeploy } from '../../models/categories';
 import { TemplatePanelComponent } from '../builder/template-panel.component';
+import { SeriesPlayerComponent } from './series-player.component';
+import { StoryReaderComponent } from './story-reader.component';
+import { VoiceControlsComponent, VoiceFx, DEFAULT_VOICE_FX, voiceFxBody } from '../studio/voice-controls.component';
+import { BuilderService } from '../builder/builder.service';
 import { CartService } from '../cart/cart.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { InvoiceChoiceComponent } from '../orders/invoice-choice.component';
 import { TPipe } from '../../i18n/t.pipe';
 import { MARKETPLACE_AGENTS, OpenClawGatewayService } from '../agents/openclaw-gateway.service';
+import { LaunchNoticeService } from '../agents/launch-notice.service';
 import { isRunpodProduct, resolveRunpodEndpoint } from '../../models/runpod-playground';
 import {
   RunpodField,
@@ -67,7 +76,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent, StoryReaderComponent, VoiceControlsComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -85,6 +94,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly i18n = inject(I18nService);
   private readonly currencySvc = inject(CurrencyService);
   private readonly openclaw = inject(OpenClawGatewayService);
+  private readonly launchNotice = inject(LaunchNoticeService);
   private readonly walletApi = inject(DashboardService);
   private readonly uploadApi = inject(UploadService);
   private readonly contentApi = inject(ContentService);
@@ -125,7 +135,10 @@ export class ProductDetailComponent implements OnInit {
   readonly chatStarting = signal(false);
   readonly templateRefresh = signal(0);
   private playSeq = 0;
-  readonly walletBalance = signal(0);
+  private readonly walletBal = inject(WalletBalanceService);
+  private readonly feed = inject(NotificationsFeedService);
+  private readonly builderApi = inject(BuilderService);
+  readonly walletBalance = this.walletBal.available;
   readonly hasActiveLicense = computed(() => {
     const lic = this.issuedLicense();
     if (!lic) return false;
@@ -289,6 +302,7 @@ export class ProductDetailComponent implements OnInit {
   lastLatencyMs = 0;
   lastCost = 0;
   voicePlayMode: 'tts' | 'stt' = 'tts';
+  voiceFx: VoiceFx = { ...DEFAULT_VOICE_FX };
   sttAudioBase64 = '';
   sttAudioName = '';
 
@@ -766,6 +780,17 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
+  /** Series player back button: leave theater mode. */
+  exitTheater(): void {
+    this.setWorkspace('overview');
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
+  }
+
+  goLogin(): void {
+    const p = this.product();
+    void this.router.navigate(['/auth/login'], { queryParams: { redirect: p ? `/product/${p.slug}` : '/' } });
+  }
+
   onMediaError(): void {
     this.unlockError.set(this.i18n.t('pd.playFailed'));
   }
@@ -847,7 +872,7 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
     if (p.streaming?.platformRental) {
-      void this.router.navigate(['/gpu'], { queryParams: offer ? { offer } : {} });
+      void this.router.navigate(['/training/gpu'], { queryParams: offer ? { offer } : {} });
       return;
     }
     if (!this.streamOnPc(p)) {
@@ -878,6 +903,28 @@ export class ProductDetailComponent implements OnInit {
         ? `Skill unlocked with ${key}. Copy install steps into your OpenClaw workspace.`
         : 'Skill unlocked. Copy install steps into your OpenClaw workspace.',
     );
+  }
+
+  /** Opens the phase workspace for a service package (no charge until a phase is approved). */
+  startServicePackage(): void {
+    const p = this.product();
+    if (!p || this.hireBusy()) return;
+    if (!this.auth.user()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+    this.hireBusy.set(true);
+    this.hireError.set('');
+    this.hireService.startPackage(p.id, this.hireBrief.trim() || undefined).subscribe({
+      next: (project) => {
+        this.hireBusy.set(false);
+        void this.router.navigate(['/hire/projects', project.id], { queryParams: project.existing ? {} : { started: '1' } });
+      },
+      error: (err) => {
+        this.hireBusy.set(false);
+        this.hireError.set(err?.error?.message || this.i18n.t('hire.err.generic'));
+      },
+    });
   }
 
   submitHireRequest(): void {
@@ -980,7 +1027,8 @@ export class ProductDetailComponent implements OnInit {
     const launch$ = agent ? this.openclaw.launchWithPlan(agent) : this.openclaw.launchGateway();
     launch$.subscribe((res) => {
       this.openclawBusy.set(false);
-      this.openclawStatus.set(res.success ? 'Opened — check the new tab.' : res.message || 'Launch failed');
+      if (agent) this.launchNotice.report(agent, this.openclaw.runtimeInfo(agent).label, res, () => this.launchOpenClaw());
+      this.openclawStatus.set(res.success ? (res.rental ? 'Rented — open it from the notice.' : 'Opened — check the new tab.') : res.message || 'Launch failed');
       if (res.success) {
         this.checkoutMsg.set(`${brand} launched.`);
       }
@@ -1007,9 +1055,9 @@ export class ProductDetailComponent implements OnInit {
       this.launchOpenClaw();
       return;
     }
-    // Professional services are fixed packages paid from the wallet (Quy chế 2.1) — no quote flow.
+    // Professional services: fixed package paid per phase after the buyer approves each one (Đề án / Quy chế).
     if (isHireRequestCategory(p.category)) {
-      this.checkout();
+      this.startServicePackage();
       return;
     }
     if (isHireCategory(p.category)) {
@@ -1515,6 +1563,7 @@ export class ProductDetailComponent implements OnInit {
             voice: preset || 'Adam',
             format: 'wav',
             action: 'tts',
+            ...voiceFxBody(this.voiceFx),
           };
         }
         return {
@@ -1522,6 +1571,7 @@ export class ProductDetailComponent implements OnInit {
           audio_url: p.contentMeta?.voiceSampleUrl,
           format: 'wav',
           action: 'voice_clone',
+          ...voiceFxBody(this.voiceFx),
         };
       }
       if (p.category === 'fine-tune') {
@@ -1707,20 +1757,18 @@ export class ProductDetailComponent implements OnInit {
 
   loadWallet(): void {
     if (!this.auth.user()) {
-      this.walletBalance.set(0);
+      this.walletBal.reset();
       return;
     }
-    this.walletApi.wallet().subscribe({
-      next: (list) => {
-        const bal = list.reduce(
-          (s, t) => s + (t.type === 'debit' || t.type === 'withdraw' ? -t.amount : t.amount),
-          0,
-        );
-        this.walletBalance.set(bal);
-      },
-      error: () => this.walletBalance.set(0),
-    });
+    // Same number as /wallet: server-side available balance (completed tx only, minus holds).
+    this.walletBal.refresh();
   }
+
+  /** Product-page purchase modal (loading → success / error). */
+  readonly purchaseNotice = signal<PurchaseNotice | null>(null);
+  /** One Idempotency-Key per purchase intent; reused on retry so a lost response never double-charges. */
+  private checkoutKey = '';
+  private checkoutKeyFor = '';
 
   checkout(): void {
     const p = this.product();
@@ -1738,7 +1786,10 @@ export class ProductDetailComponent implements OnInit {
       if (isWatchContentCategory(p.category)) {
         this.setWorkspace('watch');
         const first = this.episodes()[0];
-        if (first) this.playEpisode(first);
+        void first; // story-book: the reader opens / resumes chapters itself
+      }
+      if (isTemplateCategory(p.category)) {
+        this.purchaseNotice.set({ state: 'already', productName: p.name, template: true, available: this.walletBalance() });
       }
       return;
     }
@@ -1746,16 +1797,35 @@ export class ProductDetailComponent implements OnInit {
       ? 1
       : Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
     const licenseTerm = isLicenseCategory(p.category) ? this.licenseTerm : undefined;
+    const couponCode = this.useCoupon ? this.couponCode.trim() || undefined : undefined;
+    const intent = `${p.id}|${quantity}|${licenseTerm || ''}|${couponCode || ''}`;
+    if (intent !== this.checkoutKeyFor || !this.checkoutKey) {
+      this.checkoutKey = newIdempotencyKey();
+      this.checkoutKeyFor = intent;
+    }
+    const isTpl = isTemplateCategory(p.category);
     this.checkingOut.set(true);
-    this.billing.checkout({
-      productId: p.id,
-      quantity,
-      licenseTerm,
-      couponCode: this.useCoupon ? this.couponCode.trim() || undefined : undefined,
-    }).subscribe({
+    this.checkoutMsg.set('');
+    this.purchaseNotice.set({ state: 'loading', productName: p.name, template: isTpl });
+    this.billing.checkout({ productId: p.id, quantity, licenseTerm, couponCode, idempotencyKey: this.checkoutKey }).subscribe({
       next: (res) => {
         this.checkingOut.set(false);
+        this.checkoutKey = '';
         this.lastOrderId.set(res.orderId || '');
+        this.walletBal.apply(res);
+        if (typeof res.balance !== 'number') this.walletBal.refresh();
+        this.feed.refreshSoon();
+        this.purchaseNotice.set({
+          state: res.alreadyPurchased ? 'already' : 'success',
+          productName: res.productName || p.name,
+          amount: res.amount,
+          currency: res.currency || 'USD',
+          available: typeof res.available === 'number' ? res.available : undefined,
+          orderId: res.orderId,
+          licenseKey: res.license?.licenseKey,
+          emailTo: res.emailSent ? res.emailTo : null,
+          template: isTpl,
+        });
         if (res.license?.licenseKey) {
           this.issuedLicense.set(res.license);
           this.checkoutMsg.set(
@@ -1770,27 +1840,22 @@ export class ProductDetailComponent implements OnInit {
           if (isWatchContentCategory(p.category)) {
             this.setWorkspace('watch');
             const first = this.episodes()[0];
-            if (first) this.playEpisode(first);
+            void first; // story-book: the reader opens / resumes chapters itself
           } else if (isSkillCategory(p.category) || isDatasetCategory(p.category)) {
             this.setWorkspace('install');
           }
         } else {
           this.checkoutMsg.set(
             res.emailSent
-              ? this.i18n.t('cart.msg.paidEmail', {
-                  orders: 1,
-                  units: quantity,
-                  email: res.emailTo || '',
-                })
+              ? this.i18n.t('cart.msg.paidEmail', { orders: 1, units: quantity, email: res.emailTo || '' })
               : this.i18n.t('cart.successTitle'),
           );
         }
-        if (isTemplateCategory(p.category)) {
+        if (isTpl) {
           this.templateRefresh.update((n) => n + 1);
           this.setWorkspace('template');
         }
-        if (typeof res.balance === 'number') this.walletBalance.set(res.balance);
-        else this.loadWallet();
+        if (res.alreadyPurchased || res.duplicate) return;
         this.product.update((cur) => {
           if (!cur) return cur;
           const sold = (cur.salesCount || 0) + quantity;
@@ -1799,8 +1864,58 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (err) => {
         this.checkingOut.set(false);
-        this.checkoutMsg.set(err?.error?.message || 'Thanh toán ví thất bại');
+        const code = String(err?.error?.code || '');
+        // 409 = the same purchase is still being processed; keep the key so a retry dedupes.
+        if (err?.status !== 409 && err?.status !== 0 && err?.status < 500) this.checkoutKey = '';
+        const message =
+          code === 'CHECKOUT_IN_PROGRESS'
+            ? this.i18n.t('buy.notice.inProgress')
+            : err?.error?.message || this.i18n.t('buy.notice.errorBody');
+        this.checkoutMsg.set(message);
+        // A 5xx can happen after the debit; refresh so the user sees the real balance + notices.
+        this.walletBal.refresh();
+        this.feed.refreshSoon();
+        this.purchaseNotice.set({ state: 'error', productName: p.name, message, code, template: isTpl });
       },
+    });
+  }
+
+  closePurchaseNotice(): void {
+    this.purchaseNotice.set(null);
+  }
+
+  retryPurchase(): void {
+    this.purchaseNotice.set(null);
+    this.checkout();
+  }
+
+  noticeTopUp(): void {
+    this.purchaseNotice.set(null);
+    void this.router.navigate(['/wallet']);
+  }
+
+  noticeOrders(): void {
+    this.purchaseNotice.set(null);
+    void this.router.navigate(['/dashboard/orders']);
+  }
+
+  /** Template bought: create a Builder project from it, then open it (or export it as a .zip). */
+  noticeUseTemplate(exportZip: boolean): void {
+    const p = this.product();
+    if (!p) return;
+    this.purchaseNotice.set({ state: 'loading', productName: p.name, template: true });
+    this.builderApi.useTemplate(p.id).subscribe({
+      next: (r) => {
+        this.purchaseNotice.set(null);
+        void this.router.navigate(['/build', r.project.id], exportZip ? { queryParams: { export: 'zip' } } : undefined);
+      },
+      error: (e) =>
+        this.purchaseNotice.set({
+          state: 'error',
+          productName: p.name,
+          template: true,
+          message: e?.error?.message || this.i18n.t('builder.err.generic'),
+        }),
     });
   }
 

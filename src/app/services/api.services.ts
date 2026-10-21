@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpEvent, HttpParams, HttpRequest } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -60,9 +60,11 @@ import {
   ChatConversation,
   ChatMessage,
   ContentEpisode,
+  SeriesInfo,
   ContentUnlock,
+  ReaderBookmark,
 } from '../models/marketplace.models';
-import { CategoryMeta, StreamDevice } from '../models/marketplace.models';
+import { CategoryMeta, ProductKindRates, StreamDevice } from '../models/marketplace.models';
 import {
   Deployment,
   DeploymentRuntime,
@@ -155,6 +157,11 @@ export class ProductService {
     return this.http.put<Product>(`${this.base}/products/${id}`, product);
   }
 
+  /** Withheld tax rate per product kind for the signed-in seller's type. */
+  productKindRates(): Observable<ProductKindRates> {
+    return this.http.get<ProductKindRates>(`${this.base}/sellers/me/product-kind-rates`);
+  }
+
   remove(id: string): Observable<{ ok: boolean }> {
     return this.http.delete<{ ok: boolean }>(`${this.base}/products/${id}`);
   }
@@ -186,9 +193,11 @@ export class ContentService {
     return this.http.get<ContentEpisode[]>(`${this.base}/content/products/${slug}/episodes`);
   }
 
-  createEpisode(productId: string, input: { title: string; file?: File; files?: File[]; sourceUrl?: string }): Observable<ContentEpisode> {
+  createEpisode(productId: string, input: { title: string; file?: File; files?: File[]; sourceUrl?: string; synopsis?: string; free?: boolean }): Observable<ContentEpisode> {
     const form = new FormData();
     form.append('title', input.title);
+    if (input.synopsis) form.append('synopsis', input.synopsis);
+    if (input.free) form.append('free', 'true');
     const many = input.files?.filter(Boolean) || [];
     if (many.length) {
       for (const file of many) form.append('files', file, file.name);
@@ -197,6 +206,39 @@ export class ContentService {
     }
     if (input.sourceUrl) form.append('sourceUrl', input.sourceUrl);
     return this.http.post<ContentEpisode>(`${this.base}/content/products/${productId}/episodes`, form);
+  }
+
+  series(slug: string): Observable<SeriesInfo> {
+    return this.http.get<SeriesInfo>(`${this.base}/content/products/${slug}/series`);
+  }
+
+  react(slug: string, kind: 'like' | 'save', on: boolean): Observable<{ likes: number; saves: number; liked: boolean; saved: boolean }> {
+    return this.http.post<{ likes: number; saves: number; liked: boolean; saved: boolean }>(`${this.base}/content/products/${slug}/reactions`, { kind, on });
+  }
+
+  progress(slug: string, episodeId: string, positionSec: number): Observable<{ ok: boolean }> {
+    return this.http.put<{ ok: boolean }>(`${this.base}/content/products/${slug}/progress`, { episodeId, positionSec });
+  }
+
+  /** Reader resume point (chapter + fraction / page). */
+  readProgress(slug: string, body: { episodeId: string; fraction: number; page: number }): Observable<{ ok: boolean }> {
+    return this.http.put<{ ok: boolean }>(`${this.base}/content/products/${slug}/progress`, body);
+  }
+
+  addBookmark(slug: string, body: { episodeId: string; fraction: number; page: number; kind: 'bookmark' | 'highlight'; quote?: string; note?: string }): Observable<{ bookmark: ReaderBookmark }> {
+    return this.http.post<{ bookmark: ReaderBookmark }>(`${this.base}/content/products/${slug}/bookmarks`, body);
+  }
+
+  removeBookmark(slug: string, id: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/content/products/${slug}/bookmarks/${id}`);
+  }
+
+  updateEpisode(id: string, patch: Partial<Pick<ContentEpisode, 'title' | 'synopsis' | 'free' | 'index' | 'posterUrl' | 'published'>>): Observable<ContentEpisode> {
+    return this.http.patch<ContentEpisode>(`${this.base}/content/episodes/${id}`, patch);
+  }
+
+  updateSeries(productId: string, patch: { synopsis?: string; genres?: string[] }): Observable<{ ok: boolean; synopsis: string; genres: string[] }> {
+    return this.http.patch<{ ok: boolean; synopsis: string; genres: string[] }>(`${this.base}/content/products/${productId}/series`, patch);
   }
 
   removeEpisode(id: string): Observable<{ ok: boolean }> {
@@ -607,6 +649,28 @@ export class DeploymentService {
   }
 }
 
+export interface CheckoutResult {
+  checkoutId: string;
+  provider: string;
+  status: string;
+  productName?: string;
+  category?: string;
+  quantity?: number;
+  amount?: number;
+  currency?: string;
+  couponCode?: string;
+  couponDiscount?: number;
+  balance?: number;
+  available?: number;
+  duplicate?: boolean;
+  alreadyPurchased?: boolean;
+  license?: IssuedLicense | null;
+  emailSent?: boolean;
+  emailTo?: string | null;
+  emailReason?: string;
+  orderId?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BillingService {
   private readonly http = inject(HttpClient);
@@ -618,46 +682,23 @@ export class BillingService {
     quantity?: number;
     licenseTerm?: 'day' | 'month' | 'year';
     couponCode?: string;
-  }): Observable<{
-    checkoutId: string;
-    provider: string;
-    status: string;
-    quantity?: number;
-    amount?: number;
-    currency?: string;
-    couponCode?: string;
-    couponDiscount?: number;
-    balance?: number;
-    license?: IssuedLicense | null;
-    emailSent?: boolean;
-    emailTo?: string | null;
-    emailReason?: string;
-    orderId?: string;
-  }> {
-    return this.http.post<{
-      checkoutId: string;
-      provider: string;
-      status: string;
-      quantity?: number;
-      amount?: number;
-      currency?: string;
-      couponCode?: string;
-      couponDiscount?: number;
-      balance?: number;
-      license?: IssuedLicense | null;
-      emailSent?: boolean;
-      emailTo?: string | null;
-      emailReason?: string;
-      orderId?: string;
-    }>(`${this.base}/billing/checkout`, {
-      productId: input.productId,
-      quantity: input.quantity,
-      licenseTerm: input.licenseTerm,
-      couponCode: input.couponCode,
-      // Last-click referral (cookie set by AffiliateService); the API validates window/self-referral.
-      affiliateClickId: this.affiliate.currentClickId(),
-      provider: 'wallet',
-    });
+    /** Same key on a retry = same order, never a second charge. */
+    idempotencyKey?: string;
+  }): Observable<CheckoutResult> {
+    const headers = input.idempotencyKey ? new HttpHeaders({ 'Idempotency-Key': input.idempotencyKey }) : undefined;
+    return this.http.post<CheckoutResult>(
+      `${this.base}/billing/checkout`,
+      {
+        productId: input.productId,
+        quantity: input.quantity,
+        licenseTerm: input.licenseTerm,
+        couponCode: input.couponCode,
+        // Last-click referral (cookie set by AffiliateService); the API validates window/self-referral.
+        affiliateClickId: this.affiliate.currentClickId(),
+        provider: 'wallet',
+      },
+      headers ? { headers } : {},
+    );
   }
 }
 
@@ -871,6 +912,36 @@ export interface ComputeNode {
   maxConcurrent: number;
   createdAt: string;
   updatedAt: string;
+  /** Product category (seller list only). */
+  category?: string;
+  /** Owner-only editable settings (seller list only). The webhook secret itself is never returned. */
+  config?: ComputeNodeConfig;
+}
+
+export interface ComputeNodeConfig {
+  webhookUrl: string;
+  hasWebhookSecret: boolean;
+  streamHost: string;
+  streamPort: number;
+  streamPath: string;
+  streamKind: string;
+  streamTls: boolean;
+  iframeUrl: string;
+  healthUrl: string;
+  gpu: string;
+  mobileStream: { iframeUrl: string; host: string; port: number; path: string } | null;
+}
+
+/** Seller's own product as offered by the compute node picker. */
+export interface ComputeProductOption {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  published: boolean;
+  moderationStatus: string;
+  eligible: boolean;
+  reason: '' | 'NOT_COMPUTE_CATEGORY' | 'NOT_PUBLISHED';
 }
 
 export interface MobileStreamConfig {
@@ -888,6 +959,22 @@ export interface GpuOffer {
   memoryGb: number;
   pricePerHour: number;
   availability: 'high' | 'medium' | 'low' | 'unknown';
+}
+
+export interface GpuPromo { active: boolean; until: string | null; label: string }
+export interface SharedGpuOffer extends Omit<GpuOffer, 'availability'> {
+  availability: string;
+  shared: true;
+  listPricePerHour: number;
+  promo: GpuPromo;
+  maxMinutes: number;
+}
+export interface TrainingGpuOptions {
+  shared: SharedGpuOffer | null;
+  offers: GpuOffer[];
+  offersError: string;
+  promo: GpuPromo;
+  limits: { minPrepayHours: number; pricePerHour: number; maxMinutes: number; perUserDaily: number; perUserActive: number };
 }
 
 export interface GpuOffersResponse {
@@ -994,6 +1081,28 @@ export interface TrainingFile {
   createdAt: string;
 }
 
+export interface LicensedItem {
+  productId: string;
+  slug: string;
+  name: string;
+  category: string;
+  coverUrl: string;
+  sellerName: string;
+  term: 'day' | 'month' | 'year';
+  expiresAt: string;
+}
+export interface LicensedDataset extends LicensedItem {
+  fileCount: number;
+  totalBytes: number;
+  importedDatasetId: string | null;
+}
+export interface LicensedVoice extends LicensedItem {
+  voiceSource: 'clone' | 'preset';
+  voiceModes: string[];
+  sampleUrl: string;
+  ready: boolean;
+}
+
 export interface TrainingDataset {
   id: string;
   name: string;
@@ -1020,6 +1129,8 @@ export interface TrainingLimits {
 
 export interface TrainingJob {
   jobId: string;
+  shared?: boolean;
+  freePromo?: boolean;
   source: TrainingSource;
   task: TrainingTask;
   modelId: string;
@@ -1063,6 +1174,15 @@ export class TrainingService {
   listDatasets(source?: TrainingSource): Observable<{ datasets: TrainingDataset[]; limits: TrainingLimits }> {
     const params: Record<string, string> = source ? { source } : {};
     return this.http.get<{ datasets: TrainingDataset[]; limits: TrainingLimits }>(this.datasetsBase, { params });
+  }
+
+  /** Datasets / voices the user bought a license for on the marketplace. */
+  licensed(): Observable<{ datasets: LicensedDataset[]; voices: LicensedVoice[] }> {
+    return this.http.get<{ datasets: LicensedDataset[]; voices: LicensedVoice[] }>(`${this.datasetsBase}/licensed`);
+  }
+
+  importLicensed(productId: string): Observable<{ dataset: TrainingDataset; imported: boolean }> {
+    return this.http.post<{ dataset: TrainingDataset; imported: boolean }>(`${this.datasetsBase}/licensed/${productId}/import`, {});
   }
 
   createDataset(body: { name: string; source: TrainingSource; description?: string; hfDataset?: string }): Observable<{ dataset: TrainingDataset }> {
@@ -1118,6 +1238,10 @@ export class TrainingService {
 
   createJob(body: CreateTrainingJobBody): Observable<TrainingJob> {
     return this.http.post<TrainingJob>(this.jobsBase, body);
+  }
+
+  gpuOptions(): Observable<TrainingGpuOptions> {
+    return this.http.get<TrainingGpuOptions>(`${this.jobsBase}/gpu-options`);
   }
 
   cancelJob(jobId: string): Observable<TrainingJob> {
@@ -1211,6 +1335,11 @@ export class SellerComputeService {
 
   listNodes(): Observable<ComputeNode[]> {
     return this.http.get<ComputeNode[]>(`${this.base}/seller/compute/nodes`);
+  }
+
+  /** The seller's own products (drafts included) flagged eligible / not for a compute node. */
+  listProducts(): Observable<ComputeProductOption[]> {
+    return this.http.get<ComputeProductOption[]>(`${this.base}/seller/compute/products`);
   }
 
   registerNode(body: {
@@ -1403,7 +1532,7 @@ export class ChatService {
     return this.http.get<ChatMessage[]>(`${this.base}/chat/conversations/${conversationId}/messages`);
   }
 
-  send(conversationId: string, body: { body?: string; imageUrl?: string }): Observable<ChatMessage> {
+  send(conversationId: string, body: { body?: string; imageUrl?: string; attachmentIds?: string[] }): Observable<ChatMessage> {
     return this.http.post<ChatMessage>(`${this.base}/chat/conversations/${conversationId}/messages`, body);
   }
 }

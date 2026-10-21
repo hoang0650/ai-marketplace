@@ -24,7 +24,7 @@ type AdminTab = 'overview' | 'shops' | 'people' | 'ops' | 'disputes';
         Mọi đơn hàng trên AI Markets được thanh toán bằng ví aimarkets.vn. Nạp tiền vào ví rồi mua trên trang sản phẩm hoặc giỏ hàng.
       </p>
       <div class="panel mt-8 grid gap-3">
-        <p class="text-sm">Phương thức: ví aimarkets.vn — web nạp bằng GPay; app iOS/Android nạp bằng Apple/Google IAP.</p>
+        <p class="text-sm">Phương thức: ví aimarkets.vn — web nạp bằng chuyển khoản ngân hàng (mã QR VietQR) vào tài khoản thanh toán của Công ty; app iOS/Android nạp bằng Apple/Google IAP.</p>
         <a class="btn btn-fill w-fit" routerLink="/wallet">Mở ví & nạp tiền</a>
       </div>
     </section>
@@ -48,6 +48,11 @@ export class BillingComponent {
         GMV, phí sàn 20%, thuế theo loại người bán (cá nhân kinh doanh 7% / 1,5% do sàn khấu trừ; hộ kinh doanh, doanh nghiệp 0%) và seller payable theo snapshot đơn. Không có phí CHPlay/App Store trên đơn hàng (IAP chỉ dùng để nạp ví).
       </p>
 
+      <nav class="admin-links mt-5 flex flex-wrap gap-2" aria-label="Trang quản trị">
+        @for (l of adminLinks; track l.path) {
+          <a [routerLink]="l.path" class="admin-links__item inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm hover:bg-black/5"><span aria-hidden="true">{{ l.icon }}</span> {{ l.label }}</a>
+        }
+      </nav>
       <div class="admin-tabs mt-6" role="tablist">
         @for (x of tabs; track x.id) {
           <button type="button" role="tab" [attr.aria-selected]="tab() === x.id" [class.active]="tab() === x.id" (click)="setTab(x.id)">
@@ -287,6 +292,17 @@ export class BillingComponent {
   ],
 })
 export class AdminComponent implements OnInit {
+  /** Every admin page in one place — the avatar menu only has a single "Quản trị" entry now. */
+  readonly adminLinks = [
+    { path: '/admin/finance', icon: '💰', label: 'Tài chính & đối soát' },
+    { path: '/admin/bank-deposits', icon: '🏦', label: 'Nạp / rút tiền' },
+    { path: '/admin/kyc', icon: '🪪', label: 'Duyệt eKYC' },
+    { path: '/admin/invoices', icon: '🧾', label: 'Hóa đơn GTGT' },
+    { path: '/admin/tax', icon: '📑', label: 'Thuế & báo cáo thuế' },
+    { path: '/admin/complaints', icon: '⚖️', label: 'Khiếu nại' },
+    { path: '/admin/community-agents', icon: '🗳️', label: 'Duyệt agent cộng đồng' },
+    { path: '/admin/agent-purges', icon: '🧹', label: 'Xóa dữ liệu agent hết hạn' },
+  ];
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
   private readonly route = inject(ActivatedRoute);

@@ -9,11 +9,12 @@ import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { AgentPurgeItem, AgentPurgeRuntime, AgentPurgeTab } from '../../models/marketplace.models';
 import { AGENT_PURGE_MESSAGES } from './admin-agent-purges.messages';
+import { BackButtonComponent } from '../../shared/components/back-button.component';
 
 @Component({
   selector: 'app-admin-agent-purges',
   standalone: true,
-  imports: [DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [DatePipe, FormsModule, RouterLink, TPipe, BackButtonComponent],
   templateUrl: './admin-agent-purges.component.html',
   styleUrl: './admin-agent-purges.component.scss',
 })

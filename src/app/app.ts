@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { I18nService } from './i18n/i18n.service';
+import { LaunchNoticeComponent } from './features/agents/launch-notice.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  template: `<router-outlet />`,
+  imports: [RouterOutlet, LaunchNoticeComponent],
+  template: `<router-outlet /><app-launch-notice />`,
   styles: `:host { display: block; min-height: 100vh; }`,
 })
 export class App {

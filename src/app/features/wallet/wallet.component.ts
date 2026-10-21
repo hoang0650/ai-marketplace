@@ -3,6 +3,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, computed, inject, signal }
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { WalletBalanceService } from '../../services/wallet-balance.service';
 import { DashboardService, KycService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import {
@@ -19,6 +20,8 @@ import { environment } from '../../../environments/environment';
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../i18n/currency.service';
+import { BankTopupComponent } from './bank-topup.component';
+import { GpayTopupComponent } from './gpay-topup.component';
 
 declare const paypal: {
   FUNDING?: { PAYPAL?: string };
@@ -30,6 +33,8 @@ type DepositMethod = 'paypal' | 'gpay';
 
 /** PayPal is hidden on the web (GPay only); the /v1/paypal API stays so it can be re-enabled. */
 const PAYPAL_UI_ENABLED = false;
+/** GPay is temporarily hidden (environment.gpayEnabled, default false); its code and API stay in place. */
+const GPAY_UI_ENABLED = (environment as { gpayEnabled?: boolean }).gpayEnabled === true;
 const PAYPAL_QUICK = [5, 10, 20, 50, 100];
 const GPAY_QUICK_VND = [50_000, 100_000, 200_000, 500_000, 1_000_000];
 const GPAY_POLL_MS = 4000;
@@ -39,12 +44,13 @@ const GPAY_POLL_MAX = 225;
 @Component({
   selector: 'app-wallet',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [BankTopupComponent, GpayTopupComponent, CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.scss',
 })
 export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly api = inject(DashboardService);
+  private readonly walletBal = inject(WalletBalanceService);
   /** Display currency (VND / USD / CNY) for the balance equivalent. */
   readonly fx = inject(CurrencyService);
   private readonly seo = inject(SeoService);
@@ -86,6 +92,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly msgIsError = signal(false);
 
   readonly paypalVisible = PAYPAL_UI_ENABLED;
+  readonly gpayVisible = GPAY_UI_ENABLED;
   readonly depositMethod = signal<DepositMethod>(PAYPAL_UI_ENABLED ? 'paypal' : 'gpay');
   readonly gpayAvailable = signal(false);
   readonly gpayEnabled = signal(false);
@@ -99,6 +106,29 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   depositAmount = 10;
   depositVnd = 100000;
+
+  /** Nạp tiền: VietQR bank transfer always; GPay alongside it only when GPAY_UI_ENABLED. */
+  readonly topupMethod = signal<'vietqr' | 'gpay'>('vietqr');
+  /** VND amount shared between the VietQR and GPay forms. */
+  topupVnd = 0;
+  readonly topupLabels = computed(() =>
+    this.i18n.lang() === 'vi'
+      ? { vietqr: 'Chuyển khoản VietQR', vietqrDesc: 'Quét mã, admin xác nhận', gpay: 'GPay', gpayDesc: 'Cổng thanh toán, cộng ví tự động' }
+      : { vietqr: 'VietQR bank transfer', vietqrDesc: 'Scan & transfer, confirmed by us', gpay: 'GPay', gpayDesc: 'Payment gateway, auto credit' },
+  );
+
+  setTopupMethod(m: 'vietqr' | 'gpay'): void {
+    if (m === 'gpay' && !GPAY_UI_ENABLED) return;
+    if (m === 'gpay' && this.topupVnd > 0) this.depositVnd = this.topupVnd;
+    if (m === 'vietqr' && this.depositVnd > 0) this.topupVnd = this.depositVnd;
+    this.topupMethod.set(m);
+  }
+
+  onTopupVnd(v: number): void {
+    const n = Math.round(Number(v) || 0);
+    this.topupVnd = n;
+    this.depositVnd = n;
+  }
   private paypalClientId = '';
   private paypalScript?: HTMLScriptElement;
   private paypalButtonsGen = 0;
@@ -170,10 +200,10 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.api.gpayConfig().subscribe({
       next: (cfg) => {
-        this.gpayAvailable.set(cfg.available ?? !!cfg.enabled);
-        this.gpayEnabled.set(!!cfg.enabled);
-        this.gpayPortalEnabled.set(!!cfg.portalEnabled);
-        this.gpayQrEnabled.set(!!cfg.qrEnabled);
+        this.gpayAvailable.set(GPAY_UI_ENABLED && (cfg.available ?? !!cfg.enabled));
+        this.gpayEnabled.set(GPAY_UI_ENABLED && !!cfg.enabled);
+        this.gpayPortalEnabled.set(GPAY_UI_ENABLED && !!cfg.portalEnabled);
+        this.gpayQrEnabled.set(GPAY_UI_ENABLED && !!cfg.qrEnabled);
         this.gpayVndPerUsd.set(Number(cfg.vndPerUsd) || 26500);
         if (cfg.vndPerUsd) this.fx.setVndPerUsd(Number(cfg.vndPerUsd));
         this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);
@@ -185,9 +215,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Back from GPay's gateway: /wallet?gpay=return&order=AIM…
+    if (GPAY_UI_ENABLED && this.route.snapshot.queryParamMap.get('method') === 'gpay') this.topupMethod.set('gpay');
     const gpayOrder = this.route.snapshot.queryParamMap.get('order');
     if (this.route.snapshot.queryParamMap.get('gpay') === 'return' && gpayOrder) {
       this.depositMethod.set('gpay');
+      this.topupMethod.set('gpay');
       this.setMsg(this.i18n.t('wallet.gpay.checking'), false);
       this.pollGpayOrder(gpayOrder);
     }
@@ -426,9 +458,15 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   reload(): void {
     this.api.wallet().subscribe((list) => {
       this.txs.set(list);
-      const bal = list.reduce((s, t) => s + this.txDelta(t), 0);
-      this.balance.set(bal);
       this.currency.set(list[0]?.currency || 'USD');
+    });
+    this.api.walletSummary().subscribe({
+      next: (s) => {
+        this.walletBal.apply(s);
+        this.balance.set(s.available);
+        if (s.currency) this.currency.set(s.currency);
+      },
+      error: () => undefined,
     });
   }
 
@@ -463,16 +501,6 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   railHint(): string {
     return this.i18n.t('wallet.deposit.paypalHint');
-  }
-
-  private txDelta(t: WalletTx): number {
-    const st = t.status || 'completed';
-    if (st === 'failed' || st === 'cancelled') return 0;
-    if (t.type === 'deposit' || t.type === 'credit') {
-      return st === 'completed' ? t.amount : 0;
-    }
-    if (st === 'pending' || st === 'completed') return -t.amount;
-    return 0;
   }
 
   private currentMonthKey(): string {

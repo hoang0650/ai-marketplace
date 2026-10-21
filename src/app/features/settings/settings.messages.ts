@@ -107,6 +107,8 @@ export const SETTINGS_MESSAGES: Record<AppLang, Record<string, string>> = {
     'set.feed.contentDesc': 'Dùng hoạt động của bạn để đề xuất sản phẩm và bài viết phù hợp hơn.',
     'set.feed.ads': 'Cá nhân hóa quảng cáo',
     'set.feed.adsDesc': 'Cho phép hiển thị quảng cáo phù hợp hơn với sở thích của bạn.',
+    'set.feed.loginMail': 'Email thông báo đăng nhập',
+    'set.feed.loginMailDesc': 'Gửi email mỗi khi tài khoản đăng nhập trên thiết bị mới. Email bảo mật quan trọng (đổi mật khẩu, hoàn tiền, khiếu nại) luôn được gửi.',
     'set.feed.saved': 'Đã lưu tùy chọn.',
   },
   en: {
@@ -214,6 +216,8 @@ export const SETTINGS_MESSAGES: Record<AppLang, Record<string, string>> = {
     'set.feed.contentDesc': 'Use your activity to recommend more relevant products and posts.',
     'set.feed.ads': 'Personalized ads',
     'set.feed.adsDesc': 'Allow ads that better match your interests.',
+    'set.feed.loginMail': 'Sign-in notice emails',
+    'set.feed.loginMailDesc': 'Email me whenever my account signs in. Critical emails (password changes, refunds, complaints) are always sent.',
     'set.feed.saved': 'Preferences saved.',
   },
   zh: {
@@ -321,6 +325,8 @@ export const SETTINGS_MESSAGES: Record<AppLang, Record<string, string>> = {
     'set.feed.contentDesc': '根据你的活动推荐更相关的商品和文章。',
     'set.feed.ads': '个性化广告',
     'set.feed.adsDesc': '允许展示更符合你兴趣的广告。',
+    'set.feed.loginMail': '登录通知邮件',
+    'set.feed.loginMailDesc': '每次账户登录时发送邮件。重要邮件（修改密码、退款、投诉）始终发送。',
     'set.feed.saved': '偏好已保存。',
   },
 };
