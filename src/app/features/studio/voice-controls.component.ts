@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
+import { I18nService } from '../../i18n/i18n.service';
 
 export interface VoiceFx {
   speed: number;
@@ -27,22 +28,22 @@ let cachedLangs: Lang[] | null = null;
   template: `
 <div class="vc" [class.vc--dark]="dark" data-testid="voice-controls">
   @if (showLang) {
-    <label class="vc-f">Ngôn ngữ
+    <label class="vc-f">{{ t('voice.lang') }}
       <select [ngModel]="value.lang" (ngModelChange)="set({ lang: $event })" data-testid="vc-lang">
         @for (l of langs(); track l.code) { <option [value]="l.code">{{ l.label }}</option> }
       </select>
     </label>
   }
-  <label class="vc-f">Tốc độ <b>{{ value.speed.toFixed(2) }}×</b>
+  <label class="vc-f">{{ t('voice.speed') }} <b>{{ value.speed.toFixed(2) }}×</b>
     <input type="range" min="0.5" max="2" step="0.05" [ngModel]="value.speed" (ngModelChange)="set({ speed: +$event })" data-testid="vc-speed" />
     @if (speedNote) { <small>{{ speedNote }}</small> }
   </label>
-  <label class="vc-f">Cao độ
+  <label class="vc-f">{{ t('voice.pitch') }}
     <span class="vc-seg" role="group">
       @for (p of presets; track p.id) {
-        <button type="button" [class.on]="value.pitch === p.id" (click)="set({ pitch: p.id })" [attr.data-testid]="'vc-pitch-' + p.id">{{ p.label }}</button>
+        <button type="button" [class.on]="value.pitch === p.id" (click)="set({ pitch: p.id })" [attr.data-testid]="'vc-pitch-' + p.id">{{ t(p.key) }}</button>
       }
-      <button type="button" [class.on]="custom()" (click)="set({ pitch: semis() })">Tùy chỉnh</button>
+      <button type="button" [class.on]="custom()" (click)="set({ pitch: semis() })">{{ t('voice.custom') }}</button>
     </span>
     @if (custom()) {
       <span class="vc-row"><input type="range" min="-12" max="12" step="1" [ngModel]="semis()" (ngModelChange)="set({ pitch: +$event })" data-testid="vc-semitones" /> <b>{{ semis() > 0 ? '+' : '' }}{{ semis() }} st</b></span>
@@ -73,8 +74,17 @@ export class VoiceControlsComponent implements OnInit {
   @Input() speedNote = '';
 
   private readonly http = inject(HttpClient);
+  private readonly i18n = inject(I18nService);
   readonly langs = signal<Lang[]>(cachedLangs || FALLBACK_LANGS);
-  readonly presets = [{ id: 'tram', label: 'Trầm' }, { id: 'tu-nhien', label: 'Tự nhiên' }, { id: 'cao', label: 'Cao' }];
+  readonly presets = [
+    { id: 'tram', key: 'voice.pitch.low' },
+    { id: 'tu-nhien', key: 'voice.pitch.natural' },
+    { id: 'cao', key: 'voice.pitch.high' },
+  ] as const;
+
+  t(key: string): string {
+    return this.i18n.t(key);
+  }
 
   ngOnInit(): void {
     if (cachedLangs) return;
