@@ -369,8 +369,8 @@ export class AgentMarketplaceComponent implements OnInit {
               </div>
             }
 
-            @if (isNanoclaw() && isLaunchable()) {
-              <app-nanoclaw-provider />
+            @if ((isNanoclaw() || isHermes()) && isLaunchable()) {
+              <app-nanoclaw-provider [runtime]="isHermes() ? 'hermes' : 'nanoclaw'" />
             }
 
             <div class="panel agents-panel mt-4">

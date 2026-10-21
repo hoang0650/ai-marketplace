@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
@@ -12,7 +12,7 @@ interface ProviderSelection {
   updatedAt?: string;
 }
 
-/** Lets the buyer run their NanoClaw agents on one of their own BYOK keys instead of the AI Markets default model. */
+/** Lets the buyer run NanoClaw or Hermes on one of their own BYOK keys. Platform keys are never copied in. */
 @Component({
   selector: 'app-nanoclaw-provider',
   standalone: true,
@@ -21,8 +21,9 @@ interface ProviderSelection {
     <div class="panel agents-panel mt-4">
       <h2 class="font-display text-xl">AI provider</h2>
       <p class="text-sm text-muted">
-        Run your NanoClaw agents on your own API key (OpenAI, Anthropic, Gemini, OpenRouter…) instead of the AI Markets
-        default model. Keys are stored encrypted and shared with OpenClaw and Builder.
+        Run this agent on your own API key (OpenAI, Anthropic, Gemini, OpenRouter…). The key stays encrypted in your
+        account and is not shared with other buyers. NanoClaw falls back to the AI Markets model when this is unset;
+        Hermes only runs after you choose a key here.
       </p>
 
       @if (!auth.isAuthenticated()) {
@@ -32,7 +33,7 @@ interface ProviderSelection {
           @if (selection(); as s) {
             Current: <strong>{{ labelOf(s.provider) }}</strong> · <code class="font-mono">{{ s.model }}</code>
           } @else {
-            Current: AI Markets default model.
+            Current: {{ runtime() === 'hermes' ? 'no key yet — Hermes will not call a model' : 'AI Markets default model' }}.
           }
         </p>
 
@@ -67,11 +68,16 @@ interface ProviderSelection {
             </datalist>
             <div class="flex flex-wrap gap-2">
               <button type="submit" class="agents-btn agents-btn--primary" [disabled]="busy() || !provider">
-                {{ busy() ? 'Saving…' : 'Use this provider' }}
+                {{ busy() ? 'Saving…' : 'Use this key' }}
               </button>
-              @if (selection()) {
+              @if (selection() && runtime() !== 'hermes') {
                 <button type="button" class="agents-btn agents-btn--ghost" (click)="clear()" [disabled]="busy()">
                   Use AI Markets default
+                </button>
+              }
+              @if (selection() && runtime() === 'hermes') {
+                <button type="button" class="agents-btn agents-btn--ghost" (click)="clear()" [disabled]="busy()">
+                  Remove key
                 </button>
               }
             </div>
@@ -87,8 +93,8 @@ interface ProviderSelection {
           <p class="mt-3 text-sm text-emerald-400">{{ message() }}</p>
         }
         <p class="mt-3 text-xs text-muted">
-          Takes effect when an agent container next starts; a conversation already running keeps its model until its
-          container restarts. Token usage on your key is billed by the provider, not by AI Markets.
+          Takes effect the next time the agent starts. A conversation already running keeps its current key until
+          restart. Usage on your key is billed by the provider, not by AI Markets.
         </p>
 
         <button type="button" class="agents-btn agents-btn--ghost mt-4" (click)="showKeys.set(!showKeys())">
@@ -107,7 +113,8 @@ export class NanoclawProviderComponent implements OnInit {
   readonly auth = inject(AuthService);
   private readonly http = inject(HttpClient);
   private readonly builder = inject(BuilderService);
-  private readonly base = `${environment.apiUrl}/nanoclaw/provider`;
+  /** Which hosted agent this panel configures. */
+  readonly runtime = input<'nanoclaw' | 'hermes'>('nanoclaw');
 
   readonly providers = signal<ByokProvider[]>([]);
   readonly keys = signal<ByokKey[]>([]);
@@ -132,7 +139,7 @@ export class NanoclawProviderComponent implements OnInit {
       next: (r) => {
         this.providers.set(r.providers || []);
         this.keys.set(r.keys || []);
-        this.http.get<{ selection: ProviderSelection | null }>(this.base).subscribe({
+        this.http.get<{ selection: ProviderSelection | null }>(this.endpoint()).subscribe({
           next: (s) => {
             this.selection.set(s.selection || null);
             this.syncForm();
@@ -169,13 +176,14 @@ export class NanoclawProviderComponent implements OnInit {
     this.error.set('');
     this.message.set('');
     this.http
-      .put<{ selection: ProviderSelection }>(this.base, { provider: this.provider, model: this.model.trim() })
+      .put<{ selection: ProviderSelection }>(this.endpoint(), { provider: this.provider, model: this.model.trim() })
       .subscribe({
         next: (r) => {
           this.busy.set(false);
           this.selection.set(r.selection);
           this.model = r.selection.model;
-          this.message.set(`NanoClaw now uses ${this.labelOf(r.selection.provider)} · ${r.selection.model}.`);
+          const name = this.runtime() === 'hermes' ? 'Hermes' : 'NanoClaw';
+          this.message.set(`${name} now uses ${this.labelOf(r.selection.provider)} · ${r.selection.model}.`);
         },
         error: (e) => {
           this.busy.set(false);
@@ -188,11 +196,15 @@ export class NanoclawProviderComponent implements OnInit {
     this.busy.set(true);
     this.error.set('');
     this.message.set('');
-    this.http.delete(this.base).subscribe({
+    this.http.delete(this.endpoint()).subscribe({
       next: () => {
         this.busy.set(false);
         this.selection.set(null);
-        this.message.set('NanoClaw is back on the AI Markets default model.');
+        this.message.set(
+          this.runtime() === 'hermes'
+            ? 'Hermes will not call a model until you choose a key.'
+            : 'NanoClaw is back on the AI Markets default model.',
+        );
       },
       error: (e) => {
         this.busy.set(false);
@@ -219,6 +231,10 @@ export class NanoclawProviderComponent implements OnInit {
     const p = this.providers().find((x) => x.id === provider);
     const key = this.keys().find((k) => k.provider === provider);
     return (p?.custom ? key?.model : p?.defaultModel) || key?.model || '';
+  }
+
+  private endpoint(): string {
+    return `${environment.apiUrl}/${this.runtime()}/provider`;
   }
 
   private loadModels(): void {
