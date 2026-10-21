@@ -60,8 +60,8 @@ export class ShellComponent {
     { path: '/complaints/new', key: 'complaint.cta.file' },
     { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms' },
   ];
-  readonly appStoreUrl = 'https://apps.apple.com/vn/app/phhotel/id6778220852?l=vi';
-  readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=app.rork.phhotel_pms_interface';
+  readonly appStoreUrl = 'https://apps.apple.com/vn/app/ai-markets/id6822239570?l=vi';
+  readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=app.phgroup.ai_market_vn';
   readonly categoryOpen = signal(false);
   readonly workOpen = signal(false);
   readonly docsOpen = signal(false);
