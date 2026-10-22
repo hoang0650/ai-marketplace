@@ -112,6 +112,14 @@ export interface OpenClawLaunchResult {
   autoLogin?: boolean;
   audience?: string;
   userId?: string;
+  /**
+   * 'bootstrap': the URL carries a single-use, non-admin bootstrap token and the
+   * Control UI pairs this browser by itself. 'token': classic launch (pairing
+   * approved separately); bootstrapFallback says why bootstrap was not used.
+   */
+  pairingMode?: 'bootstrap' | 'token';
+  bootstrapFallback?: string;
+  bootstrapExpiresAt?: number | null;
   /** Set when this Launch rented the agent (wallet charge). */
   rental?: AgentRentalReceipt;
   /** Set when provisioning failed after a charge and the rental was refunded. */

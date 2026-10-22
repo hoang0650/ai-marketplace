@@ -939,7 +939,9 @@ export class OpenClawSetupWizardComponent implements OnInit, OnDestroy {
     this.busy.set(true);
     this.launchError.set('');
     this.status.set(`Opening ${agent.name} at ${this.host()}…`);
-    this.gateway.launchWithPlan(agent).subscribe((res) => {
+    // OpenClaw: open the Control UI with a single-use, non-admin bootstrap token so
+    // this browser pairs itself (the API falls back to the classic launch).
+    this.gateway.launchWithPlan(agent, { bootstrap: true }).subscribe((res) => {
       this.busy.set(false);
       this.notice.report(agent, this.gateway.runtimeInfo(agent).label, res, () => this.openUi());
       if (res.success) {
@@ -947,8 +949,14 @@ export class OpenClawSetupWizardComponent implements OnInit, OnDestroy {
         if (res.username && res.password) {
           this.creds.set({ username: res.username, password: res.password });
         }
-        this.status.set(res.rental ? 'Rented — use “Open” in the notice to start it.' : 'Opened — this browser will be approved automatically.');
-        this.startPairingWatch();
+        this.status.set(
+          res.rental
+            ? 'Rented — use “Open” in the notice to start it.'
+            : res.pairingMode === 'bootstrap'
+              ? 'Opened. This browser pairs itself with standard (non-admin) access. Link valid for 10 minutes, one use.'
+              : 'Opened — this browser will be approved automatically.',
+        );
+        if (res.pairingMode !== 'bootstrap') this.startPairingWatch();
       } else if (res.code !== 'RENT_CANCELLED') {
         const msg = res.message || 'Failed to open the dashboard';
         this.launchError.set(msg);
