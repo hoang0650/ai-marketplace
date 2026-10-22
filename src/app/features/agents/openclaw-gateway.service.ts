@@ -466,8 +466,9 @@ export class OpenClawGatewayService {
    * and reported in `res.refund`. After a rental the tab is not auto-opened (the
    * browser would block a popup outside the click) — the launch notice offers it.
    */
-  launchWithPlan(agent: MarketplaceAgent): Observable<OpenClawLaunchResult> {
-    return this.launchGateway({ agent }).pipe(
+  launchWithPlan(agent: MarketplaceAgent, opts?: { bootstrap?: boolean }): Observable<OpenClawLaunchResult> {
+    const bootstrap = Boolean(opts?.bootstrap);
+    return this.launchGateway({ agent, bootstrap }).pipe(
       switchMap((res) => {
         if (res.code !== AGENT_SUBSCRIPTION_REQUIRED || !isPlatformBrowser(this.platformId)) return of(res);
         return this.getSubscription(agent).pipe(
@@ -496,7 +497,7 @@ export class OpenClawGatewayService {
                   paidUntil: st.paidUntil,
                   autoRenew: st.autoRenew,
                 };
-                return this.launchGateway({ agent, strict: true, openTab: false }).pipe(
+                return this.launchGateway({ agent, strict: true, openTab: false, bootstrap }).pipe(
                   switchMap((launched) => {
                     if (launched.success) return of<OpenClawLaunchResult>({ ...launched, rental });
                     if (!rental.charged || !rental.walletTxId) {
@@ -526,6 +527,11 @@ export class OpenClawGatewayService {
     strict?: boolean;
     /** false: return the URL without opening a tab (caller shows it). */
     openTab?: boolean;
+    /**
+     * OpenClaw only: ask the API for a reduced-scope bootstrap URL so the Control UI
+     * pairs this browser itself. The API falls back to the token launch.
+     */
+    bootstrap?: boolean;
   }): Observable<OpenClawLaunchResult> {
     if (opts?.agent && !this.isLaunchableAgent(opts.agent)) {
       return of({ success: false, message: this.comingSoonMessage(opts.agent) });
@@ -558,7 +564,7 @@ export class OpenClawGatewayService {
     const info = this.runtimeInfo(agent);
     const skipApprove = !info.pairing;
 
-    return this.resolveLaunchUrl(userId, agent, Boolean(opts?.strict)).pipe(
+    return this.resolveLaunchUrl(userId, agent, Boolean(opts?.strict), Boolean(opts?.bootstrap)).pipe(
       tap((res) => {
         this.opening = false;
         if (res.success && res.url && opts?.openTab === false && opts?.agent) {
@@ -572,7 +578,8 @@ export class OpenClawGatewayService {
             // Popup blocked — still surface the URL.
             window.location.href = res.url;
           }
-          if (!skipApprove) {
+          // A bootstrap launch pairs itself (non-admin scopes); no approve polling needed.
+          if (!skipApprove && res.pairingMode !== 'bootstrap') {
             this.approveDelayTimer(1500, () => this.triggerAutoApprove(12, 3000));
           }
         }
@@ -713,6 +720,7 @@ export class OpenClawGatewayService {
     userId?: string,
     agent?: MarketplaceAgent | null,
     strict = false,
+    bootstrap = false,
   ): Observable<OpenClawLaunchResult> {
     const kind = this.runtimeKind(agent);
     const hermes = kind === 'hermes';
@@ -723,7 +731,9 @@ export class OpenClawGatewayService {
     return this.http
       .post<OpenClawLaunchResult>(
         `${environment.apiUrl}/${path}/launch`,
-        { userId: userId || null },
+        kind === 'openclaw' && bootstrap
+          ? { userId: userId || null, controlUiBootstrap: true }
+          : { userId: userId || null },
         { headers: this.authHeaders() },
       )
       .pipe(
