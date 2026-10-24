@@ -86,9 +86,12 @@
   gap: 0.25rem;
   border-bottom: 1px solid #ececec;
   margin-bottom: 1.1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabs button {
+  flex: none;
   border: 0;
   background: transparent;
   padding: 0.85rem 0.9rem;
@@ -99,6 +102,7 @@
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
+  white-space: nowrap;
 }
 
 .tabs button.active {
@@ -673,6 +677,24 @@ th {
 @media (max-width: 600px) {
   .methods {
     grid-template-columns: 1fr;
+  }
+
+  .tabs button,
+  .quick__btns button,
+  .gpay-box__copy,
+  .method {
+    min-height: 44px;
+  }
+
+  .wallet,
+  .wallet-panel {
+    max-width: 100%;
+  }
+
+  .gpay-box__qr {
+    width: min(148px, 46vw);
+    height: auto;
+    aspect-ratio: 1;
   }
 }
 

@@ -44,8 +44,6 @@
   border: 1px solid var(--color-line);
   border-radius: 12px;
   padding: 1rem 1rem 1.15rem;
-  position: sticky;
-  top: 4.25rem;
 }
 
 /* Desktop: the sidebar fits the viewport so Apply/Reset stay visible; filters scroll inside. */
@@ -53,6 +51,8 @@
   .mkt-filter {
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 4.25rem;
     max-height: calc(100vh - 5.25rem);
     padding-bottom: 0;
   }

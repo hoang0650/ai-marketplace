@@ -255,8 +255,8 @@ const uid = () => Math.random().toString(36).slice(2, 10);
   styles: [`
 .ed-vc{border-top:1px solid var(--b, #2a2c33);padding-top:10px;margin-top:4px}.ed-vc-h{display:block;font-weight:600;margin-bottom:6px}
 .ed-fold{border:1px solid var(--b,#2a2c33);border-radius:8px;padding:8px 10px}.ed-fold summary{cursor:pointer;font-weight:600}
-:host{display:block}
-.ed{--bg:#0f1012;--p:#17181c;--p2:#1f2026;--b:#2a2c33;--t:#e9e9ec;--m:#8b8d98;--a:#22d3ee;--a2:#c9a961;background:var(--bg);color:var(--t);border-radius:14px;overflow:hidden;font-size:13px;min-height:calc(100vh - 140px);display:flex;flex-direction:column}
+:host{display:block;max-width:100%;min-width:0}
+.ed{--bg:#0f1012;--p:#17181c;--p2:#1f2026;--b:#2a2c33;--t:#e9e9ec;--m:#8b8d98;--a:#22d3ee;--a2:#c9a961;background:var(--bg);color:var(--t);border-radius:14px;overflow:hidden;font-size:13px;min-height:calc(100vh - 140px);max-width:100%;min-width:0;display:flex;flex-direction:column}
 .ed button,.ed select,.ed input,.ed textarea{font:inherit;color:inherit}
 .ed-top{display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--p);border-bottom:1px solid var(--b)}
 .ed-brand{font-weight:700;white-space:nowrap}.ed-brand span{color:var(--a2)}
@@ -332,8 +332,10 @@ const uid = () => Math.random().toString(36).slice(2, 10);
   .ed-main{grid-template-columns:1fr}.ed-panel,.ed-center{display:none}.m-show{display:flex !important;flex-direction:column}
   .ed-left.m-show{display:block !important}.ed-panel{max-height:none;border:0}
   .ed-mtabs{display:flex;background:var(--p);border-bottom:1px solid var(--b)}
-  .ed-top{flex-wrap:wrap}.ed-title{order:3;max-width:none;flex-basis:100%}.ed-top-r .ed-muted{display:none}
+  .ed-mtabs button,.ed-btn{min-height:44px}
+  .ed-top{flex-wrap:wrap}.ed-title{order:3;max-width:none;flex-basis:100%;min-width:0}.ed-top-r{flex-wrap:wrap;margin-left:0}.ed-top-r .ed-muted{display:none}
   .ed-stage{min-height:200px}.ed-tl-bar .ed-muted{display:none}
+  .ed-tracks{max-width:100%}
 }
 `],
 })

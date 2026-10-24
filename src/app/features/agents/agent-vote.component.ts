@@ -154,6 +154,10 @@ import { CommunityAgent, CommunityAgentsService, VoteBoard } from './community-a
     .cv__badge--pending { border-color: color-mix(in srgb, #e8b84a 60%, var(--color-line)); color: #9a6b00; }
     .cv__badge--ok { border-color: color-mix(in srgb, #2ecc71 50%, var(--color-line)); color: #1f8f55; }
     .cv__empty { margin: 0; color: var(--color-muted); }
+    .cv__meta { overflow-wrap: anywhere; }
+    @media (max-width: 640px) {
+      .cv__btn, .cv__input { min-height: 44px; }
+    }
     @media (max-width: 560px) {
       .cv__row { grid-template-columns: 40px minmax(0, 1fr); }
       .cv__rank { display: none; }

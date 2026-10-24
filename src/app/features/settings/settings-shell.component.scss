@@ -132,6 +132,16 @@
   }
 }
 
+@media (max-width: 640px) {
+  .settings-main {
+    padding: 1rem 0.85rem calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  .settings-nav a {
+    min-height: 44px;
+  }
+}
+
 [data-theme='dark'] {
   .settings-side,
   .settings-main {

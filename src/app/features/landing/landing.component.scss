@@ -165,6 +165,22 @@
   background: #d8bb78;
 }
 
+@media (max-width: 479.98px) {
+  .lux-search__icon {
+    margin-left: 0.7rem;
+  }
+
+  .lux-search input {
+    padding: 0.85rem 0.45rem;
+    font-size: 16px;
+  }
+
+  .lux-search__btn {
+    padding: 0 0.8rem;
+    letter-spacing: 0.02em;
+  }
+}
+
 .lux-hero__quick {
   margin-top: 1rem;
   display: flex;

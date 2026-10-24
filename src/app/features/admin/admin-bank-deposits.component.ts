@@ -40,6 +40,7 @@ interface AdminBankDeposit {
         <button type="button" (click)="load()">Search</button>
       </div>
       @if (msg()) { <p class="msg">{{ msg() }}</p> }
+      <div class="tbl-scroll">
       <table class="tbl">
         <thead>
           <tr><th>Created</th><th>User</th><th>Content</th><th>VND</th><th>USD credit</th><th>Status</th><th></th></tr>
@@ -65,12 +66,18 @@ interface AdminBankDeposit {
           }
         </tbody>
       </table>
+      </div>
     </section>
   `,
   styles: [
     `
-      .filters { display: flex; gap: 0.5rem; margin: 1rem 0; }
-      .tbl { width: 100%; border-collapse: collapse; }
+      .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+      .filters input, .filters select { min-width: 0; max-width: 100%; }
+      .tbl-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .tbl { width: 100%; border-collapse: collapse; min-width: 720px; }
+      @media (max-width: 640px) {
+        .filters button, .tbl button { min-height: 44px; }
+      }
       .tbl th, .tbl td { padding: 0.5rem; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; }
       .tbl button { margin-right: 0.25rem; }
     `,

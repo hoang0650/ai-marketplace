@@ -9,8 +9,10 @@
   --oc-ok: #3ddc84;
 
   min-height: calc(100vh - 4rem);
-  margin: -1.5rem -1rem 0;
-  padding: 1.25rem 1.25rem 2.5rem;
+  margin: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  padding: 1.25rem max(1.25rem, env(safe-area-inset-right)) calc(2.5rem + env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left));
   background: var(--oc-bg);
   color: var(--oc-text);
   border-radius: 0;
@@ -18,7 +20,7 @@
   flex-direction: column;
 
   @media (min-width: 768px) {
-    margin: -2rem -1.5rem 0;
+    margin: 0;
     padding: 1.5rem 2rem 3rem;
     min-height: calc(100vh - 5rem);
   }
@@ -94,6 +96,16 @@
   height: 0.5rem;
   border-radius: 999px;
   background: #666;
+}
+
+@media (max-width: 640px) {
+  .oc-setup__top-actions {
+    flex-wrap: wrap;
+  }
+
+  .oc-setup__pill--btn {
+    min-height: 44px;
+  }
 }
 
 .oc-setup__main {
@@ -667,6 +679,10 @@
   color: inherit;
   font-size: 0.82rem;
   cursor: pointer;
+
+  @media (max-width: 640px) {
+    min-height: 44px;
+  }
 }
 
 .oc-shell-tab--active {

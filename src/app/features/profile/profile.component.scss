@@ -77,6 +77,7 @@
   font-weight: 800;
   color: var(--color-ink);
   letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
 }
 
 .profile-hero__sub {
@@ -483,6 +484,15 @@
 @media (max-width: 720px) {
   .profile-hero__banner {
     height: 120px;
+  }
+
+  .profile-hero__name {
+    font-size: 1.25rem;
+  }
+
+  .profile-hero__actions .btn,
+  .profile-hero__actions a {
+    min-height: 44px;
   }
 
   .profile-hero__avatar {

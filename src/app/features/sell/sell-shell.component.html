@@ -23,7 +23,7 @@
               <p class="sell-nav-group__title sell-nav-group__title--static">{{ g.titleKey | t }}</p>
             }
           }
-          @if (!g.collapsible || isOpen(g.key) || collapsed()) {
+          @if (!g.collapsible || isOpen(g.key) || collapsed() || compactNav()) {
             <ul>
               @for (item of g.items; track item.path) {
                 @let label = item.labelKey | t;

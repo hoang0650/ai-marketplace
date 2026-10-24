@@ -88,7 +88,20 @@
         <span class="brand__text font-display">{{ brand }}</span>
       </a>
 
-      <nav class="site-header__nav" aria-label="Primary">
+      <button
+        type="button"
+        class="nav-burger"
+        [class.is-open]="mobileNavOpen()"
+        [attr.aria-expanded]="mobileNavOpen()"
+        [attr.aria-label]="'nav.menu' | t"
+        (click)="toggleMobileNav($event)"
+      >
+        <span class="nav-burger__bar"></span>
+        <span class="nav-burger__bar"></span>
+        <span class="nav-burger__bar"></span>
+      </button>
+
+      <nav class="site-header__nav" [class.is-open]="mobileNavOpen()" (click)="onNavClick($event)" aria-label="Primary">
         <a routerLink="/marketplace" routerLinkActive="active" class="nav-link">{{ 'nav.marketplace' | t }}</a>
 
         <div class="nav-dd" [class.open]="categoryOpen()">
