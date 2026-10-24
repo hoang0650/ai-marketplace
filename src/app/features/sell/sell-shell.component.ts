@@ -1,4 +1,5 @@
-import { Component, HostListener, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, HostListener, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
@@ -150,7 +151,9 @@ export class SellShellComponent {
   private readonly productsApi = inject(ProductService);
 
   readonly brand = environment.brandName;
+  private readonly platformId = inject(PLATFORM_ID);
   readonly collapsed = signal(false);
+  readonly compactNav = signal(false);
   readonly openGroups = signal<Record<string, boolean>>({
     setup: true,
     sales: true,
@@ -174,6 +177,7 @@ export class SellShellComponent {
   });
 
   constructor() {
+    if (isPlatformBrowser(this.platformId)) this.compactNav.set(window.innerWidth <= 960);
     this.shop.reload();
     const slug = this.auth.user()?.creatorSlug;
     if (slug && this.workspace() === 'seller') {
@@ -209,6 +213,12 @@ export class SellShellComponent {
   logout(): void {
     this.closeUserMenu();
     this.auth.logout();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.compactNav.set(window.innerWidth <= 960);
   }
 
   @HostListener('document:click')

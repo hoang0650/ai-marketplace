@@ -525,6 +525,12 @@
 }
 
 @media (max-width: 640px) {
+  .store-search {
+    min-width: 0;
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
   .store-stats {
     grid-template-columns: 1fr;
   }

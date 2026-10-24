@@ -1,7 +1,7 @@
 import { CurrencyPipe, isPlatformBrowser } from '@angular/common';
 import { WalletBalanceService } from '../services/wallet-balance.service';
 import { Component, ElementRef, HostListener, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { AuthService } from '../services/auth.service';
 import { DashboardService, WishlistService } from '../services/api.services';
@@ -70,6 +70,8 @@ export class ShellComponent {
   readonly notiOpen = signal(false);
   readonly langOpen = signal(false);
   readonly currencyOpen = signal(false);
+  readonly mobileNavOpen = signal(false);
+  private readonly router = inject(Router);
   private readonly feed = inject(NotificationsFeedService);
   readonly notifications = this.feed.items;
   readonly notiTab = signal<NotiTab>('all');
@@ -101,6 +103,9 @@ export class ShellComponent {
 
   constructor() {
     inject(AffiliateService).startTracking();
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) this.closeMobileNav();
+    });
     effect(() => {
       const authed = this.auth.isAuthenticated();
       if (!isPlatformBrowser(this.platformId)) return;
@@ -257,8 +262,49 @@ export class ShellComponent {
     }
   }
 
+  toggleMobileNav(event: Event): void {
+    event.stopPropagation();
+    this.mobileNavOpen.update((v) => !v);
+    this.closeCategories();
+    this.closeWork();
+    this.closeDocs();
+    this.closeUserMenu();
+    this.closeNoti();
+    this.closeLang();
+    this.closeCurrency();
+    this.closeCart();
+    this.syncNavLock();
+  }
+
+  closeMobileNav(): void {
+    if (!this.mobileNavOpen()) return;
+    this.mobileNavOpen.set(false);
+    this.syncNavLock();
+  }
+
+  onNavClick(event: Event): void {
+    const el = event.target as HTMLElement | null;
+    if (el?.closest('a')) this.closeMobileNav();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (window.innerWidth >= 900) this.closeMobileNav();
+  }
+
+  private syncNavLock(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    document.body.classList.toggle('nav-lock', this.mobileNavOpen());
+    const header = this.host.nativeElement.querySelector('.site-header') as HTMLElement | null;
+    if (header) {
+      document.documentElement.style.setProperty('--shell-nav-top', `${Math.round(header.getBoundingClientRect().bottom)}px`);
+    }
+  }
+
   @HostListener('document:keydown.escape')
   onEscape(): void {
+    this.closeMobileNav();
     this.closeCategories();
     this.closeWork();
     this.closeDocs();

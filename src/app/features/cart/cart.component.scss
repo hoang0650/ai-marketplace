@@ -496,6 +496,12 @@
 }
 
 @media (max-width: 640px) {
+  .qty button,
+  .trash {
+    width: 44px;
+    height: 44px;
+  }
+
   .line {
     grid-template-columns: auto 56px 1fr;
   }

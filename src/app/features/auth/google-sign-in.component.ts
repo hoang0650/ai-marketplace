@@ -101,6 +101,19 @@ import { I18nService } from '../../i18n/i18n.service';
         border-radius: 999px;
         white-space: nowrap;
       }
+      @media (max-width: 767.98px) {
+        .auth-oauth--compact .auth-oauth__google {
+          min-height: 44px;
+        }
+      }
+      @media (max-width: 639.98px) {
+        .auth-oauth--compact .auth-oauth__google {
+          width: 44px;
+          padding: 0;
+          font-size: 0;
+          gap: 0;
+        }
+      }
       .auth-oauth__google:hover:not(:disabled) {
         border-color: #dadce0;
         box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);

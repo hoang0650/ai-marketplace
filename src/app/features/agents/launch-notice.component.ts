@@ -72,7 +72,10 @@ import { LaunchNoticeService } from './launch-notice.service';
     .ln-backdrop { position: fixed; inset: 0; background: rgba(5, 8, 20, 0.6); z-index: 1000; }
     .ln-modal {
       position: fixed; z-index: 1001; left: 50%; top: 50%; transform: translate(-50%, -50%);
-      width: min(480px, calc(100vw - 32px)); padding: 24px; border-radius: 16px;
+      width: min(480px, calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+      max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow: auto;
+      padding: 24px; border-radius: 16px;
       background: #0f1424; color: #e8ecf8; border: 1px solid #2b8a5a; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
       font-family: inherit;
     }
@@ -89,8 +92,12 @@ import { LaunchNoticeService } from './launch-notice.service';
     .ln-reason { color: #c3c8d8; font-size: 13px; }
     .ln-actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .ln-btn {
-      display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 10px; border: 1px solid #34405e;
+      display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border-radius: 10px; border: 1px solid #34405e;
       background: transparent; color: #e8ecf8; font-size: 14px; text-decoration: none; cursor: pointer;
+    }
+    @media (max-width: 640px) {
+      .ln-btn { min-height: 44px; }
+      .ln-actions { display: grid; }
     }
     .ln-btn--primary { background: #3b6cff; border-color: #3b6cff; color: #fff; font-weight: 600; }
     .ln-btn--ghost { border-color: transparent; color: #9aa3bd; }

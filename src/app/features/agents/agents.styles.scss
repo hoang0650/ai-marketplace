@@ -182,14 +182,18 @@
 
 .agents-tabs {
   display: inline-flex;
+  max-width: 100%;
   gap: 0.35rem;
   padding: 0.25rem;
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--color-mist) 80%, transparent);
   margin-bottom: 1.25rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .agents-tab {
+  flex: none;
   border: 0;
   background: transparent;
   color: var(--color-muted);
@@ -197,6 +201,11 @@
   padding: 0.45rem 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+
+  @media (max-width: 767.98px) {
+    min-height: 44px;
+  }
 
   &.active {
     background: color-mix(in srgb, var(--color-paper) 90%, transparent);
