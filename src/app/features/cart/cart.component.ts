@@ -89,6 +89,16 @@ export class CartComponent implements OnInit {
     });
   }
 
+  private defaultTerm(line: { product: Product }): 'day' | 'month' | 'year' {
+    const t = line.product.contentMeta?.licenseTerm;
+    return t === 'day' || t === 'year' ? t : 'month';
+  }
+
+  termUnit(term: string): string {
+    if (!term) return '';
+    return this.i18n.t(term === 'day' ? 'pd.unitDay' : term === 'month' ? 'pd.unitMonth' : 'pd.unitYear');
+  }
+
   toggleAll(): void {
     this.cart.toggleAll(!this.allSelected());
   }
@@ -124,12 +134,8 @@ export class CartComponent implements OnInit {
       this.billing.checkout({
         productId: line.product.id,
         quantity: line.qty,
-        licenseTerm: isLicenseCategory(line.product.category)
-          ? line.product.contentMeta?.licenseTerm === 'day' ||
-            line.product.contentMeta?.licenseTerm === 'year'
-            ? line.product.contentMeta.licenseTerm
-            : 'month'
-          : undefined,
+        // The period chosen on the product page (stored on the cart line), so the charge matches the cart.
+        licenseTerm: isLicenseCategory(line.product.category) ? line.licenseTerm || this.defaultTerm(line) : undefined,
         // Same key for a retried pay of the same line, so a lost response never charges twice.
         idempotencyKey: this.payKey(line.product.id, line.qty),
       }),

@@ -163,7 +163,17 @@ export class ProductDetailComponent implements OnInit {
   /** Skill / dataset downloads unlock with the same AIM-xxxx license as film/story. */
   readonly canUnlockDownload = computed(() => this.canPlayContent());
   qty = 1;
-  licenseTerm: 'day' | 'month' | 'year' = 'month';
+  /** Signal-backed so every computed price (plan cards, subtotal, total) follows the chosen period. */
+  private readonly licenseTermSig = signal<'day' | 'month' | 'year'>('month');
+  get licenseTerm(): 'day' | 'month' | 'year' {
+    return this.licenseTermSig();
+  }
+  set licenseTerm(term: 'day' | 'month' | 'year') {
+    this.licenseTermSig.set(term);
+  }
+  /** Server verdict for raw file downloads: who unlocked them, or null when locked. */
+  readonly filesAccess = signal<'admin' | 'seller' | 'license' | null>(null);
+  readonly filesLicenseExpiresAt = signal<string | null>(null);
   readonly licenseTerms = ['day', 'month', 'year'] as const;
   useCoupon = false;
   couponCode = '';
@@ -457,10 +467,18 @@ export class ProductDetailComponent implements OnInit {
     if (pr.model === 'usage' && qty === 1) {
       return this.currencySvc.formatUsageFromUsd(usd, pr.usageUnit || 'unit', this.displayCurrency);
     }
+    if (isLicenseCategory(p.category)) {
+      return `${this.currencySvc.formatFromUsd(usd, this.displayCurrency)}/${this.termUnit(this.licenseTerm)}`;
+    }
     if (pr.model === 'subscription' && qty === 1) {
       return `${this.currencySvc.formatFromUsd(usd, this.displayCurrency)}/${pr.interval}`;
     }
     return this.currencySvc.formatFromUsd(usd, this.displayCurrency);
+  }
+
+  /** Short unit for a license period, e.g. "$3.00/ngày" — never the listing's default interval. */
+  termUnit(term: 'day' | 'month' | 'year'): string {
+    return this.i18n.t(term === 'day' ? 'pd.unitDay' : term === 'month' ? 'pd.unitMonth' : 'pd.unitYear');
   }
 
   unitUsd(p: Product): number {
@@ -519,7 +537,8 @@ export class ProductDetailComponent implements OnInit {
   displayTotal(p: Product): string {
     const preview = this.couponPreview();
     if (preview && preview.code === this.couponCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')) {
-      return this.currencySvc.formatFromUsd(preview.total, this.displayCurrency);
+      const total = this.currencySvc.formatFromUsd(preview.total, this.displayCurrency);
+      return isLicenseCategory(p.category) ? `${total}/${this.termUnit(this.licenseTerm)}` : total;
     }
     return this.displayPrice(p, this.qty);
   }
@@ -660,8 +679,16 @@ export class ProductDetailComponent implements OnInit {
 
   loadProductFiles(productId: string): void {
     this.contentApi.productFiles(productId).subscribe({
-      next: (res) => this.productFiles.set(res.files || []),
-      error: () => this.productFiles.set([]),
+      next: (res) => {
+        this.productFiles.set(res.files || []);
+        // The API decides; older responses without `access` fall back to the boolean.
+        this.filesAccess.set(res.unlocked ? res.access || 'license' : null);
+        this.filesLicenseExpiresAt.set(res.licenseExpiresAt || null);
+      },
+      error: () => {
+        this.productFiles.set([]);
+        this.filesAccess.set(null);
+      },
     });
   }
 
@@ -675,7 +702,7 @@ export class ProductDetailComponent implements OnInit {
   downloadProductFile(f: ProductFile): void {
     const p = this.product();
     if (!p) return;
-    if (!this.canUnlockDownload()) {
+    if (!this.filesAccess()) {
       this.fileError.set(this.i18n.t('pd.licenseRequired'));
       return;
     }
@@ -693,7 +720,13 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (err) => {
         this.fileDownloading.set('');
-        this.fileError.set(err?.status === 402 ? this.i18n.t('pd.licenseRequired') : err?.error?.message || this.i18n.t('pd.fileDownloadFailed'));
+        if (err?.status === 402) {
+          // License expired or missing: lock the list again instead of leaving stale buttons.
+          this.filesAccess.set(null);
+          this.fileError.set(this.i18n.t('pd.licenseRequired'));
+          return;
+        }
+        this.fileError.set(err?.error?.message || this.i18n.t('pd.fileDownloadFailed'));
       },
     });
   }
@@ -1877,6 +1910,7 @@ export class ProductDetailComponent implements OnInit {
         });
         if (res.license?.licenseKey) {
           this.issuedLicense.set(res.license);
+          if (isDownloadLicenseCategory(p.category)) this.loadProductFiles(p.id);
           this.checkoutMsg.set(
             this.i18n.t(isFilmCategory(p.category) ? 'pd.watchOk' : 'pd.licenseOk', {
               key: res.license.licenseKey,
@@ -2016,7 +2050,7 @@ export class ProductDetailComponent implements OnInit {
       void this.router.navigate(['/cart']);
       return;
     }
-    this.cart.add(p.id).subscribe({
+    this.cart.add(p.id, 1, isLicenseCategory(p.category) ? this.licenseTerm : undefined).subscribe({
       error: (err) => this.checkoutMsg.set(err?.error?.message || this.i18n.t('cart.err.addFail')),
     });
   }

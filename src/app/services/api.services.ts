@@ -81,6 +81,14 @@ import { RunpodModelSchema } from '../models/runpod-schema';
 
 export type { RunpodModelSchema, RunpodParamSpec } from '../models/runpod-schema';
 
+/** `access` says why files are unlocked ('admin' / 'seller' / 'license'); null means locked. */
+export interface ProductFilesResponse {
+  files: ProductFile[];
+  unlocked: boolean;
+  access?: 'admin' | 'seller' | 'license' | null;
+  licenseExpiresAt: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RunpodService {
   private readonly http = inject(HttpClient);
@@ -261,8 +269,8 @@ export class ContentService {
   }
 
   /** Skill pack / dataset files (list is public; download needs an active license). */
-  productFiles(productId: string): Observable<{ files: ProductFile[]; unlocked: boolean; licenseExpiresAt: string | null }> {
-    return this.http.get<{ files: ProductFile[]; unlocked: boolean; licenseExpiresAt: string | null }>(
+  productFiles(productId: string): Observable<ProductFilesResponse> {
+    return this.http.get<ProductFilesResponse>(
       `${this.base}/product-files/${productId}`,
     );
   }
