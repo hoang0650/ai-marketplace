@@ -60,6 +60,7 @@ import {
   ChatConversation,
   ChatMessage,
   ContentEpisode,
+  ProductFile,
   SeriesInfo,
   ContentUnlock,
   ReaderBookmark,
@@ -254,6 +255,20 @@ export class ContentService {
 
   download(episodeId: string, licenseKey?: string): Observable<Blob> {
     return this.http.get(`${this.base}/content/episodes/${episodeId}/download`, {
+      responseType: 'blob',
+      headers: licenseKey ? { 'x-license-key': licenseKey } : undefined,
+    });
+  }
+
+  /** Skill pack / dataset files (list is public; download needs an active license). */
+  productFiles(productId: string): Observable<{ files: ProductFile[]; unlocked: boolean; licenseExpiresAt: string | null }> {
+    return this.http.get<{ files: ProductFile[]; unlocked: boolean; licenseExpiresAt: string | null }>(
+      `${this.base}/product-files/${productId}`,
+    );
+  }
+
+  downloadProductFile(productId: string, fileId: string, licenseKey?: string): Observable<Blob> {
+    return this.http.get(`${this.base}/product-files/${productId}/${fileId}/download`, {
       responseType: 'blob',
       headers: licenseKey ? { 'x-license-key': licenseKey } : undefined,
     });

@@ -20,7 +20,7 @@ import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { switchMap } from 'rxjs';
-import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, CouponPreview, StreamDevice } from '../../models/marketplace.models';
+import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, ProductFile, CouponPreview, StreamDevice } from '../../models/marketplace.models';
 import { HireService } from '../../services/hire.service';
 import { WalletBalanceService } from '../../services/wallet-balance.service';
 import { NotificationsFeedService } from '../../services/notifications-feed.service';
@@ -124,6 +124,10 @@ export class ProductDetailComponent implements OnInit {
   readonly lastOrderId = signal('');
   readonly issuedLicense = signal<IssuedLicense | null>(null);
   readonly episodes = signal<ContentEpisode[]>([]);
+  /** Skill pack / dataset files the license unlocks. */
+  readonly productFiles = signal<ProductFile[]>([]);
+  readonly fileDownloading = signal('');
+  readonly fileError = signal('');
   readonly selectedEpisode = signal<ContentEpisode | null>(null);
   readonly playUrl = signal('');
   readonly playKind = signal('');
@@ -413,6 +417,11 @@ export class ProductDetailComponent implements OnInit {
         if (isWatchContentCategory(p.category)) {
           this.loadEpisodes(p.slug);
         }
+        this.productFiles.set([]);
+        this.fileError.set('');
+        if (isDownloadLicenseCategory(p.category)) {
+          this.loadProductFiles(p.id);
+        }
         if (isLicenseCategory(p.category)) {
           this.loadMyLicense(p.id);
         }
@@ -646,6 +655,46 @@ export class ProductDetailComponent implements OnInit {
     this.contentApi.episodes(slug).subscribe({
       next: (rows) => this.episodes.set(rows),
       error: () => this.episodes.set([]),
+    });
+  }
+
+  loadProductFiles(productId: string): void {
+    this.contentApi.productFiles(productId).subscribe({
+      next: (res) => this.productFiles.set(res.files || []),
+      error: () => this.productFiles.set([]),
+    });
+  }
+
+  fileSize(bytes: number): string {
+    const n = Number(bytes) || 0;
+    if (n >= 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)} MB`;
+    if (n >= 1024) return `${Math.round(n / 1024)} KB`;
+    return `${n} B`;
+  }
+
+  downloadProductFile(f: ProductFile): void {
+    const p = this.product();
+    if (!p) return;
+    if (!this.canUnlockDownload()) {
+      this.fileError.set(this.i18n.t('pd.licenseRequired'));
+      return;
+    }
+    this.fileError.set('');
+    this.fileDownloading.set(f.id);
+    this.contentApi.downloadProductFile(p.id, f.id, this.issuedLicense()?.licenseKey).subscribe({
+      next: (blob) => {
+        this.fileDownloading.set('');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = f.filename;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      },
+      error: (err) => {
+        this.fileDownloading.set('');
+        this.fileError.set(err?.status === 402 ? this.i18n.t('pd.licenseRequired') : err?.error?.message || this.i18n.t('pd.fileDownloadFailed'));
+      },
     });
   }
 

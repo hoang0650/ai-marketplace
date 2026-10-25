@@ -471,6 +471,31 @@
               <p class="cost-hint">{{ (isDataset(p.category) ? 'pd.datasetInstalledHint' : 'pd.skillInstalledHint') | t }}</p>
             }
           }
+          @if (productFiles().length) {
+            <h3 class="mt-4 text-sm font-semibold">{{ 'pd.filesTitle' | t }}</h3>
+            <ul class="episode-list">
+              @for (f of productFiles(); track f.id) {
+                <li class="episode-row">
+                  <span class="episode-row__play">
+                    <span class="episode-row__idx">{{ f.index }}</span>
+                    <span>
+                      <span class="font-mono">{{ f.filename }}</span>
+                      <em class="episode-row__pages">{{ fileSize(f.size) }}</em>
+                      @if (f.description) {
+                        <span class="block text-xs text-muted">{{ f.description }}</span>
+                      }
+                    </span>
+                  </span>
+                  <button type="button" class="btn btn-outline text-xs" (click)="downloadProductFile(f)" [disabled]="!canUnlockDownload() || fileDownloading() === f.id">
+                    {{ fileDownloading() === f.id ? ('pd.fileDownloading' | t) : ('pd.downloadFile' | t) }}
+                  </button>
+                </li>
+              }
+            </ul>
+            @if (fileError()) {
+              <p class="mt-2 text-sm" style="color:#c62828">{{ fileError() }}</p>
+            }
+          }
         </section>
         <aside class="pg-pane">
           <div class="pg-pane__head">

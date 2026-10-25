@@ -348,6 +348,17 @@ export interface IssuedLicense {
   valid: boolean;
 }
 
+/** Downloadable file of a licensed skill pack / dataset (GET /v1/product-files/:productId). */
+export interface ProductFile {
+  id: string;
+  index: number;
+  filename: string;
+  contentType: string;
+  size: number;
+  description?: string;
+  updatedAt?: string;
+}
+
 export interface ContentEpisode {
   id: string;
   productId: string;
