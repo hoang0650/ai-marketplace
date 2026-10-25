@@ -535,7 +535,7 @@ export class DashboardAnalyticsComponent implements OnInit {
             <p class="mt-3 text-xs text-muted">Sau khi Publish, tải từng tập/chương (ảnh hoặc video, tối đa 80MB) ở danh sách sản phẩm bên dưới. Mỗi listing cấp một license AIM-xxxx riêng — cùng shop không dùng chung key. Người mua chỉ xem / đọc online (không tải về); hết hạn thì dừng ngay.</p>
             }
             @if (draft.category === 'skill-pack' || draft.category === 'dataset') {
-            <p class="mt-3 text-xs text-muted">Buyer thanh toán theo ngày/tháng/năm sẽ nhận license key AIM-xxxx (email + dashboard). Key chỉ mở khóa đúng listing này — hết hạn thì không còn quyền tải/cài.</p>
+            <p class="mt-3 text-xs text-muted">Buyer thanh toán theo ngày/tháng/năm sẽ nhận license key AIM-xxxx (email + dashboard). Key chỉ mở khóa đúng listing này, chỉ dùng online (API / skill chạy phía máy chủ trong sandbox cách ly, không tải về) — hết hạn thì dừng ngay.</p>
             }
             @if (draft.category === 'voice-clone') {
             <p class="mt-3 text-xs text-muted">Giọng clone của bạn bán giống giọng sàn: không có license thì trừ phí theo ký tự; có AIM-xxxx còn hạn thì TTS/STT không trừ usage.</p>
@@ -603,8 +603,19 @@ export class DashboardAnalyticsComponent implements OnInit {
           <input class="input" [(ngModel)]="draft.skillsText" name="skillsText" placeholder="web-search, code-exec, memory" />
         </div>
         }
+        @if (isOnlineTermsDraft()) {
+          <label class="md:col-span-2 flex items-start gap-2 rounded-lg border border-line p-3 text-xs text-muted">
+            <input type="checkbox" class="mt-0.5" [(ngModel)]="draft.acceptOnlineTerms" name="acceptOnlineTerms" required />
+            <span>
+              Tôi đồng ý sản phẩm này được phân phối cho người mua theo
+              <a href="/terms-of-service#online-license" target="_blank" rel="noopener" class="underline">Giấy phép trực tuyến AI Markets (AIM-OL 1.0)</a>:
+              không độc quyền, không chuyển nhượng, không cấp phép lại, chỉ trong thời hạn license, chỉ dùng qua API / trình phát / trình đọc / skill chạy trên máy chủ,
+              có watermark và mã truy vết. Tôi bảo đảm có quyền cấp phép như vậy (kể cả dữ liệu, mã của bên thứ ba) và giữ nguyên thông báo giấy phép gốc (ví dụ MIT).
+            </span>
+          </label>
+        }
         <div class="md:col-span-2 flex flex-wrap items-center gap-3">
-          <button class="btn btn-fill" type="submit" [disabled]="publishing || (isTemplateDraft() && !templateBuild)">
+          <button class="btn btn-fill" type="submit" [disabled]="publishing || (isTemplateDraft() && !templateBuild) || (isOnlineTermsDraft() && !draft.acceptOnlineTerms)">
             {{ publishing ? 'Publishing…' : 'Publish' }}
           </button>
           @if (isTemplateDraft() && !templateBuild) {
@@ -899,7 +910,13 @@ export class DashboardProductsComponent implements OnInit {
       compareAtPrice: 0,
       negotiable: true,
       affiliatePct: '' as number | string,
+      acceptOnlineTerms: false,
     };
+  }
+
+  /** dataset / skill-pack / ai-film-series / story-book are sold online-only under AIM-OL. */
+  isOnlineTermsDraft(): boolean {
+    return ['dataset', 'skill-pack', 'ai-film-series', 'story-book'].includes(String(this.draft.category));
   }
 
   /** Seller affiliate commission 0–25% → fraction; empty = store default (null). Server re-validates. */
@@ -1204,6 +1221,7 @@ export class DashboardProductsComponent implements OnInit {
         productKind: this.draft.productKind || 'DIGITAL',
         pricing,
         affiliateRate: this.draftAffiliateRate(),
+        ...(this.isOnlineTermsDraft() ? { acceptOnlineTerms: !!this.draft.acceptOnlineTerms } : {}),
         contentMeta,
         runtime: {
           serverlessEndpoint: this.draft.serverlessEndpoint.trim(),
@@ -1266,6 +1284,7 @@ export class DashboardProductsComponent implements OnInit {
         productKind: this.draft.productKind || 'DIGITAL',
         pricing,
         affiliateRate: this.draftAffiliateRate(),
+        ...(this.isOnlineTermsDraft() ? { acceptOnlineTerms: !!this.draft.acceptOnlineTerms } : {}),
         coverUrl: this.draft.coverUrl || undefined,
         gallery: this.draft.coverUrl ? [this.draft.coverUrl] : undefined,
         tags,

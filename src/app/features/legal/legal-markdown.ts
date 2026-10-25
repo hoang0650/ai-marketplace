@@ -64,7 +64,11 @@ export function renderLegalMarkdown(source: string): string {
     const heading = /^(#{1,4})\s+(.+)$/.exec(line);
     if (heading) {
       const level = heading[1].length;
-      out.push(`<h${level}>${inline(emphasisHeading(heading[2]))}</h${level}>`);
+      // Optional explicit anchor: "## Title {#online-license}" → <h2 id="online-license">
+      const anchor = /\s*\{#([a-z0-9-]{1,64})\}\s*$/.exec(heading[2]);
+      const text = anchor ? heading[2].slice(0, anchor.index) : heading[2];
+      const id = anchor ? ` id="${anchor[1]}"` : '';
+      out.push(`<h${level}${id}>${inline(emphasisHeading(text))}</h${level}>`);
       i += 1;
       continue;
     }

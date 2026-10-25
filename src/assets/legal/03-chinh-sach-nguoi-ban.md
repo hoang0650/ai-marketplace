@@ -8,7 +8,7 @@
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày hiệu lực:** 05/10/2026  
-**Phiên bản:** 2.1
+**Phiên bản:** 2.2 (25/10/2026: sản phẩm trực tuyến theo AIM-OL)
 
 ---
 
@@ -49,6 +49,7 @@ Nền tảng không nhận đăng tin tuyển dụng, vị trí việc làm, h�
 - **Dataset, giọng đọc AI:** công bố rõ giấy phép có cho phép dùng để huấn luyện, tinh chỉnh mô hình hay không; người mua chỉ dùng cho huấn luyện khi giấy phép cho phép.
 - **Dịch vụ chuyên môn trọn gói:** chia gói thành các giai đoạn (mặc định 30% – 40% – 30%); bàn giao từng giai đoạn trong không gian dự án, chỉnh sửa khi người mua yêu cầu; tiền được ghi nhận khi người mua nghiệm thu từng giai đoạn và tạm giữ 48 giờ; khi người mua chấm dứt, giai đoạn chưa nghiệm thu bị hủy; người bán phản hồi khiếu nại trong thời hạn quy định. Mô tả rõ phạm vi công việc, kết quả bàn giao, thời hạn và giá theo gói (không tính theo giờ, ngày hay tháng làm việc); không chứa tin tuyển dụng, vị trí việc làm, tiền lương, hồ sơ xin việc; tuân thủ khoản 6 Mục X của [Quy chế hoạt động](01-quy-che-hoat-dong-san-tmdt.md).
 - **Dataset:** khai báo nguồn gốc, quyền phân phối và giấy phép sử dụng; không chứa dữ liệu cá nhân hoặc dữ liệu thu thập trái phép.
+- **Dataset, gói kỹ năng (skill), phim AI, truyện/sách AI:** chỉ phân phối trực tuyến (API, trình phát/trình đọc, trình chạy skill phía máy chủ trong môi trường cách ly), không bán tệp tải về. Khi đăng bán, người bán **đồng ý sản phẩm được phân phối cho người mua theo [Giấy phép trực tuyến AI Markets (AIM-OL)](02-dieu-khoan-su-dung.md)** (Điều 14 Điều khoản sử dụng): giấy phép và tóm tắt điều khoản của sản phẩm được đặt mặc định theo AIM-OL; ghi chú riêng của người bán chỉ được bổ sung, không được trái với AIM-OL. Người bán bảo đảm có quyền cấp phép lại đối với dữ liệu, mã của bên thứ ba và giữ nguyên thông báo giấy phép gốc (ví dụ MIT).
 - **API, compute, máy chủ trò chơi:** khai báo đơn giá theo đơn vị sử dụng; tích hợp qua cổng (gateway) của nền tảng để mức sử dụng được đo cho từng người mua; máy chủ trò chơi chỉ cho thuê máy, không phát hành, vận hành trò chơi.
 
 ## Điều 6. Phí, doanh thu và chi trả

@@ -498,6 +498,10 @@ export interface Product {
   sellerName?: string;
   license?: string;
   termsSummary?: string;
+  /** AI Markets Online License acceptance (online-only categories). */
+  onlineTerms?: { version: string; acceptedAt: string | null; url: string } | null;
+  /** Create-only: seller accepts AIM-OL for dataset / skill / film / book listings. */
+  acceptOnlineTerms?: boolean;
   complianceStatus?: string;
   moderationStatus?: string;
   creatorId: string;
