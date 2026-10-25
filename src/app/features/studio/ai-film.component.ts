@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -26,6 +27,8 @@ interface Scene {
   source: 'ai' | 'upload'; uploadId?: string; startUploadId?: string; chainPrev?: boolean; characterIds?: string[]; settingId?: string | null;
   status: string; error?: string; generation?: number; keyframes?: { v: number; frameKey: string }[]; shots: Shot[];
 }
+interface AssetImg { key: string; source: string; url: string }
+interface Asset { id: string; type: 'character' | 'setting'; name: string; description: string; status: string; images: AssetImg[] }
 interface Upload { uid: string; kind: 'video' | 'image' | 'audio'; name: string; key: string; size: number; duration?: number; status: string }
 interface Render { job: string; key: string; status: string; duration?: number; bytes?: number; createdAt?: string }
 interface Project {
@@ -38,7 +41,7 @@ interface EstItem { sid: string; shots: number[]; seconds: number; images: numbe
 interface Estimate { items: EstItem[]; total: number; render: { ttsChars: number; price: number }; available: number }
 interface Voice { label: string; id: string }
 interface Seg { scene: Scene; idx: number; start: number; dur: number; shot: number; video: string; thumb: string; offset: number }
-interface Confirm { kind: 'scenes' | 'render'; items: EstItem[]; total: number; balance: number; renderLine?: string }
+interface Confirm { kind: 'scenes' | 'render' | 'asset'; assetId?: string; items: EstItem[]; total: number; balance: number; renderLine?: string }
 
 const FALLBACK_VOICES: Voice[] = [
   { id: 'Binh', label: 'Bình (nam miền Bắc)' }, { id: 'Tuyen', label: 'Tuyên (nam miền Bắc)' },
@@ -64,7 +67,7 @@ export function splitDuration(total: number): number[] {
 @Component({
   selector: 'app-ai-film',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, NgTemplateOutlet],
   template: `
 <div class="ed" data-testid="film-editor">
   <header class="ed-top">
@@ -119,6 +122,8 @@ export function splitDuration(total: number): number[] {
               }
             </div>
           }
+          @case ('cast') { <ng-container *ngTemplateOutlet="assetLib; context: { type: 'character' }"></ng-container> }
+          @case ('sets') { <ng-container *ngTemplateOutlet="assetLib; context: { type: 'setting' }"></ng-container> }
           @case ('uploads') {
             <label class="ed-btn ed-block" [class.dis]="!project()">⤒ {{ t('film.ed.upload') }}<input type="file" accept="image/*,video/*,audio/*" multiple hidden (change)="upload($event)" [disabled]="!project()" data-testid="film-upload" /></label>
             <p class="ed-muted">{{ t('film.v2.uploadHint') }}</p>
@@ -230,6 +235,22 @@ export function splitDuration(total: number): number[] {
           @if (index(c.sid) > 0) {
             <label class="ed-check"><input type="checkbox" [(ngModel)]="c.chainPrev" (ngModelChange)="edit()" data-testid="film-chain" /> {{ t('film.v2.chain') }}</label>
           }
+          <div class="ed-refs" data-testid="film-refs">
+            <b>{{ t('film.v2.cast') }}</b>
+            <div class="ed-chips">
+              @for (a of assetsOf('character'); track a.id) {
+                <button class="ed-chip" [class.on]="usesRef(a)" (click)="toggleRef(a)" [disabled]="c.status === 'generating'" [attr.data-testid]="'ref-' + a.id">
+                  @if (a.images[0]; as im) { <img [src]="im.url" alt="" /> } {{ a.name }}</button>
+              } @empty { <button class="ed-chip" (click)="lib.set('cast'); mtab.set('lib')">＋ {{ t('film.v2.castNew') }}</button> }
+            </div>
+            <label>{{ t('film.v2.setting') }}
+              <select [ngModel]="c.settingId || ''" (ngModelChange)="c.settingId = $event || null; edit()" data-testid="film-setting">
+                <option value="">—</option>
+                @for (a of assetsOf('setting'); track a.id) { <option [value]="a.id">🏞 {{ a.name }}</option> }
+              </select>
+            </label>
+            @if ((c.characterIds || []).length || c.settingId) { <p class="ed-muted">{{ t('film.v2.refsHint') }}</p> }
+          </div>
           <label>{{ t('film.v2.startImage') }}
             <select [(ngModel)]="c.startUploadId" (ngModelChange)="edit()">
               <option value="">{{ t('film.v2.startAuto') }}</option>
@@ -309,6 +330,45 @@ export function splitDuration(total: number): number[] {
   </section>
   @if (musicUrl()) { <audio #musicEl [src]="musicUrl()" loop></audio> }
 
+
+  <ng-template #assetLib let-type="type">
+    <p class="ed-muted">{{ t(type === 'character' ? 'film.v2.castHint' : 'film.v2.setsHint') }}</p>
+    <div class="ed-newa">
+      <input [(ngModel)]="newAsset.name" [placeholder]="t(type === 'character' ? 'film.v2.castName' : 'film.v2.setName')" maxlength="60" [attr.data-testid]="'asset-name-' + type" />
+      <textarea rows="2" [(ngModel)]="newAsset.description" [placeholder]="t(type === 'character' ? 'film.v2.castDesc' : 'film.v2.setDesc')" maxlength="400" [attr.data-testid]="'asset-desc-' + type"></textarea>
+      <button class="ed-btn ed-block" (click)="createAsset(type)" [disabled]="!newAsset.name.trim() || !loggedIn()" [attr.data-testid]="'asset-create-' + type">＋ {{ t('film.v2.assetCreate') }}</button>
+    </div>
+    @for (a of assetsOf(type); track a.id) {
+      <div class="ed-asset" [attr.data-testid]="'asset-' + a.id">
+        <div class="ed-ahead">
+          @if (a.images[0]; as im) { <img [src]="im.url" alt="" loading="lazy" /> } @else { <span class="ed-ph">{{ type === 'character' ? '👤' : '🏞' }}</span> }
+          <div class="ed-ainfo">
+            <input [(ngModel)]="a.name" (change)="saveAsset(a)" maxlength="60" />
+            <textarea rows="2" [(ngModel)]="a.description" (change)="saveAsset(a)" maxlength="400"></textarea>
+          </div>
+        </div>
+        @if (a.images.length > 1) {
+          <div class="ed-astrip">
+            @for (im of a.images; track im.key; let k = $index) {
+              <span class="ed-aimg" [class.sel]="k === 0"><img [src]="im.url" alt="" (click)="primaryImage(a, im.key)" [title]="t('film.v2.assetPrimary')" />
+                <button class="ed-x" (click)="removeAssetImage(a, im.key)">✕</button></span>
+            }
+          </div>
+        }
+        @if (a.status === 'generating') { <p class="ed-muted">⏳ {{ t('film.v2.assetGenerating') }}</p> }
+        <div class="ed-2">
+          <button class="ed-btn" (click)="generateAsset(a)" [disabled]="!canGenerate() || a.status === 'generating' || a.images.length >= 6" [attr.data-testid]="'asset-gen-' + a.id">✨ {{ t(a.images.length ? 'film.v2.assetVariant' : 'film.v2.assetGen') }}</button>
+          <label class="ed-btn" [class.dis]="a.images.length >= 6">⤒ {{ t('film.v2.assetUpload') }}<input type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="uploadAssetImage($event, a)" [disabled]="a.images.length >= 6" /></label>
+        </div>
+        <div class="ed-2">
+          @if (sel()?.source === 'ai') {
+            <button class="ed-btn" (click)="toggleRef(a)" [class.on]="usesRef(a)">{{ usesRef(a) ? '✓ ' + t('film.v2.inScene') : '＋ ' + t('film.v2.addToScene') }}</button>
+          }
+          <button class="ed-btn ed-danger" (click)="deleteAsset(a)" [disabled]="a.status === 'generating'">🗑</button>
+        </div>
+      </div>
+    } @empty { <p class="ed-muted">{{ t('film.v2.assetEmpty') }}</p> }
+  </ng-template>
   @if (confirm(); as cf) {
     <div class="ed-modal" (click)="confirm.set(null)">
       <div class="ed-dlg" (click)="$event.stopPropagation()" data-testid="film-estimate">
@@ -320,7 +380,7 @@ export function splitDuration(total: number): number[] {
             }
             @if (cf.items.length > 12) { <li>… +{{ cf.items.length - 12 }}</li> }
           </ul>
-        } @else { <p>{{ cf.renderLine }}</p> }
+        } @else { <p data-testid="film-est-line">{{ cf.renderLine }}</p> }
         <p class="ed-total">{{ t('film.v2.estTotal', { price: money(cf.total) }) }}</p>
         <p class="ed-muted">{{ t('film.v2.estBalance', { bal: money(cf.balance) }) }}</p>
         <p class="ed-muted">{{ t('film.v2.estNote') }}</p>
@@ -360,12 +420,13 @@ export function splitDuration(total: number): number[] {
 .ed-right{border-right:0;border-left:1px solid var(--b);padding:12px;display:flex;flex-direction:column;gap:10px}
 .ed-right h3{font-size:14px;margin:0}
 .ed-right label{display:flex;flex-direction:column;gap:4px;color:var(--m);font-size:12px}
-.ed-right textarea,.ed-right select,.ed-right input[type=range]{background:var(--p2);border:1px solid var(--b);border-radius:8px;padding:7px;color:var(--t);resize:vertical}
+.ed-right textarea,.ed-right select,.ed-right input[type=range],.ed-lib input:not([type]),.ed-lib textarea,.ed-shot input{background:var(--p2);border:1px solid var(--b);border-radius:8px;padding:7px;color:var(--t);resize:vertical}
 .ed-right input[type=range]{padding:0;accent-color:var(--a)}
 .ed-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ed-errtxt{color:#fca5a5;font-size:12px}
-.ed-tabs{display:flex;border-bottom:1px solid var(--b);position:sticky;top:0;background:var(--p)}
+.ed-tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--b);position:sticky;top:0;background:var(--p)}
 .ed-tabs button,.ed-mtabs button{flex:1;padding:9px 4px;background:none;border:0;border-bottom:2px solid transparent;color:var(--m);cursor:pointer}
+.ed-tabs button{flex:1 0 33%;font-size:12.5px;white-space:nowrap}
 .ed-tabs button.on,.ed-mtabs button.on{color:var(--t);border-color:var(--a)}
 .ed-lib{padding:10px}.ed-lib h4{margin:10px 0 6px;font-size:12px;color:var(--m)}
 .ed-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -378,6 +439,13 @@ export function splitDuration(total: number): number[] {
 .ed-add{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:6px;border:0;background:var(--a);color:#06262c;cursor:pointer;font-weight:700}
 .ed-row{display:flex;justify-content:space-between;width:100%;text-align:left;background:var(--p2);border:1px solid var(--b);border-radius:8px;padding:7px 9px;margin-bottom:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ed-row.sel{border-color:var(--a)}.ed-x{background:none;border:0;cursor:pointer;color:var(--m)}
+.ed-newa{display:grid;gap:6px;margin-bottom:10px}.ed-asset{border:1px solid var(--b);border-radius:10px;padding:8px;margin-bottom:8px;background:var(--p2)}
+.ed-ahead{display:flex;gap:8px}.ed-ahead>img,.ed-ahead>.ed-ph{width:64px;height:80px;object-fit:cover;border-radius:6px;flex:none;display:grid;place-items:center;background:var(--p)}
+.ed-ainfo{display:grid;gap:4px;flex:1;min-width:0}.ed-ainfo input,.ed-ainfo textarea{padding:4px 6px!important;font-size:12.5px}.ed-astrip{display:flex;gap:4px;margin:6px 0;flex-wrap:wrap}.ed-aimg{position:relative}.ed-aimg img{width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;border:2px solid transparent}
+.ed-aimg.sel img{border-color:var(--a)}.ed-aimg .ed-x{position:absolute;top:-6px;right:-6px;font-size:10px}
+.ed-refs{border-top:1px solid var(--b);padding-top:8px;margin:8px 0}.ed-chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.ed-chip{display:flex;align-items:center;gap:4px;border:1px solid var(--b);background:var(--p2);color:inherit;border-radius:999px;padding:3px 8px 3px 3px;cursor:pointer;font-size:12px}
+.ed-chip img{width:22px;height:22px;border-radius:50%;object-fit:cover}.ed-chip.on,.ed-btn.on{border-color:var(--a);background:rgba(34,211,238,.15)}
 .ed-check{display:flex;gap:6px;align-items:center;margin-bottom:8px}
 .ed-center{display:flex;flex-direction:column;padding:12px;gap:8px;min-width:0}
 .ed-stage{position:relative;flex:1;min-height:300px;max-height:56vh;background:#000;border-radius:10px;overflow:hidden;display:grid;place-items:center}
@@ -447,7 +515,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   @ViewChild('musicEl') musicEl?: ElementRef<HTMLAudioElement>;
   @ViewChild('tracks') tracksEl?: ElementRef<HTMLElement>;
 
-  readonly libTabs = ['scenes', 'uploads', 'audio', 'text'] as const;
+  readonly libTabs = ['scenes', 'cast', 'sets', 'uploads', 'audio', 'text'] as const;
   readonly mobileTabs = ['preview', 'lib', 'props'] as const;
   readonly cameras = Object.keys(CAMERA_LABEL) as Camera[];
 
@@ -470,6 +538,8 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   readonly zoom = signal(50);
   readonly confirm = signal<Confirm | null>(null);
   readonly busyBatch = signal(false);
+  readonly assets = signal<Asset[]>([]);
+  newAsset = { name: '', description: '' };
   readonly uploading = signal<{ name: string; p: number }[]>([]);
   readonly loggedIn = computed(() => !!this.auth.user());
   readonly scenes = computed(() => this.project()?.scenes || []);
@@ -517,6 +587,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
       if (!list.items.length) await this.createProject(this.migrateLocal());
       else await this.open(localStorage.getItem(LAST) && list.items.some((r) => r.id === localStorage.getItem(LAST)) ? localStorage.getItem(LAST)! : list.items[0].id);
     } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+    this.loadAssets();
     this.poller = setInterval(() => this.poll(), 4000);
   }
   ngOnDestroy(): void {
@@ -601,7 +672,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
         music: p.music,
         scenes: sent.map((s) => ({
           sid: s.sid, title: s.title, prompt: s.prompt, narration: s.narration, voice: s.voice, camera: s.camera, duration: s.duration,
-          source: s.source, uploadId: s.uploadId, startUploadId: s.startUploadId || '', chainPrev: !!s.chainPrev,
+          source: s.source, uploadId: s.uploadId, startUploadId: s.startUploadId || '', chainPrev: !!s.chainPrev, characterIds: s.characterIds || [], settingId: s.settingId || null,
           shots: (s.shots || []).map((sh) => ({ sid: sh.sid, prompt: sh.prompt })),
         })),
       };
@@ -638,6 +709,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     this.project.set({ ...cur, scenes, uploads: r.uploads, renders: r.renders, media: { ...cur.media, ...r.media }, totalSeconds: r.totalSeconds });
   }
   private poll(): void {
+    if (!this.destroyed && this.assets().some((a) => a.status === 'generating')) this.loadAssets(true);
     const p = this.project();
     if (!p || this.destroyed || this.saving || this.saveTimer) return;
     if (!p.scenes.some((s) => s.status === 'generating') && !this.renderActive()) return;
@@ -679,7 +751,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     this.edit();
   }
   duplicate(c: Scene): void {
-    this.addScene({ prompt: c.prompt, narration: c.narration, voice: c.voice, camera: c.camera, duration: c.duration, source: c.source, uploadId: c.uploadId, startUploadId: c.startUploadId, chainPrev: c.chainPrev }, this.index(c.sid) + 1);
+    this.addScene({ prompt: c.prompt, narration: c.narration, voice: c.voice, camera: c.camera, duration: c.duration, source: c.source, uploadId: c.uploadId, startUploadId: c.startUploadId, chainPrev: c.chainPrev, characterIds: [...(c.characterIds || [])], settingId: c.settingId || null }, this.index(c.sid) + 1);
   }
   removeScene(sid: string): void {
     const p = this.project();
@@ -792,6 +864,95 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     } catch (e) { this.note((e as HttpErrorResponse).status === 409 ? this.t('film.v2.inUse') : this.apiError(e as HttpErrorResponse), true); }
   }
 
+
+  // ---------- character / setting library (reference images for consistent faces and places) ----------
+  assetsOf(type: string): Asset[] { return this.assets().filter((a) => a.type === type); }
+  private loadAssets(fromPoll = false): void {
+    const before = new Map(this.assets().map((a) => [a.id, a.status]));
+    this.http.get<{ items: Asset[] }>(`${FILM}/assets`).subscribe({
+      next: (r) => {
+        this.assets.set(r.items);
+        if (fromPoll) for (const a of r.items) if (before.get(a.id) === 'generating' && a.status !== 'generating') this.note(this.t('film.v2.assetDone', { name: a.name }));
+      },
+      error: () => {},
+    });
+  }
+  private putAsset(a: Asset): void { this.assets.update((xs) => xs.map((x) => (x.id === a.id ? a : x))); }
+  async createAsset(type: 'character' | 'setting'): Promise<void> {
+    try {
+      const a = await firstValueFrom(this.http.post<Asset>(`${FILM}/assets`, { type, name: this.newAsset.name, description: this.newAsset.description }));
+      this.assets.update((xs) => [a, ...xs]);
+      this.newAsset = { name: '', description: '' };
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async saveAsset(a: Asset): Promise<void> {
+    try { this.putAsset(await firstValueFrom(this.http.put<Asset>(`${FILM}/assets/${a.id}`, { name: a.name, description: a.description }))); }
+    catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async primaryImage(a: Asset, key: string): Promise<void> {
+    try { this.putAsset(await firstValueFrom(this.http.put<Asset>(`${FILM}/assets/${a.id}`, { order: [key] }))); } catch { /* ignore */ }
+  }
+  async removeAssetImage(a: Asset, key: string): Promise<void> {
+    try { this.putAsset(await firstValueFrom(this.http.delete<Asset>(`${FILM}/assets/${a.id}/images`, { params: { key } }))); }
+    catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async deleteAsset(a: Asset): Promise<void> {
+    if (!confirm(this.t('film.v2.assetDelete', { name: a.name }))) return;
+    try {
+      await firstValueFrom(this.http.delete(`${FILM}/assets/${a.id}`));
+      this.assets.update((xs) => xs.filter((x) => x.id !== a.id));
+      let changed = false;
+      for (const s of this.scenes()) {
+        if ((s.characterIds || []).includes(a.id)) { s.characterIds = s.characterIds!.filter((x) => x !== a.id); changed = true; }
+        if (s.settingId === a.id) { s.settingId = null; changed = true; }
+      }
+      if (changed) this.edit();
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async uploadAssetImage(ev: Event, a: Asset): Promise<void> {
+    const input = ev.target as HTMLInputElement;
+    const f = input.files?.[0];
+    input.value = '';
+    if (!f) return;
+    const row = { name: f.name, p: 0 };
+    this.uploading.update((x) => [...x, row]);
+    try {
+      const r = await firstValueFrom(this.http.post<{ key: string; putUrl: string; headers: Record<string, string> }>(`${FILM}/assets/${a.id}/uploads`, { name: f.name, size: f.size, contentType: f.type }));
+      await this.put(r.putUrl, f, r.headers, (pct) => { row.p = pct; this.uploading.update((x) => [...x]); });
+      this.putAsset(await firstValueFrom(this.http.post<Asset>(`${FILM}/assets/${a.id}/uploads/confirm`, { key: r.key })));
+    } catch { this.note(this.t('film.v2.uploadFail', { name: f.name }), true); }
+    finally { this.uploading.update((x) => x.filter((y) => y !== row)); }
+  }
+  async generateAsset(a: Asset): Promise<void> {
+    const price = Math.round((this.cfg()?.perImage || 0) * 1e4) / 1e4;
+    let balance = 0;
+    try { balance = (await this.estimate([])).available; } catch { /* the API re-checks the wallet */ }
+    this.confirm.set({ kind: 'asset', assetId: a.id, items: [], total: price, balance, renderLine: this.t('film.v2.estAsset', { name: a.name, price: this.money(price) }) });
+  }
+  private async submitAsset(id: string, price: number): Promise<void> {
+    try {
+      const r = await firstValueFrom(this.http.post<{ asset: Asset }>(`${FILM}/assets/${id}/generate`, { expectedPrice: price }));
+      this.putAsset(r.asset);
+      this.note(this.t('film.v2.assetSubmitted'));
+    } catch (e) {
+      const err = e as HttpErrorResponse;
+      this.note(err.error?.code === 'PRICE_CHANGED' ? this.t('film.v2.priceChanged', { price: this.money(err.error.price) }) : this.apiError(err), true);
+    }
+  }
+  usesRef(a: Asset): boolean { const c = this.sel(); return !!c && (a.type === 'setting' ? c.settingId === a.id : (c.characterIds || []).includes(a.id)); }
+  toggleRef(a: Asset): void {
+    const c = this.sel();
+    if (!c || c.source !== 'ai' || c.status === 'generating') return;
+    if (a.type === 'setting') c.settingId = c.settingId === a.id ? null : a.id;
+    else {
+      const ids = c.characterIds || [];
+      if (ids.includes(a.id)) c.characterIds = ids.filter((x) => x !== a.id);
+      else if (ids.length >= 3) return this.note(this.t('film.v2.castMax'), true);
+      else c.characterIds = [...ids, a.id];
+    }
+    this.edit();
+  }
+
   // ---------- generate (estimate shown first; API checks expectedPrice) ----------
   private apiError(e: HttpErrorResponse): string {
     if (e?.error?.code === 'INSUFFICIENT_WALLET') return this.t('film.v2.noFunds');
@@ -820,6 +981,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   async confirmed(cf: Confirm): Promise<void> {
     this.confirm.set(null);
     if (cf.kind === 'render') return this.submitRender(cf.total);
+    if (cf.kind === 'asset') return this.submitAsset(cf.assetId!, cf.total);
     if (cf.items.length === 1) { await this.submitScene(cf.items[0].sid, cf.items[0].price); return; }
     // Batch: one scene at a time, max 3 in flight; a chained scene waits for the previous one so it can start from its last frame.
     this.busyBatch.set(true);
