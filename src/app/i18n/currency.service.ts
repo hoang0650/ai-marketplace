@@ -66,7 +66,28 @@ export class CurrencyService {
   }
 
   formatUsageFromUsd(usd: number, unit: string, target: AppCurrency = this.currency()): string {
-    return `${this.formatFromUsd(usd, target)}/${unit}`;
+    return `${this.formatRateFromUsd(usd, target)}/${unit}`;
+  }
+
+  /**
+   * Like formatFromUsd, but keeps sub-cent unit rates readable ($0.00174 → $0.0017, not $0.00):
+   * values under one cent (or one fen) show 2 significant digits.
+   */
+  formatRateFromUsd(usd: number, target: AppCurrency = this.currency()): string {
+    const v = Number(usd) || 0;
+    if (target === 'VND') {
+      const vnd = v * RATE_FROM_USD.VND;
+      if (vnd > 0 && vnd < 10) return `${vnd.toLocaleString('vi-VN', { maximumSignificantDigits: 2 })} đ`;
+      return this.formatFromUsd(v, target);
+    }
+    const amount = target === 'CNY' ? v * RATE_FROM_USD.CNY : v;
+    if (amount <= 0 || amount >= 0.01) return this.formatFromUsd(v, target);
+    const digits = Math.min(8, Math.max(3, 1 - Math.floor(Math.log10(amount))));
+    const text = amount.toLocaleString(target === 'CNY' ? 'zh-CN' : 'en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: digits,
+    });
+    return target === 'CNY' ? `¥${text}` : `$${text}`;
   }
 
   private readInitial(): AppCurrency {

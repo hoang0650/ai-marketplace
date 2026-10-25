@@ -194,7 +194,20 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
     this.sessionId = '';
     this.playerUrl.set(null);
     this.status.set('stopped');
-    if (id) this.gpu.closeGameSession(id).subscribe({ error: () => undefined });
+    if (!id) return;
+    this.gpu.closeGameSession(id).subscribe({
+      // Show the final bill (the stop settles the last partial minute).
+      next: (r) => {
+        const prev = this.bill();
+        this.bill.set({
+          ratePerHour: prev?.ratePerHour ?? 0,
+          currency: prev?.currency ?? 'USD',
+          billedCost: Number(r.billedCost ?? prev?.billedCost ?? 0),
+          billedMinutes: Number(r.billedMinutes ?? prev?.billedMinutes ?? 0),
+        });
+      },
+      error: () => undefined,
+    });
   }
 
   private startHeartbeat(everyMs: number): void {
@@ -205,6 +218,8 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
       this.gpu.heartbeatGameSession(this.sessionId).subscribe({
         next: (hb) => {
           this.bill.set(hb);
+          // Dedicated servers go starting → live once the pod's port answers.
+          if (hb.status) this.status.set(hb.status);
           this.lowBalance.set(hb.ratePerHour > 0 && hb.minutesLeft !== undefined && hb.minutesLeft <= 5);
         },
         error: (e) => {
