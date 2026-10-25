@@ -233,7 +233,7 @@ export class ContentService {
   }
 
   /** Reader resume point (chapter + fraction / page). */
-  readProgress(slug: string, body: { episodeId: string; fraction: number; page: number }): Observable<{ ok: boolean }> {
+  readProgress(slug: string, body: { episodeId: string; fraction: number; page: number; audioEpisodeId?: string; audioSec?: number }): Observable<{ ok: boolean }> {
     return this.http.put<{ ok: boolean }>(`${this.base}/content/products/${slug}/progress`, body);
   }
 

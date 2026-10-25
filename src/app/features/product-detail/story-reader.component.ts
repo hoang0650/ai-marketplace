@@ -1,25 +1,30 @@
 import {
-  AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, computed, inject, signal,
+  AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, computed, effect, inject, signal, untracked,
 } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ContentService } from '../../services/api.services';
 import { environment } from '../../../environments/environment';
-import { ContentEpisode, Product, ReaderBookmark, SeriesInfo } from '../../models/marketplace.models';
+import { ContentEpisode, NarrationTiming, Product, ReaderBookmark, SeriesInfo } from '../../models/marketplace.models';
 
 type Theme = 'light' | 'sepia' | 'dark';
 type Mode = 'scroll' | 'paged';
 interface ReaderSettings { size: number; family: 'serif' | 'sans'; line: number; margin: 0 | 1 | 2; theme: Theme; mode: Mode }
 interface Chapter { ep: ContentEpisode; kind: 'text' | 'image' | 'other'; paras: string[]; images: string[]; error: string }
+/** One narrated sentence: paragraph index, [c0, c1) offsets in that paragraph, start / end seconds. */
+interface Seg { p: number; c0: number; c1: number; start: number; end: number }
+interface Sync { segs: Seg[]; sentence: boolean }
 
 const SETTINGS_KEY = 'aimarkets.reader.settings';
 const LS = (slug: string) => `aimarkets.read.${slug}`;
+const LS_AUDIO = (slug: string) => `aimarkets.listen.${slug}`;
+const FOLLOW_PAUSE_MS = 6000; // after the reader scrolls / flips by hand, stop following the voice for a moment
 const DEFAULTS: ReaderSettings = { size: 19, family: 'serif', line: 1.7, margin: 1, theme: 'sepia', mode: 'scroll' };
 const SPEEDS = [0.75, 1, 1.25, 1.5, 2];
 
 /**
  * Kindle / Wattpad-style reader for story-book products: immersive, themable (light / sepia / dark),
  * scroll or page-flip, TOC with locked / free chapters, resume + bookmarks / highlights stored per user,
- * VieNeu audio narration. License-gated like the series player; no-capture rules kept (no context menu,
+ * audio narration synced to the text (per-sentence TTS timing: highlight, follow, tap-to-seek, resume). License-gated like the series player; no-capture rules kept (no context menu,
  * drag, copy or print of the content).
  */
 @Component({
@@ -73,7 +78,7 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 2];
             <figure class="rd-fig"><img [src]="src" alt="" draggable="false" (load)="relayout()" /></figure>
           }
           @for (p of c.paras; track $index) {
-            <p class="rd-p" [class.rd-p--now]="audioOpen() && !audio.paused && sayingPara() === $index" [attr.data-i]="$index" [innerHTML]="marked(p, $index)"></p>
+            <p class="rd-p" [class.rd-p--now]="audioOpen() && sayingPara() === $index" [class.rd-p--tap]="audioOpen() && !!sync()" [attr.data-i]="$index" [innerHTML]="marked(p, $index)"></p>
           }
           <div class="rd-end">
             @if (nextChapter(); as nc) {
@@ -99,10 +104,13 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 2];
       } @else {
         <button type="button" class="rd-play" (click)="playPause()" [attr.aria-label]="audio.paused ? 'Phát' : 'Tạm dừng'" data-testid="rd-play">{{ audioPlaying() ? '❚❚' : '▶' }}</button>
         <div class="rd-audio__mid">
-          <small>🎙 {{ narration()?.title || 'Sách nói' }} · VieNeu</small>
+          <small>🎙 {{ narration()?.title || 'Sách nói' }} · {{ voiceLabel() }}</small>
           <input type="range" min="0" [max]="aDur() || 0" step="0.1" [value]="aTime()" (input)="seek($any($event.target).value)" aria-label="Vị trí" />
         </div>
-        <span class="rd-audio__t">{{ clock(aTime()) }} / {{ clock(aDur()) }}</span>
+        <span class="rd-audio__t" data-testid="rd-audio-time">{{ clock(aTime()) }} / {{ clock(aDur()) }}</span>
+        @if (readingElsewhere(); as rc) {
+          <button type="button" class="rd-chip" (click)="go(rc)" data-testid="rd-audio-back" [attr.aria-label]="'Về chương đang đọc: ' + rc.title">↩ Ch. {{ rc.index }}</button>
+        }
         <button type="button" class="rd-chip" (click)="cycleSpeed()" aria-label="Tốc độ" data-testid="rd-speed">{{ speed() }}×</button>
       }
       <button type="button" class="rd-ib rd-ib--sm" (click)="closeNarration()" aria-label="Đóng">✕</button>
@@ -221,7 +229,9 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 2];
 .rd-kicker{margin:0 0 .3em;font:600 .7em/1.2 inherit;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:inherit}
 .rd-h1{margin:0 0 1.1em;font-size:1.45em;line-height:1.25;font-weight:700}
 .rd-p{margin:0 0 1em;text-align:justify;hyphens:auto;-webkit-user-select:text;user-select:text;border-radius:4px;transition:background .3s}
-.rd-p--now{background:var(--hl)}
+.rd-p--now{background:color-mix(in srgb,var(--hl) 38%,transparent)}
+.rd-p--tap{cursor:pointer}
+:host ::ng-deep .rd-p .rd-s{background:var(--hl);color:inherit;border-radius:3px;box-shadow:0 0 0 2px var(--hl);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 :host ::ng-deep .rd-p mark{background:var(--hl);color:inherit;border-radius:2px}
 .rd-fig{margin:0 0 1.2em;break-inside:avoid;text-align:center}
 .rd-fig img{max-width:100%;max-height:72vh;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.18);pointer-events:none;-webkit-user-drag:none}
@@ -323,6 +333,8 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   readonly aTime = signal(0);
   readonly aDur = signal(0);
   readonly speed = signal(1);
+  /** Timing of the open narration (from /unlock) and the chapter it reads. */
+  readonly timing = signal<NarrationTiming | null>(null);
   readonly audio: HTMLAudioElement = typeof Audio !== 'undefined' ? new Audio() : ({ paused: true } as HTMLAudioElement);
 
   readonly chapters = computed(() => this.episodes().filter((e) => e.kind !== 'audio' && e.kind !== 'video'));
@@ -340,15 +352,56 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     const c = this.chapter();
     return !!c && this.bookmarks().some((b) => b.kind === 'bookmark' && b.episodeId === c.ep.id && Math.abs(b.fraction - this.fraction()) < 0.04);
   });
-  /** Narration sync: paragraph being read, from the time ratio weighted by paragraph length. */
+  private readonly paraSigs = computed(() => (this.chapter()?.paras || []).map(fnv));
+  /**
+   * Real narration timing for the chapter on screen: sentence level when every paragraph still hashes like the
+   * text that was narrated, paragraph level if only the count matches (chapter edited since), else none.
+   */
+  readonly sync = computed<Sync | null>(() => {
+    const t = this.timing();
+    const c = this.chapter();
+    if (!t || !c || t.forEpisode !== c.ep.id || !t.segments?.length) return null;
+    const sigs = this.paraSigs();
+    if (t.paraCount !== sigs.length) return null;
+    const sentence = t.paraSig?.length === sigs.length && t.paraSig.every((h, i) => h === sigs[i]);
+    const segs = t.segments
+      .map(([p, c0, c1, start, end]) => ({ p, c0, c1, start, end }))
+      .filter((g) => g.p >= 0 && g.p < sigs.length && g.c1 <= c.paras[g.p].length);
+    return segs.length ? { segs, sentence } : null;
+  });
+  /** Index of the sentence being spoken (binary search on the playback clock; stays on it through the pause after). */
+  readonly sayingSeg = computed(() => {
+    const t = this.sync();
+    if (!t) return -1;
+    const x = this.aTime() + 0.06; // a hair ahead: the eye should land as the voice starts
+    const g = t.segs;
+    if (x < g[0].start) return this.aTime() > 0 ? 0 : -1;
+    let lo = 0, hi = g.length - 1;
+    while (lo < hi) { const m = (lo + hi + 1) >> 1; if (g[m].start <= x) lo = m; else hi = m - 1; }
+    return lo;
+  });
+  /** Paragraph being read: from the real timing; legacy narrations without timing keep the length-weighted estimate. */
   readonly sayingPara = computed(() => {
+    const t = this.sync();
+    if (t) { const k = this.sayingSeg(); return k >= 0 ? t.segs[k].p : -1; }
+    if (this.timing() || this.narration()?.narrationFor) return -1; // narration of another chapter: nothing to mark here
     const paras = this.chapter()?.paras || [];
     const d = this.aDur();
-    if (!paras.length || !d) return -1;
+    if (!paras.length || !d || !this.aTime()) return -1;
     const total = paras.reduce((a, p) => a + p.length, 0) || 1;
     let at = (this.aTime() / d) * total;
     for (let i = 0; i < paras.length; i++) { at -= paras[i].length; if (at <= 0) return i; }
     return paras.length - 1;
+  });
+  /** Chapter the open narration reads, when the reader is looking at a different one. */
+  readonly readingElsewhere = computed(() => {
+    const id = this.narration()?.narrationFor;
+    if (!id || !this.audioOpen() || id === this.chapter()?.ep.id) return null;
+    return this.chapters().find((e) => e.id === id) || null;
+  });
+  readonly voiceLabel = computed(() => {
+    const m = this.timing()?.model || this.narration()?.narrationModel || 'VieNeu';
+    return /chatterbox/i.test(m) ? 'Chatterbox' : 'VieNeu';
   });
 
   private slug = '';
@@ -358,6 +411,13 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   private touch: { x: number; y: number; t: number } | null = null;
   private prevOverflow = '';
   private hideTimer: ReturnType<typeof setTimeout> | null = null;
+  private clockTimer: ReturnType<typeof setInterval> | null = null;
+  private userMovedAt = 0;
+  private autoMoveAt = 0;
+  private pendingSeek = -1;
+  private pendingPlay = false;
+  private retryAt = 0;
+  private listenResume: { episodeId: string; sec: number } | null = null;
   private readonly keyHandler = (ev: KeyboardEvent) => this.onKey(ev);
   private readonly resizeHandler = () => this.relayout();
 
@@ -368,12 +428,26 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     } catch { /* ignore */ }
     if (typeof window !== 'undefined' && window.matchMedia?.('(max-width: 640px)').matches && !localStorage.getItem(SETTINGS_KEY)) this.s.set({ ...DEFAULTS, size: 18, margin: 0 });
     this.audio.preload = 'auto';
-    this.audio.ontimeupdate = () => this.aTime.set(this.audio.currentTime || 0);
-    this.audio.onloadedmetadata = () => this.aDur.set(this.audio.duration || 0);
-    this.audio.onplay = () => this.audioPlaying.set(true);
-    this.audio.onpause = () => this.audioPlaying.set(false);
-    this.audio.onended = () => this.audioPlaying.set(false);
-    this.audio.onerror = () => { if (this.audio.src) this.audioErr.set('Không phát được sách nói.'); };
+    this.audio.ontimeupdate = () => { this.aTime.set(this.audio.currentTime || 0); this.save(false); };
+    this.audio.onloadedmetadata = () => {
+      this.aDur.set(this.audio.duration || 0);
+      if (this.pendingSeek > 0 && this.pendingSeek < (this.audio.duration || 0) - 0.5) this.audio.currentTime = this.pendingSeek;
+      this.pendingSeek = -1;
+      this.aTime.set(this.audio.currentTime || 0);
+      if (this.pendingPlay) void this.audio.play().catch(() => undefined);
+      this.pendingPlay = false;
+    };
+    // While playing, a 10 Hz clock (timeupdate alone is ~4 Hz) keeps the highlight on the spoken words.
+    this.audio.onplay = () => { this.audioPlaying.set(true); this.startClock(); };
+    this.audio.onpause = () => { this.audioPlaying.set(false); this.stopClock(); this.save(true); };
+    this.audio.onended = () => { this.audioPlaying.set(false); this.stopClock(); this.onNarrationEnd(); };
+    this.audio.onerror = () => this.onAudioError();
+    // Follow the voice: scroll the sentence into view (scroll mode) or turn to its page (paged mode).
+    effect(() => {
+      this.sayingSeg();
+      this.sayingPara();
+      untracked(() => setTimeout(() => this.follow(), 0));
+    });
   }
 
   ngAfterViewInit(): void {
@@ -392,12 +466,13 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     } else if (ch['canPlay'] && !ch['canPlay'].firstChange && this.canPlay) {
       const c = this.chapter();
       if (c && !c.paras.length && !c.images.length) this.open(c.ep, true);
-      if (this.audioOpen() && this.audioErr()) this.openNarration(this.narration());
+      if (this.audioOpen() && this.audioErr()) this.openNarration(this.narration(), { at: this.aTime(), play: false, force: true });
     }
   }
 
   ngOnDestroy(): void {
     this.save(true);
+    this.stopClock();
     this.audio.pause();
     this.audio.removeAttribute('src');
     if (typeof document !== 'undefined') {
@@ -453,6 +528,9 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
         this.bookmarks.set(s.bookmarks || []);
         const local = this.readLocal();
         const p = s.progress || local;
+        const la = this.readLocalAudio();
+        const sa = s.progress?.audio || null;
+        this.listenResume = la && (!sa || la.at > (Date.parse(s.progress?.updatedAt || '') || 0)) ? { episodeId: la.episodeId, sec: la.sec } : sa;
         this.resume = p ? { episodeId: p.episodeId, fraction: Number(p.fraction || 0), page: Number(p.page || 0) } : null;
         const list = this.chapters();
         const ep = list.find((e) => e.id === this.resume?.episodeId) || list.find((e) => this.playable(e)) || list[0];
@@ -467,7 +545,7 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
 
   go(ep: ContentEpisode): void {
     this.panel.set(null);
-    if (ep.kind === 'audio') return this.openNarration(ep);
+    if (ep.kind === 'audio') return this.openNarration(ep, { at: this.listenResume?.episodeId === ep.id ? this.listenResume.sec : 0 });
     this.save(true);
     this.resume = null;
     this.open(ep, true);
@@ -561,6 +639,7 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   private restore(fraction: number, page: number): void {
     const sc = this.scroller?.nativeElement;
     if (!sc) return;
+    this.autoMoveAt = Date.now();
     if (this.s().mode === 'paged') {
       const p = page >= 0 ? page : Math.round(fraction * (this.pages() - 1));
       this.goPage(Math.min(this.pages() - 1, Math.max(0, p)), false);
@@ -575,6 +654,7 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     const sc = this.scroller?.nativeElement;
     if (!sc) return;
     const max = sc.scrollHeight - sc.clientHeight;
+    if (Date.now() - this.autoMoveAt > 1200) this.userMovedAt = Date.now();
     this.fraction.set(max > 4 ? Math.min(1, sc.scrollTop / max) : 1);
     this.selQuote.set('');
     this.save(false);
@@ -593,7 +673,7 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     const art = this.cols?.nativeElement;
     if (art) art.style.transform = q ? `translateX(${-q * sc.clientWidth}px)` : '';
     this.fraction.set(n > 1 ? q / (n - 1) : 1);
-    if (user) this.save(false);
+    if (user) { this.userMovedAt = Date.now(); this.save(false); }
   }
 
   private flip(d: 1 | -1): void {
@@ -612,6 +692,13 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     if (window.getSelection()?.toString().trim()) return;
     const w = (this.scroller?.nativeElement.clientWidth || window.innerWidth);
     const x = ev.clientX;
+    // Listening: tapping a sentence / paragraph reads from there (paged mode keeps narrow edge zones for flipping).
+    const para = t.closest<HTMLElement>('.rd-p');
+    const edge = this.s().mode === 'paged' && (x < w * 0.12 || x > w * 0.88);
+    if (para && !edge && this.audioOpen() && this.sync()) {
+      const seg = this.segAt(Number(para.dataset['i']), this.caretOffset(ev, para));
+      if (seg) { this.listenFrom(seg.start); return; }
+    }
     if (x < w * 0.28) this.flip(-1);
     else if (x > w * 0.72) this.flip(1);
     else this.chrome.set(!this.chrome());
@@ -668,7 +755,12 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   }
 
   marked(p: string, i: number): string {
-    let html = esc(p);
+    const t = this.sync();
+    const k = this.audioOpen() && t?.sentence ? this.sayingSeg() : -1;
+    const g = k >= 0 ? t!.segs[k] : null;
+    let html = g && g.p === i
+      ? `${esc(p.slice(0, g.c0))}<span class="rd-s">${esc(p.slice(g.c0, g.c1))}</span>${esc(p.slice(g.c1))}`
+      : esc(p);
     const id = this.chapter()?.ep.id;
     for (const b of this.bookmarks()) {
       if (b.kind !== 'highlight' || b.episodeId !== id || !b.quote) continue;
@@ -734,33 +826,67 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   // ───────────── narration ─────────────
   toggleNarration(): void {
     if (this.audioOpen()) return this.closeNarration();
-    this.openNarration(this.narrationFor());
+    const ep = this.narrationFor();
+    const r = this.listenResume;
+    this.openNarration(ep, { at: r && ep && r.episodeId === ep.id ? r.sec : 0 });
   }
 
+  /** Narration of the chapter on screen; else the next narrated chapter; legacy (untimed) lists map by position. */
   private narrationFor(): ContentEpisode | null {
     const list = this.narrations();
     if (!list.length) return null;
+    const id = this.chapter()?.ep.id;
+    const own = list.find((e) => e.narrationFor === id);
+    if (own) return own;
+    if (list.some((e) => e.narrationFor)) {
+      const order = this.chapters().map((e) => e.id);
+      const after = list
+        .filter((e) => e.narrationFor && order.indexOf(e.narrationFor) > this.idx())
+        .sort((a, b) => order.indexOf(a.narrationFor!) - order.indexOf(b.narrationFor!));
+      return after[0] || list[0];
+    }
     if (list.length === this.chapters().length && this.idx() >= 0) return list[this.idx()];
     return list[0];
   }
 
-  openNarration(ep: ContentEpisode | null): void {
+  private narrationOf(chapterId: string): ContentEpisode | null {
+    return this.narrations().find((e) => e.narrationFor === chapterId) || null;
+  }
+
+  /**
+   * Open (or resume) a narration. `at` restores the listening position, `force` re-unlocks the same episode (play
+   * tokens are short-lived) without losing the position. A timed narration also opens the chapter it reads.
+   */
+  openNarration(ep: ContentEpisode | null, opt: { at?: number; play?: boolean; force?: boolean } = {}): void {
     this.panel.set(null);
     if (!ep) return;
+    const play = opt.play !== false;
     this.audioOpen.set(true);
     this.audioErr.set('');
-    if (this.narration()?.id === ep.id && this.audio.src) { void this.audio.play().catch(() => undefined); return; }
+    if (ep.narrationFor && ep.narrationFor !== this.chapter()?.ep.id) {
+      const ch = this.chapters().find((e) => e.id === ep.narrationFor);
+      if (ch) { this.save(true); this.resume = null; this.open(ch, true); }
+    }
+    if (!opt.force && this.narration()?.id === ep.id && this.audio.src && !this.audio.error) {
+      if (opt.at != null && opt.at > 0) this.audio.currentTime = opt.at;
+      if (play) void this.audio.play().catch(() => undefined);
+      return;
+    }
+    const same = this.narration()?.id === ep.id;
     this.narration.set(ep);
-    this.aTime.set(0);
-    this.aDur.set(ep.durationSec || 0);
+    if (!same) { this.timing.set(null); this.aTime.set(opt.at || 0); this.aDur.set(ep.durationSec || 0); }
     if (!this.auth.user()) { this.audioErr.set('Đăng nhập để nghe sách nói.'); return; }
     if (!this.playable(ep)) { this.audioErr.set('Sách nói cần license.'); return; }
     this.api.unlock(ep.id, this.licenseKey || undefined).subscribe({
       next: (res) => {
+        if (this.narration()?.id !== ep.id) return;
         const tok = String(res.playToken || '').trim();
+        this.timing.set(res.narration || null);
+        this.pendingSeek = opt.at && opt.at > 0 ? opt.at : -1;
+        this.pendingPlay = play;
         this.audio.src = tok ? `${environment.apiUrl}/content/play?token=${encodeURIComponent(tok)}&page=1` : res.playUrl;
         this.audio.playbackRate = this.speed();
-        void this.audio.play().catch(() => undefined);
+        this.audio.load();
       },
       error: (e) => this.audioErr.set(e?.status === 402 ? 'Sách nói cần license.' : e?.error?.message || 'Không mở được sách nói.'),
     });
@@ -772,13 +898,27 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   }
 
   playPause(): void {
-    if (!this.audio.src) return this.openNarration(this.narration() || this.narrationFor());
-    if (this.audio.paused) void this.audio.play().catch(() => undefined);
+    if (!this.audio.src || this.audio.error) {
+      const ep = this.narration() || this.narrationFor();
+      return this.openNarration(ep, { at: this.aTime(), force: true });
+    }
+    if (this.audio.paused) void this.audio.play().catch(() => this.onAudioError());
     else this.audio.pause();
   }
 
   seek(v: string): void {
     this.audio.currentTime = Number(v) || 0;
+    this.aTime.set(this.audio.currentTime || 0);
+    this.userMovedAt = 0; // a deliberate seek: follow the voice right away
+  }
+
+  /** Read from this point of the open narration (tap on text). */
+  listenFrom(sec: number): void {
+    this.userMovedAt = 0;
+    if (!this.audio.src || this.audio.error) return this.openNarration(this.narration(), { at: sec, force: true });
+    this.audio.currentTime = Math.max(0, sec);
+    this.aTime.set(this.audio.currentTime);
+    void this.audio.play().catch(() => undefined);
   }
 
   cycleSpeed(): void {
@@ -788,20 +928,135 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     this.audio.playbackRate = next;
   }
 
+  /** Expired play token / network drop: unlock again once and continue from the same second. */
+  private onAudioError(): void {
+    if (!this.audio.src || !this.narration()) return;
+    if (Date.now() - this.retryAt > 20000) {
+      this.retryAt = Date.now();
+      const at = this.aTime();
+      const play = this.audioPlaying() || this.pendingPlay;
+      this.openNarration(this.narration(), { at, play, force: true });
+      return;
+    }
+    this.audioErr.set('Không phát được sách nói.');
+  }
+
+  /** Chapter narration finished: continue with the next narrated chapter the reader may open. */
+  private onNarrationEnd(): void {
+    this.save(true);
+    const cur = this.narration()?.narrationFor;
+    if (!cur) return;
+    const order = this.chapters();
+    const i = order.findIndex((e) => e.id === cur);
+    for (const ch of order.slice(i + 1)) {
+      const n = this.narrationOf(ch.id);
+      if (!n) continue;
+      if (this.playable(n)) this.openNarration(n, { at: 0 });
+      return;
+    }
+  }
+
+  private startClock(): void {
+    this.stopClock();
+    this.clockTimer = setInterval(() => this.aTime.set(this.audio.currentTime || 0), 100);
+  }
+
+  private stopClock(): void {
+    if (this.clockTimer) clearInterval(this.clockTimer);
+    this.clockTimer = null;
+  }
+
+  private segAt(p: number, offset: number): Seg | null {
+    const segs = (this.sync()?.segs || []).filter((g) => g.p === p);
+    if (!segs.length) return null;
+    if (offset >= 0 && this.sync()?.sentence) return segs.find((g) => offset < g.c1) || segs[segs.length - 1];
+    return segs[0];
+  }
+
+  /** Character offset of a click inside a paragraph's text (caret APIs), -1 if unknown. */
+  private caretOffset(ev: MouseEvent, para: HTMLElement): number {
+    const d = document as Document & {
+      caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+      caretRangeFromPoint?: (x: number, y: number) => Range | null;
+    };
+    let node: Node | null = null, off = 0;
+    const cp = d.caretPositionFromPoint?.(ev.clientX, ev.clientY);
+    if (cp) { node = cp.offsetNode; off = cp.offset; }
+    else { const r = d.caretRangeFromPoint?.(ev.clientX, ev.clientY); if (r) { node = r.startContainer; off = r.startOffset; } }
+    if (!node || !para.contains(node)) return -1;
+    const walk = document.createTreeWalker(para, NodeFilter.SHOW_TEXT);
+    let n = 0;
+    while (walk.nextNode()) {
+      if (walk.currentNode === node) return n + off;
+      n += (walk.currentNode.textContent || '').length;
+    }
+    return -1;
+  }
+
+  /** Keep the spoken line on screen: scroll it to ~30% height, or turn to the page holding it. */
+  private follow(): void {
+    if (!this.audioOpen() || this.audio.paused || this.sayingPara() < 0) return;
+    if (Date.now() - this.userMovedAt < FOLLOW_PAUSE_MS) return;
+    const art = this.cols?.nativeElement;
+    const sc = this.scroller?.nativeElement;
+    if (!art || !sc) return;
+    const el = art.querySelector<HTMLElement>('.rd-s') || art.querySelector<HTMLElement>(`.rd-p[data-i="${this.sayingPara()}"]`);
+    if (!el) return;
+    // The line being read: a sentence wraps over several line boxes (and maybe two pages); pick by elapsed share.
+    const rects = Array.from(el.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
+    if (!rects.length) return;
+    const t = this.sync();
+    const k = this.sayingSeg();
+    const g = t && k >= 0 ? t.segs[k] : null;
+    const share = g && g.end > g.start ? Math.min(0.999, Math.max(0, (this.aTime() - g.start) / (g.end - g.start))) : 0;
+    const r = rects[Math.min(rects.length - 1, Math.floor(share * rects.length))];
+    const box = sc.getBoundingClientRect();
+    if (this.s().mode === 'paged') {
+      const off = Math.floor((r.left + r.width / 2 - box.left) / sc.clientWidth);
+      if (off !== 0) { this.autoMoveAt = Date.now(); this.goPage(this.page() + off, false); this.save(false); }
+    } else {
+      const top = r.top - box.top;
+      if (top < sc.clientHeight * 0.14 || top > sc.clientHeight * 0.72) {
+        this.autoMoveAt = Date.now();
+        sc.scrollTo({ top: Math.max(0, sc.scrollTop + top - sc.clientHeight * 0.3), behavior: 'smooth' });
+      }
+    }
+  }
+
   // ───────────── progress ─────────────
   private readLocal(): { episodeId: string; fraction: number; page: number } | null {
     try { return JSON.parse(localStorage.getItem(LS(this.slug)) || 'null'); } catch { return null; }
   }
 
+  private readLocalAudio(): { episodeId: string; sec: number; at: number } | null {
+    try { return JSON.parse(localStorage.getItem(LS_AUDIO(this.slug)) || 'null'); } catch { return null; }
+  }
+
   private save(force: boolean): void {
     const c = this.chapter();
     if (!c || !this.slug || (!c.paras.length && !c.images.length)) return;
-    const body = { episodeId: c.ep.id, fraction: Math.round(this.fraction() * 1000) / 1000, page: this.page() };
+    const body: { episodeId: string; fraction: number; page: number; audioEpisodeId?: string; audioSec?: number } = { episodeId: c.ep.id, fraction: Math.round(this.fraction() * 1000) / 1000, page: this.page() };
     try { localStorage.setItem(LS(this.slug), JSON.stringify(body)); } catch { /* quota */ }
+    const n = this.narration();
+    if (n && this.audio.src && this.aTime() > 0) {
+      // Where the listener stopped (restarts at 0 once the chapter narration has been heard to the end).
+      const sec = this.audio.ended ? 0 : Math.round(this.aTime() * 10) / 10;
+      body.audioEpisodeId = n.id;
+      body.audioSec = sec;
+      this.listenResume = { episodeId: n.id, sec };
+      try { localStorage.setItem(LS_AUDIO(this.slug), JSON.stringify({ episodeId: n.id, sec, at: Date.now() })); } catch { /* quota */ }
+    }
     if (!this.auth.user() || (!force && Date.now() - this.lastSave < 4000)) return;
     this.lastSave = Date.now();
     this.api.readProgress(this.slug, body).subscribe({ error: () => undefined });
   }
+}
+
+/** FNV-1a 32-bit over UTF-16 code units, hex; same as the API (utils/story-narration.js) paragraph signatures. */
+export function fnv(s: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, '0');
 }
 
 function esc(s: string): string {
