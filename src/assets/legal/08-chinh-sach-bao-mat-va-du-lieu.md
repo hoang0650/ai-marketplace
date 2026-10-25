@@ -8,7 +8,7 @@
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày hiệu lực:** 04/10/2026  
-**Phiên bản:** 2.0
+**Phiên bản:** 2.1 (25/10/2026: xử lý dữ liệu khi chạy skill phía máy chủ)
 
 ---
 
@@ -45,6 +45,7 @@ Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; x
 4. Tệp, hình ảnh gửi trong tin nhắn và không gian dự án được lưu trữ riêng tư, chỉ người tham gia hội thoại/dự án và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn.
 2. Để trả kết quả, nội dung được chuyển tới nhà cung cấp mô hình AI tương ứng (có thể ở nước ngoài) và xử lý theo điều khoản của nhà cung cấp đó. Khi dùng BYOK, nội dung đi trực tiếp tới nhà cung cấp theo tài khoản của người dùng.
 3. Người dùng chỉ đưa dữ liệu cá nhân của người khác vào AI khi có cơ sở pháp lý phù hợp.
+5. **Chạy gói kỹ năng (skill) phía máy chủ:** tham số và tệp người mua gửi để chạy skill được xử lý trên máy chủ của Công ty tại Việt Nam (123HOST), trong môi trường cách ly riêng cho từng lần chạy: không có kết nối mạng, không có khóa bí mật của hệ thống, không truy cập được dữ liệu của lần chạy hoặc người dùng khác. Dữ liệu chỉ dùng để thực hiện lần chạy đó, không chuyển ra nước ngoài, không chia sẻ với người bán skill, không dùng để huấn luyện mô hình, và **bị xóa ngay sau khi lần chạy kết thúc** (kết quả được trả về cho người mua). Nền tảng chỉ lưu số lượt chạy, thời điểm và mã truy vết theo giấy phép để tính hạn mức và chống lạm dụng.
 
 ## Điều 6. Chia sẻ dữ liệu
 
@@ -62,7 +63,7 @@ Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lư
 
 ## Điều 8. Biện pháp bảo vệ
 
-Mã hóa đường truyền HTTPS/TLS; mật khẩu băm; khóa API của người dùng được mã hóa khi lưu; phân quyền theo vai trò; giới hạn tần suất truy cập; khóa bí mật hệ thống lưu trong biến môi trường; cơ sở dữ liệu không mở ra Internet; nhật ký thao tác quản trị; phiên đăng nhập có thể thu hồi từ xa.
+Mã hóa đường truyền HTTPS/TLS; mật khẩu băm; khóa API của người dùng được mã hóa khi lưu; phân quyền theo vai trò; giới hạn tần suất truy cập; khóa bí mật hệ thống lưu trong biến môi trường; cơ sở dữ liệu không mở ra Internet; nhật ký thao tác quản trị; phiên đăng nhập có thể thu hồi từ xa; mã skill của bên thứ ba chạy trong container cách ly (gốc chỉ đọc, không có mạng, không có khóa bí mật, giới hạn CPU, bộ nhớ, thời gian).
 
 ## Điều 9. Quyền của chủ thể dữ liệu
 
@@ -77,7 +78,7 @@ Dữ liệu mà pháp luật buộc phải lưu (đơn hàng, hợp đồng, ch�
 
 ## Điều 10. Thời hạn lưu trữ
 
-Theo [Chính sách lưu trữ và cung cấp dữ liệu](17-chinh-sach-luu-tru-va-cung-cap-du-lieu.md). Dữ liệu trong không gian AI agent được giữ 30 ngày sau khi thuê bao hết hạn; dữ liệu trên máy GPU bị xóa 24 giờ sau khi máy dừng do hết số dư.
+Theo [Chính sách lưu trữ và cung cấp dữ liệu](17-chinh-sach-luu-tru-va-cung-cap-du-lieu.md). Dữ liệu trong không gian AI agent được giữ 30 ngày sau khi thuê bao hết hạn; dữ liệu trên máy GPU bị xóa 24 giờ sau khi máy dừng do hết số dư; dữ liệu đầu vào, đầu ra của mỗi lần chạy skill bị xóa ngay khi lần chạy kết thúc.
 
 ## Điều 11. Cookie và công nghệ tương tự
 

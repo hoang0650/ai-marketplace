@@ -8,7 +8,7 @@
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày hiệu lực:** 04/10/2026  
-**Phiên bản:** 2.0
+**Phiên bản:** 2.1 (25/10/2026: Giấy phép trực tuyến AI Markets)
 
 ---
 
@@ -46,7 +46,8 @@ Nền tảng có thể yêu cầu người bán giải trình, tạm ẩn sản 
 2. **Mẫu website/ứng dụng:** người mua được tạo bản sao riêng để chỉnh sửa và triển khai cho mục đích của mình; bản sao lưu thông tin mẫu gốc và người bán; không được đăng bán lại thành mẫu mới.
 3. **Dataset, giọng đọc dùng để huấn luyện:** chỉ được dùng để huấn luyện, tinh chỉnh mô hình khi giấy phép đã mua cho phép mục đích này; mô hình tạo ra chịu ràng buộc phạm vi giấy phép (không phân phối lại dữ liệu gốc, không tái tạo giọng ngoài phạm vi đồng ý của người có giọng nói).
 4. **Kết quả dịch vụ chuyên môn trọn gói:** quyền đối với kết quả bàn giao theo điều kiện người bán công bố trên trang dịch vụ hoặc thỏa thuận giữa người mua và người bán.
-4. Việc thanh toán không tự động chuyển quyền sở hữu trí tuệ, trừ khi có thỏa thuận chuyển nhượng rõ ràng.
+5. **Sản phẩm trực tuyến (dataset, gói kỹ năng, phim AI, truyện/sách AI):** theo [Giấy phép trực tuyến AI Markets (AIM-OL)](02-dieu-khoan-su-dung.md) tại Điều 14 Điều khoản sử dụng: không độc quyền, không chuyển nhượng, không cấp phép lại, chỉ trong thời hạn giấy phép, chỉ truy cập qua API, trình phát/trình đọc trực tuyến hoặc trình chạy skill; không phân phối lại, không sao chép hàng loạt, cào dữ liệu hay tái dựng; nội dung mang watermark/mã truy vết. Thông báo giấy phép mã nguồn mở của thành phần gốc (ví dụ MIT) được giữ nguyên.
+6. Việc thanh toán không tự động chuyển quyền sở hữu trí tuệ, trừ khi có thỏa thuận chuyển nhượng rõ ràng.
 
 ## Điều 8. Tài sản của nền tảng
 

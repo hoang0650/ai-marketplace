@@ -106,7 +106,13 @@ export class LegalPolicyPageComponent implements OnInit {
       this.next = idx >= 0 && idx < LEGAL_POLICIES.length - 1 ? LEGAL_POLICIES[idx + 1] : null;
       this.syncSeo();
       if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const hash = decodeURIComponent(window.location.hash || '').slice(1);
+        if (/^[a-z0-9-]{1,64}$/.test(hash)) {
+          // Deep link to a section, e.g. /terms-of-service#online-license (after the HTML renders).
+          setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     });
   }
