@@ -319,6 +319,8 @@ export class ProductDetailComponent implements OnInit {
   lastLatencyMs = 0;
   lastCost = 0;
   voicePlayMode: 'tts' | 'stt' = 'tts';
+  /** TTS language for voices that serve several (platform voices); '' = listing default. */
+  voiceLang = '';
   voiceFx: VoiceFx = { ...DEFAULT_VOICE_FX };
   sttAudioBase64 = '';
   sttAudioName = '';
@@ -1194,6 +1196,7 @@ export class ProductDetailComponent implements OnInit {
     this.previewRows = 20;
     this.apiAction = 'runsync';
     this.voicePlayMode = 'tts';
+    this.voiceLang = product?.contentMeta?.voiceLanguages?.[0] || '';
     this.sttAudioBase64 = '';
     this.sttAudioName = '';
 
@@ -1626,6 +1629,24 @@ export class ProductDetailComponent implements OnInit {
     return `phai.requestLogs.${productId}`;
   }
 
+  voiceLanguages(p: Product): string[] {
+    return p.contentMeta?.voiceLanguages || [];
+  }
+
+  voiceHasStt(p: Product): boolean {
+    const modes = p.contentMeta?.voiceModes;
+    return !modes?.length || modes.includes('stt');
+  }
+
+  langLabel(code: string): string {
+    try {
+      const name = new Intl.DisplayNames([this.i18n.lang()], { type: 'language' }).of(code);
+      return name ? `${name} (${code})` : code;
+    } catch {
+      return code;
+    }
+  }
+
   /** The `input` object exactly as the endpoint's docs describe it. */
   runpodInput(): Record<string, unknown> {
     const p = this.product();
@@ -1646,7 +1667,8 @@ export class ProductDetailComponent implements OnInit {
         if (isVoicePresetCategory(p.category) || p.contentMeta?.voiceSource === 'preset') {
           return {
             prompt: this.prompt,
-            voice: preset || 'Adam',
+            voice: String(p.contentMeta?.presetVoiceId || '').trim() || preset || 'Binh',
+            ...(this.voiceLang ? { language: this.voiceLang } : {}),
             format: 'wav',
             action: 'tts',
             ...voiceFxBody(this.voiceFx),

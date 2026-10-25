@@ -48,12 +48,27 @@ export class MarketplaceComponent implements OnInit {
   readonly priceMinSig = signal(0);
   readonly priceMaxSig = signal(500);
 
+  /** Published listings per canonical category (api-endpoint folds into inference). */
+  readonly counts = computed(() => {
+    const m = new Map<string, number>();
+    for (const p of this.catalog()) {
+      const id = canonicalCategory(p.category);
+      m.set(id, (m.get(id) || 0) + 1);
+    }
+    return m;
+  });
+  /** Sidebar only lists categories that have listings (plus the one being viewed); all of them until the catalog loads. */
+  private readonly listed = computed(() => {
+    const counts = this.counts();
+    const selected = this.selectedCategory();
+    if (!this.catalog().length) return this.categories();
+    return this.categories().filter((c) => (counts.get(c.id) || 0) > 0 || c.id === selected);
+  });
   readonly aiCategories = computed(() => this.categories().filter((c) => c.lane === 'ai'));
-  readonly apiCategories = computed(() => this.categories().filter((c) => c.navGroup === 'apis'));
-  readonly generateCategories = computed(() => this.categories().filter((c) => c.navGroup === 'generate'));
-  readonly platformCategories = computed(() =>
-    this.categories().filter((c) => c.navGroup === 'platform' || c.navGroup === 'talent'),
-  );
+  readonly apiCategories = computed(() => this.listed().filter((c) => c.navGroup === 'apis'));
+  readonly generateCategories = computed(() => this.listed().filter((c) => c.navGroup === 'generate'));
+  readonly platformCategories = computed(() => this.listed().filter((c) => c.navGroup === 'platform'));
+  readonly talentCategories = computed(() => this.listed().filter((c) => c.navGroup === 'talent'));
 
   readonly sorts: Array<{ id: SortId; key: string }> = [
     { id: 'featured', key: 'mkt.sort.featured' },
@@ -170,7 +185,7 @@ export class MarketplaceComponent implements OnInit {
   }
 
   categoryCount(id: string): number {
-    return this.catalog().filter((p) => canonicalCategory(p.category) === id).length;
+    return this.counts().get(id) || 0;
   }
 
   setSort(id: SortId): void {

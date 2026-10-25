@@ -759,10 +759,26 @@
               <span class="field-label">Chế độ</span>
               <div class="segmented" role="group" aria-label="TTS or STT">
                 <button type="button" [class.active]="voicePlayMode === 'tts'" (click)="voicePlayMode = 'tts'">TTS · đọc</button>
-                <button type="button" [class.active]="voicePlayMode === 'stt'" (click)="voicePlayMode = 'stt'">STT · nhận giọng</button>
+                @if (voiceHasStt(p)) {
+                  <button type="button" [class.active]="voicePlayMode === 'stt'" (click)="voicePlayMode = 'stt'">STT · nhận giọng</button>
+                }
               </div>
-              <p class="text-xs text-muted" style="margin-top:0.5rem">TTS dùng VieNeu. STT dùng vinai/PhoWhisper-large. Không license thì trừ theo ký tự; AIM-xxxx còn hạn thì không trừ usage.</p>
+              @if (voiceLanguages(p).length) {
+                <p class="text-xs text-muted" style="margin-top:0.5rem">{{ p.contentMeta?.voiceEngine === 'chatterbox' ? 'TTS dùng Chatterbox multilingual.' : 'Tiếng Việt dùng VieNeu-TTS; ngôn ngữ khác dùng Chatterbox multilingual nhân bản giọng này.' }} Không license thì trừ theo ký tự; AIM-xxxx còn hạn thì không trừ usage.</p>
+              } @else {
+                <p class="text-xs text-muted" style="margin-top:0.5rem">TTS dùng VieNeu. STT dùng vinai/PhoWhisper-large. Không license thì trừ theo ký tự; AIM-xxxx còn hạn thì không trừ usage.</p>
+              }
             </div>
+            @if (voicePlayMode === 'tts' && voiceLanguages(p).length > 1) {
+              <div class="field" data-testid="pd-voice-lang">
+                <label class="field-label" for="voiceLang">Ngôn ngữ đọc / Language</label>
+                <select id="voiceLang" class="input" name="voiceLang" [(ngModel)]="voiceLang">
+                  @for (l of voiceLanguages(p); track l) {
+                    <option [value]="l">{{ langLabel(l) }}</option>
+                  }
+                </select>
+              </div>
+            }
           }
 
           @if (!isChatModel() && !fields().length && !(isVoice(p.category) && voicePlayMode === 'stt')) {

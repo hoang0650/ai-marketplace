@@ -46,56 +46,81 @@
           </li>
         </ul>
 
-        <p class="mkt-filter__lane">{{ 'group.generate' | t }}</p>
-        <ul class="mkt-filter__cats">
-          @for (c of generateCategories(); track c.id) {
-            <li>
-              <button
-                type="button"
-                class="mkt-filter__cat"
-                [class.active]="draftCategory === c.id"
-                (click)="draftCategory = c.id"
-              >
-                <span>{{ ('cat.' + c.id + '.label') | t }}</span>
-                <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
-              </button>
-            </li>
-          }
-        </ul>
+        @if (generateCategories().length) {
+          <p class="mkt-filter__lane">{{ 'group.generate' | t }}</p>
+          <ul class="mkt-filter__cats">
+            @for (c of generateCategories(); track c.id) {
+              <li>
+                <button
+                  type="button"
+                  class="mkt-filter__cat"
+                  [class.active]="draftCategory === c.id"
+                  (click)="draftCategory = c.id"
+                >
+                  <span>{{ ('cat.' + c.id + '.label') | t }}</span>
+                  <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
 
-        <p class="mkt-filter__lane">{{ 'group.apis' | t }}</p>
-        <ul class="mkt-filter__cats">
-          @for (c of apiCategories(); track c.id) {
-            <li>
-              <button
-                type="button"
-                class="mkt-filter__cat"
-                [class.active]="draftCategory === c.id"
-                (click)="draftCategory = c.id"
-              >
-                <span>{{ ('cat.' + c.id + '.label') | t }}</span>
-                <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
-              </button>
-            </li>
-          }
-        </ul>
+        @if (apiCategories().length) {
+          <p class="mkt-filter__lane">{{ 'group.apis' | t }}</p>
+          <ul class="mkt-filter__cats">
+            @for (c of apiCategories(); track c.id) {
+              <li>
+                <button
+                  type="button"
+                  class="mkt-filter__cat"
+                  [class.active]="draftCategory === c.id"
+                  (click)="draftCategory = c.id"
+                >
+                  <span>{{ ('cat.' + c.id + '.label') | t }}</span>
+                  <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
 
-        <p class="mkt-filter__lane">{{ 'group.platform' | t }}</p>
-        <ul class="mkt-filter__cats">
-          @for (c of platformCategories(); track c.id) {
-            <li>
-              <button
-                type="button"
-                class="mkt-filter__cat"
-                [class.active]="draftCategory === c.id"
-                (click)="draftCategory = c.id"
-              >
-                <span>{{ ('cat.' + c.id + '.label') | t }}</span>
-                <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
-              </button>
-            </li>
-          }
-        </ul>
+        @if (platformCategories().length) {
+          <p class="mkt-filter__lane">{{ 'group.platform' | t }}</p>
+          <ul class="mkt-filter__cats">
+            @for (c of platformCategories(); track c.id) {
+              <li>
+                <button
+                  type="button"
+                  class="mkt-filter__cat"
+                  [class.active]="draftCategory === c.id"
+                  (click)="draftCategory = c.id"
+                >
+                  <span>{{ ('cat.' + c.id + '.label') | t }}</span>
+                  <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (talentCategories().length) {
+          <p class="mkt-filter__lane">{{ 'group.talent' | t }}</p>
+          <ul class="mkt-filter__cats">
+            @for (c of talentCategories(); track c.id) {
+              <li>
+                <button
+                  type="button"
+                  class="mkt-filter__cat"
+                  [class.active]="draftCategory === c.id"
+                  (click)="draftCategory = c.id"
+                >
+                  <span>{{ ('cat.' + c.id + '.label') | t }}</span>
+                  <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
       </div>
 
       <div class="mkt-filter__block">
