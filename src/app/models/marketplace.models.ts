@@ -318,6 +318,11 @@ export interface ProductContentMeta {
   voiceSampleUrl?: string;
   presetVoiceId?: string;
   presetVoiceName?: string;
+  /** Platform voices: engine and the languages the voice serves (first = default). */
+  voiceEngine?: string;
+  voiceLanguages?: string[];
+  voiceGender?: string;
+  voiceAccent?: string;
   cloneStatus?: 'pending' | 'ready' | 'failed' | '';
   cloneProvider?: string;
   cloneEndpoint?: string;
