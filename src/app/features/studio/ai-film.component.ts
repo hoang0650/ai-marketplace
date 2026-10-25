@@ -41,7 +41,7 @@ interface EstItem { sid: string; shots: number[]; seconds: number; images: numbe
 interface Estimate { items: EstItem[]; total: number; render: { ttsChars: number; price: number }; available: number }
 interface Voice { label: string; id: string }
 interface Seg { scene: Scene; idx: number; start: number; dur: number; shot: number; video: string; thumb: string; offset: number }
-interface Confirm { kind: 'scenes' | 'render' | 'asset'; assetId?: string; items: EstItem[]; total: number; balance: number; renderLine?: string }
+interface Confirm { kind: 'scenes' | 'render' | 'asset' | 'shot'; assetId?: string; sceneSid?: string; shotSid?: string; items: EstItem[]; total: number; balance: number; renderLine?: string }
 
 const FALLBACK_VOICES: Voice[] = [
   { id: 'Binh', label: 'Bình (nam miền Bắc)' }, { id: 'Tuyen', label: 'Tuyên (nam miền Bắc)' },
@@ -271,7 +271,18 @@ export function splitDuration(total: number): number[] {
                 <span class="ed-badge-i" [attr.data-s]="sh.status">{{ sh.duration }}s</span>
                 @if (sh.active >= 0 && sh.versions[sh.active]; as v) { <img [src]="media(v.frameKey)" alt="" (click)="seekShot(c, j)" loading="lazy" /> }
                 <input [(ngModel)]="sh.prompt" (ngModelChange)="edit()" [placeholder]="t('film.v2.shotPh', { n: j + 1 })" />
+                @if (sh.versions.length || sh.status === 'failed') {
+                  <button class="ed-btn ed-mini" (click)="regenShot(c, j)" [disabled]="!canGenerate() || c.status === 'generating'" [title]="t('film.v2.regenShot')" [attr.data-testid]="'shot-regen-' + j">↻</button>
+                }
               </div>
+              @if (sh.versions.length > 1) {
+                <div class="ed-vers" [attr.data-testid]="'shot-versions-' + j">
+                  <span>{{ t('film.v2.takes') }}</span>
+                  @for (v of sh.versions; track v.v; let k = $index) {
+                    <button class="ed-ver" [class.on]="k === sh.active" (click)="useTake(c, sh, v.v)" [disabled]="c.status === 'generating' || k === sh.active" [title]="v.prompt || ''">v{{ v.v }}</button>
+                  }
+                </div>
+              }
             }
           </div>
           @if (c.error) { <p class="ed-errtxt">{{ c.error }}</p> }
@@ -502,6 +513,10 @@ export function splitDuration(total: number): number[] {
 .ed-badge-i{font-size:11px;padding:1px 7px;border-radius:999px;background:var(--p2);color:var(--m);font-weight:500}
 .ed-badge-i[data-s=ready]{color:#34d399}.ed-badge-i[data-s=failed]{color:#f87171}.ed-badge-i[data-s=generating],.ed-badge-i[data-s=partial],.ed-badge-i[data-s=stale]{color:#fcd34d}
 .ed-del{position:absolute;top:4px;right:32px;width:24px;height:24px;border-radius:6px;border:0;background:rgba(0,0,0,.6);color:#fca5a5;cursor:pointer}
+.ed-mini{padding:2px 8px;min-width:0;flex:0 0 auto}
+.ed-vers{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:11px;opacity:.9;padding-left:4px}
+.ed-ver{font-size:11px;padding:1px 6px;border-radius:6px;border:1px solid var(--b);background:transparent;color:inherit;cursor:pointer}
+.ed-ver.on{background:var(--accent,#7c5cff);color:#fff;border-color:transparent}
 .ed-shots{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--b);padding-top:8px}
 .ed-shot{display:flex;gap:6px;align-items:center}.ed-shot img{width:52px;height:30px;object-fit:cover;border-radius:4px;cursor:pointer}
 .ed-shot input{flex:1;min-width:0;background:var(--p2);border:1px solid var(--b);border-radius:6px;padding:5px 7px;color:var(--t)}
@@ -989,6 +1004,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     this.confirm.set(null);
     if (cf.kind === 'render') return this.submitRender(cf.total);
     if (cf.kind === 'asset') return this.submitAsset(cf.assetId!, cf.total);
+    if (cf.kind === 'shot') return this.submitShot(cf.sceneSid!, cf.shotSid!, cf.total);
     if (cf.items.length === 1) { await this.submitScene(cf.items[0].sid, cf.items[0].price); return; }
     // Batch: one scene at a time, max 3 in flight; a chained scene waits for the previous one so it can start from its last frame.
     this.busyBatch.set(true);
@@ -1018,6 +1034,40 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     } finally { this.busyBatch.set(false); }
   }
   /** Returns 'ok', 'busy' (too many running, batch retries) or an error message. */
+  /** Re-shoot one shot (new take, price shown first). Later shots keep their takes; regenerate them too for a seamless chain. */
+  async regenShot(c: Scene, j: number): Promise<void> {
+    const p = this.project();
+    const sh = c.shots[j];
+    if (!p || !sh) return;
+    await this.flush();
+    try {
+      const e = await firstValueFrom(this.http.post<{ seconds: number; price: number; ready: boolean; available: number }>(`${FILM}/projects/${p.id}/scenes/${c.sid}/shots/${sh.sid}/estimate`, {}));
+      if (!e.ready) return this.note(this.t('film.v2.shotNeedPrev'), true);
+      this.confirm.set({ kind: 'shot', sceneSid: c.sid, shotSid: sh.sid, items: [], total: e.price, balance: e.available,
+        renderLine: this.t('film.v2.estShot', { n: j + 1, s: e.seconds, price: this.money(e.price) }) });
+    } catch (err) { this.note(this.apiError(err as HttpErrorResponse), true); }
+  }
+  private async submitShot(sid: string, shot: string, price: number): Promise<void> {
+    const p = this.project();
+    if (!p) return;
+    const sh = this.scenes().find((s) => s.sid === sid)?.shots.find((x) => x.sid === shot);
+    try {
+      const r = await firstValueFrom(this.http.post<{ project: Project }>(`${FILM}/projects/${p.id}/scenes/${sid}/shots/${shot}/generate`, { expectedPrice: price, prompt: sh?.prompt || '' }));
+      this.merge(r.project, !this.saveTimer && !this.saving);
+      this.note(this.t('film.v2.shotSubmitted'));
+    } catch (e) {
+      const err = e as HttpErrorResponse;
+      this.note(err.error?.code === 'PRICE_CHANGED' ? this.t('film.v2.priceChanged', { price: this.money(err.error.price) }) : err.error?.code === 'NEED_PREVIOUS' ? this.t('film.v2.shotNeedPrev') : this.apiError(err), true);
+    }
+  }
+  async useTake(c: Scene, sh: Shot, v: number): Promise<void> {
+    const p = this.project();
+    if (!p) return;
+    try {
+      const r = await firstValueFrom(this.http.post<{ project: Project }>(`${FILM}/projects/${p.id}/scenes/${c.sid}/shots/${sh.sid}/active`, { v }));
+      this.merge(r.project, !this.saveTimer && !this.saving);
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
   private async submitScene(sid: string, price: number, batch = false): Promise<string> {
     const p = this.project();
     if (!p) return 'no project';
