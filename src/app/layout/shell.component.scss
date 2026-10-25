@@ -471,20 +471,21 @@
 
 .icon-btn__badge {
   position: absolute;
-  top: 0.2rem;
-  right: 0.15rem;
-  min-width: 1.1rem;
-  height: 1.1rem;
-  padding: 0 0.28rem;
+  top: 0.1rem;
+  left: calc(50% + 0.3rem); /* pinned to the icon's top-right corner, grows outward */
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.22rem;
   border-radius: 999px;
   border: 2px solid var(--color-surface);
   box-sizing: content-box;
   background: #c62828; /* white on #c62828 = 5.6:1 */
   color: #fff;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 800;
-  line-height: 1.1rem;
+  line-height: 1rem;
   text-align: center;
+  pointer-events: none;
 }
 
 .icon-btn__badge--neutral {
