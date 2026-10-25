@@ -54,13 +54,20 @@ export const CAMERA_LABEL: Record<Camera, string> = {
 };
 const TICK_STEPS = [1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600];
 const uid = () => Math.random().toString(36).slice(2, 10);
-/** Same split as the API/AI service: 15 s shots then the remainder (Wan 2.2 takes 5/8/10/15 s). */
+/** Same split as the API/AI service: Wan 2.2 on RunPod takes 8 s / 5 s clips; fewest shots within -2..+1 s of the target (max 60). */
 export function splitDuration(total: number): number[] {
-  let t = Math.max(5, Math.min(60, Math.round((Number(total) || 0) / 5) * 5 || 5));
-  const out: number[] = [];
-  while (t >= 15) { out.push(15); t -= 15; }
-  if (t) out.push(t);
-  return out;
+  const t = Math.max(5, Math.min(60, Math.round((Number(total) || 0) / 5) * 5 || 5));
+  for (let n = 1; n <= 20; n += 1) {
+    let best: { a: number; score: number } | null = null;
+    for (let a = n; a >= 0; a -= 1) {
+      const sum = 8 * a + 5 * (n - a);
+      if (sum < t - 2 || sum > Math.min(t + 1, 60)) continue;
+      const score = Math.abs(sum - t) * 2 + (sum > t ? 1 : 0);
+      if (!best || score < best.score) best = { a, score };
+    }
+    if (best) return [...Array(best.a).fill(8), ...Array(n - best.a).fill(5)];
+  }
+  return [5];
 }
 
 /** AI film editor: server-saved projects up to 120 min, 5–60 s chained scenes (Wan 2.2 I2V on RunPod, per-second pricing shown before generating), uploads/music in MinIO, final ffmpeg join on the AI service. */
@@ -793,7 +800,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     return done ? s.shots.reduce((a, sh) => a + sh.duration, 0) : splitDuration(s.duration).reduce((a, b) => a + b, 0);
   }
   w(c: Scene): number { return Math.max(3, this.secondsOf(c) * this.pps() - 2); }
-  splitLabel(d: number): string { const a = splitDuration(d); return this.t('film.v2.shotsSplit', { n: a.length, list: a.map((x) => x + 's').join(' + ') }); }
+  splitLabel(d: number): string { const a = splitDuration(d); return this.t('film.v2.shotsSplit', { n: a.length, list: a.map((x) => x + 's').join(' + ') + ' = ' + a.reduce((x, y) => x + y, 0) + 's' }); }
   media(k?: string): string { return (k && this.project()?.media?.[k]) || ''; }
   thumbOf(s: Scene): string {
     if (s.source === 'upload') return '';
