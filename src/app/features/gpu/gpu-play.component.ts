@@ -44,7 +44,12 @@ const STOP_REASONS = new Set(['idle', 'insufficient_funds', 'switched_device', '
           {{ 'compute.play.profilePc' | t: { res: pf.maxHeight + 'p', fps: pf.fps } }}
           @if (bill(); as b) {
             @if (b.ratePerHour > 0) {
-              · {{ 'compute.play.billed' | t: { amount: money(b.billedCost), minutes: b.billedMinutes } }}
+              · {{ 'compute.play.rate' | t: { rate: rate(b.ratePerHour / 60) } }}
+              @if (status() === 'live' && b.usedMinutes !== undefined) {
+                · {{ 'compute.play.running' | t: { amount: rate(b.usedCost ?? 0), minutes: b.usedMinutes, estimate: money(b.estimatedCharge ?? 0) } }}
+              } @else {
+                · {{ 'compute.play.billed' | t: { amount: money(b.billedCost), minutes: b.billedMinutes } }}
+              }
               @if (b.minutesLeft !== undefined) {
                 · {{ 'compute.play.minutesLeft' | t: { minutes: b.minutesLeft } }}
               }
@@ -125,6 +130,11 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
 
   money(usd: number): string {
     return this.currency.formatFromUsd(Number(usd) || 0);
+  }
+
+  /** Sub-cent rates/amounts with the same rounding as the product page and the server player. */
+  rate(usd: number): string {
+    return this.currency.formatRateFromUsd(Math.round((Number(usd) || 0) * 1e6) / 1e6);
   }
 
   start(): void {

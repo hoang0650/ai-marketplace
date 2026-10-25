@@ -491,6 +491,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.i18n.t('wallet.method.internal');
   }
 
+  /** History amount: cents for anything under $1 (a $0.01 game minute must not read "$0"). */
+  txAmount(t: WalletTx): string {
+    return this.fx.formatAmount(t.amount, t.currency);
+  }
+
   isCredit(type: WalletTx['type']): boolean {
     return type === 'deposit' || type === 'credit';
   }

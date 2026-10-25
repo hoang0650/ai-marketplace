@@ -65,24 +65,35 @@ export class CurrencyService {
     return (Number(vnd) || 0) / RATE_FROM_USD.VND;
   }
 
+  /** Wallet amounts: whole đồng for VND; otherwise cents, with sub-cent amounts kept readable. */
+  formatAmount(amount: number, currency: string): string {
+    const v = Math.abs(Number(amount) || 0);
+    const code = String(currency || 'USD').toUpperCase();
+    if (code === 'VND') return `${Math.round(v).toLocaleString('vi-VN')} đ`;
+    const digits = v > 0 && v < 0.01 ? Math.min(8, Math.max(3, 2 - Math.floor(Math.log10(v)))) : 2;
+    const text = v.toLocaleString(code === 'CNY' ? 'zh-CN' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: digits });
+    return code === 'CNY' ? `¥${text}` : code === 'USD' ? `$${text}` : `${text} ${code}`;
+  }
+
   formatUsageFromUsd(usd: number, unit: string, target: AppCurrency = this.currency()): string {
     return `${this.formatRateFromUsd(usd, target)}/${unit}`;
   }
 
   /**
-   * Like formatFromUsd, but keeps sub-cent unit rates readable ($0.00174 → $0.0017, not $0.00):
-   * values under one cent (or one fen) show 2 significant digits.
+   * Like formatFromUsd, but keeps sub-cent amounts readable ($0.001763 → $0.00176, not $0.00):
+   * values under one cent (or one fen, or 10 đ) show 3 significant digits. The API's game player
+   * page uses the same rule, so a rate reads the same on the product page and while playing.
    */
   formatRateFromUsd(usd: number, target: AppCurrency = this.currency()): string {
     const v = Number(usd) || 0;
     if (target === 'VND') {
       const vnd = v * RATE_FROM_USD.VND;
-      if (vnd > 0 && vnd < 10) return `${vnd.toLocaleString('vi-VN', { maximumSignificantDigits: 2 })} đ`;
+      if (vnd > 0 && vnd < 10) return `${vnd.toLocaleString('vi-VN', { maximumSignificantDigits: 3 })} đ`;
       return this.formatFromUsd(v, target);
     }
     const amount = target === 'CNY' ? v * RATE_FROM_USD.CNY : v;
     if (amount <= 0 || amount >= 0.01) return this.formatFromUsd(v, target);
-    const digits = Math.min(8, Math.max(3, 1 - Math.floor(Math.log10(amount))));
+    const digits = Math.min(8, Math.max(3, 2 - Math.floor(Math.log10(amount))));
     const text = amount.toLocaleString(target === 'CNY' ? 'zh-CN' : 'en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: digits,
