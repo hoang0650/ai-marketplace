@@ -224,7 +224,7 @@
                   </td>
                   <td [class.credit-amt]="isCredit(t.type)" [class.debit-amt]="!isCredit(t.type)">
                     {{ isCredit(t.type) ? '+' : '-' }}
-                    {{ t.amount | currency: t.currency: 'symbol-narrow': '1.0-0' }}
+                    {{ txAmount(t) }}
                   </td>
                   <td>{{ methodLabel(t) }}</td>
                   <td><span class="pill" [attr.data-status]="t.status || 'completed'">{{ statusLabel(t) }}</span></td>

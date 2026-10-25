@@ -909,6 +909,10 @@ export interface GameHeartbeat {
   currency: string;
   available?: number;
   minutesLeft?: number;
+  /** Live sessions: minutes so far (partial minute counted), exact cost, and the total if stopped now. */
+  usedMinutes?: number;
+  usedCost?: number;
+  estimatedCharge?: number;
 }
 
 export interface ComputeNode {
