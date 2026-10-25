@@ -243,6 +243,68 @@
   max-width: 48rem;
 }
 
+.pd-demos {
+  margin: 1rem 0 0;
+  display: grid;
+  gap: 0.85rem;
+  max-width: 48rem;
+}
+
+.pd-demos__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pd-demo {
+  margin: 0;
+  border: 1px solid var(--color-border, rgba(127, 127, 127, 0.25));
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.pd-demo__media {
+  display: block;
+  width: 100%;
+  max-height: 28rem;
+  object-fit: contain;
+  background: #000;
+}
+
+.pd-demo__text {
+  margin: 0;
+  padding: 0.75rem;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+}
+
+.pd-demo__caption {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+
+.pd-demo__input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  img {
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: cover;
+    border-radius: 0.4rem;
+  }
+}
+
+.pd-demo__settings {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
 .pd-meta__features {
   margin: 0.85rem 0 0;
   padding: 0;

@@ -65,6 +65,38 @@
             <span>{{ 'pd.sold' | t: { n: (p.salesCount || 0) } }}</span>
           </p>
           <p class="pd-meta__desc">{{ p.description }}</p>
+          @if (p.demos?.length) {
+            <section class="pd-demos" aria-label="Demo">
+              <h2 class="pd-demos__title">{{ 'pd.demoTitle' | t }}</h2>
+              @for (d of p.demos; track $index) {
+                <figure class="pd-demo">
+                  @if (d.kind === 'video' && d.url) {
+                    <video class="pd-demo__media" [src]="d.url" [poster]="d.posterUrl || ''" controls playsinline preload="metadata"></video>
+                  } @else if (d.kind === 'image' && d.url) {
+                    <img class="pd-demo__media" [src]="d.url" [alt]="d.prompt || p.name" loading="lazy" />
+                  } @else if (d.kind === 'audio' && d.url) {
+                    <audio [src]="d.url" controls preload="none"></audio>
+                  } @else if (d.text) {
+                    <pre class="pd-demo__text">{{ d.text }}</pre>
+                  }
+                  <figcaption class="pd-demo__caption">
+                    @if (d.inputImageUrl) {
+                      <span class="pd-demo__input">
+                        <span>{{ 'pd.demoInputImage' | t }}</span>
+                        <img [src]="d.inputImageUrl" alt="input" loading="lazy" />
+                      </span>
+                    }
+                    @if (d.prompt) {
+                      <span><strong>{{ 'pd.demoPrompt' | t }}:</strong> {{ d.prompt }}</span>
+                    }
+                    @if (d.settings) {
+                      <span class="pd-demo__settings">{{ d.settings }}</span>
+                    }
+                  </figcaption>
+                </figure>
+              }
+            </section>
+          }
           <ul class="pd-meta__features">
             <li>Manual / API delivery via seller runtime</li>
             <li>Token metering &amp; wallet settlement</li>
