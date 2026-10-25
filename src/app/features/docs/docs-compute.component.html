@@ -22,12 +22,18 @@
     </ul>
   </article>
 
+  <article id="auth" class="seller-docs__section">
+    <h2>{{ 'docsCompute.auth.title' | t }}</h2>
+    <p>{{ 'docsCompute.auth.p1' | t }}</p>
+  </article>
+
   <article id="register" class="seller-docs__section">
     <h2>{{ 'docsCompute.register.title' | t }}</h2>
     <p>{{ 'docsCompute.register.p1' | t }}</p>
     <pre class="seller-docs__code">{{ registerExample }}</pre>
     <h3>{{ 'docsCompute.register.manage' | t }}</h3>
     <ul>
+      <li>{{ 'docsCompute.register.m0' | t }}</li>
       <li>{{ 'docsCompute.register.m1' | t }}</li>
       <li>{{ 'docsCompute.register.m2' | t }}</li>
       <li>{{ 'docsCompute.register.m3' | t }}</li>
@@ -75,6 +81,8 @@
     <pre class="seller-docs__code">{{ webhookPayload }}</pre>
     <h3>{{ 'docsCompute.webhook.response' | t }}</h3>
     <pre class="seller-docs__code">{{ webhookResponse }}</pre>
+    <h3>{{ 'docsCompute.webhook.stop' | t }}</h3>
+    <pre class="seller-docs__code">{{ webhookStopPayload }}</pre>
     <p class="seller-docs__hint">{{ 'docsCompute.webhook.fallback' | t }}</p>
   </article>
 
@@ -85,12 +93,25 @@
     <p class="seller-docs__hint">{{ 'docsCompute.buyer.heartbeat' | t }}</p>
     <h3>{{ 'docsCompute.buyer.errors' | t }}</h3>
     <ul>
+      <li><code>404</code> — {{ 'docsCompute.buyer.e404' | t }}</li>
       <li><code>402</code> — {{ 'docsCompute.buyer.e402' | t }}</li>
       <li><code>409</code> — {{ 'docsCompute.buyer.e409' | t }}</li>
       <li><code>410</code> — {{ 'docsCompute.buyer.e410' | t }}</li>
       <li><code>429</code> — {{ 'docsCompute.buyer.e429' | t }}</li>
+      <li><code>502</code> — {{ 'docsCompute.buyer.e502' | t }}</li>
       <li><code>503</code> — {{ 'docsCompute.buyer.e503' | t }}</li>
     </ul>
+  </article>
+
+  <article id="dedicated" class="seller-docs__section">
+    <h2>{{ 'docsCompute.dedicated.title' | t }}</h2>
+    <p>{{ 'docsCompute.dedicated.p1' | t }}</p>
+    <ul>
+      <li>{{ 'docsCompute.dedicated.l1' | t }}</li>
+      <li>{{ 'docsCompute.dedicated.l2' | t }}</li>
+      <li>{{ 'docsCompute.dedicated.l3' | t }}</li>
+    </ul>
+    <pre class="seller-docs__code">{{ dedicatedExample }}</pre>
   </article>
 
   <article id="billing" class="seller-docs__section">
@@ -103,6 +124,21 @@
       <li>{{ 'docsCompute.billing.l4' | t }}</li>
       <li>{{ 'docsCompute.billing.l5' | t }}</li>
     </ul>
+  </article>
+
+  <article id="examples" class="seller-docs__section">
+    <h2>{{ 'docsCompute.examples.title' | t }}</h2>
+    <p>{{ 'docsCompute.examples.p1' | t }}</p>
+    <h3>{{ 'docsCompute.examples.curl' | t }}</h3>
+    <pre class="seller-docs__code">{{ curlExample }}</pre>
+    <h3>{{ 'docsCompute.examples.node' | t }}</h3>
+    <pre class="seller-docs__code">{{ nodeExample }}</pre>
+    <h3>{{ 'docsCompute.examples.nodeHook' | t }}</h3>
+    <pre class="seller-docs__code">{{ nodeWebhookExample }}</pre>
+    <h3>{{ 'docsCompute.examples.py' | t }}</h3>
+    <pre class="seller-docs__code">{{ pythonExample }}</pre>
+    <h3>{{ 'docsCompute.examples.pyHook' | t }}</h3>
+    <pre class="seller-docs__code">{{ pythonWebhookExample }}</pre>
   </article>
 
   <footer class="seller-docs__foot">
