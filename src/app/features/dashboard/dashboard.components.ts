@@ -532,7 +532,7 @@ export class DashboardAnalyticsComponent implements OnInit {
               </div>
             </div>
             @if (draft.category === 'ai-film-series' || draft.category === 'story-book') {
-            <p class="mt-3 text-xs text-muted">Sau khi Publish, tải từng tập/chương (ảnh hoặc video, tối đa 80MB) ở danh sách sản phẩm bên dưới. Mỗi listing cấp một license AIM-xxxx riêng — cùng shop không dùng chung key. Hết hạn thì file .aimc trên máy họ không mở được.</p>
+            <p class="mt-3 text-xs text-muted">Sau khi Publish, tải từng tập/chương (ảnh hoặc video, tối đa 80MB) ở danh sách sản phẩm bên dưới. Mỗi listing cấp một license AIM-xxxx riêng — cùng shop không dùng chung key. Người mua chỉ xem / đọc online (không tải về); hết hạn thì dừng ngay.</p>
             }
             @if (draft.category === 'skill-pack' || draft.category === 'dataset') {
             <p class="mt-3 text-xs text-muted">Buyer thanh toán theo ngày/tháng/năm sẽ nhận license key AIM-xxxx (email + dashboard). Key chỉ mở khóa đúng listing này — hết hạn thì không còn quyền tải/cài.</p>
@@ -695,7 +695,7 @@ export class DashboardAnalyticsComponent implements OnInit {
               <p class="mb-3 text-xs text-muted">
                 {{ p.category === 'story-book'
                   ? 'Chọn nhiều ảnh trong một lần — mỗi ảnh là một trang/frame của chương. File lưu riêng, buyer chỉ đọc khi license còn hạn.'
-                  : 'File lưu riêng, không public. Buyer chỉ stream/tải khi license còn hạn. Tải xuống là file .aimc mã hóa.' }}
+                  : 'File lưu riêng, không public. Buyer chỉ xem / đọc / dùng online khi license còn hạn — không tải về. Bạn (người bán) vẫn tải được bản của mình.' }}
               </p>
               @if (p.category !== 'story-book') {
                 <div class="mb-3 grid gap-2 rounded-md border border-line p-2" data-testid="series-meta">

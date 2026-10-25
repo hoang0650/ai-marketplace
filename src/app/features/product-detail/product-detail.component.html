@@ -456,22 +456,15 @@
               {{ checkingOut() ? ('cart.paying' | t) : ((isDataset(p.category) ? 'pd.ctaDownloadDataset' : 'pd.ctaDownloadSkill') | t) }}
               · {{ licensePrice(p) | currency: displayCurrency:'symbol-narrow':'1.0-2' }}
             </button>
-          } @else {
-            <div class="pg-actions mt-3">
-              <button type="button" class="btn btn-run" (click)="installSkill()">
-                @if (isDataset(p.category)) {
-                  {{ skillInstalled() ? ('pd.datasetMarked' | t) : ('pd.datasetMarkDownloaded' | t) }}
-                } @else {
-                  {{ skillInstalled() ? ('pd.skillInstalled' | t) : ('pd.skillMarkInstalled' | t) }}
-                }
-              </button>
-              <a routerLink="/dashboard/licenses" class="btn btn-outline">{{ 'dash.licenses' | t }}</a>
-            </div>
-            @if (skillInstalled()) {
-              <p class="cost-hint">{{ (isDataset(p.category) ? 'pd.datasetInstalledHint' : 'pd.skillInstalledHint') | t }}</p>
-            }
           }
-          @if (productFiles().length) {
+          <app-online-access-panel
+            [product]="p"
+            [canUse]="canUnlockDownload()"
+            [owner]="isContentOwner()"
+            [licenseKey]="issuedLicense()?.licenseKey || ''"
+            [licenseExpiresAt]="issuedLicense()?.expiresAt || null"
+          />
+          @if (productFiles().length && (filesAccess() === 'admin' || filesAccess() === 'seller')) {
             <h3 class="mt-4 text-sm font-semibold">{{ 'pd.filesTitle' | t }}</h3>
             @switch (filesAccess()) {
               @case ('admin') { <p class="pd-files-note">{{ 'pd.filesAccessAdmin' | t }}</p> }
@@ -675,6 +668,7 @@
         [product]="p"
         [canPlay]="canPlayContent()"
         [licenseKey]="issuedLicense()?.licenseKey || ''"
+        [owner]="isContentOwner()"
         [priceLabel]="(licensePrice(p) | currency: displayCurrency:'symbol-narrow':'1.0-2') || ''"
         [checkingOut]="checkingOut()"
         (checkout)="checkout()"
@@ -688,6 +682,7 @@
         [product]="p"
         [canPlay]="canPlayContent()"
         [licenseKey]="issuedLicense()?.licenseKey || ''"
+        [owner]="isContentOwner()"
         [priceLabel]="(licensePrice(p) | currency: displayCurrency:'symbol-narrow':'1.0-2') || ''"
         [checkingOut]="checkingOut()"
         (checkout)="checkout()"

@@ -27,8 +27,9 @@ const LS = (slug: string) => `aimarkets.watch.${slug}`;
           <video #vid class="sp-video" [src]="playUrl()" playsinline autoplay preload="auto"
             controlslist="nodownload noremoteplayback noplaybackrate" disablepictureinpicture
             (loadedmetadata)="onMeta($event)" (timeupdate)="onTime()" (play)="paused.set(false)" (pause)="onPause()"
-            (ended)="onEnded()" (error)="err.set('Không phát được tập này. Thử lại sau.')" (click)="toggle()"
+            (ended)="onEnded()" (error)="onVideoError()" (click)="toggle()"
             (contextmenu)="block($event)" data-testid="sp-video"></video>
+          @if (watermark()) { <div class="sp-wm" [style.top.%]="wmPos().y" [style.left.%]="wmPos().x" aria-hidden="true" data-testid="sp-wm">{{ watermark() }}</div> }
           @if (caption()) { <div class="sp-sub" data-testid="sp-sub">{{ caption() }}</div> }
           @if (paused() && !nextIn()) {
             <button type="button" class="sp-bigplay" (click)="toggle()" aria-label="Phát" data-testid="sp-play">▶</button>
@@ -45,7 +46,7 @@ const LS = (slug: string) => `aimarkets.watch.${slug}`;
               <div class="sp-gate" data-testid="sp-locked">
                 <span class="sp-lockbig">🔒</span>
                 <b>Tập {{ current()!.index }} cần mở khóa</b>
-                <small>Mua license để xem toàn bộ {{ episodes().length }} tập và tải file .aimc mã hóa.</small>
+                <small>Mua license để xem online toàn bộ {{ episodes().length }} tập.</small>
                 <button type="button" class="sp-cta" (click)="checkout.emit()" [disabled]="checkingOut" data-testid="sp-unlock">
                   {{ checkingOut ? 'Đang thanh toán…' : 'Mở khóa toàn bộ tập' }}@if (priceLabel) { · {{ priceLabel }} }
                 </button>
@@ -129,10 +130,10 @@ const LS = (slug: string) => `aimarkets.watch.${slug}`;
             🔓 Mở khóa toàn bộ@if (priceLabel) { · {{ priceLabel }} }
           </button>
         }
-        @if (canPlay && current()) {
-          <button type="button" class="sp-dl" (click)="download()" data-testid="sp-download">⤓ Tải tập {{ current()!.index }} (.aimc mã hóa)</button>
+        @if (owner && current()) {
+          <button type="button" class="sp-dl" (click)="download()" data-testid="sp-download">⤓ Tải tập {{ current()!.index }} (.aimc · {{ auth.user()?.role === 'admin' ? 'kiểm duyệt' : 'chủ sở hữu' }})</button>
         }
-        <p class="sp-hint">File .aimc chỉ mở được trong ứng dụng AI Markets khi license còn hạn.</p>
+        <p class="sp-hint">Chỉ xem online: mỗi lần phát đều kiểm tra license, dừng ngay khi license hết hạn. Không tải về.</p>
       </div>
     </aside>
   </div>
@@ -195,6 +196,7 @@ const LS = (slug: string) => `aimarkets.watch.${slug}`;
 .sp-lic code{background:#000;padding:2px 6px;border-radius:4px}
 .sp-dl{width:100%;background:#1e1e28;border:1px solid var(--b);color:var(--t);border-radius:10px;padding:10px;cursor:pointer;margin-top:6px}
 .sp-hint{color:var(--m);font-size:12px;margin-top:8px}
+.sp-wm{position:absolute;z-index:3;pointer-events:none;user-select:none;color:rgba(255,255,255,.28);font:600 12px/1.2 ui-monospace,monospace;text-shadow:0 0 2px rgba(0,0,0,.5);white-space:nowrap;transition:top 1.2s,left 1.2s}
 .sp-scrim{display:none}
 @media (max-width:820px){
   :host{overflow:hidden}
@@ -234,6 +236,8 @@ export class SeriesPlayerComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() licenseKey = '';
   @Input() priceLabel = '';
   @Input() checkingOut = false;
+  /** Seller or admin: the only viewers who may download the raw .aimc file. */
+  @Input() owner = false;
   @Output() checkout = new EventEmitter<void>();
   @Output() back = new EventEmitter<void>();
   @Output() login = new EventEmitter<void>();
@@ -246,6 +250,10 @@ export class SeriesPlayerComponent implements OnChanges, AfterViewInit, OnDestro
   readonly episodes = signal<ContentEpisode[]>([]);
   readonly current = signal<ContentEpisode | null>(null);
   readonly playUrl = signal('');
+  readonly watermark = signal('');
+  readonly wmPos = signal({ x: 6, y: 8 });
+  private wmTimer: ReturnType<typeof setInterval> | null = null;
+  private retried = false;
   readonly loading = signal(false);
   readonly paused = signal(true);
   readonly portrait = signal(false);
@@ -294,6 +302,7 @@ export class SeriesPlayerComponent implements OnChanges, AfterViewInit, OnDestro
   }
 
   ngOnDestroy(): void {
+    if (this.wmTimer) clearInterval(this.wmTimer);
     if (typeof document !== 'undefined') {
       document.removeEventListener('keydown', this.keyHandler, true);
       document.body.style.overflow = this.prevOverflow;
@@ -371,14 +380,46 @@ export class SeriesPlayerComponent implements OnChanges, AfterViewInit, OnDestro
         this.loading.set(false);
         const tok = String(res.playToken || '').trim();
         this.playUrl.set(tok ? `${environment.apiUrl}/content/play?token=${encodeURIComponent(tok)}&page=1` : res.playUrl);
+        this.setWatermark(res.watermark || '');
       },
       error: (e) => {
         if (s !== this.seq) return;
         this.loading.set(false);
         const code = e?.error?.code;
-        this.err.set(code === 'LICENSE_REQUIRED' || e?.status === 402 ? 'Tập này cần license để xem.' : e?.error?.message || 'Không mở được tập này.');
+        this.playUrl.set('');
+        this.setWatermark('');
+        this.err.set(
+          code === 'LICENSE_EXPIRED'
+            ? 'License đã hết hạn — phát lại đã dừng. Gia hạn để xem tiếp.'
+            : code === 'LICENSE_REQUIRED' || e?.status === 402
+              ? 'Tập này cần license để xem.'
+              : e?.error?.message || 'Không mở được tập này.',
+        );
       },
     });
+  }
+
+  /**
+   * Play tokens live 5 minutes and every range request re-checks the license. A failed request
+   * re-unlocks once: a valid license resumes where it stopped, an expired one shows the reason.
+   */
+  onVideoError(): void {
+    const ep = this.current();
+    if (!ep || this.retried) {
+      this.err.set('Không phát được tập này. Thử lại sau.');
+      return;
+    }
+    this.retried = true;
+    this.resumeAt = this.vid?.nativeElement?.currentTime || this.time() || 0;
+    this.unlock(ep);
+  }
+
+  private setWatermark(text: string): void {
+    this.watermark.set(text);
+    if (this.wmTimer) clearInterval(this.wmTimer);
+    this.wmTimer = null;
+    if (!text || typeof window === 'undefined') return;
+    this.wmTimer = setInterval(() => this.wmPos.set({ x: 4 + Math.random() * 52, y: 6 + Math.random() * 74 }), 15000);
   }
 
   onMeta(ev: Event): void {
@@ -389,6 +430,7 @@ export class SeriesPlayerComponent implements OnChanges, AfterViewInit, OnDestro
     this.dur.set(v.duration || 0);
     if (this.resumeAt > 1 && this.resumeAt < (v.duration || 0) - 2) v.currentTime = this.resumeAt;
     this.resumeAt = 0;
+    this.retried = false;
     v.play().catch(() => this.paused.set(true));
   }
 
@@ -522,7 +564,7 @@ export class SeriesPlayerComponent implements OnChanges, AfterViewInit, OnDestro
 
   download(): void {
     const ep = this.current();
-    if (!ep || !this.canPlay) return;
+    if (!ep || !this.owner) return;
     this.api.download(ep.id, this.licenseKey || undefined).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
