@@ -25,9 +25,11 @@ interface Voice { label: string; id: string }
 interface Job { status: string; position?: number | null; videoUrl?: string; imageUrl?: string; error?: string; timings?: Record<string, number> }
 interface Quota { enabled?: boolean; promo?: { active: boolean }; film?: { used: number; free: number }; fast?: { used: number; free: number } }
 
+// Same ids as the VieNeu catalog (/studio/voices); old projects may still hold retired ids.
 const FALLBACK_VOICES: Voice[] = [
-  { id: 'Trúc Ly', label: 'Trúc Ly — Nữ · Bắc' }, { id: 'Thiện Minh', label: 'Thiện Minh — Nam · Bắc' },
-  { id: 'Mai Anh', label: 'Mai Anh — Nữ · Nam' }, { id: 'Adam bựa', label: 'Adam bựa — Nam · Bắc' },
+  { id: 'Binh', label: 'Bình (nam miền Bắc)' }, { id: 'Tuyen', label: 'Tuyên (nam miền Bắc)' },
+  { id: 'Ly', label: 'Ly (nữ miền Bắc)' }, { id: 'Ngoc', label: 'Ngọc (nữ miền Bắc)' },
+  { id: 'Vinh', label: 'Vĩnh (nam miền Nam)' }, { id: 'Doan', label: 'Đoan (nữ miền Nam)' },
 ];
 export const CAMERA_LABEL: Record<Camera, string> = {
   static: 'Đứng yên', 'push-in': 'Tiến vào', 'pull-out': 'Lùi ra', 'pan-left': 'Lia trái', 'pan-right': 'Lia phải', orbit: 'Xoay quanh', handheld: 'Cầm tay',
@@ -396,10 +398,11 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.restore();
     if (!this.clips().length) this.addClip();
+    this.fixVoices();
     if (!this.loggedIn()) return;
     this.http.get<Quota>(`${API}/studio/quota`).subscribe({ next: (q) => { this.quota.set(q); if (q.enabled === false) this.gpuDown.set(true); }, error: () => {} });
-    this.http.get<{ vi?: Voice[] }>(`${API}/studio/voices`).subscribe({
-      next: (r) => { if (r.vi?.length) this.voices.set(r.vi); },
+    this.http.get<{ vi?: Voice[]; default?: string }>(`${API}/studio/voices`).subscribe({
+      next: (r) => { if (r.vi?.length) { this.voices.set(r.vi); this.fixVoices(r.default); } },
       error: () => this.gpuDown.set(true),
     });
   }
@@ -407,7 +410,16 @@ export class AiFilmComponent implements OnInit, OnDestroy {
 
   // ---------- project ----------
   private newClip(p: Partial<Clip> = {}): Clip {
-    return { id: uid(), prompt: '', narration: '', voice: this.voices()[0]?.id || 'Trúc Ly', duration: 4, transition: 'fade', camera: 'push-in', state: 'draft', source: 'ai', ...p };
+    return { id: uid(), prompt: '', narration: '', voice: this.voices()[0]?.id || 'Binh', duration: 4, transition: 'fade', camera: 'push-in', state: 'draft', source: 'ai', ...p };
+  }
+  /** A clip whose voice is not in the list shows an empty picker and is rejected by TTS: move it to the default. */
+  private fixVoices(preferred?: string): void {
+    const ids = new Set(this.voices().map((v) => v.id));
+    const def = preferred && ids.has(preferred) ? preferred : this.voices()[0]?.id;
+    if (!def) return;
+    let changed = false;
+    for (const c of this.clips()) if (!ids.has(c.voice)) { c.voice = def; changed = true; }
+    if (changed) this.touch();
   }
   addClip(p: Partial<Clip> = {}): void {
     if (this.clips().length >= 6) return this.note(this.t('film.ed.max'), true);
