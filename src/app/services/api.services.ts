@@ -1333,8 +1333,8 @@ export class GpuGatewayService {
     return this.http.post<GameHeartbeat>(`${this.base}/game-sessions/${sessionId}/heartbeat`, {});
   }
 
-  closeGameSession(sessionId: string): Observable<{ ok: boolean; billedCost?: number }> {
-    return this.http.delete<{ ok: boolean; billedCost?: number }>(
+  closeGameSession(sessionId: string): Observable<{ ok: boolean; billedCost?: number; billedMinutes?: number }> {
+    return this.http.delete<{ ok: boolean; billedCost?: number; billedMinutes?: number }>(
       `${this.base}/game-sessions/${sessionId}`,
     );
   }
