@@ -10,6 +10,7 @@ import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../i18n/currency.service';
 import { FILM_V2_MESSAGES } from './film-v2.messages';
+import { FILM_LANG_MESSAGES } from './film-lang.messages';
 
 const API = environment.apiUrl;
 const FILM = `${API}/studio/film`;
@@ -23,7 +24,7 @@ type Camera = 'static' | 'push-in' | 'pull-out' | 'pan-left' | 'pan-right' | 'or
 interface Version { v: number; videoKey: string; frameKey: string; prompt: string; seed: number; seconds: number; createdAt?: string }
 interface Shot { sid: string; prompt: string; duration: number; status: string; error?: string; active: number; versions: Version[] }
 interface Scene {
-  sid: string; title?: string; prompt: string; narration: string; voice: string; camera: Camera; transition?: string; duration: number;
+  sid: string; title?: string; prompt: string; narration: string; voice: string; lang?: string; camera: Camera; transition?: string; duration: number;
   source: 'ai' | 'upload'; uploadId?: string; startUploadId?: string; chainPrev?: boolean; characterIds?: string[]; settingId?: string | null;
   status: string; error?: string; generation?: number; keyframes?: { v: number; frameKey: string }[]; shots: Shot[];
 }
@@ -32,22 +33,45 @@ interface Asset { id: string; type: 'character' | 'setting'; name: string; descr
 interface Upload { uid: string; kind: 'video' | 'image' | 'audio'; name: string; key: string; size: number; duration?: number; status: string }
 interface Render { job: string; key: string; status: string; duration?: number; bytes?: number; createdAt?: string }
 interface Project {
-  id: string; title: string; lang?: string; scenes: Scene[]; uploads: Upload[]; music: { uploadId?: string; volume?: number };
+  id: string; title: string; lang?: string; subtitles?: SubMode; scenes: Scene[]; uploads: Upload[]; music: { uploadId?: string; volume?: number };
   renders: Render[]; totalSeconds: number; maxSeconds: number; media: Record<string, string>;
 }
 interface ProjectRow { id: string; title: string; scenes: number; totalSeconds: number }
-interface Config { available: boolean; perSecond: number; perImage: number; ttsPerK: number; sceneMaxSec: number; projectMaxSec: number }
+interface FilmLang { code: string; name: string; engine: string; font: string; rtl: boolean; defaultVoice: string }
+interface Config { available: boolean; perSecond: number; perImage: number; ttsPerK: number; sceneMaxSec: number; projectMaxSec: number; languages?: FilmLang[]; voices?: Record<string, Voice[]> }
+type SubMode = 'off' | 'soft' | 'burn';
 interface EstItem { sid: string; shots: number[]; seconds: number; images: number; price: number }
 interface Estimate { items: EstItem[]; total: number; render: { ttsChars: number; price: number }; available: number }
-interface Voice { label: string; id: string }
+interface Voice { id: string; name: string; gender: string; region?: string; kind: 'preset' | 'clone' | 'builtin' }
 interface Seg { scene: Scene; idx: number; start: number; dur: number; shot: number; video: string; thumb: string; offset: number }
 interface Confirm { kind: 'scenes' | 'render' | 'asset' | 'shot'; assetId?: string; sceneSid?: string; shotSid?: string; items: EstItem[]; total: number; balance: number; renderLine?: string }
 
-const FALLBACK_VOICES: Voice[] = [
-  { id: 'Binh', label: 'Bình (nam miền Bắc)' }, { id: 'Tuyen', label: 'Tuyên (nam miền Bắc)' },
-  { id: 'Ly', label: 'Ly (nữ miền Bắc)' }, { id: 'Ngoc', label: 'Ngọc (nữ miền Bắc)' },
-  { id: 'Vinh', label: 'Vĩnh (nam miền Nam)' }, { id: 'Doan', label: 'Đoan (nữ miền Nam)' },
+/** Same catalog as GET /studio/film/config (languages + voices); used until the config loads. */
+const PRESET_VOICES: Omit<Voice, 'kind'>[] = [
+  { id: 'Binh', name: 'Bình', gender: 'male', region: 'bac' }, { id: 'Tuyen', name: 'Tuyên', gender: 'male', region: 'bac' },
+  { id: 'Ly', name: 'Ly', gender: 'female', region: 'bac' }, { id: 'Ngoc', name: 'Ngọc', gender: 'female', region: 'bac' },
+  { id: 'Vinh', name: 'Vĩnh', gender: 'male', region: 'nam' }, { id: 'Doan', name: 'Đoan', gender: 'female', region: 'nam' },
 ];
+const LANG_NAMES: [string, string][] = [
+  ['vi', 'Tiếng Việt'], ['en', 'English'], ['zh', '中文'], ['ja', '日本語'], ['ko', '한국어'], ['fr', 'Français'], ['de', 'Deutsch'],
+  ['es', 'Español'], ['it', 'Italiano'], ['pt', 'Português'], ['ru', 'Русский'], ['ar', 'العربية'], ['hi', 'हिन्दी'], ['ms', 'Bahasa Melayu'],
+  ['nl', 'Nederlands'], ['pl', 'Polski'], ['tr', 'Türkçe'], ['sv', 'Svenska'], ['da', 'Dansk'], ['fi', 'Suomi'], ['no', 'Norsk'],
+  ['el', 'Ελληνικά'], ['he', 'עברית'], ['sw', 'Kiswahili'],
+];
+const LANG_FONTS: Record<string, string> = { zh: 'Noto Sans CJK SC', ja: 'Noto Sans CJK JP', ko: 'Noto Sans CJK KR', ar: 'Noto Sans Arabic', he: 'Noto Sans Hebrew', hi: 'Noto Sans Devanagari' };
+export const FALLBACK_LANGS: FilmLang[] = LANG_NAMES.map(([code, name]) => ({
+  code, name, engine: code === 'vi' ? 'vieneu' : 'chatterbox', font: LANG_FONTS[code] || 'Noto Sans', rtl: code === 'ar' || code === 'he', defaultVoice: code === 'vi' ? 'Binh' : 'default',
+}));
+export function fallbackVoices(lang: string): Voice[] {
+  const list = PRESET_VOICES.map((v) => ({ ...v, kind: (lang === 'vi' ? 'preset' : 'clone') as Voice['kind'] }));
+  return lang === 'vi' ? list : [{ id: 'default', name: 'Chatterbox', gender: 'female', kind: 'builtin' }, ...list];
+}
+/** CSS font stack for subtitles in the preview (matches the export's Noto fonts). */
+const CSS_FONT: Record<string, string> = {
+  zh: "'Noto Sans CJK SC','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif", ja: "'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',sans-serif",
+  ko: "'Noto Sans CJK KR','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif", ar: "'Noto Sans Arabic',Tahoma,sans-serif",
+  he: "'Noto Sans Hebrew',Arial,sans-serif", hi: "'Noto Sans Devanagari','Nirmala UI',sans-serif",
+};
 export const CAMERA_LABEL: Record<Camera, string> = {
   static: 'Đứng yên', 'push-in': 'Tiến vào', 'pull-out': 'Lùi ra', 'pan-left': 'Lia trái', 'pan-right': 'Lia phải', orbit: 'Xoay quanh',
   'tilt-up': 'Ngước lên', handheld: 'Cầm tay', aerial: 'Flycam',
@@ -150,9 +174,15 @@ export function splitDuration(total: number): number[] {
             </div>
           }
           @case ('audio') {
-            <h4>{{ t('film.ed.voices') }}</h4>
+            <label>{{ t('film.lang.project') }}
+              <select [ngModel]="projectLang()" (ngModelChange)="setProjectLang($event)" [disabled]="!project()" data-testid="film-project-lang">
+                @for (l of langs(); track l.code) { <option [value]="l.code">{{ l.name }}</option> }
+              </select>
+            </label>
+            <p class="ed-muted">{{ t('film.lang.hint') }}</p>
+            <h4>{{ t('film.voice.forLang', { l: langName(sel() ? langOf(sel()!) : projectLang()) }) }}</h4>
             @for (v of voices(); track v.id) {
-              <button class="ed-row" [class.sel]="sel()?.voice === v.id" (click)="setVoice(v.id)">🎙 {{ v.label }}</button>
+              <button class="ed-row" [class.sel]="sel()?.voice === v.id" (click)="setVoice(v.id)" [attr.data-testid]="'film-voice-' + v.id">🎙 {{ voiceLabel(v) }}</button>
             }
             <h4>{{ t('film.ed.music') }}</h4>
             <label class="ed-btn ed-block">♫ {{ t('film.ed.uploadMusic') }}<input type="file" accept="audio/*" hidden (change)="upload($event)" [disabled]="!project()" /></label>
@@ -173,6 +203,12 @@ export function splitDuration(total: number): number[] {
           @case ('text') {
             <p class="ed-muted">{{ t('film.ed.subsHint') }}</p>
             <label class="ed-check"><input type="checkbox" [(ngModel)]="subtitles" /> {{ t('film.ed.showSubs') }}</label>
+            <label>{{ t('film.subs.export') }}
+              <select [ngModel]="project()?.subtitles || 'off'" (ngModelChange)="setSubtitles($event)" [disabled]="!project()" data-testid="film-subs-mode">
+                @for (m of subModes; track m) { <option [value]="m">{{ t('film.subs.' + m) }}</option> }
+              </select>
+            </label>
+            <p class="ed-muted">{{ t('film.subs.exportHint') }}</p>
             @for (c of scenes(); track c.sid; let i = $index) {
               <button class="ed-row" (click)="select(c.sid)">💬 {{ i + 1 }}. {{ c.narration || t('film.ed.noNarration') }}</button>
             }
@@ -193,7 +229,7 @@ export function splitDuration(total: number): number[] {
           } @else {
             <div class="ed-empty"><b>{{ t('film.scene', { n: g.idx + 1 }) }}</b><span>{{ g.scene.prompt || t('film.ed.emptyPrompt') }}</span></div>
           }
-          @if (subtitles && g.scene.narration) { <div class="ed-sub">{{ g.scene.narration }}</div> }
+          @if (subtitles && g.scene.narration) { <div class="ed-sub" [attr.lang]="langOf(g.scene)" [attr.dir]="isRtl(langOf(g.scene)) ? 'rtl' : null" [style.font-family]="subFont(langOf(g.scene))" data-testid="film-sub">{{ g.scene.narration }}</div> }
           @if (g.scene.status === 'generating') { <div class="ed-spin">{{ t('film.v2.generating', { n: secondsOf(g.scene) }) }}</div> }
         } @else {
           <div class="ed-empty"><b>{{ t('film.ed.noScenes') }}</b><span>{{ t('film.ed.noScenesHint') }}</span></div>
@@ -222,11 +258,18 @@ export function splitDuration(total: number): number[] {
           </label>
         }
         <label>{{ t('film.ed.narration') }}
-          <textarea rows="3" [(ngModel)]="c.narration" (ngModelChange)="edit()" [placeholder]="t('film.ed.narrationPh')" [attr.data-testid]="'film-narration-' + index(c.sid)"></textarea>
+          <textarea rows="3" [(ngModel)]="c.narration" (ngModelChange)="edit()" [placeholder]="t('film.ed.narrationPh')" [attr.data-testid]="'film-narration-' + index(c.sid)" [attr.lang]="langOf(c)" [attr.dir]="isRtl(langOf(c)) ? 'rtl' : null"></textarea>
+        </label>
+        @if (langOf(c) !== i18n.lang()) { <p class="ed-muted">{{ t('film.lang.writeIn', { l: langName(langOf(c)) }) }}</p> }
+        <label>{{ t('film.lang.scene') }}
+          <select [ngModel]="c.lang || ''" (ngModelChange)="setSceneLang(c, $event)" data-testid="film-scene-lang">
+            <option value="">{{ t('film.lang.inherit', { l: langName(projectLang()) }) }}</option>
+            @for (l of langs(); track l.code) { <option [value]="l.code">{{ l.name }}</option> }
+          </select>
         </label>
         <label>{{ t('film.ed.voice') }}
-          <select [(ngModel)]="c.voice" (ngModelChange)="edit()">
-            @for (v of voices(); track v.id) { <option [value]="v.id">{{ v.label }}</option> }
+          <select [(ngModel)]="c.voice" (ngModelChange)="edit()" data-testid="film-voice">
+            @for (v of voices(); track v.id) { <option [value]="v.id">{{ voiceLabel(v) }}</option> }
           </select>
         </label>
         @if (c.source === 'ai') {
@@ -326,7 +369,7 @@ export function splitDuration(total: number): number[] {
       <div class="ed-track"><span class="ed-tname">🎙 {{ t('film.ed.track.voice') }}</span>
         <div class="ed-lane" [style.width.px]="width()">
           @for (c of scenes(); track c.sid) {
-            <div class="ed-clip a" [style.width.px]="w(c)">@if (c.narration && w(c) > 30) { <span class="ed-wave"></span><span class="ed-cl">{{ voiceName(c.voice) }}</span> }</div>
+            <div class="ed-clip a" [style.width.px]="w(c)">@if (c.narration && w(c) > 30) { <span class="ed-wave"></span><span class="ed-cl">{{ voiceName(c.voice, langOf(c)) }} · {{ langOf(c).toUpperCase() }}</span> }</div>
           }
         </div>
       </div>
@@ -531,7 +574,7 @@ export function splitDuration(total: number): number[] {
 export class AiFilmComponent implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
-  private readonly i18n = inject(I18nService);
+  protected readonly i18n = inject(I18nService);
   private readonly cur = inject(CurrencyService);
   @ViewChild('clipEl') clipEl?: ElementRef<HTMLVideoElement>;
   @ViewChild('musicEl') musicEl?: ElementRef<HTMLAudioElement>;
@@ -540,6 +583,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   readonly libTabs = ['scenes', 'cast', 'sets', 'uploads', 'audio', 'text'] as const;
   readonly mobileTabs = ['preview', 'lib', 'props'] as const;
   readonly cameras = Object.keys(CAMERA_LABEL) as Camera[];
+  readonly subModes: SubMode[] = ['off', 'soft', 'burn'];
 
   title = '';
   subtitles = true;
@@ -549,7 +593,10 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   readonly project = signal<Project | null>(null);
   readonly projects = signal<ProjectRow[]>([]);
   readonly cfg = signal<Config | null>(null);
-  readonly voices = signal<Voice[]>(FALLBACK_VOICES);
+  readonly langs = computed<FilmLang[]>(() => this.cfg()?.languages?.length ? this.cfg()!.languages! : FALLBACK_LANGS);
+  readonly projectLang = computed(() => this.project()?.lang || 'vi');
+  /** Voices of the selected scene's language (the dropdown and the audio tab follow it). */
+  readonly voices = computed<Voice[]>(() => this.voicesFor(this.sel() ? this.langOf(this.sel()!) : this.projectLang()));
   readonly selId = signal('');
   readonly playhead = signal(0);
   readonly playing = signal(false);
@@ -595,6 +642,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.i18n.extend(FILM_V2_MESSAGES);
+    this.i18n.extend(FILM_LANG_MESSAGES);
     inject(SeoService).set({ title: this.i18n.t('film.title'), description: this.i18n.t('film.subtitle') });
   }
   t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
@@ -602,7 +650,6 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     if (!this.loggedIn()) return;
     this.http.get<Config>(`${FILM}/config`).subscribe({ next: (c) => this.cfg.set(c), error: () => this.cfg.set({ available: false } as Config) });
-    this.http.get<{ vi?: Voice[] }>(`${API}/studio/voices`).subscribe({ next: (r) => { if (r.vi?.length) this.voices.set(r.vi); }, error: () => {} });
     try {
       const list = await firstValueFrom(this.http.get<{ items: ProjectRow[] }>(`${FILM}/projects`));
       this.projects.set(list.items);
@@ -634,8 +681,9 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     } catch { return null; }
   }
   private async createProject(seed: Partial<Project> | null): Promise<void> {
-    const body = seed || { title: '', scenes: [{ prompt: '', narration: '', voice: this.voices()[0]?.id || 'Binh', camera: 'push-in', duration: 15 } as Scene] };
-    const p = await firstValueFrom(this.http.post<Project>(`${FILM}/projects`, { ...body, lang: this.i18n.lang() }));
+    const lang = this.i18n.lang();
+    const body = seed || { title: '', scenes: [{ prompt: '', narration: '', voice: lang === 'vi' ? 'Binh' : 'default', camera: 'push-in', duration: 15 } as Scene] };
+    const p = await firstValueFrom(this.http.post<Project>(`${FILM}/projects`, { ...body, lang }));
     if (seed) { try { localStorage.setItem(MIGRATED, '1'); } catch { /* ignore */ } this.note(this.t('film.v2.migrated')); }
     this.projects.update((a) => [{ id: p.id, title: p.title, scenes: p.scenes.length, totalSeconds: p.totalSeconds }, ...a]);
     this.setProject(p);
@@ -691,9 +739,11 @@ export class AiFilmComponent implements OnInit, OnDestroy {
       const sent = [...p.scenes];
       const body = {
         title: this.title,
+        lang: p.lang || 'vi',
+        subtitles: p.subtitles || 'off',
         music: p.music,
         scenes: sent.map((s) => ({
-          sid: s.sid, title: s.title, prompt: s.prompt, narration: s.narration, voice: s.voice, camera: s.camera, duration: s.duration,
+          sid: s.sid, title: s.title, prompt: s.prompt, narration: s.narration, voice: s.voice, lang: s.lang || '', camera: s.camera, duration: s.duration,
           source: s.source, uploadId: s.uploadId, startUploadId: s.startUploadId || '', chainPrev: !!s.chainPrev, characterIds: s.characterIds || [], settingId: s.settingId || null,
           shots: (s.shots || []).map((sh) => ({ sid: sh.sid, prompt: sh.prompt })),
         })),
@@ -759,7 +809,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
 
   // ---------- scenes ----------
   private newScene(p: Partial<Scene> = {}): Scene {
-    return { sid: 'n_' + uid(), prompt: '', narration: '', voice: this.sel()?.voice || this.voices()[0]?.id || 'Binh', camera: 'push-in', duration: 15, source: 'ai', status: 'draft', shots: [], chainPrev: this.scenes().length > 0, ...p };
+    return { sid: 'n_' + uid(), prompt: '', narration: '', voice: this.sel()?.voice || this.voicesFor(this.projectLang())[0]?.id || 'Binh', lang: this.sel()?.lang || '', camera: 'push-in', duration: 15, source: 'ai', status: 'draft', shots: [], chainPrev: this.scenes().length > 0, ...p };
   }
   addScene(p: Partial<Scene> = {}, at?: number): void {
     const proj = this.project();
@@ -773,7 +823,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     this.edit();
   }
   duplicate(c: Scene): void {
-    this.addScene({ prompt: c.prompt, narration: c.narration, voice: c.voice, camera: c.camera, duration: c.duration, source: c.source, uploadId: c.uploadId, startUploadId: c.startUploadId, chainPrev: c.chainPrev, characterIds: [...(c.characterIds || [])], settingId: c.settingId || null }, this.index(c.sid) + 1);
+    this.addScene({ prompt: c.prompt, narration: c.narration, voice: c.voice, lang: c.lang || '', camera: c.camera, duration: c.duration, source: c.source, uploadId: c.uploadId, startUploadId: c.startUploadId, chainPrev: c.chainPrev, characterIds: [...(c.characterIds || [])], settingId: c.settingId || null }, this.index(c.sid) + 1);
   }
   removeScene(sid: string): void {
     const p = this.project();
@@ -828,7 +878,31 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     return up ? this.media(up.key) : '';
   }
   uploadName(id?: string): string { return (id && this.project()?.uploads.find((u) => u.uid === id)?.name) || ''; }
-  voiceName(id: string): string { return (this.voices().find((v) => v.id === id)?.label || id).split(' — ')[0]; }
+  voiceName(id: string, lang?: string): string { return this.voicesFor(lang || this.projectLang()).find((v) => v.id === id)?.name || id; }
+  voiceLabel(v: Voice): string {
+    if (v.kind === 'builtin') return `${v.name} (${this.t('film.voice.builtin')})`;
+    const who = [this.t('film.voice.' + v.gender), v.region ? this.t('film.voice.region.' + v.region) : ''].filter(Boolean).join(' ');
+    return `${v.name} (${who})` + (v.kind === 'clone' ? ` · ${this.t('film.voice.clone')}` : '');
+  }
+  voicesFor(lang: string): Voice[] { return this.cfg()?.voices?.[lang]?.length ? this.cfg()!.voices![lang] : fallbackVoices(lang); }
+  langOf(s: Scene): string { return s.lang || this.projectLang(); }
+  langName(code: string): string { return this.langs().find((l) => l.code === code)?.name || code; }
+  subFont(code: string): string { return CSS_FONT[code] || "'Noto Sans','Be Vietnam Pro',system-ui,sans-serif"; }
+  isRtl(code: string): boolean { return code === 'ar' || code === 'he'; }
+  /** Keep the voice valid for the language (vi presets have no "default"; other languages start on Chatterbox's own voice). */
+  private fixVoice(s: Scene): void {
+    const lang = this.langOf(s);
+    if (!this.voicesFor(lang).some((v) => v.id === s.voice)) s.voice = this.langs().find((l) => l.code === lang)?.defaultVoice || (lang === 'vi' ? 'Binh' : 'default');
+  }
+  setSceneLang(s: Scene, lang: string): void { s.lang = lang; this.fixVoice(s); this.edit(); }
+  setProjectLang(lang: string): void {
+    const p = this.project();
+    if (!p) return;
+    p.lang = lang;
+    for (const s of p.scenes) this.fixVoice(s);
+    this.edit();
+  }
+  setSubtitles(mode: SubMode): void { const p = this.project(); if (p) { p.subtitles = mode; this.edit(); } }
   camLabel(id: Camera): string { const k = 'film.cam.' + id; const s = this.t(k); return s === k ? CAMERA_LABEL[id] : s; }
   stateLabel(s: string): string { return ['generating', 'partial', 'stale'].includes(s) ? this.t('film.v2.state.' + s) : this.t('film.ed.state.' + s); }
   money(usd: number): string {
@@ -979,7 +1053,10 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   private apiError(e: HttpErrorResponse): string {
     if (e?.error?.code === 'INSUFFICIENT_WALLET') return this.t('film.v2.noFunds');
     if (e?.status === 0 || e?.status >= 502 || e?.error?.code === 'STUDIO_UNAVAILABLE') return this.t('film.ed.gpuRetry');
-    return e?.error?.message || this.t('film.ed.sendFail');
+    const code = String(e?.error?.code || '');
+    const known = code ? this.t('film.err.' + code) : '';
+    if (known && known !== 'film.err.' + code) return known;
+    return this.i18n.lang() === 'vi' && e?.error?.message ? e.error.message : this.t('film.ed.sendFail');
   }
   private estimate(sceneIds?: string[]): Promise<Estimate> {
     return firstValueFrom(this.http.post<Estimate>(`${FILM}/projects/${this.project()!.id}/estimate`, sceneIds ? { sceneIds } : {}));
