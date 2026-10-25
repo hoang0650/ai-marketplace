@@ -1,12 +1,14 @@
 import { CurrencyPipe, isPlatformBrowser } from '@angular/common';
 import { WalletBalanceService } from '../services/wallet-balance.service';
 import { Component, ElementRef, HostListener, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
-import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { AuthService } from '../services/auth.service';
 import { DashboardService, WishlistService } from '../services/api.services';
 import { environment } from '../../environments/environment';
-import { NAV_SECTIONS } from '../models/categories';
+import { NAV_SECTIONS, isHiddenCategory } from '../models/categories';
+import { UiIconComponent } from './ui-icon.component';
+import { HEADER_MESSAGES } from './header.messages';
 import { WORK_BOARD_ENABLED } from '../models/feature-flags';
 import { CatalogLane } from '../models/marketplace.models';
 import { I18nService } from '../i18n/i18n.service';
@@ -23,7 +25,7 @@ type NotiTab = 'all' | 'tx' | 'system' | 'promo';
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe, GoogleSignInComponent, CurrencyPipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TPipe, GoogleSignInComponent, CurrencyPipe, UiIconComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
@@ -60,6 +62,27 @@ export class ShellComponent {
     { path: '/complaints/new', key: 'complaint.cta.file' },
     { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms' },
   ];
+  /** "Popular" column of the Categories mega-menu (former top-level Agent / Model links + key hubs). */
+  readonly quickLinks = [
+    { path: '/hire-agent/marketplace', key: 'hdr.quick.agent', desc: 'hdr.quick.agentDesc', icon: 'bot', cat: '' },
+    { path: '/models', key: 'hdr.quick.model', desc: 'hdr.quick.modelDesc', icon: 'sparkles', cat: '' },
+    { path: '/training/dataset', key: 'hdr.quick.dataset', desc: 'hdr.quick.datasetDesc', icon: 'database', cat: 'dataset' },
+    { path: '/skill-pack', key: 'hdr.quick.skill', desc: 'hdr.quick.skillDesc', icon: 'layers', cat: 'skill-pack' },
+    { path: '/game-server', key: 'hdr.quick.game', desc: 'hdr.quick.gameDesc', icon: 'gamepad', cat: 'game-server' },
+    { path: '/training/gpu', key: 'hdr.quick.gpu', desc: 'hdr.quick.gpuDesc', icon: 'cpu', cat: '' },
+  ].filter((l) => !l.cat || !isHiddenCategory(l.cat));
+  private readonly categoryPaths = [
+    ...this.quickLinks.map((l) => l.path),
+    ...NAV_SECTIONS.flatMap((s) => s.links.map((l) => l.path)),
+  ].filter((p) => p && p !== '/');
+  readonly url = signal('/');
+  readonly compact = signal(false);
+  readonly categoriesActive = computed(() => {
+    const u = this.url().split(/[?#]/)[0];
+    return this.categoryPaths.some((p) => u === p || u.startsWith(p + '/'));
+  });
+  readonly docsActive = computed(() => /^\/docs(\/|$)|^\/sell\/integrate/.test(this.url()));
+  readonly workActive = computed(() => /^\/work(\/|$)/.test(this.url()));
   readonly appStoreUrl = 'https://apps.apple.com/vn/app/ai-markets/id6822239570?l=vi';
   readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=app.phgroup.ai_market_vn';
   readonly categoryOpen = signal(false);
@@ -102,9 +125,12 @@ export class ShellComponent {
   });
 
   constructor() {
+    inject(I18nService).extend(HEADER_MESSAGES);
     inject(AffiliateService).startTracking();
+    this.url.set(this.router.url || '/');
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) this.closeMobileNav();
+      if (event instanceof NavigationEnd) this.url.set(event.urlAfterRedirects || event.url);
     });
     effect(() => {
       const authed = this.auth.isAuthenticated();
@@ -246,12 +272,12 @@ export class ShellComponent {
       }
     }
     if (this.langOpen()) {
-      if (target && !this.host.nativeElement.querySelector('.lang-dd')?.contains(target)) {
+      if (target && !this.host.nativeElement.querySelector('.locale-dd')?.contains(target)) {
         this.closeLang();
       }
     }
     if (this.currencyOpen()) {
-      if (target && !this.host.nativeElement.querySelector('.currency-dd')?.contains(target)) {
+      if (target && !this.host.nativeElement.querySelector('.locale-dd')?.contains(target)) {
         this.closeCurrency();
       }
     }
@@ -290,7 +316,15 @@ export class ShellComponent {
   @HostListener('window:resize')
   onResize(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    if (window.innerWidth >= 900) this.closeMobileNav();
+    if (window.innerWidth >= 1024) this.closeMobileNav();
+  }
+
+  /** Sticky header shrinks once the page scrolls (class toggled only on change). */
+  @HostListener('window:scroll')
+  onScroll(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const next = window.scrollY > 24;
+    if (next !== this.compact()) this.compact.set(next);
   }
 
   private syncNavLock(): void {
@@ -357,6 +391,7 @@ export class ShellComponent {
   setCurrency(code: AppCurrency): void {
     this.currencySvc.setCurrency(code);
     this.closeCurrency();
+    this.closeLang();
   }
 
   currencyLabel(): string {
