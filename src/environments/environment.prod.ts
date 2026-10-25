@@ -15,6 +15,11 @@ export const environment = {
    * Flip to true (and set GPAY_ENABLED=true on the API) to bring GPay back.
    */
   gpayEnabled: false,
+  /**
+   * Site-wide trial / licensing notice. Set to false in both environment files
+   * once the Ministry of Industry and Trade approves the e-commerce registration.
+   */
+  trialNotice: true,
   /** Public Web OAuth client ID — must match GOOGLE_CLIENT_ID on api.aimarkets.vn */
   googleClientId: '',
   brandName: 'AI Markets',
