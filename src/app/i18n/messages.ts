@@ -1055,7 +1055,7 @@ export const MESSAGES: Record<AppLang, Record<string, string>> = {
     'common.back': 'Quay lại',
     'nav.logout': 'Đăng xuất',
     'nav.support': 'Hỗ trợ',
-    'nav.docs': 'Docs',
+    'nav.docs': 'Tài liệu',
     'nav.docsGroup': 'Tích hợp seller',
     'nav.docsOverview': 'Tổng quan',
     'nav.docsOverviewDesc': 'Bắt đầu tích hợp API vào AI Markets',
