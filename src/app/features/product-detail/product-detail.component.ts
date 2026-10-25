@@ -30,6 +30,8 @@ import { isHiddenCategory, isHireCategory, isHireRequestCategory, isSkillCategor
 import { TemplatePanelComponent } from '../builder/template-panel.component';
 import { SeriesPlayerComponent } from './series-player.component';
 import { StoryReaderComponent } from './story-reader.component';
+import { OnlineAccessPanelComponent } from './online-access-panel.component';
+import { HttpClient } from '@angular/common/http';
 import { VoiceControlsComponent, VoiceFx, DEFAULT_VOICE_FX, voiceFxBody } from '../studio/voice-controls.component';
 import { BuilderService } from '../builder/builder.service';
 import { CartService } from '../cart/cart.service';
@@ -76,7 +78,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent, StoryReaderComponent, VoiceControlsComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent, StoryReaderComponent, VoiceControlsComponent, OnlineAccessPanelComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -98,6 +100,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly walletApi = inject(DashboardService);
   private readonly uploadApi = inject(UploadService);
   private readonly contentApi = inject(ContentService);
+  private readonly http = inject(HttpClient);
   private readonly chatApi = inject(ChatService);
   private readonly hireService = inject(HireService);
   private readonly router = inject(Router);
@@ -160,7 +163,7 @@ export class ProductDetailComponent implements OnInit {
     return (!!p.creatorId && String(p.creatorId) === uid) || (!!p.creatorSlug && p.creatorSlug === u.creatorSlug);
   });
   readonly canPlayContent = computed(() => this.hasActiveLicense() || this.isContentOwner());
-  /** Skill / dataset downloads unlock with the same AIM-xxxx license as film/story. */
+  /** Skill / dataset online access unlocks with the same AIM-xxxx license as film/story. */
   readonly canUnlockDownload = computed(() => this.canPlayContent());
   qty = 1;
   /** Signal-backed so every computed price (plan cards, subtotal, total) follows the chosen period. */
@@ -897,8 +900,9 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
+  /** Raw .aimc download: seller and admin moderation only — buyers watch / read online. */
   downloadEpisode(ep: ContentEpisode): void {
-    if (!this.canPlayContent()) {
+    if (!this.isContentOwner()) {
       this.unlockError.set(this.i18n.t('pd.licenseRequired'));
       return;
     }
@@ -1808,20 +1812,30 @@ export class ProductDetailComponent implements OnInit {
     ].join('\n');
   }
 
+  /** Real per-product mk_live_ key (POST /v1/api-keys); the plaintext is shown once. */
   createApiKey(): void {
-    const id = `key_${Math.random().toString(36).slice(2, 10)}`;
-    const secret = `phai_${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
-    this.apiKeys.update((list) => [
-      {
-        id,
-        name: `Key ${list.length + 1}`,
-        prefix: `${secret.slice(0, 12)}…`,
-        createdAt: new Date().toISOString(),
-      },
-      ...list,
-    ]);
-    this.showApiKeys.set(true);
-    this.checkoutMsg.set(`API key created (mock): ${secret} — copy now, shown once.`);
+    const p = this.product();
+    if (!p) return;
+    if (!this.auth.user()) {
+      this.goLogin();
+      return;
+    }
+    this.http
+      .post<{ id: string; name: string; prefix: string; createdAt: string; apiKey: string }>(`${environment.apiUrl}/api-keys`, {
+        productSlug: p.slug,
+        name: `Key ${this.apiKeys().length + 1}`,
+      })
+      .subscribe({
+        next: (res) => {
+          this.apiKeys.update((list) => [
+            { id: res.id, name: res.name, prefix: `${res.prefix}…`, createdAt: res.createdAt || new Date().toISOString() },
+            ...list,
+          ]);
+          this.showApiKeys.set(true);
+          this.checkoutMsg.set(`API key: ${res.apiKey} — copy now, shown once.`);
+        },
+        error: (err) => this.checkoutMsg.set(err?.error?.message || 'Could not create an API key.'),
+      });
   }
 
   copyApiSnippet(p: Product): void {

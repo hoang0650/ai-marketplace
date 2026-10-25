@@ -44,6 +44,7 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 2];
     <button type="button" class="rd-ib rd-aa" (click)="panel.set(panel() === 'settings' ? null : 'settings')" [class.on]="panel() === 'settings'" aria-label="Cài đặt đọc" data-testid="rd-settings-btn">Aa</button>
   </header>
 
+  @if (watermark()) { <div class="rd-wm" aria-hidden="true" data-testid="rd-wm">{{ watermark() }}</div> }
   <main #scroller class="rd-body" (scroll)="onScroll()" (click)="onTap($event)" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)" (mouseup)="onSelect()" data-testid="rd-body">
     @if (loading() && !chapter()) {
       <div class="rd-center">Đang tải…</div>
@@ -144,7 +145,7 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 2];
                 </span>
                 @if (!playable(ep)) { <span class="rd-tag rd-tag--lock">🔒</span> } @else if (ep.free && !canPlay) { <span class="rd-tag rd-tag--free">Miễn phí</span> }
               </button>
-              @if (canPlay) { <button type="button" class="rd-ib rd-ib--sm" (click)="download.emit(ep)" title="Tải .aimc (mã hoá, cần license)" aria-label="Tải .aimc">⬇</button> }
+              @if (owner) { <button type="button" class="rd-ib rd-ib--sm" (click)="download.emit(ep)" title="Tải .aimc (chủ sở hữu / kiểm duyệt)" aria-label="Tải .aimc">⬇</button> }
             </li>
           }
           @for (ep of narrations(); track ep.id) {
@@ -152,11 +153,11 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 2];
               <button type="button" class="rd-toc__row" (click)="openNarration(ep)"><span class="rd-toc__n">🎧</span><span class="rd-toc__t">{{ ep.title }} <small>Sách nói · {{ clock(ep.durationSec || 0) }}</small></span>
                 @if (!playable(ep)) { <span class="rd-tag rd-tag--lock">🔒</span> }
               </button>
-              @if (canPlay) { <button type="button" class="rd-ib rd-ib--sm" (click)="download.emit(ep)" aria-label="Tải .aimc">⬇</button> }
+              @if (owner) { <button type="button" class="rd-ib rd-ib--sm" (click)="download.emit(ep)" aria-label="Tải .aimc">⬇</button> }
             </li>
           }
         </ol>
-        <p class="rd-note">{{ canPlay ? 'Tệp .aimc được mã hoá theo license của bạn.' : 'Chương 🔒 cần license để đọc.' }} Nội dung được bảo vệ: không chụp / sao chép.</p>
+        <p class="rd-note">{{ canPlay ? 'Chỉ đọc online: mỗi trang đều kiểm tra license, dừng ngay khi license hết hạn.' : 'Chương 🔒 cần license để đọc.' }} Nội dung được bảo vệ: không tải về, không chụp / sao chép.</p>
       } @else {
         <ul class="rd-bms">
           @for (b of bookmarks(); track b.id) {
@@ -254,6 +255,7 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 2];
 .rd-tag{flex:none;font-size:12px;padding:2px 8px;border-radius:999px}.rd-tag--free{background:rgba(34,197,94,.15);color:#16a34a}.rd-tag--lock{background:var(--line)}
 .rd-bm{flex-direction:column;align-items:flex-start;gap:4px}.rd-bm q{font-style:italic;color:var(--muted);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .rd-note{margin:10px 14px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.rd-wm{position:absolute;inset:auto 0 calc(76px + env(safe-area-inset-bottom)) 0;z-index:4;text-align:center;pointer-events:none;user-select:none;font:600 11px/1.2 ui-monospace,monospace;color:var(--muted);opacity:.45}
 .rd-sheet{position:absolute;z-index:5;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);background:var(--bg);color:var(--fg);border-radius:18px 18px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.3);padding:14px 16px max(14px,env(safe-area-inset-bottom));animation:rd-up .2s ease-out}
 @keyframes rd-up{from{transform:translate(-50%,100%)}}
 .rd-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;font-size:14px}
@@ -288,6 +290,8 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   @Input() licenseKey = '';
   @Input() priceLabel = '';
   @Input() checkingOut = false;
+  /** Seller or admin: the only readers who may download the raw .aimc file. */
+  @Input() owner = false;
   @Output() checkout = new EventEmitter<void>();
   @Output() back = new EventEmitter<void>();
   @Output() login = new EventEmitter<void>();
@@ -301,6 +305,7 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   readonly info = signal<SeriesInfo | null>(null);
   readonly episodes = signal<ContentEpisode[]>([]);
   readonly chapter = signal<Chapter | null>(null);
+  readonly watermark = signal('');
   readonly loading = signal(false);
   readonly chrome = signal(true);
   readonly panel = signal<'toc' | 'settings' | null>(null);
@@ -482,6 +487,7 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
       next: async (res) => {
         if (s !== this.seq) return;
         const tok = String(res.playToken || '').trim();
+        this.watermark.set(res.watermark || '');
         const src = (pg: number, url?: string) => (tok ? `${environment.apiUrl}/content/play?token=${encodeURIComponent(tok)}&page=${pg}` : url || res.playUrl);
         const kind = (res.kind || ep.kind) as string;
         const c: Chapter = { ep, kind: kind === 'text' ? 'text' : kind === 'image' ? 'image' : 'other', paras: [], images: [], error: '' };
@@ -490,8 +496,14 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
             const r = await fetch(src(1));
             if (!r.ok) throw new Error(String(r.status));
             c.paras = toParagraphs(await r.text(), r.headers.get('content-type') || '');
-          } catch {
-            c.error = 'Không tải được nội dung chương.';
+          } catch (err) {
+            const st = String((err as Error)?.message || '');
+            c.error =
+              st === '402' || st === '403'
+                ? 'License đã hết hạn hoặc không hợp lệ — đã dừng đọc. Gia hạn để đọc tiếp.'
+                : st === '429'
+                  ? 'Bạn đọc quá nhanh (giới hạn theo license). Thử lại sau ít phút.'
+                  : 'Không tải được nội dung chương.';
           }
         } else {
           const pages = res.pages?.length ? res.pages : [{ index: 1, playUrl: res.playUrl }];
@@ -512,7 +524,14 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
         if (s !== this.seq) return;
         this.loading.set(false);
         const code = e?.error?.code;
-        this.chapter.set({ ep, kind: 'other', paras: [], images: [], error: code === 'LICENSE_REQUIRED' || e?.status === 402 ? 'Chương này cần license.' : e?.error?.message || 'Không mở được chương.' });
+        this.watermark.set('');
+        const msg =
+          code === 'LICENSE_EXPIRED'
+            ? 'License đã hết hạn — đã dừng đọc. Gia hạn để đọc tiếp.'
+            : code === 'LICENSE_REQUIRED' || e?.status === 402
+              ? 'Chương này cần license.'
+              : e?.error?.message || 'Không mở được chương.';
+        this.chapter.set({ ep, kind: 'other', paras: [], images: [], error: msg });
       },
     });
   }

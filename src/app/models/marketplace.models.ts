@@ -408,7 +408,13 @@ export interface ContentUnlock {
   ok: boolean;
   playUrl: string;
   playToken?: string;
-  downloadUrl: string;
+  /** Only set for the seller / admin; buyers use the product online only. */
+  downloadUrl: string | null;
+  onlineOnly?: boolean;
+  access?: 'moderation' | 'owner' | 'free' | 'license';
+  traceId?: string;
+  /** Short buyer watermark ("ma***@domain · AIM-…XXXX · trace") shown over the player / reader. */
+  watermark?: string;
   kind: string;
   mime: string;
   title: string;

@@ -87,6 +87,9 @@ export interface ProductFilesResponse {
   unlocked: boolean;
   access?: 'admin' | 'seller' | 'license' | null;
   licenseExpiresAt: string | null;
+  /** Raw downloads are for the seller and admin moderation only. */
+  canDownload?: boolean;
+  onlineOnly?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
