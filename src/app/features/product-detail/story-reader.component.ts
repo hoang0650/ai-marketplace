@@ -413,6 +413,7 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
   private hideTimer: ReturnType<typeof setTimeout> | null = null;
   private clockTimer: ReturnType<typeof setInterval> | null = null;
   private userMovedAt = 0;
+  private readonly followTick = computed(() => (this.audioPlaying() ? Math.floor(this.aTime() * 2) : -1));
   private autoMoveAt = 0;
   private pendingSeek = -1;
   private pendingPlay = false;
@@ -443,9 +444,11 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     this.audio.onended = () => { this.audioPlaying.set(false); this.stopClock(); this.onNarrationEnd(); };
     this.audio.onerror = () => this.onAudioError();
     // Follow the voice: scroll the sentence into view (scroll mode) or turn to its page (paged mode).
+    // followTick (2 Hz) also turns the page mid-sentence when a long sentence spans a page break.
     effect(() => {
       this.sayingSeg();
       this.sayingPara();
+      this.followTick();
       untracked(() => setTimeout(() => this.follow(), 0));
     });
   }
@@ -510,7 +513,11 @@ export class StoryReaderComponent implements OnChanges, AfterViewInit, OnDestroy
     this.s.set({ ...this.s(), ...patch });
     try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(this.s())); } catch { /* quota */ }
     setTimeout(() => this.relayout(), 30);
-    setTimeout(() => this.restore(keep, -1), 120);
+    setTimeout(() => {
+      this.restore(keep, -1);
+      // Changing font/mode/margins moves the text: while listening, jump straight back to the spoken line.
+      if (this.audioOpen() && !this.audio.paused) { this.userMovedAt = 0; this.follow(); }
+    }, 120);
   }
 
   block(ev: Event): void {
