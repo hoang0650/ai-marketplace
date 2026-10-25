@@ -374,6 +374,21 @@ export interface ContentEpisode {
   free?: boolean;
   synopsis?: string;
   posterUrl?: string;
+  /** Story narration made from a text chapter: id of the chapter it reads (timings come with /unlock). */
+  narrationFor?: string | null;
+  narrationStatus?: 'generating' | 'ready' | 'failed' | null;
+  narrationModel?: string | null;
+}
+
+/** Narration timing from /unlock: [paragraph, c0, c1, start, end] per sentence (UTF-16 offsets, seconds). */
+export interface NarrationTiming {
+  forEpisode: string;
+  lang: string;
+  voice: string;
+  model: string;
+  paraCount: number;
+  paraSig: string[];
+  segments: [number, number, number, number, number][];
 }
 
 export interface ReaderBookmark {
@@ -400,12 +415,14 @@ export interface SeriesInfo {
   saves: number;
   liked: boolean;
   saved: boolean;
-  progress: { episodeId: string; positionSec: number; fraction?: number; page?: number; updatedAt?: string } | null;
+  progress: { episodeId: string; positionSec: number; fraction?: number; page?: number; updatedAt?: string; audio?: { episodeId: string; sec: number } | null } | null;
   episodes: ContentEpisode[];
 }
 
 export interface ContentUnlock {
   ok: boolean;
+  /** Story narration only: real per-sentence timing into the chapter's paragraphs. */
+  narration?: NarrationTiming | null;
   playUrl: string;
   playToken?: string;
   /** Only set for the seller / admin; buyers use the product online only. */
