@@ -166,9 +166,9 @@
 
         @if (isLicense(p.category)) {
           <label class="pd-buy__section">{{ 'pd.accessTerm' | t }}</label>
-          <div class="pd-qty" style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <div class="pd-terms" role="group" [attr.aria-label]="'pd.accessTerm' | t">
             @for (t of licenseTerms; track t) {
-              <button type="button" class="btn" [class.btn-fill]="licenseTerm === t" (click)="licenseTerm = t; couponPreview.set(null)">
+              <button type="button" class="pd-term" [class.active]="licenseTerm === t" [attr.aria-pressed]="licenseTerm === t" (click)="licenseTerm = t; couponPreview.set(null)">
                 {{ t === 'day' ? ('pd.termDay' | t) : t === 'month' ? ('pd.termMonth' | t) : ('pd.termYear' | t) }}
               </button>
             }
@@ -473,6 +473,16 @@
           }
           @if (productFiles().length) {
             <h3 class="mt-4 text-sm font-semibold">{{ 'pd.filesTitle' | t }}</h3>
+            @switch (filesAccess()) {
+              @case ('admin') { <p class="pd-files-note">{{ 'pd.filesAccessAdmin' | t }}</p> }
+              @case ('seller') { <p class="pd-files-note">{{ 'pd.filesAccessSeller' | t }}</p> }
+              @case ('license') {
+                @if (filesLicenseExpiresAt(); as exp) {
+                  <p class="pd-files-note">{{ 'pd.filesAccessLicense' | t }} {{ exp | date: 'short' }}</p>
+                }
+              }
+              @default { <p class="pd-files-note pd-files-note--locked">🔒 {{ 'pd.filesLocked' | t }}</p> }
+            }
             <ul class="episode-list">
               @for (f of productFiles(); track f.id) {
                 <li class="episode-row">
@@ -486,9 +496,13 @@
                       }
                     </span>
                   </span>
-                  <button type="button" class="btn btn-outline text-xs" (click)="downloadProductFile(f)" [disabled]="!canUnlockDownload() || fileDownloading() === f.id">
-                    {{ fileDownloading() === f.id ? ('pd.fileDownloading' | t) : ('pd.downloadFile' | t) }}
-                  </button>
+                  @if (filesAccess()) {
+                    <button type="button" class="btn btn-outline text-xs" (click)="downloadProductFile(f)" [disabled]="fileDownloading() === f.id">
+                      {{ fileDownloading() === f.id ? ('pd.fileDownloading' | t) : ('pd.downloadFile' | t) }}
+                    </button>
+                  } @else {
+                    <span class="pd-file-lock" [attr.title]="'pd.filesLocked' | t">🔒 {{ 'pd.fileLockedShort' | t }}</span>
+                  }
                 </li>
               }
             </ul>

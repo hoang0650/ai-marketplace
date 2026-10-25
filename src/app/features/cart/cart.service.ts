@@ -6,14 +6,20 @@ import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/marketplace.models';
 
+export type LicenseTerm = 'day' | 'month' | 'year';
+
 export interface CartLine {
   product: Product;
   qty: number;
   selected: boolean;
+  /** License period chosen on the product page ('' for non-license products). */
+  licenseTerm: LicenseTerm | '';
+  /** Server price for that period — the same amount checkout charges. */
+  serverUnitPrice: number | null;
 }
 
 interface CartResponse {
-  items: Array<{ product: Product; qty: number }>;
+  items: Array<{ product: Product; qty: number; licenseTerm?: LicenseTerm | ''; unitPrice?: number | null }>;
   count: number;
 }
 
@@ -31,7 +37,7 @@ export class CartService {
   readonly ids = computed(() => new Set(this.linesSignal().map((l) => l.product.id)));
   readonly selectedLines = computed(() => this.linesSignal().filter((l) => l.selected));
   readonly subtotal = computed(() =>
-    this.selectedLines().reduce((s, l) => s + this.unitPrice(l.product) * l.qty, 0),
+    this.selectedLines().reduce((s, l) => s + this.lineUnitPrice(l) * l.qty, 0),
   );
   readonly currency = computed(() => this.linesSignal()[0]?.product.pricing.currency || 'USD');
 
@@ -50,8 +56,16 @@ export class CartService {
       .subscribe((res) => res && this.apply(res));
   }
 
-  add(productId: string, qty = 1): Observable<CartLine[]> {
-    return this.sync(this.http.post<CartResponse>(`${this.base}/items`, { productId, qty }));
+  add(productId: string, qty = 1, licenseTerm?: LicenseTerm): Observable<CartLine[]> {
+    return this.sync(this.http.post<CartResponse>(`${this.base}/items`, { productId, qty, licenseTerm }));
+  }
+
+  /** Price per unit for a cart line: the chosen license period when there is one. */
+  lineUnitPrice(line: CartLine): number {
+    if (line.serverUnitPrice != null && line.serverUnitPrice > 0) return line.serverUnitPrice;
+    const term = line.licenseTerm;
+    const fromMap = term ? Number(line.product.contentMeta?.licensePrices?.[term]) : 0;
+    return fromMap > 0 ? fromMap : this.unitPrice(line.product);
   }
 
   unitPrice(p: Product): number {
@@ -112,6 +126,8 @@ export class CartService {
         product: it.product,
         qty: it.qty,
         selected: !this.unselected.has(it.product.id),
+        licenseTerm: it.licenseTerm || '',
+        serverUnitPrice: typeof it.unitPrice === 'number' ? it.unitPrice : null,
       })),
     );
   }

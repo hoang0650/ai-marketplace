@@ -74,7 +74,7 @@
               <p class="stock"><i></i> {{ 'cart.inStock' | t }}</p>
             </div>
             <div class="line__side">
-              <p class="price">{{ cart.unitPrice(line.product) | currency: line.product.pricing.currency: 'symbol-narrow': '1.0-2' }}</p>
+              <p class="price">{{ cart.lineUnitPrice(line) | currency: line.product.pricing.currency: 'symbol-narrow': '1.0-2' }}@if (line.licenseTerm) {<span class="price__unit">/{{ termUnit(line.licenseTerm) }}</span>}</p>
               <div class="qty">
                 <button type="button" (click)="cart.setQty(line.product.id, line.qty - 1)" [attr.aria-label]="'cart.qtyDecrease' | t">−</button>
                 <span>{{ line.qty }}</span>
