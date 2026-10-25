@@ -111,6 +111,7 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
   readonly touchDevice = signal(false);
   private sessionId = '';
   private heartbeat: ReturnType<typeof setInterval> | null = null;
+  private dedicated = false;
 
   ngOnInit(): void {
     const productSlug = this.route.snapshot.paramMap.get('productSlug') || '';
@@ -153,6 +154,7 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
     req.subscribe({
       next: (sess) => {
         this.sessionId = sess.sessionId;
+        this.dedicated = !!sess.dedicated;
         this.status.set(sess.status);
         this.profile.set(sess.profile || null);
         if (sess.productSlug) this.productSlug.set(sess.productSlug);
@@ -198,7 +200,8 @@ export class GpuPlayComponent implements OnInit, OnDestroy {
   private startHeartbeat(everyMs: number): void {
     this.stopHeartbeat();
     const beat = () => {
-      if (!this.sessionId || document.visibilityState === 'hidden') return;
+      // Dedicated servers keep beating while the buyer is in the game client (tab in background).
+      if (!this.sessionId || (document.visibilityState === 'hidden' && !this.dedicated)) return;
       this.gpu.heartbeatGameSession(this.sessionId).subscribe({
         next: (hb) => {
           this.bill.set(hb);

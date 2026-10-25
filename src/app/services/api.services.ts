@@ -860,6 +860,9 @@ export interface GameSessionInfo {
   productSlug?: string;
   hosting?: 'external' | 'aimarkets';
   playerMode?: 'terminal' | 'game';
+  /** Dedicated game server (own pod); buyer plays in the game client, connect = IP:port when live. */
+  dedicated?: boolean;
+  connect?: { host: string; port: number; address: string } | null;
   client?: 'pc' | 'android' | 'ios';
   device?: StreamDevice;
   profile?: StreamProfile;
