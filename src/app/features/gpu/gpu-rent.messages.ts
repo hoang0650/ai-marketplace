@@ -4,7 +4,7 @@ import { AppLang } from '../../i18n/messages';
 export const GPU_RENT_MESSAGES: Record<AppLang, Record<string, string>> = {
   vi: {
     'gvol.liveNote':
-      'Danh sách GPU thật, lấy trực tiếp từ kho RunPod (làm mới mỗi 10 phút). GPU hết hàng được ẩn.',
+      'Danh sách GPU thật, lấy trực tiếp từ hạ tầng GPU của AI Markets (làm mới mỗi 10 phút). GPU hết hàng được ẩn.',
     'gvol.perMin': 'phút',
     'gvol.monthShort': 'tháng',
     'gvol.cloud.all': 'Tất cả cloud',
@@ -59,7 +59,7 @@ export const GPU_RENT_MESSAGES: Record<AppLang, Record<string, string>> = {
   },
   en: {
     'gvol.liveNote':
-      'Live GPU list straight from RunPod stock (refreshed every 10 minutes). Out-of-stock GPUs are hidden.',
+      'Live GPU list straight from AI Markets GPU cloud stock (refreshed every 10 minutes). Out-of-stock GPUs are hidden.',
     'gvol.perMin': 'min',
     'gvol.monthShort': 'mo',
     'gvol.cloud.all': 'All clouds',
@@ -114,7 +114,7 @@ export const GPU_RENT_MESSAGES: Record<AppLang, Record<string, string>> = {
     'gpu.err.DATA_CENTER_INVALID': 'This data center does not support network volumes.',
   },
   zh: {
-    'gvol.liveNote': '实时 GPU 列表，直接来自 RunPod 库存（每 10 分钟刷新）。缺货的 GPU 已隐藏。',
+    'gvol.liveNote': '实时 GPU 列表，直接来自 AI Markets GPU 云库存（每 10 分钟刷新）。缺货的 GPU 已隐藏。',
     'gvol.perMin': '分钟',
     'gvol.monthShort': '月',
     'gvol.cloud.all': '全部云',
