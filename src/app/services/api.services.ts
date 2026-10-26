@@ -1009,12 +1009,56 @@ export interface MobileStreamConfig {
   iframeUrl?: string;
 }
 
+export type GpuAvailability = 'high' | 'medium' | 'low' | 'unknown';
+export interface GpuOfferCloud {
+  type: 'secure' | 'community';
+  pricePerHour: number;
+  pricePerMinute: number;
+  /** Price when a network volume is mounted (no pod volume; the volume is billed separately). */
+  networkVolumePricePerHour: number;
+  networkVolumePricePerMinute: number;
+  availability: GpuAvailability;
+  dataCenters: { id: string; availability: GpuAvailability }[];
+}
 export interface GpuOffer {
   id: string;
   name: string;
   memoryGb: number;
   pricePerHour: number;
-  availability: 'high' | 'medium' | 'low' | 'unknown';
+  pricePerMinute?: number;
+  availability: GpuAvailability;
+  clouds?: GpuOfferCloud[];
+}
+export interface GpuDataCenter {
+  id: string;
+  location: string;
+  gpuCount: number;
+  cheapestPricePerHour: number | null;
+}
+export interface GpuVolumeLimits {
+  sizeMin: number;
+  sizeMax: number;
+  sizeDefault: number;
+  maxPerUser: number;
+  pricePerGbMonth: number;
+  mountPath: string;
+}
+export interface GpuVolume {
+  id: string;
+  name: string;
+  dataCenterId: string;
+  sizeGb: number;
+  mountPath: string;
+  status: 'creating' | 'active' | 'error' | 'deleted';
+  pricePerHour: number;
+  pricePerMonth: number;
+  pricePerGbMonth: number;
+  currency: 'USD';
+  billedMinutes: number;
+  billedTotal: number;
+  terminateAfter: string | null;
+  attachedRentalId: string | null;
+  createdAt: string;
 }
 
 export interface GpuPromo { active: boolean; until: string | null; label: string }
@@ -1035,6 +1079,7 @@ export interface TrainingGpuOptions {
 
 export interface GpuOffersResponse {
   offers: GpuOffer[];
+  dataCenters?: GpuDataCenter[];
   currency: 'USD';
   wallet: { available: number };
   limits: {
@@ -1045,6 +1090,7 @@ export interface GpuOffersResponse {
     diskGb: number;
     warnMinutes: number;
     terminateGraceHours: number;
+    networkVolume?: GpuVolumeLimits;
   };
 }
 
@@ -1056,6 +1102,9 @@ export interface GpuRental {
   gpu: { id: string; name: string; memoryGb: number; count: number };
   diskGb: number;
   volumeGb: number;
+  cloudType?: 'secure' | 'community';
+  dataCenterId?: string;
+  networkVolume?: { id: string; name?: string; sizeGb?: number; mountPath: string } | null;
   status: GpuRentalStatus;
   ready: boolean;
   pricePerHour: number;
@@ -1102,8 +1151,27 @@ export class GpuRentalService {
     return this.http.get<{ rental: GpuRental }>(`${this.base}/rentals/${id}`);
   }
 
-  create(body: { offerId: string; name?: string; volumeGb?: number; gpuCount?: number }): Observable<{ rental: GpuRental }> {
+  create(body: {
+    offerId: string;
+    name?: string;
+    volumeGb?: number;
+    gpuCount?: number;
+    cloud?: 'secure' | 'community';
+    volumeId?: string;
+  }): Observable<{ rental: GpuRental }> {
     return this.http.post<{ rental: GpuRental }>(`${this.base}/rentals`, body);
+  }
+
+  volumes(): Observable<{ volumes: GpuVolume[]; limits: GpuVolumeLimits }> {
+    return this.http.get<{ volumes: GpuVolume[]; limits: GpuVolumeLimits }>(`${this.base}/volumes`);
+  }
+
+  createVolume(body: { name?: string; dataCenterId: string; sizeGb: number }): Observable<{ volume: GpuVolume }> {
+    return this.http.post<{ volume: GpuVolume }>(`${this.base}/volumes`, body);
+  }
+
+  deleteVolume(id: string): Observable<{ volume: GpuVolume }> {
+    return this.http.delete<{ volume: GpuVolume }>(`${this.base}/volumes/${id}`);
   }
 
   start(id: string): Observable<{ rental: GpuRental }> {
