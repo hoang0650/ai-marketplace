@@ -119,7 +119,7 @@ import { SeoService } from '../../services/seo.service';
                 <div class="flex flex-wrap gap-2">
                   @if (r.status === 'running') {
                     <button class="btn btn-fill text-xs" type="button" [disabled]="!r.ready" (click)="open(r, 'lab')">JupyterLab</button>
-                    <button class="btn btn-outline text-xs" type="button" [disabled]="!r.ready" (click)="open(r, 'terminal')">Terminal</button>
+                    <a class="btn btn-outline text-xs" [routerLink]="['/training/gpu', r.id, 'terminal']">Terminal</a>
                     <button class="btn btn-outline text-xs" type="button" (click)="stop(r)">{{ 'gpu.rent.stop' | t }}</button>
                   }
                   @if (r.status === 'stopped' || r.status === 'error') {

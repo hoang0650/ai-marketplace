@@ -202,7 +202,8 @@ const KEYS = {
         .ap-search { flex-basis: 100%; }
         .ap-sort { margin-left: 0; }
         .ap-row { align-items: flex-start; flex-direction: column; gap: 0.3rem; }
-        .ap-meta { align-items: flex-start; text-align: left; padding-left: 2.7rem; }
+        .ap-meta { align-items: flex-start; text-align: left; }
+        .ap-row:has(.ap-ava) .ap-meta { padding-left: 2.7rem; }
         .ap-pager { justify-content: center; }
       }
     `,

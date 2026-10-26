@@ -301,6 +301,12 @@ export const routes: Routes = [
             canActivate: [authGuard],
             loadComponent: () => import('./features/gpu/gpu-rent.component').then((m) => m.GpuRentComponent),
           },
+          {
+            path: 'gpu/:id/terminal',
+            canActivate: [authGuard],
+            loadComponent: () =>
+              import('./features/gpu/gpu-rental-terminal.component').then((m) => m.GpuRentalTerminalComponent),
+          },
         ],
       },
       {

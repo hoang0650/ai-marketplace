@@ -907,6 +907,8 @@ export interface GameSessionInfo {
   productSlug?: string;
   hosting?: 'external' | 'aimarkets';
   playerMode?: 'terminal' | 'game';
+  /** True when no real pod/stream backs the session (browser-simulated demo). */
+  sandbox?: boolean;
   /** Dedicated game server (own pod); buyer plays in the game client, connect = IP:port when live. */
   dedicated?: boolean;
   connect?: { host: string; port: number; address: string } | null;
@@ -1066,6 +1068,21 @@ export interface GpuRental {
   createdAt: string;
   stoppedAt: string | null;
   terminatedAt: string | null;
+  /** Owner-only live pod facts (GET /rentals/:id). */
+  live?: {
+    podId: string;
+    dataCenterId: string;
+    uptimeSeconds: number;
+    gpuUtilPercent: number | null;
+    memoryUtilPercent: number | null;
+  };
+}
+
+export interface GpuTerminalTicket {
+  term: string;
+  wsPath: string;
+  ticket: string;
+  expiresIn: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -1108,6 +1125,17 @@ export class GpuRentalService {
 
   absoluteUrl(path: string): string {
     return `${new URL(environment.apiUrl).origin}${path}`;
+  }
+
+  /** Opens a real shell on the pod; connect to wsUrl(...) within the ticket lifetime. */
+  terminal(id: string): Observable<GpuTerminalTicket> {
+    return this.http.post<GpuTerminalTicket>(`${this.base}/rentals/${id}/terminal`, {});
+  }
+
+  wsUrl(t: GpuTerminalTicket): string {
+    const api = new URL(environment.apiUrl);
+    const proto = api.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${proto}//${api.host}${t.wsPath}?ticket=${encodeURIComponent(t.ticket)}`;
   }
 }
 
