@@ -9,7 +9,10 @@ import { AffiliateService } from './affiliate.service';
 import {
   AffiliateStats,
   AdminOverview,
+  AdminPage,
   AdminProductDetail,
+  AdminProductPage,
+  AdminUserRow,
   AdminUserDetail,
   ModerationStatus,
   Creator,
@@ -90,6 +93,14 @@ export interface ProductFilesResponse {
   /** Raw downloads are for the seller and admin moderation only. */
   canDownload?: boolean;
   onlineOnly?: boolean;
+}
+
+function compactParams(params: Record<string, string | number>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== '' && v !== null && v !== undefined) out[k] = String(v);
+  }
+  return out;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -583,6 +594,16 @@ export class DashboardService {
 
   licenses(): Observable<IssuedLicense[]> {
     return this.http.get<IssuedLicense[]>(`${this.base}/licenses/me`);
+  }
+
+  /** Every account, newest first. Empty params are dropped. */
+  adminUsers(params: Record<string, string | number>): Observable<AdminPage<AdminUserRow>> {
+    return this.http.get<AdminPage<AdminUserRow>>(`${this.base}/admin/users`, { params: compactParams(params) });
+  }
+
+  /** Every product (published or not), newest first; facets=1 adds filter options. */
+  adminProducts(params: Record<string, string | number>): Observable<AdminProductPage> {
+    return this.http.get<AdminProductPage>(`${this.base}/admin/products`, { params: compactParams(params) });
   }
 
   adminUser(id: string): Observable<AdminUserDetail> {

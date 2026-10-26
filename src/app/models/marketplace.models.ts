@@ -1143,6 +1143,52 @@ export interface AdminDailyPoint {
   users: number;
 }
 
+/** One page of an admin list (GET /v1/admin/users, /v1/admin/products). */
+export interface AdminPage<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
+export interface AdminUserRow {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  creatorSlug: string;
+  avatarUrl: string;
+  accountStatus: string;
+  createdAt: string | null;
+}
+
+export interface AdminProductRow {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  productType: string;
+  creatorId: string;
+  creatorSlug: string;
+  creatorName: string;
+  published: boolean;
+  moderationStatus: string;
+  salesCount: number;
+  createdAt: string | null;
+}
+
+export interface AdminFacet {
+  id: string;
+  count: number;
+  name?: string;
+  slug?: string;
+}
+
+export interface AdminProductPage extends AdminPage<AdminProductRow> {
+  facets?: { categories: AdminFacet[]; types: AdminFacet[]; sellers: AdminFacet[] };
+}
+
 export interface AdminOverview {
   users: number;
   products: number;
