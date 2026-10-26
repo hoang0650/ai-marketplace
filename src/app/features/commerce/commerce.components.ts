@@ -5,6 +5,7 @@ import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/commo
 import { DashboardService, ReviewService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AdminOverviewChartsComponent } from '../admin/admin-overview-charts.component';
+import { AdminPeopleComponent } from '../admin/admin-people.component';
 import {
   AdminOverview,
   Order,
@@ -40,7 +41,7 @@ export class BillingComponent {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CurrencyPipe, DecimalPipe, PercentPipe, DatePipe, RouterLink, AdminOverviewChartsComponent],
+  imports: [CurrencyPipe, DecimalPipe, PercentPipe, DatePipe, RouterLink, AdminOverviewChartsComponent, AdminPeopleComponent],
   template: `
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
@@ -158,34 +159,7 @@ export class BillingComponent {
         }
 
         @case ('people') {
-        <div class="mt-6 grid gap-6 lg:grid-cols-2">
-          <div class="panel">
-            <h2 class="font-display text-2xl">Recent users</h2>
-            <ul class="mt-4 space-y-2 text-sm">
-              @for (u of d.usersList; track u.id) {
-                <li class="border-b border-line py-2">
-                  <a class="flex justify-between gap-3 hover:text-accent" [routerLink]="['/admin/users', u.id]">
-                    <span>{{ u.name }}</span>
-                    <span class="text-muted">{{ u.role }} · {{ u.accountStatus || 'active' }}</span>
-                  </a>
-                </li>
-              }
-            </ul>
-          </div>
-          <div class="panel">
-            <h2 class="font-display text-2xl">Recent products</h2>
-            <ul class="mt-4 space-y-2 text-sm">
-              @for (p of d.productsList; track p.id) {
-                <li class="border-b border-line py-2">
-                  <a class="flex justify-between gap-3 hover:text-accent" [routerLink]="['/admin/products', p.id]">
-                    <span>{{ p.name }}</span>
-                    <span class="text-muted">{{ p.category }} · bán {{ p.salesCount || 0 }}</span>
-                  </a>
-                </li>
-              }
-            </ul>
-          </div>
-        </div>
+        <app-admin-people />
         }
 
         @case ('ops') {
