@@ -35,8 +35,10 @@
               }
             ],
             "styles": [
+              "node_modules/@xterm/xterm/css/xterm.css",
               "src/styles.scss"
             ],
+            "allowedCommonJsDependencies": ["@xterm/xterm", "@xterm/addon-fit"],
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
