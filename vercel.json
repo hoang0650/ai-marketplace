@@ -8,6 +8,11 @@
       "headers": { "Cache-Control": "public, max-age=31536000, immutable" },
       "continue": true
     },
+    {
+      "src": "/product/(gpu-rtx4090-hour|gpu-a100-train|gpu-l40s-infer)/?",
+      "status": 308,
+      "headers": { "Location": "/training/gpu", "Cache-Control": "no-store" }
+    },
     { "handle": "filesystem" },
     {
       "src": "/.*\\.[A-Za-z0-9]{1,8}",
