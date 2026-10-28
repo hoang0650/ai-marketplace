@@ -38,7 +38,7 @@ interface Project {
 }
 interface ProjectRow { id: string; title: string; scenes: number; totalSeconds: number }
 interface FilmLang { code: string; name: string; engine: string; font: string; rtl: boolean; defaultVoice: string }
-interface FilmModel { id: string; name: string; kind: 'image' | 'video'; modality: string; available: boolean; reason: string; durations: number[]; acceptsReferences: boolean; productSlug: string }
+interface FilmModel { marketplacePricing?: { usageRate: number; usageUnit: string; currency: string }; id: string; name: string; kind: 'image' | 'video'; modality: string; available: boolean; reason: string; durations: number[]; acceptsReferences: boolean; productSlug: string }
 interface Config { modelCatalog?: FilmModel[]; available: boolean; perSecond: number; perImage: number; ttsPerK: number; sceneMaxSec: number; projectMaxSec: number; languages?: FilmLang[]; voices?: Record<string, Voice[]> }
 type SubMode = 'off' | 'soft' | 'burn';
 interface EstItem { sid: string; shots: number[]; seconds: number; images: number; price: number }
@@ -127,7 +127,6 @@ export function splitDuration(total: number): number[] {
   }
   @if (cfg(); as c) {
     @if (!c.available) { <div class="ed-banner ed-warn" data-testid="gpu-offline">⚠ {{ t('film.v2.unavailable') }}</div> }
-    @else { <div class="ed-banner ed-price" data-testid="film-pricing">💲 {{ t('film.v2.pricing', { sec: money(c.perSecond), img: money(c.perImage) }) }}</div> }
   }
   @if (msg()) { <div class="ed-banner" [class.ed-err]="msgErr()" data-testid="film-status">{{ msg() }}</div> }
 
@@ -254,20 +253,21 @@ export function splitDuration(total: number): number[] {
         @if (c.source === 'upload') {
           <p class="ed-muted">🎞 {{ t('film.v2.upload') }}: {{ uploadName(c.uploadId) }} · {{ secondsOf(c) }}s</p>
         } @else {
+          <label>{{ t('film.models.videoPrompt') }}
+            <textarea rows="5" maxlength="600" [(ngModel)]="c.prompt" (ngModelChange)="edit()" [placeholder]="t('film.models.videoPromptHint')" [disabled]="c.status === 'generating'" [attr.data-testid]="'film-prompt-' + index(c.sid)"></textarea>
+          </label>
           <label>{{ t('film.models.video') }}
             <select [ngModel]="c.videoModel || 'wan-2-2-i2v-720'" (ngModelChange)="c.videoModel = $event; edit()" [disabled]="c.status === 'generating'" data-testid="film-video-model">
-              @for (m of models('video'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+              @for (m of models('video'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }} - {{ modelPrice(m) }}{{ m.available ? '' : ' - ' + m.reason }}</option> }
             </select>
           </label>
           <label>{{ t('film.models.image') }}
             <select [ngModel]="c.imageModel || 'qwen-image-edit-2511'" (ngModelChange)="c.imageModel = $event; edit()" [disabled]="c.status === 'generating'" data-testid="film-image-model">
-              @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+              @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }} - {{ modelPrice(m) }}{{ m.available ? '' : ' - ' + m.reason }}</option> }
             </select>
           </label>
           <p class="ed-muted">{{ t('film.models.hint') }}</p>
-          <label>{{ t('film.ed.prompt') }}
-            <textarea rows="4" [(ngModel)]="c.prompt" (ngModelChange)="edit()" [placeholder]="t('film.ed.promptPh')" [attr.data-testid]="'film-prompt-' + index(c.sid)"></textarea>
-          </label>
+
         }
         <label>{{ t('film.ed.narration') }}
           <textarea rows="3" [(ngModel)]="c.narration" (ngModelChange)="edit()" [placeholder]="t('film.ed.narrationPh')" [attr.data-testid]="'film-narration-' + index(c.sid)" [attr.lang]="langOf(c)" [attr.dir]="isRtl(langOf(c)) ? 'rtl' : null"></textarea>
@@ -407,7 +407,7 @@ export function splitDuration(total: number): number[] {
   <ng-template #assetLib let-type="type">
     <label>{{ t('film.models.image') }}
       <select [(ngModel)]="assetImageModel" data-testid="film-asset-model">
-        @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+        @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }} - {{ modelPrice(m) }}{{ m.available ? '' : ' - ' + m.reason }}</option> }
       </select>
     </label>
     <p class="ed-muted">{{ t(type === 'character' ? 'film.v2.castHint' : 'film.v2.setsHint') }}</p>
@@ -875,6 +875,454 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   }
   @HostListener('document:mouseup') onUp(): void { if (this.trim) { this.trim = null; this.edit(); } }
 
+  modelPrice(m: FilmModel): string {
+    const p = m.marketplacePricing;
+    if (!p || !(p.usageRate > 0)) return this.t('film.models.quoteOnly');
+    const unitKeys: Record<string, string> = { second: 'second', seconds: 'second', image: 'perImage', images: 'perImage', video: 'perVideo', megapixel: 'megapixel' };
+    const unit = unitKeys[p.usageUnit] ? this.t('film.models.' + unitKeys[p.usageUnit]) : p.usageUnit;
+    const amount = this.cur.currency() === 'USD' ? ' 'qwen-image-edit-2511';
+  models(kind: 'image' | 'video'): FilmModel[] { return (this.cfg()?.modelCatalog || []).filter(m => m.kind === kind); }
+  private modelSplit(total: number, id?: string): number[] {
+    if (!id || id === 'wan-2-2-i2v-720') return splitDuration(total);
+    const options = [...(this.models('video').find(m => m.id === id)?.durations || [])].sort((a,b) => b-a);
+    const target = Math.max(5, Math.min(60, Math.round(Number(total) || 5)));
+    const dp: (number[] | null)[] = Array(61).fill(null); dp[0] = [];
+    for (let n=1; n<=60; n++) for (const d of options) {
+      const prev = n>=d ? dp[n-d] : null;
+      if (prev && prev.length<12 && (!dp[n] || prev.length+1 < dp[n]!.length)) dp[n] = [...prev, d];
+    }
+    const hits = dp.map((shots,seconds) => ({shots,seconds})).filter(x => x.seconds && x.shots);
+    hits.sort((a,b) => Math.abs(a.seconds-target)-Math.abs(b.seconds-target) || Number(a.seconds>target)-Number(b.seconds>target) || a.shots!.length-b.shots!.length);
+    return hits[0]?.shots?.sort((a, b) => b - a) || splitDuration(total);
+  }
+  // ---------- derived helpers ----------
+  secondsOf(s: Scene): number {
+    if (s.source === 'upload') return Math.round(this.project()?.uploads.find((u) => u.uid === s.uploadId)?.duration || 0);
+    const done = s.shots?.length && s.shots.every((sh) => sh.active >= 0) && s.status !== 'stale';
+    return done ? s.shots.reduce((a, sh) => a + sh.duration, 0) : this.modelSplit(s.duration, s.videoModel).reduce((a, b) => a + b, 0);
+  }
+  w(c: Scene): number { return Math.max(3, this.secondsOf(c) * this.pps() - 2); }
+  splitLabel(d: number, model?: string): string { const a = this.modelSplit(d, model); return this.t('film.v2.shotsSplit', { n: a.length, list: a.map((x) => x + 's').join(' + ') + ' = ' + a.reduce((x, y) => x + y, 0) + 's' }); }
+  media(k?: string): string { return (k && this.project()?.media?.[k]) || ''; }
+  thumbOf(s: Scene): string {
+    if (s.source === 'upload') return '';
+    const sh = s.shots?.[0];
+    const v = sh && sh.active >= 0 ? sh.versions[sh.active] : null;
+    if (v) return this.media(v.frameKey);
+    const kf = s.keyframes?.[s.keyframes.length - 1];
+    if (kf) return this.media(kf.frameKey);
+    const up = s.startUploadId && this.project()?.uploads.find((u) => u.uid === s.startUploadId);
+    return up ? this.media(up.key) : '';
+  }
+  uploadName(id?: string): string { return (id && this.project()?.uploads.find((u) => u.uid === id)?.name) || ''; }
+  voiceName(id: string, lang?: string): string { return this.voicesFor(lang || this.projectLang()).find((v) => v.id === id)?.name || id; }
+  voiceLabel(v: Voice): string {
+    if (v.kind === 'builtin') return `${v.name} (${this.t('film.voice.builtin')})`;
+    const who = [this.t('film.voice.' + v.gender), v.region ? this.t('film.voice.region.' + v.region) : ''].filter(Boolean).join(' ');
+    return `${v.name} (${who})` + (v.kind === 'clone' ? ` · ${this.t('film.voice.clone')}` : '');
+  }
+  voicesFor(lang: string): Voice[] { return this.cfg()?.voices?.[lang]?.length ? this.cfg()!.voices![lang] : fallbackVoices(lang); }
+  langOf(s: Scene): string { return s.lang || this.projectLang(); }
+  langName(code: string): string { return this.langs().find((l) => l.code === code)?.name || code; }
+  subFont(code: string): string { return CSS_FONT[code] || "'Noto Sans','Be Vietnam Pro',system-ui,sans-serif"; }
+  isRtl(code: string): boolean { return code === 'ar' || code === 'he'; }
+  /** Keep the voice valid for the language (vi presets have no "default"; other languages start on Chatterbox's own voice). */
+  private fixVoice(s: Scene): void {
+    const lang = this.langOf(s);
+    if (!this.voicesFor(lang).some((v) => v.id === s.voice)) s.voice = this.langs().find((l) => l.code === lang)?.defaultVoice || (lang === 'vi' ? 'Binh' : 'default');
+  }
+  setSceneLang(s: Scene, lang: string): void { s.lang = lang; this.fixVoice(s); this.edit(); }
+  setProjectLang(lang: string): void {
+    const p = this.project();
+    if (!p) return;
+    p.lang = lang;
+    for (const s of p.scenes) this.fixVoice(s);
+    this.edit();
+  }
+  setSubtitles(mode: SubMode): void { const p = this.project(); if (p) { p.subtitles = mode; this.edit(); } }
+  camLabel(id: Camera): string { const k = 'film.cam.' + id; const s = this.t(k); return s === k ? CAMERA_LABEL[id] : s; }
+  stateLabel(s: string): string { return ['generating', 'partial', 'stale'].includes(s) ? this.t('film.v2.state.' + s) : this.t('film.ed.state.' + s); }
+  money(usd: number): string {
+    const v = Number(usd) || 0;
+    if (this.cur.currency() === 'USD') return `$${v < 1 ? v.toFixed(4) : v.toFixed(2)}`;
+    return this.cur.formatFromUsd(v);
+  }
+  round(n: number): number { return Math.round(n); }
+
+  // ---------- uploads (browser -> MinIO presigned PUT, then confirm) ----------
+  async upload(ev: Event): Promise<void> {
+    const input = ev.target as HTMLInputElement;
+    const files = Array.from(input.files || []);
+    input.value = '';
+    const p = this.project();
+    if (!p) return;
+    await this.flush();
+    for (const f of files) {
+      const kind = f.type.split('/')[0];
+      if (!['image', 'video', 'audio'].includes(kind)) continue;
+      const row = { name: f.name, p: 0 };
+      this.uploading.update((a) => [...a, row]);
+      try {
+        const r = await firstValueFrom(this.http.post<{ upload: Upload; putUrl: string; headers: Record<string, string> }>(`${FILM}/projects/${p.id}/uploads`, { kind, name: f.name, size: f.size, contentType: f.type }));
+        await this.put(r.putUrl, f, r.headers, (pct) => { row.p = pct; this.uploading.update((a) => [...a]); });
+        await firstValueFrom(this.http.post(`${FILM}/projects/${p.id}/uploads/${r.upload.uid}/confirm`, {}));
+        this.merge(await firstValueFrom(this.http.get<Project>(`${FILM}/projects/${p.id}`)), false);
+        if (kind === 'audio' && !this.music().uploadId) this.setMusic(r.upload.uid);
+      } catch {
+        this.note(this.t('film.v2.uploadFail', { name: f.name }), true);
+      } finally {
+        this.uploading.update((a) => a.filter((x) => x !== row));
+      }
+    }
+  }
+  private put(url: string, f: File, headers: Record<string, string>, onPct: (n: number) => void): Promise<void> {
+    return new Promise((res, rej) => {
+      const x = new XMLHttpRequest();
+      x.open('PUT', url);
+      Object.entries(headers || {}).forEach(([k, v]) => x.setRequestHeader(k, v));
+      x.upload.onprogress = (e) => e.lengthComputable && onPct(Math.round((e.loaded / e.total) * 100));
+      x.onload = () => (x.status >= 200 && x.status < 300 ? res() : rej(new Error(String(x.status))));
+      x.onerror = () => rej(new Error('network'));
+      x.send(f);
+    });
+  }
+  useVideo(m: Upload): void { this.addScene({ source: 'upload', uploadId: m.uid, prompt: '', camera: 'static', duration: Math.min(60, Math.max(5, Math.round(m.duration || 5))), chainPrev: false }); this.lib.set('scenes'); }
+  useStart(m: Upload): void { const c = this.sel(); if (c && c.source === 'ai') { c.startUploadId = m.uid; c.chainPrev = false; this.edit(); } }
+  async removeUpload(m: Upload): Promise<void> {
+    const p = this.project();
+    if (!p) return;
+    try {
+      await firstValueFrom(this.http.delete(`${FILM}/projects/${p.id}/uploads/${m.uid}`));
+      this.project.set({ ...p, uploads: p.uploads.filter((u) => u.uid !== m.uid) });
+    } catch (e) { this.note((e as HttpErrorResponse).status === 409 ? this.t('film.v2.inUse') : this.apiError(e as HttpErrorResponse), true); }
+  }
+
+
+  // ---------- character / setting library (reference images for consistent faces and places) ----------
+  assetsOf(type: string): Asset[] { return this.assets().filter((a) => a.type === type); }
+  private loadAssets(fromPoll = false): void {
+    const before = new Map(this.assets().map((a) => [a.id, a.status]));
+    this.http.get<{ items: Asset[] }>(`${FILM}/assets`).subscribe({
+      next: (r) => {
+        this.assets.set(r.items);
+        if (fromPoll) for (const a of r.items) if (before.get(a.id) === 'generating' && a.status !== 'generating') this.note(this.t('film.v2.assetDone', { name: a.name }));
+      },
+      error: () => {},
+    });
+  }
+  private putAsset(a: Asset): void { this.assets.update((xs) => xs.map((x) => (x.id === a.id ? a : x))); }
+  async createAsset(type: 'character' | 'setting'): Promise<void> {
+    try {
+      const a = await firstValueFrom(this.http.post<Asset>(`${FILM}/assets`, { type, name: this.newAsset.name, description: this.newAsset.description }));
+      this.assets.update((xs) => [a, ...xs]);
+      this.newAsset = { name: '', description: '' };
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async saveAsset(a: Asset): Promise<void> {
+    try { this.putAsset(await firstValueFrom(this.http.put<Asset>(`${FILM}/assets/${a.id}`, { name: a.name, description: a.description }))); }
+    catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async primaryImage(a: Asset, key: string): Promise<void> {
+    try { this.putAsset(await firstValueFrom(this.http.put<Asset>(`${FILM}/assets/${a.id}`, { order: [key] }))); } catch { /* ignore */ }
+  }
+  async removeAssetImage(a: Asset, key: string): Promise<void> {
+    try { this.putAsset(await firstValueFrom(this.http.delete<Asset>(`${FILM}/assets/${a.id}/images`, { params: { key } }))); }
+    catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async deleteAsset(a: Asset): Promise<void> {
+    if (!confirm(this.t('film.v2.assetDelete', { name: a.name }))) return;
+    try {
+      await firstValueFrom(this.http.delete(`${FILM}/assets/${a.id}`));
+      this.assets.update((xs) => xs.filter((x) => x.id !== a.id));
+      let changed = false;
+      for (const s of this.scenes()) {
+        if ((s.characterIds || []).includes(a.id)) { s.characterIds = s.characterIds!.filter((x) => x !== a.id); changed = true; }
+        if (s.settingId === a.id) { s.settingId = null; changed = true; }
+      }
+      if (changed) this.edit();
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async uploadAssetImage(ev: Event, a: Asset): Promise<void> {
+    const input = ev.target as HTMLInputElement;
+    const f = input.files?.[0];
+    input.value = '';
+    if (!f) return;
+    const row = { name: f.name, p: 0 };
+    this.uploading.update((x) => [...x, row]);
+    try {
+      const r = await firstValueFrom(this.http.post<{ key: string; putUrl: string; headers: Record<string, string> }>(`${FILM}/assets/${a.id}/uploads`, { name: f.name, size: f.size, contentType: f.type }));
+      await this.put(r.putUrl, f, r.headers, (pct) => { row.p = pct; this.uploading.update((x) => [...x]); });
+      this.putAsset(await firstValueFrom(this.http.post<Asset>(`${FILM}/assets/${a.id}/uploads/confirm`, { key: r.key })));
+    } catch { this.note(this.t('film.v2.uploadFail', { name: f.name }), true); }
+    finally { this.uploading.update((x) => x.filter((y) => y !== row)); }
+  }
+  async generateAsset(a: Asset): Promise<void> {
+    let price = 0;
+    const imageModel = this.assetImageModel;
+    try { price = (await firstValueFrom(this.http.post<{ price: number }>(`${FILM}/model-quote`, { imageModel, mode: a.type }))).price; }
+    catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); return; }
+    let balance = 0;
+    try { balance = (await this.estimate([])).available; } catch { /* the API re-checks the wallet */ }
+    this.confirm.set({ kind: 'asset', imageModel, assetId: a.id, items: [], total: price, balance, renderLine: this.t('film.v2.estAsset', { name: a.name, price: this.money(price) }) });
+  }
+  private async submitAsset(id: string, price: number, imageModel?: string): Promise<void> {
+    try {
+      const r = await firstValueFrom(this.http.post<{ asset: Asset }>(`${FILM}/assets/${id}/generate`, { imageModel, expectedPrice: price }));
+      this.putAsset(r.asset);
+      this.note(this.t('film.v2.assetSubmitted'));
+    } catch (e) {
+      const err = e as HttpErrorResponse;
+      this.note(err.error?.code === 'PRICE_CHANGED' ? this.t('film.v2.priceChanged', { price: this.money(err.error.price) }) : this.apiError(err), true);
+    }
+  }
+  usesRef(a: Asset): boolean { const c = this.sel(); return !!c && (a.type === 'setting' ? c.settingId === a.id : (c.characterIds || []).includes(a.id)); }
+  toggleRef(a: Asset): void {
+    const c = this.sel();
+    if (!c || c.source !== 'ai' || c.status === 'generating') return;
+    if (a.type === 'setting') c.settingId = c.settingId === a.id ? null : a.id;
+    else {
+      const ids = c.characterIds || [];
+      if (ids.includes(a.id)) c.characterIds = ids.filter((x) => x !== a.id);
+      else if (ids.length >= 3) return this.note(this.t('film.v2.castMax'), true);
+      else c.characterIds = [...ids, a.id];
+    }
+    this.edit();
+  }
+
+  // ---------- generate (estimate shown first; API checks expectedPrice) ----------
+  private apiError(e: HttpErrorResponse): string {
+    if (e?.error?.code === 'INSUFFICIENT_WALLET') return this.t('film.v2.noFunds');
+    if (e?.status === 0 || e?.status >= 502 || e?.error?.code === 'STUDIO_UNAVAILABLE') return this.t('film.ed.gpuRetry');
+    const code = String(e?.error?.code || '');
+    const known = code ? this.t('film.err.' + code) : '';
+    if (known && known !== 'film.err.' + code) return known;
+    return this.i18n.lang() === 'vi' && e?.error?.message ? e.error.message : this.t('film.ed.sendFail');
+  }
+  private estimate(sceneIds?: string[]): Promise<Estimate> {
+    return firstValueFrom(this.http.post<Estimate>(`${FILM}/projects/${this.project()!.id}/estimate`, sceneIds ? { sceneIds } : {}));
+  }
+  async generate(c: Scene): Promise<void> {
+    await this.flush();
+    try {
+      const est = await this.estimate([c.sid]);
+      this.confirm.set({ kind: 'scenes', items: est.items, total: est.total, balance: est.available });
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async generateAll(): Promise<void> {
+    await this.flush();
+    try {
+      const est = await this.estimate();
+      const items = est.items.filter((it) => (this.scenes().find((s) => s.sid === it.sid)?.prompt || '').trim().length >= 3);
+      if (!items.length) return this.note(this.t('film.ed.needPrompt'), true);
+      this.confirm.set({ kind: 'scenes', items, total: items.reduce((a, x) => a + x.price, 0), balance: est.available });
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  async confirmed(cf: Confirm): Promise<void> {
+    this.confirm.set(null);
+    if (cf.kind === 'render') return this.submitRender(cf.total);
+    if (cf.kind === 'asset') return this.submitAsset(cf.assetId!, cf.total, cf.imageModel);
+    if (cf.kind === 'shot') return this.submitShot(cf.sceneSid!, cf.shotSid!, cf.total);
+    if (cf.items.length === 1) { await this.submitScene(cf.items[0].sid, cf.items[0].price); return; }
+    // Batch: one scene at a time, max 3 in flight; a chained scene waits for the previous one so it can start from its last frame.
+    this.busyBatch.set(true);
+    let done = 0;
+    try {
+      for (const it of cf.items) {
+        const i = this.index(it.sid);
+        const s = this.scenes()[i];
+        if (!s) continue;
+        if (s.chainPrev && i > 0) await this.waitFor(() => this.scenes()[i - 1]?.status !== 'generating');
+        let price = it.price;
+        const fresh = (await this.estimate([it.sid])).items[0];
+        if (fresh && fresh.price <= it.price + 1e-9) price = fresh.price; // never charge more than the user confirmed
+        else if (fresh) throw new Error(this.t('film.v2.priceChanged', { price: this.money(fresh.price) }));
+        for (;;) {
+          const r = await this.submitScene(it.sid, price, true);
+          if (r === 'busy') { this.note(this.t('film.v2.waitSlot')); await this.sleep(8000); continue; }
+          if (r !== 'ok') throw new Error(r);
+          break;
+        }
+        done += 1;
+        this.note(this.t('film.v2.batch', { done, n: cf.items.length }));
+      }
+      this.note(this.t('film.v2.batchDone', { n: done }));
+    } catch (e) {
+      this.note(this.t('film.v2.batchStop', { e: (e as Error).message }), true);
+    } finally { this.busyBatch.set(false); }
+  }
+  /** Returns 'ok', 'busy' (too many running, batch retries) or an error message. */
+  /** Re-shoot one shot (new take, price shown first). Later shots keep their takes; regenerate them too for a seamless chain. */
+  async regenShot(c: Scene, j: number): Promise<void> {
+    const p = this.project();
+    const sh = c.shots[j];
+    if (!p || !sh) return;
+    await this.flush();
+    try {
+      const e = await firstValueFrom(this.http.post<{ seconds: number; price: number; ready: boolean; available: number }>(`${FILM}/projects/${p.id}/scenes/${c.sid}/shots/${sh.sid}/estimate`, {}));
+      if (!e.ready) return this.note(this.t('film.v2.shotNeedPrev'), true);
+      this.confirm.set({ kind: 'shot', sceneSid: c.sid, shotSid: sh.sid, items: [], total: e.price, balance: e.available,
+        renderLine: this.t('film.v2.estShot', { n: j + 1, s: e.seconds, price: this.money(e.price) }) });
+    } catch (err) { this.note(this.apiError(err as HttpErrorResponse), true); }
+  }
+  private async submitShot(sid: string, shot: string, price: number): Promise<void> {
+    const p = this.project();
+    if (!p) return;
+    const sh = this.scenes().find((s) => s.sid === sid)?.shots.find((x) => x.sid === shot);
+    try {
+      const r = await firstValueFrom(this.http.post<{ project: Project }>(`${FILM}/projects/${p.id}/scenes/${sid}/shots/${shot}/generate`, { expectedPrice: price, prompt: sh?.prompt || '' }));
+      this.merge(r.project, !this.saveTimer && !this.saving);
+      this.note(this.t('film.v2.shotSubmitted'));
+    } catch (e) {
+      const err = e as HttpErrorResponse;
+      this.note(err.error?.code === 'PRICE_CHANGED' ? this.t('film.v2.priceChanged', { price: this.money(err.error.price) }) : err.error?.code === 'NEED_PREVIOUS' ? this.t('film.v2.shotNeedPrev') : this.apiError(err), true);
+    }
+  }
+  async useTake(c: Scene, sh: Shot, v: number): Promise<void> {
+    const p = this.project();
+    if (!p) return;
+    try {
+      const r = await firstValueFrom(this.http.post<{ project: Project }>(`${FILM}/projects/${p.id}/scenes/${c.sid}/shots/${sh.sid}/active`, { v }));
+      this.merge(r.project, !this.saveTimer && !this.saving);
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  private async submitScene(sid: string, price: number, batch = false): Promise<string> {
+    const p = this.project();
+    if (!p) return 'no project';
+    try {
+      const r = await firstValueFrom(this.http.post<{ project: Project }>(`${FILM}/projects/${p.id}/scenes/${sid}/generate`, { expectedPrice: price }));
+      this.merge(r.project, !this.saveTimer && !this.saving);
+      if (!batch) this.note(this.t('film.v2.submitted', { n: this.index(sid) + 1 }));
+      return 'ok';
+    } catch (e) {
+      const err = e as HttpErrorResponse;
+      if (err.error?.code === 'JOB_ACTIVE' && batch) return 'busy';
+      const m = err.error?.code === 'PRICE_CHANGED' ? this.t('film.v2.priceChanged', { price: this.money(err.error.price) }) : this.apiError(err);
+      if (!batch) this.note(m, true);
+      return m;
+    }
+  }
+  private sleep(ms: number): Promise<void> { return new Promise((r) => setTimeout(r, ms)); }
+  private async waitFor(ok: () => boolean, maxMs = 30 * 60e3): Promise<void> {
+    const t0 = Date.now();
+    while (!ok() && !this.destroyed && Date.now() - t0 < maxMs) { this.poll(); await this.sleep(5000); }
+  }
+
+  // ---------- render (final ffmpeg join on the AI service) ----------
+  async render(): Promise<void> {
+    await this.flush();
+    const p = this.project();
+    if (!p) return;
+    const notReady = p.scenes.some((s) => (s.source === 'upload' ? !this.uploadName(s.uploadId) : !(s.shots?.length && s.shots.every((sh) => sh.active >= 0)) || s.status === 'generating'));
+    if (notReady) return this.note(this.t('film.v2.notReady'), true);
+    try {
+      const est = await this.estimate([]);
+      const n = p.scenes.length; const tt = this.tcShort(this.total());
+      const line = est.render.price > 0 ? this.t('film.v2.estRender', { n, t: tt, chars: est.render.ttsChars, price: this.money(est.render.price) }) : this.t('film.v2.estRenderFree', { n, t: tt });
+      this.confirm.set({ kind: 'render', items: [], total: est.render.price, balance: est.available, renderLine: line });
+    } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
+  }
+  private async submitRender(price: number): Promise<void> {
+    const p = this.project();
+    if (!p) return;
+    try {
+      const r = await firstValueFrom(this.http.post<{ project: Project }>(`${FILM}/projects/${p.id}/render`, { expectedPrice: price }));
+      this.merge(r.project, !this.saveTimer && !this.saving);
+      this.note(this.t('film.v2.rendering'));
+    } catch (e) {
+      const err = e as HttpErrorResponse;
+      this.note(err.error?.code === 'NOT_READY' ? this.t('film.v2.notReady') : err.error?.code === 'PRICE_CHANGED' ? this.t('film.v2.priceChanged', { price: this.money(err.error.price) }) : this.apiError(err), true);
+    }
+  }
+
+  // ---------- timeline + playback ----------
+  fit(): void {
+    const el = this.tracksEl?.nativeElement;
+    const avail = Math.max(300, (el?.clientWidth || (typeof window !== 'undefined' ? window.innerWidth : 1200)) - 120);
+    const pps = Math.min(120, Math.max(0.05, avail / Math.max(10, this.total() * 1.04)));
+    this.zoom.set(Math.round((Math.log(pps / 0.05) / Math.log(2400)) * 100));
+  }
+  private buildSegs(): Seg[] {
+    const out: Seg[] = [];
+    let t = 0;
+    this.scenes().forEach((s, idx) => {
+      const dur = this.secondsOf(s);
+      if (s.source === 'upload') {
+        const u = this.project()?.uploads.find((x) => x.uid === s.uploadId);
+        out.push({ scene: s, idx, start: t, dur, shot: 0, video: u ? this.media(u.key) : '', thumb: '', offset: 0 });
+      } else if (s.shots?.length && s.status !== 'stale') {
+        let o = 0;
+        s.shots.forEach((sh, j) => {
+          const v = sh.active >= 0 ? sh.versions[sh.active] : null;
+          out.push({ scene: s, idx, start: t + o, dur: sh.duration, shot: j, video: v ? this.media(v.videoKey) : '', thumb: v ? this.media(v.frameKey) : this.thumbOf(s), offset: o });
+          o += sh.duration;
+        });
+      } else {
+        out.push({ scene: s, idx, start: t, dur, shot: 0, video: '', thumb: this.thumbOf(s), offset: 0 });
+      }
+      t += dur;
+    });
+    return out;
+  }
+  private segAt(t: number): Seg | null {
+    const a = this.segs();
+    let lo = 0; let hi = a.length - 1;
+    while (lo <= hi) {
+      const m = (lo + hi) >> 1;
+      if (t < a[m].start) hi = m - 1; else if (t >= a[m].start + a[m].dur) lo = m + 1; else return a[m];
+    }
+    return null;
+  }
+  private firstSegOf(sid: string): Seg | null { return this.segs().find((g) => g.scene.sid === sid) || null; }
+  private startOf(sid: string): number { return this.firstSegOf(sid)?.start ?? 0; }
+  seekShot(c: Scene, j: number): void { const g = this.segs().find((x) => x.scene.sid === c.sid && x.shot === j); if (g) this.seek(g.start); }
+  toggle(): void { this.playing() ? this.pause() : this.play(); }
+  play(): void {
+    if (this.playhead() >= this.total() - 0.05) this.playhead.set(0);
+    this.finalVideo.set('');
+    this.playing.set(true); this.last = performance.now(); this.musicEl?.nativeElement.play().catch(() => {});
+    const step = (now: number) => {
+      if (!this.playing()) return;
+      const before = this.seg();
+      this.playhead.set(Math.min(this.total(), this.playhead() + (now - this.last) / 1000)); this.last = now;
+      const g = this.segAt(this.playhead());
+      if (g && (g.scene.sid !== before?.scene.sid || g.shot !== before?.shot)) { this.selId.set(g.scene.sid); setTimeout(() => this.syncVideo(), 0); }
+      if (this.playhead() >= this.total()) { this.pause(); return; }
+      this.raf = requestAnimationFrame(step);
+    };
+    setTimeout(() => this.syncVideo(), 0);
+    this.raf = requestAnimationFrame(step);
+  }
+  pause(): void { this.playing.set(false); cancelAnimationFrame(this.raf); this.clipEl?.nativeElement.pause(); this.musicEl?.nativeElement.pause(); }
+  private syncVideo(): void {
+    const v = this.clipEl?.nativeElement; const g = this.seg();
+    if (!v || !g) return;
+    const want = Math.max(0, this.playhead() - g.start);
+    if (Math.abs(v.currentTime - want) > 0.3) v.currentTime = want;
+    if (this.playing()) v.play().catch(() => {}); else v.pause();
+  }
+  seek(t: number): void {
+    this.playhead.set(Math.max(0, Math.min(this.total(), t)));
+    const g = this.segAt(this.playhead());
+    if (g) this.selId.set(g.scene.sid);
+    setTimeout(() => this.syncVideo(), 0);
+  }
+  scrub(e: MouseEvent): void {
+    const el = e.currentTarget as HTMLElement; const x = e.clientX - el.getBoundingClientRect().left + el.scrollLeft - 96;
+    if (x >= 0 && (e.target as HTMLElement).closest('.ed-ruler')) this.seek(x / this.pps());
+  }
+  tc(t: number): string {
+    const f = Math.floor((t % 1) * FPS); const s = Math.floor(t) % 60; const m = Math.floor(t / 60) % 60; const h = Math.floor(t / 3600);
+    return `${h ? h + ':' : ''}${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}:${String(f).padStart(2, '0')}`;
+  }
+  tcShort(t: number): string {
+    const s = Math.round(t) % 60; const m = Math.floor(Math.round(t) / 60) % 60; const h = Math.floor(Math.round(t) / 3600);
+    return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+  }
+  private note(m: string, err = false): void { this.msg.set(m); this.msgErr.set(err); }
+}
+ + p.usageRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 }) : this.cur.formatFromUsd(p.usageRate);
+    return this.t('film.models.from') + ' ' + amount + '/' + unit;
+  }
   assetImageModel = 'qwen-image-edit-2511';
   models(kind: 'image' | 'video'): FilmModel[] { return (this.cfg()?.modelCatalog || []).filter(m => m.kind === kind); }
   private modelSplit(total: number, id?: string): number[] {
