@@ -251,7 +251,7 @@ export class ModelsHubComponent implements OnInit {
   readonly kinds = RUNPOD_KINDS;
   readonly kindLabel = RUNPOD_ENDPOINT_KIND_LABEL;
   readonly products = signal<Product[]>([]);
-  readonly publicEndpoints = signal<RunpodPublicEndpoint[]>(RUNPOD_PUBLIC_ENDPOINTS);
+  readonly publicEndpoints = signal<RunpodPublicEndpoint[]>([]);
   readonly q = signal('');
   readonly cat = signal<string | null>(null);
   readonly kind = signal<RunpodEndpointKind | null>(null);
@@ -284,7 +284,7 @@ export class ModelsHubComponent implements OnInit {
     });
     this.runpodApi.publicEndpoints().subscribe({
       next: (items) => this.publicEndpoints.set(items),
-      error: () => this.publicEndpoints.set(RUNPOD_PUBLIC_ENDPOINTS),
+      error: () => this.publicEndpoints.set([]),
     });
     this.productsApi.list().subscribe((items) => {
       this.products.set(items.filter((p) => MODEL_CATEGORIES.includes(p.category)));

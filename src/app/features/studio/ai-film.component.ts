@@ -25,7 +25,7 @@ interface Version { v: number; videoKey: string; frameKey: string; prompt: strin
 interface Shot { sid: string; prompt: string; duration: number; status: string; error?: string; active: number; versions: Version[] }
 interface Scene {
   sid: string; title?: string; prompt: string; narration: string; voice: string; lang?: string; camera: Camera; transition?: string; duration: number;
-  source: 'ai' | 'upload'; uploadId?: string; startUploadId?: string; chainPrev?: boolean; characterIds?: string[]; settingId?: string | null;
+  videoModel?: string; imageModel?: string; source: 'ai' | 'upload'; uploadId?: string; startUploadId?: string; chainPrev?: boolean; characterIds?: string[]; settingId?: string | null;
   status: string; error?: string; generation?: number; keyframes?: { v: number; frameKey: string }[]; shots: Shot[];
 }
 interface AssetImg { key: string; source: string; url: string }
@@ -38,13 +38,14 @@ interface Project {
 }
 interface ProjectRow { id: string; title: string; scenes: number; totalSeconds: number }
 interface FilmLang { code: string; name: string; engine: string; font: string; rtl: boolean; defaultVoice: string }
-interface Config { available: boolean; perSecond: number; perImage: number; ttsPerK: number; sceneMaxSec: number; projectMaxSec: number; languages?: FilmLang[]; voices?: Record<string, Voice[]> }
+interface FilmModel { id: string; name: string; kind: 'image' | 'video'; modality: string; available: boolean; reason: string; durations: number[]; acceptsReferences: boolean; productSlug: string }
+interface Config { modelCatalog?: FilmModel[]; available: boolean; perSecond: number; perImage: number; ttsPerK: number; sceneMaxSec: number; projectMaxSec: number; languages?: FilmLang[]; voices?: Record<string, Voice[]> }
 type SubMode = 'off' | 'soft' | 'burn';
 interface EstItem { sid: string; shots: number[]; seconds: number; images: number; price: number }
 interface Estimate { items: EstItem[]; total: number; render: { ttsChars: number; price: number }; available: number }
 interface Voice { id: string; name: string; gender: string; region?: string; kind: 'preset' | 'clone' | 'builtin' }
 interface Seg { scene: Scene; idx: number; start: number; dur: number; shot: number; video: string; thumb: string; offset: number }
-interface Confirm { kind: 'scenes' | 'render' | 'asset' | 'shot'; assetId?: string; sceneSid?: string; shotSid?: string; items: EstItem[]; total: number; balance: number; renderLine?: string }
+interface Confirm { imageModel?: string; kind: 'scenes' | 'render' | 'asset' | 'shot'; assetId?: string; sceneSid?: string; shotSid?: string; items: EstItem[]; total: number; balance: number; renderLine?: string }
 
 /** Same catalog as GET /studio/film/config (languages + voices); used until the config loads. */
 const PRESET_VOICES: Omit<Voice, 'kind'>[] = [
@@ -253,6 +254,17 @@ export function splitDuration(total: number): number[] {
         @if (c.source === 'upload') {
           <p class="ed-muted">🎞 {{ t('film.v2.upload') }}: {{ uploadName(c.uploadId) }} · {{ secondsOf(c) }}s</p>
         } @else {
+          <label>{{ t('film.models.video') }}
+            <select [ngModel]="c.videoModel || 'wan-2-2-i2v-720'" (ngModelChange)="c.videoModel = $event; edit()" [disabled]="c.status === 'generating'" data-testid="film-video-model">
+              @for (m of models('video'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+            </select>
+          </label>
+          <label>{{ t('film.models.image') }}
+            <select [ngModel]="c.imageModel || 'qwen-image-edit-2511'" (ngModelChange)="c.imageModel = $event; edit()" [disabled]="c.status === 'generating'" data-testid="film-image-model">
+              @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+            </select>
+          </label>
+          <p class="ed-muted">{{ t('film.models.hint') }}</p>
           <label>{{ t('film.ed.prompt') }}
             <textarea rows="4" [(ngModel)]="c.prompt" (ngModelChange)="edit()" [placeholder]="t('film.ed.promptPh')" [attr.data-testid]="'film-prompt-' + index(c.sid)"></textarea>
           </label>
@@ -273,7 +285,7 @@ export function splitDuration(total: number): number[] {
           </select>
         </label>
         @if (c.source === 'ai') {
-          <label>{{ t('film.v2.duration', { n: c.duration, shots: splitLabel(c.duration) }) }}
+          <label>{{ t('film.v2.duration', { n: c.duration, shots: splitLabel(c.duration, c.videoModel) }) }}
             <input type="range" min="5" max="60" step="5" [(ngModel)]="c.duration" (ngModelChange)="edit()" [disabled]="c.status === 'generating'" data-testid="film-duration" />
           </label>
           @if (c.status === 'stale') { <p class="ed-errtxt">{{ t('film.v2.staleHint') }}</p> }
@@ -393,6 +405,11 @@ export function splitDuration(total: number): number[] {
 
 
   <ng-template #assetLib let-type="type">
+    <label>{{ t('film.models.image') }}
+      <select [(ngModel)]="assetImageModel" data-testid="film-asset-model">
+        @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+      </select>
+    </label>
     <p class="ed-muted">{{ t(type === 'character' ? 'film.v2.castHint' : 'film.v2.setsHint') }}</p>
     <div class="ed-newa">
       <input [(ngModel)]="newAsset.name" [placeholder]="t(type === 'character' ? 'film.v2.castName' : 'film.v2.setName')" maxlength="60" [attr.data-testid]="'asset-name-' + type" />
@@ -743,7 +760,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
         subtitles: p.subtitles || 'off',
         music: p.music,
         scenes: sent.map((s) => ({
-          sid: s.sid, title: s.title, prompt: s.prompt, narration: s.narration, voice: s.voice, lang: s.lang || '', camera: s.camera, duration: s.duration,
+          videoModel: s.videoModel, imageModel: s.imageModel, sid: s.sid, title: s.title, prompt: s.prompt, narration: s.narration, voice: s.voice, lang: s.lang || '', camera: s.camera, duration: s.duration,
           source: s.source, uploadId: s.uploadId, startUploadId: s.startUploadId || '', chainPrev: !!s.chainPrev, characterIds: s.characterIds || [], settingId: s.settingId || null,
           shots: (s.shots || []).map((sh) => ({ sid: sh.sid, prompt: sh.prompt })),
         })),
@@ -858,14 +875,29 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   }
   @HostListener('document:mouseup') onUp(): void { if (this.trim) { this.trim = null; this.edit(); } }
 
+  assetImageModel = 'qwen-image-edit-2511';
+  models(kind: 'image' | 'video'): FilmModel[] { return (this.cfg()?.modelCatalog || []).filter(m => m.kind === kind); }
+  private modelSplit(total: number, id?: string): number[] {
+    if (!id || id === 'wan-2-2-i2v-720') return splitDuration(total);
+    const options = [...(this.models('video').find(m => m.id === id)?.durations || [])].sort((a,b) => b-a);
+    const target = Math.max(5, Math.min(60, Math.round(Number(total) || 5)));
+    const dp: (number[] | null)[] = Array(61).fill(null); dp[0] = [];
+    for (let n=1; n<=60; n++) for (const d of options) {
+      const prev = n>=d ? dp[n-d] : null;
+      if (prev && prev.length<12 && (!dp[n] || prev.length+1 < dp[n]!.length)) dp[n] = [...prev, d];
+    }
+    const hits = dp.map((shots,seconds) => ({shots,seconds})).filter(x => x.seconds && x.shots);
+    hits.sort((a,b) => Math.abs(a.seconds-target)-Math.abs(b.seconds-target) || Number(a.seconds>target)-Number(b.seconds>target) || a.shots!.length-b.shots!.length);
+    return hits[0]?.shots?.sort((a, b) => b - a) || splitDuration(total);
+  }
   // ---------- derived helpers ----------
   secondsOf(s: Scene): number {
     if (s.source === 'upload') return Math.round(this.project()?.uploads.find((u) => u.uid === s.uploadId)?.duration || 0);
     const done = s.shots?.length && s.shots.every((sh) => sh.active >= 0) && s.status !== 'stale';
-    return done ? s.shots.reduce((a, sh) => a + sh.duration, 0) : splitDuration(s.duration).reduce((a, b) => a + b, 0);
+    return done ? s.shots.reduce((a, sh) => a + sh.duration, 0) : this.modelSplit(s.duration, s.videoModel).reduce((a, b) => a + b, 0);
   }
   w(c: Scene): number { return Math.max(3, this.secondsOf(c) * this.pps() - 2); }
-  splitLabel(d: number): string { const a = splitDuration(d); return this.t('film.v2.shotsSplit', { n: a.length, list: a.map((x) => x + 's').join(' + ') + ' = ' + a.reduce((x, y) => x + y, 0) + 's' }); }
+  splitLabel(d: number, model?: string): string { const a = this.modelSplit(d, model); return this.t('film.v2.shotsSplit', { n: a.length, list: a.map((x) => x + 's').join(' + ') + ' = ' + a.reduce((x, y) => x + y, 0) + 's' }); }
   media(k?: string): string { return (k && this.project()?.media?.[k]) || ''; }
   thumbOf(s: Scene): string {
     if (s.source === 'upload') return '';
@@ -1020,14 +1052,17 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     finally { this.uploading.update((x) => x.filter((y) => y !== row)); }
   }
   async generateAsset(a: Asset): Promise<void> {
-    const price = Math.round((this.cfg()?.perImage || 0) * 1e4) / 1e4;
+    let price = 0;
+    const imageModel = this.assetImageModel;
+    try { price = (await firstValueFrom(this.http.post<{ price: number }>(`${FILM}/model-quote`, { imageModel, mode: a.type }))).price; }
+    catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); return; }
     let balance = 0;
     try { balance = (await this.estimate([])).available; } catch { /* the API re-checks the wallet */ }
-    this.confirm.set({ kind: 'asset', assetId: a.id, items: [], total: price, balance, renderLine: this.t('film.v2.estAsset', { name: a.name, price: this.money(price) }) });
+    this.confirm.set({ kind: 'asset', imageModel, assetId: a.id, items: [], total: price, balance, renderLine: this.t('film.v2.estAsset', { name: a.name, price: this.money(price) }) });
   }
-  private async submitAsset(id: string, price: number): Promise<void> {
+  private async submitAsset(id: string, price: number, imageModel?: string): Promise<void> {
     try {
-      const r = await firstValueFrom(this.http.post<{ asset: Asset }>(`${FILM}/assets/${id}/generate`, { expectedPrice: price }));
+      const r = await firstValueFrom(this.http.post<{ asset: Asset }>(`${FILM}/assets/${id}/generate`, { imageModel, expectedPrice: price }));
       this.putAsset(r.asset);
       this.note(this.t('film.v2.assetSubmitted'));
     } catch (e) {
@@ -1080,7 +1115,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   async confirmed(cf: Confirm): Promise<void> {
     this.confirm.set(null);
     if (cf.kind === 'render') return this.submitRender(cf.total);
-    if (cf.kind === 'asset') return this.submitAsset(cf.assetId!, cf.total);
+    if (cf.kind === 'asset') return this.submitAsset(cf.assetId!, cf.total, cf.imageModel);
     if (cf.kind === 'shot') return this.submitShot(cf.sceneSid!, cf.shotSid!, cf.total);
     if (cf.items.length === 1) { await this.submitScene(cf.items[0].sid, cf.items[0].price); return; }
     // Batch: one scene at a time, max 3 in flight; a chained scene waits for the previous one so it can start from its last frame.

@@ -1,8 +1,11 @@
 /** AI Film v2 editor strings (server projects, 60 s scenes, per-second pricing), merged by the film editor. */
 export const FILM_V2_MESSAGES = {
   vi: {
+    'film.models.video': "Model video",
+    'film.models.image': "Model ảnh",
+    'film.models.hint': "Giá theo model và độ phân giải, đồng bộ với sàn AI Markets. Xem báo giá trước khi tạo; model chỉ nhận văn bản không dùng ảnh tham chiếu.",
     'film.v2.unavailable': 'Dịch vụ tạo phim AI tạm thời không khả dụng — bạn vẫn có thể chỉnh sửa dự án (lưu trên máy chủ). Tạo cảnh và xuất phim sẽ hoạt động lại khi dịch vụ trực tuyến.',
-    'film.v2.pricing': 'Wan 2.2 (720p): {{sec}}/giây video · Qwen Image Edit: {{img}}/ảnh · không có lượt miễn phí',
+    'film.v2.pricing': "Giá theo model public endpoint trên sàn · Wan từ {{sec}}/giây · Qwen {{img}}/ảnh · xem báo giá trước khi tạo",
     'film.v2.projects': 'Dự án',
     'film.v2.newProject': 'Dự án mới',
     'film.v2.deleteProject': 'Xoá dự án',
@@ -96,8 +99,11 @@ export const FILM_V2_MESSAGES = {
     'film.v2.castMax': "Mỗi cảnh tối đa 3 nhân vật.",
   },
   en: {
+    'film.models.video': "Video model",
+    'film.models.image': "Image model",
+    'film.models.hint': "Model and resolution prices match AI Markets. Review the quote before generation; text-only models do not use reference images.",
     'film.v2.unavailable': 'AI film generation is temporarily unavailable — you can still edit the project (saved on the server). Scene generation and export resume when the service is back.',
-    'film.v2.pricing': 'Wan 2.2 (720p): {{sec}}/second of video · Qwen Image Edit: {{img}}/image · no free quota',
+    'film.v2.pricing': "Marketplace public endpoint prices · Wan from {{sec}}/second · Qwen {{img}}/image · review the quote before generation",
     'film.v2.projects': 'Projects',
     'film.v2.newProject': 'New project',
     'film.v2.deleteProject': 'Delete project',
@@ -191,8 +197,11 @@ export const FILM_V2_MESSAGES = {
     'film.v2.castMax': "Max 3 characters per scene.",
   },
   zh: {
+    'film.models.video': "视频模型",
+    'film.models.image': "图像模型",
+    'film.models.hint': "模型和分辨率价格与 AI Markets 同步。生成前查看报价；纯文本模型不使用参考图像。",
     'film.v2.unavailable': 'AI 影片生成服务暂时不可用——仍可编辑项目（保存在服务器）。服务恢复后即可生成场景并导出。',
-    'film.v2.pricing': 'Wan 2.2（720p）：每秒视频 {{sec}} · Qwen Image Edit：每张 {{img}} · 无免费额度',
+    'film.v2.pricing': "市场公共端点价格 · Wan 每秒 {{sec}} 起 · Qwen 每张 {{img}} · 生成前查看报价",
     'film.v2.projects': '项目',
     'film.v2.newProject': '新建项目',
     'film.v2.deleteProject': '删除项目',
