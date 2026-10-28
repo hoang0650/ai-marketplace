@@ -28,21 +28,13 @@ const IDEAS: Record<BuilderKind, string[]> = {
         <p class="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-400">{{ error() }}</p>
       }
 
-      @if (loaded() && !hasKey()) {
-        <div class="panel space-y-3 border-amber-500/40">
-          <h2 class="font-display text-xl">{{ 'builder.needKey.title' | t }}</h2>
-          <p class="text-sm text-muted">{{ 'builder.needKey.body' | t }}</p>
-          <app-byok-keys (changed)="onKeys($event)" />
-        </div>
-      }
-
-      <form class="panel space-y-4" (ngSubmit)="create()">
-        <div class="flex flex-wrap gap-2" role="tablist">
+      <form class="panel min-w-0 space-y-5 rounded-2xl p-4 sm:p-6" (ngSubmit)="create()">
+        <div class="grid grid-cols-2 gap-3" role="tablist">
           @for (k of kinds; track k) {
             <button
               type="button"
               role="tab"
-              class="rounded-xl border px-4 py-3 text-left"
+              class="min-w-0 rounded-xl border px-4 py-3 text-left transition-colors hover:border-accent"
               [class.border-line]="kind() !== k"
               [class.border-accent]="kind() === k"
               [class.ring-2]="kind() === k"
@@ -55,6 +47,23 @@ const IDEAS: Record<BuilderKind, string[]> = {
           }
         </div>
 
+        <textarea
+          class="input min-h-[10rem] w-full resize-y rounded-xl p-4 text-base leading-relaxed"
+          [attr.aria-label]="('builder.promptPh.' + kind()) | t"
+          name="prompt"
+          [(ngModel)]="prompt"
+          maxlength="8000"
+          [placeholder]="(selected() ? 'builder.tpl.promptPh' : 'builder.promptPh.' + kind()) | t"
+        ></textarea>
+        <div class="flex flex-wrap gap-2">
+          @for (idea of ideas(); track idea) {
+            <button type="button" class="rounded-full border border-line px-3 py-1 text-xs hover:border-accent" (click)="useIdea(idea)">
+              {{ idea | t }}
+            </button>
+          }
+        </div>
+        <details class="rounded-2xl border border-line p-4">
+          <summary class="cursor-pointer text-sm font-semibold">{{ 'builder.tpl.startFrom' | t }}</summary>
         <div class="space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <p class="text-sm font-semibold">{{ 'builder.tpl.startFrom' | t }}</p>
@@ -113,20 +122,7 @@ const IDEAS: Record<BuilderKind, string[]> = {
           </div>
         </div>
 
-        <textarea
-          class="input min-h-[7rem] w-full"
-          name="prompt"
-          [(ngModel)]="prompt"
-          maxlength="8000"
-          [placeholder]="(selected() ? 'builder.tpl.promptPh' : 'builder.promptPh.' + kind()) | t"
-        ></textarea>
-        <div class="flex flex-wrap gap-2">
-          @for (idea of ideas(); track idea) {
-            <button type="button" class="rounded-full border border-line px-3 py-1 text-xs hover:border-accent" (click)="useIdea(idea)">
-              {{ idea | t }}
-            </button>
-          }
-        </div>
+        </details>
         <div class="grid gap-2 sm:grid-cols-[1fr_auto]">
           <input class="input" name="name" [(ngModel)]="name" maxlength="80" [placeholder]="'builder.namePh' | t" />
           <button class="btn btn-fill" type="submit" [disabled]="!canSubmit()">
@@ -134,18 +130,29 @@ const IDEAS: Record<BuilderKind, string[]> = {
           </button>
         </div>
         @if (!hasKey() && loaded() && !selected()) {
-          <p class="text-xs text-amber-400">{{ 'builder.needKey.short' | t }}</p>
+          <p class="flex flex-wrap items-center gap-2 text-xs text-amber-600">
+            {{ 'builder.needKey.short' | t }}
+            <a href="#builder-api-keys" class="font-semibold underline" (click)="showKeys.set(true)">{{ 'builder.keys.manage' | t }} →</a>
+          </p>
         }
       </form>
+      <details id="builder-api-keys" class="panel scroll-mt-24 rounded-2xl" [open]="showKeys()">
+        <summary class="flex cursor-pointer flex-wrap items-center justify-between gap-2 text-sm font-semibold">
+          <span>{{ 'builder.keys.manage' | t }}</span>
+          <span class="rounded-full border border-line px-3 py-1 text-xs font-normal" [class.text-amber-600]="loaded() && !hasKey()">{{ (hasKey() ? 'builder.keys.active' : 'builder.needKey.short') | t }}</span>
+        </summary>
+        <div class="mt-4 space-y-3">
+          @if (!hasKey()) { <p class="text-sm text-muted">{{ 'builder.needKey.body' | t }}</p> }
+          <app-byok-keys (changed)="onKeys($event)" />
+        </div>
+      </details>
+
 
       <div class="panel">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h2 class="font-display text-xl">{{ 'builder.projects' | t }}</h2>
-          <button type="button" class="btn btn-outline text-xs" (click)="showKeys.set(!showKeys())">{{ 'builder.keys.manage' | t }}</button>
+
         </div>
-        @if (showKeys() && hasKey()) {
-          <div class="mt-4"><app-byok-keys (changed)="onKeys($event)" /></div>
-        }
         <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           @for (p of projects(); track p.id) {
             <li class="flex flex-col justify-between gap-3 rounded-xl border border-line p-4">
