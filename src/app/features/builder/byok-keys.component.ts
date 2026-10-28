@@ -16,9 +16,9 @@ import { BuilderService, ByokKey, ByokProvider } from './builder.service';
       @if (error()) {
         <p class="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-400">{{ error() }}</p>
       }
-      <ul class="divide-y divide-line rounded-xl border border-line">
+      <ul class="grid gap-3 md:grid-cols-2">
         @for (p of providers(); track p.id) {
-          <li class="space-y-2 p-3">
+          <li class="min-w-0 space-y-3 rounded-xl border border-line p-4">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p class="text-sm font-semibold">{{ p.label }}</p>

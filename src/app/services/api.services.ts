@@ -1297,6 +1297,7 @@ export interface TrainingJob {
   cost: number;
   pricePerHour: number | null;
   rentalId: string | null;
+  reusedRental?: boolean;
   workspaceStatus: GpuRental['status'] | null;
   autoStop: boolean;
   artifact: { size: number } | null;
@@ -1305,6 +1306,8 @@ export interface TrainingJob {
 }
 
 export interface CreateTrainingJobBody {
+  rentalId?: string;
+  volumeId?: string;
   source: TrainingSource;
   task: TrainingTask;
   datasetId?: string;

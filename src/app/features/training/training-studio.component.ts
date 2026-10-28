@@ -1,4 +1,4 @@
-import { WalletBalanceService } from '../../services/wallet-balance.service';
+﻿import { WalletBalanceService } from '../../services/wallet-balance.service';
 import { Component, DestroyRef, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
   GpuOffer,
+  GpuRental, GpuVolume, GpuDataCenter, GpuVolumeLimits,
   GpuPromo,
   SharedGpuOffer,
   GpuRentalService,
@@ -20,6 +21,7 @@ import {
   TrainingSource,
   TrainingTask,
 } from '../../services/api.services';
+import { WORKSPACE_MESSAGES } from './workspace.messages';
 import { CurrencyService } from '../../i18n/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -376,18 +378,51 @@ interface UploadRow {
               <span class="block text-xs opacity-80">{{ 'gpu.promo.train' | t: { minutes: sharedMax() } }}</span>
             </p>
           }
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" class="btn btn-outline" [class.border-accent]="computeMode === 'new'" (click)="computeMode = 'new'; modeChanged()">{{ 'train.compute.new' | t }}</button>
+            <button type="button" class="btn btn-outline" [class.border-accent]="computeMode === 'existing'" (click)="computeMode = 'existing'; modeChanged()">{{ 'train.compute.existing' | t }}</button>
+          </div>
+          @if (computeMode === 'existing') {
+            <label class="block text-sm">{{ 'train.compute.pick' | t }}
+              <select class="input mt-1 w-full" name="rentalId" [(ngModel)]="rentalId">
+                <option value="">{{ 'train.compute.pick' | t }}</option>
+                @for (r of rentals(); track r.id) { <option [value]="r.id">{{ r.name }} · {{ r.gpu.name }} · {{ money(r.pricePerHour) }}/{{ 'gpu.rent.hour' | t }}</option> }
+              </select>
+            </label>
+            @if (!rentals().length) { <p class="text-sm text-muted">{{ 'train.compute.none' | t }} <a routerLink="/training/gpu" class="text-accent">{{ 'train.gpu' | t }}</a></p> }
+            <p class="text-xs text-muted">{{ 'train.compute.reuseNote' | t }}</p>
+            <p class="text-xs text-muted">{{ 'train.storage.existing' | t }}</p>
+          } @else {
           <label class="block text-sm">
             <span class="text-muted">{{ 'train.gpu' | t }}</span>
             <select class="input mt-1 w-full" name="offer" [(ngModel)]="offerId" data-testid="train-gpu">
-              @if (shared(); as sh) {
+              @if (!volumeId && shared(); as sh) {
                 <option [value]="sh.id">{{ sh.name }} · {{ sh.memoryGb }} GB · {{ sh.promo.active ? ('gpu.promo.title' | t) : money(sh.pricePerHour) + '/' + ('gpu.rent.hour' | t) }}</option>
               }
-              @for (o of offers(); track o.id) {
+              @for (o of availableOffers(); track o.id) {
                 <option [value]="o.id">{{ o.name }} · {{ o.memoryGb }} GB · {{ money(o.pricePerHour) }}/{{ 'gpu.rent.hour' | t }}</option>
               }
             </select>
           </label>
 
+          <label class="block text-sm">{{ 'train.storage.title' | t }}
+            <select class="input mt-1 w-full" name="volumeId" [(ngModel)]="volumeId" (ngModelChange)="volumeChanged()">
+              <option value="">{{ 'train.storage.local' | t }}</option>
+              @for (v of volumes(); track v.id) { <option [value]="v.id">{{ v.name }} · {{ v.sizeGb }} GB · {{ v.dataCenterId }} · {{ money(v.pricePerMonth) }}{{ 'train.storage.month' | t }}</option> }
+            </select>
+          </label>
+          <details class="rounded-xl border border-line p-3">
+            <summary class="cursor-pointer text-sm font-semibold">+ {{ 'train.storage.create' | t }}</summary>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              <label class="text-sm">{{ 'train.storage.name' | t }}<input class="input mt-1 w-full" name="volumeName" [(ngModel)]="volumeName" maxlength="80" /></label>
+              <label class="text-sm">{{ 'train.storage.size' | t }}<input class="input mt-1 w-full" type="number" name="volumeSize" [(ngModel)]="volumeSize" [min]="volumeLimits()?.sizeMin || 10" [max]="volumeLimits()?.sizeMax || 500" /></label>
+              <label class="text-sm sm:col-span-2">{{ 'train.storage.dc' | t }}<select class="input mt-1 w-full" name="dataCenter" [(ngModel)]="dataCenterId">@for (dc of dataCenters(); track dc.id) { <option [value]="dc.id">{{ dc.id }} · {{ dc.location }}</option> }</select></label>
+              <p class="text-sm">{{ money(volumeSize * (volumeLimits()?.pricePerGbMonth || 0)) }}{{ 'train.storage.month' | t }}</p>
+              <button type="button" class="btn btn-outline" [disabled]="volumeCreating() || !dataCenterId || !volumeLimits()" (click)="createNetworkVolume()">{{ 'train.storage.create' | t }}</button>
+            </div>
+          </details>
+          <p class="text-xs text-muted">{{ 'train.storage.note' | t }}</p>
+          }
           <label class="flex items-center gap-2 text-sm">
             <input type="checkbox" name="autoStop" [(ngModel)]="autoStop" />
             <span>{{ 'train.autoStop' | t }}</span>
@@ -398,10 +433,10 @@ interface UploadRow {
           }
           @if (isShared()) {
             <p class="text-xs text-muted">{{ (promo()?.active ? 'gpu.shared.noteFree' : 'gpu.shared.notePaid') | t: { minutes: sharedMax() } }}</p>
-          } @else {
+          } @else if (computeMode === 'new') {
             <p class="text-xs text-muted">{{ 'train.billingNote' | t: { hours: minPrepayHours() } }}</p>
           }
-          <button class="btn btn-fill w-full" type="submit" [disabled]="starting() || !!readiness() || !offerId">
+          <button class="btn btn-fill w-full" type="submit" [disabled]="starting() || !!readiness() || (computeMode === 'existing' ? !rentalId : !offerId)">
             {{ starting() ? ('train.starting' | t) : ('train.startBtn' | t) }}
           </button>
         </form>
@@ -495,7 +530,7 @@ export class TrainingStudioComponent implements OnInit {
   readonly shared = signal<SharedGpuOffer | null>(null);
   readonly promo = signal<GpuPromo | null>(null);
   readonly sharedMax = signal(30);
-  isShared(): boolean { return !!this.shared() && this.offerId === this.shared()!.id; }
+  isShared(): boolean { return this.computeMode === 'new' && !this.volumeId && !!this.shared() && this.offerId === this.shared()!.id; }
   readonly taskSel = signal<TrainingTask>('action-recognition');
   readonly tasks = computed(() => TASKS[this.source()]);
   readonly accept = computed(() => ACCEPT[this.source()]);
@@ -520,6 +555,40 @@ export class TrainingStudioComponent implements OnInit {
   maxSeconds = 10;
   offerId = '';
   autoStop = true;
+  computeMode = 'new';
+  rentalId = '';
+  volumeId = '';
+  volumeName = '';
+  volumeSize = 20;
+  dataCenterId = '';
+  readonly rentals = signal<GpuRental[]>([]);
+  readonly volumes = signal<GpuVolume[]>([]);
+  readonly dataCenters = signal<GpuDataCenter[]>([]);
+  readonly volumeLimits = signal<GpuVolumeLimits | null>(null);
+  readonly volumeCreating = signal(false);
+  availableOffers(): GpuOffer[] {
+    const volume = this.volumes().find(v => v.id === this.volumeId);
+    if (!volume) return this.offers();
+    return this.offers().flatMap(o => {
+      const secure = o.clouds?.find(c => c.type === 'secure' && c.dataCenters.some(d => d.id === volume.dataCenterId && d.availability !== 'unknown'));
+      return secure ? [{ ...o, pricePerHour: secure.networkVolumePricePerHour }] : [];
+    });
+  }
+  volumeChanged(): void { if (this.volumeId && !this.availableOffers().some(o => o.id === this.offerId)) this.offerId = this.availableOffers()[0]?.id || ''; }
+  modeChanged(): void { this.autoStop = this.computeMode !== 'existing'; }
+  loadWorkspaceOptions(): void {
+    this.gpu.list().subscribe({ next: r => this.rentals.set(r.rentals.filter(x => x.status === 'running' && x.ready)), error: e => this.fail(e) });
+    this.gpu.volumes().subscribe({ next: r => { this.volumes.set(r.volumes.filter(v => v.status === 'active' && !v.attachedRentalId)); this.volumeLimits.set(r.limits); this.volumeSize = r.limits.sizeDefault; }, error: e => this.fail(e) });
+    this.gpu.offers().subscribe({ next: r => { this.dataCenters.set(r.dataCenters || []); this.dataCenterId ||= r.dataCenters?.[0]?.id || ''; }, error: e => this.fail(e) });
+  }
+  createNetworkVolume(): void {
+    if (!this.dataCenterId || this.volumeCreating()) return;
+    this.volumeCreating.set(true);
+    this.gpu.createVolume({ name: this.volumeName, sizeGb: Number(this.volumeSize), dataCenterId: this.dataCenterId }).subscribe({
+      next: r => { this.volumes.update(v => [r.volume, ...v]); this.volumeId = r.volume.id; this.volumeChanged(); this.volumeCreating.set(false); this.notice.set(this.i18n.t('train.storage.createDone')); },
+      error: e => { this.volumeCreating.set(false); this.fail(e); },
+    });
+  }
   private timer: ReturnType<typeof setInterval> | null = null;
 
   /** Client-side checklist mirroring the API rules, so the start button explains what is missing. */
@@ -540,12 +609,14 @@ export class TrainingStudioComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.i18n.extend(WORKSPACE_MESSAGES);
     this.seo.set({ title: this.i18n.t('train.title') });
     if (!this.browser) return;
     this.walletBalance.refresh();
     this.loadDatasets();
     this.loadLicensed();
     this.loadJobs();
+    this.loadWorkspaceOptions();
     this.api.gpuOptions().subscribe({
       next: (r) => {
         const offers = [...(r.offers || [])].sort((a, b) => a.pricePerHour - b.pricePerHour);
@@ -808,7 +879,9 @@ export class TrainingStudioComponent implements OnInit {
         task,
         datasetId: this.selected()?.id,
         modelId: BASE_MODELS[task] ? (this.modelIds[task] || '').trim() || BASE_MODELS[task] : undefined,
-        offerId: this.offerId,
+        offerId: this.computeMode === 'new' ? this.offerId : undefined,
+        rentalId: this.computeMode === 'existing' ? this.rentalId : undefined,
+        volumeId: this.computeMode === 'new' ? this.volumeId || undefined : undefined,
         config,
         autoStop: this.autoStop,
       })
@@ -905,3 +978,4 @@ export class TrainingStudioComponent implements OnInit {
     this.error.set(this.message(e) || this.i18n.t('gpu.err.PROVIDER_ERROR'));
   }
 }
+
