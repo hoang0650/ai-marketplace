@@ -38,7 +38,7 @@ interface Project {
 }
 interface ProjectRow { id: string; title: string; scenes: number; totalSeconds: number }
 interface FilmLang { code: string; name: string; engine: string; font: string; rtl: boolean; defaultVoice: string }
-interface FilmModel { id: string; name: string; kind: 'image' | 'video'; modality: string; available: boolean; reason: string; durations: number[]; acceptsReferences: boolean; productSlug: string }
+interface FilmModel { marketplacePricing?: { usageRate: number; usageUnit: string; currency: string }; id: string; name: string; kind: 'image' | 'video'; modality: string; available: boolean; reason: string; durations: number[]; acceptsReferences: boolean; productSlug: string }
 interface Config { modelCatalog?: FilmModel[]; available: boolean; perSecond: number; perImage: number; ttsPerK: number; sceneMaxSec: number; projectMaxSec: number; languages?: FilmLang[]; voices?: Record<string, Voice[]> }
 type SubMode = 'off' | 'soft' | 'burn';
 interface EstItem { sid: string; shots: number[]; seconds: number; images: number; price: number }
@@ -127,7 +127,6 @@ export function splitDuration(total: number): number[] {
   }
   @if (cfg(); as c) {
     @if (!c.available) { <div class="ed-banner ed-warn" data-testid="gpu-offline">⚠ {{ t('film.v2.unavailable') }}</div> }
-    @else { <div class="ed-banner ed-price" data-testid="film-pricing">💲 {{ t('film.v2.pricing', { sec: money(c.perSecond), img: money(c.perImage) }) }}</div> }
   }
   @if (msg()) { <div class="ed-banner" [class.ed-err]="msgErr()" data-testid="film-status">{{ msg() }}</div> }
 
@@ -254,20 +253,21 @@ export function splitDuration(total: number): number[] {
         @if (c.source === 'upload') {
           <p class="ed-muted">🎞 {{ t('film.v2.upload') }}: {{ uploadName(c.uploadId) }} · {{ secondsOf(c) }}s</p>
         } @else {
+          <label>{{ t('film.models.videoPrompt') }}
+            <textarea rows="5" maxlength="600" [(ngModel)]="c.prompt" (ngModelChange)="edit()" [placeholder]="t('film.models.videoPromptHint')" [disabled]="c.status === 'generating'" [attr.data-testid]="'film-prompt-' + index(c.sid)"></textarea>
+          </label>
           <label>{{ t('film.models.video') }}
             <select [ngModel]="c.videoModel || 'wan-2-2-i2v-720'" (ngModelChange)="c.videoModel = $event; edit()" [disabled]="c.status === 'generating'" data-testid="film-video-model">
-              @for (m of models('video'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+              @for (m of models('video'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }} - {{ modelPrice(m) }}{{ m.available ? '' : ' - ' + m.reason }}</option> }
             </select>
           </label>
           <label>{{ t('film.models.image') }}
             <select [ngModel]="c.imageModel || 'qwen-image-edit-2511'" (ngModelChange)="c.imageModel = $event; edit()" [disabled]="c.status === 'generating'" data-testid="film-image-model">
-              @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+              @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }} - {{ modelPrice(m) }}{{ m.available ? '' : ' - ' + m.reason }}</option> }
             </select>
           </label>
           <p class="ed-muted">{{ t('film.models.hint') }}</p>
-          <label>{{ t('film.ed.prompt') }}
-            <textarea rows="4" [(ngModel)]="c.prompt" (ngModelChange)="edit()" [placeholder]="t('film.ed.promptPh')" [attr.data-testid]="'film-prompt-' + index(c.sid)"></textarea>
-          </label>
+
         }
         <label>{{ t('film.ed.narration') }}
           <textarea rows="3" [(ngModel)]="c.narration" (ngModelChange)="edit()" [placeholder]="t('film.ed.narrationPh')" [attr.data-testid]="'film-narration-' + index(c.sid)" [attr.lang]="langOf(c)" [attr.dir]="isRtl(langOf(c)) ? 'rtl' : null"></textarea>
@@ -407,7 +407,7 @@ export function splitDuration(total: number): number[] {
   <ng-template #assetLib let-type="type">
     <label>{{ t('film.models.image') }}
       <select [(ngModel)]="assetImageModel" data-testid="film-asset-model">
-        @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }}{{ m.available ? '' : ' � ' + m.reason }}</option> }
+        @for (m of models('image'); track m.id) { <option [value]="m.id" [disabled]="!m.available">{{ m.name }} - {{ modelPrice(m) }}{{ m.available ? '' : ' - ' + m.reason }}</option> }
       </select>
     </label>
     <p class="ed-muted">{{ t(type === 'character' ? 'film.v2.castHint' : 'film.v2.setsHint') }}</p>
@@ -875,6 +875,14 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   }
   @HostListener('document:mouseup') onUp(): void { if (this.trim) { this.trim = null; this.edit(); } }
 
+  modelPrice(m: FilmModel): string {
+    const p = m.marketplacePricing;
+    if (!p || !(p.usageRate > 0)) return this.t('film.models.quoteOnly');
+    const unitKeys: Record<string, string> = { second: 'second', seconds: 'second', image: 'perImage', images: 'perImage', video: 'perVideo', megapixel: 'megapixel' };
+    const unit = unitKeys[p.usageUnit] ? this.t('film.models.' + unitKeys[p.usageUnit]) : p.usageUnit;
+    const amount = this.cur.currency() === 'USD' ? '$' + p.usageRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 }) : this.cur.formatFromUsd(p.usageRate);
+    return this.t('film.models.from') + ' ' + amount + '/' + unit;
+  }
   assetImageModel = 'qwen-image-edit-2511';
   models(kind: 'image' | 'video'): FilmModel[] { return (this.cfg()?.modelCatalog || []).filter(m => m.kind === kind); }
   private modelSplit(total: number, id?: string): number[] {
