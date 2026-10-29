@@ -1,3 +1,4 @@
+import { DOCS_RUNTIME_MESSAGES } from './docs-runtime.messages';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
@@ -40,11 +41,11 @@ Authorization: Bearer <seller_token>
   "kind": "game",
   "webhookUrl": "https://seller.example.com/aim/webhook",
   "webhookSecret": "whsec_at_least_16_chars",
-  "streamHost": "203.0.113.10",
-  "streamPort": 6080,
+  "streamHost": "stream.your-domain.com",
+  "streamPort": 443,
   "streamKind": "novnc",
   "devices": ["pc", "mobile"],
-  "mobileStream": { "host": "203.0.113.11", "port": 8443, "kind": "hls" },
+  "mobileStream": { "host": "mobile-stream.your-domain.com", "port": 8443, "kind": "hls" },
   "healthUrl": "https://seller.example.com/health",
   "maxConcurrent": 4
 }
@@ -85,11 +86,11 @@ Authorization: Bearer <seller_token>
 }`;
 
   readonly webhookResponse = `{
-  "streamHost": "10.0.0.5",
-  "streamPort": 6080,
+  "streamHost": "stream.your-domain.com",
+  "streamPort": 443,
   "streamPath": "/",
   "streamKind": "novnc",
-  "streamTls": false
+  "streamTls": true
 }`;
 
   readonly buyerExample = `POST ${environment.production ? 'https://api.aimarkets.vn/v1' : 'http://localhost:4100/v1'}/game-sessions
@@ -98,7 +99,7 @@ Authorization: Bearer <buyer_token>
 { "productSlug": "my-game-box", "client": "pc" }
 
 → 201 { "sessionId", "status": "live", "device", "profile", "streamKind", "playerUrl",
-        "heartbeatMs": 30000, "idleTimeoutMs": 300000, "billedMinutes", "billedCost", … }
+        "heartbeatMs": 30000, "idleTimeoutMs": 600000, "billedMinutes", "billedCost", … }
 
 POST .../game-sessions/:sessionId/heartbeat   (every heartbeatMs)
 → { "ok": true, "status", "ratePerHour", "billedMinutes", "billedCost", "currency", "available", "minutesLeft" }
@@ -127,8 +128,8 @@ curl -sS -X POST "$API/seller/compute/nodes" \\
     "kind": "game",
     "webhookUrl": "https://seller.example.com/aim/webhook",
     "webhookSecret": "whsec_at_least_16_chars",
-    "streamHost": "203.0.113.10",
-    "streamPort": 6080,
+    "streamHost": "stream.your-domain.com",
+    "streamPort": 443,
     "streamKind": "novnc",
     "devices": ["pc"],
     "maxConcurrent": 2
@@ -172,11 +173,11 @@ const app = express();
 app.post('/aim/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   const expected = crypto.createHmac('sha256', SECRET).update(req.body).digest('hex');
   const got = req.get('X-AIM-Signature') || '';
-  if (got.length !== expected.length ||
-      !crypto.timingSafeEqual(Buffer.from(got), Buffer.from(expected))) return res.sendStatus(401);
+  if (!/^[a-f0-9]{64}$/i.test(got) ||
+      !crypto.timingSafeEqual(Buffer.from(got, 'hex'), Buffer.from(expected, 'hex'))) return res.sendStatus(401);
   const evt = JSON.parse(req.body);
   if (evt.event === 'session.start') {
-    return res.json({ streamHost: '203.0.113.10', streamPort: 6080, streamPath: '/', streamKind: 'novnc', streamTls: false });
+    return res.json({ streamHost: 'stream.your-domain.com', streamPort: 443, streamPath: '/', streamKind: 'novnc', streamTls: true });
   }
   res.json({ ok: true });
 });
@@ -206,7 +207,7 @@ def hook():
         abort(401)
     evt = json.loads(raw)
     if evt["event"] == "session.start":
-        return jsonify(streamHost="203.0.113.10", streamPort=6080, streamPath="/", streamKind="novnc", streamTls=False)
+        return jsonify(streamHost="stream.your-domain.com", streamPort=443, streamPath="/", streamKind="novnc", streamTls=True)
     return jsonify(ok=True)`;
 
   readonly webhookStopPayload = `{
@@ -224,15 +225,16 @@ def hook():
   readonly dedicatedExample = `POST https://api.aimarkets.vn/v1/game-sessions
 { "productSlug": "game-server-minecraft-java" }
 → { "sessionId": "gs_…", "status": "starting", "dedicated": true, "streamKind": "tcp",
-    "game": "minecraft-java", "ratePerHour": 0.105781, "ratePerMinute": 0.001763, "connect": null, … }
+    "game": "minecraft-java", "connect": null, … }
 
 GET https://api.aimarkets.vn/v1/game-sessions/gs_…        (poll every ~5 s)
-→ { "status": "live", "connect": { "host": "216.81.151.47", "port": 18917, "address": "216.81.151.47:18917" }, … }
+→ { "status": "live", "connect": { "host": "<allocated-host>", "port": 30000, "address": "<allocated-host>:30000" }, … }
 
 DELETE https://api.aimarkets.vn/v1/game-sessions/gs_…     (stop + destroy the server)
 → { "ok": true, "billedCost": 0.01, "billedMinutes": 3 }`;
 
   readonly toc = [
+    { id: 'remote-desktop', labelKey: 'docsRuntime.rdp.title' },
     { id: 'overview', labelKey: 'docsCompute.toc.overview' },
     { id: 'auth', labelKey: 'docsCompute.toc.auth' },
     { id: 'register', labelKey: 'docsCompute.toc.register' },
@@ -250,6 +252,7 @@ DELETE https://api.aimarkets.vn/v1/game-sessions/gs_…     (stop + destroy the 
   }
 
   ngOnInit(): void {
+    this.i18n.extend(DOCS_RUNTIME_MESSAGES);
     this.seo.set({ title: this.i18n.t('docsCompute.title') });
   }
 }

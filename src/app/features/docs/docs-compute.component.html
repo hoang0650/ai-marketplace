@@ -141,6 +141,20 @@
     <pre class="seller-docs__code">{{ pythonWebhookExample }}</pre>
   </article>
 
+
+  <article id="remote-desktop" class="seller-docs__section">
+    <h2>{{ 'docsRuntime.rdp.title' | t }}</h2><p>{{ 'docsRuntime.rdp.body' | t }}</p><p>{{ 'docsRuntime.rdp.private' | t }}</p>
+    <pre class="seller-docs__code">GET /v1/game-sessions/:sessionId
+GET /v1/game-sessions/:sessionId/rdp/credentials
+GET /v1/game-sessions/:sessionId/rdp/file
+Authorization: Bearer &lt;owner_access_token&gt;
+Cache-Control: no-store
+
+POST /v1/game-sessions/:sessionId/heartbeat
+DELETE /v1/game-sessions/:sessionId</pre>
+    <p>{{ 'docsRuntime.external' | t }}</p>
+    <a routerLink="/docs/api-usage">{{ 'docsRuntime.meter.title' | t }} →</a>
+  </article>
   <footer class="seller-docs__foot">
     <p>{{ 'docsCompute.foot' | t: { email: supportEmail } }}</p>
   </footer>

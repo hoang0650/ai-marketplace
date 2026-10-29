@@ -10,6 +10,7 @@ import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../i18n/currency.service';
 import { FILM_V2_MESSAGES } from './film-v2.messages';
+import { FILM_VOICE_MESSAGES } from './film-voice.messages';
 import { FILM_LANG_MESSAGES } from './film-lang.messages';
 
 const API = environment.apiUrl;
@@ -23,7 +24,9 @@ const MAX_SEC = 7200;
 type Camera = 'static' | 'push-in' | 'pull-out' | 'pan-left' | 'pan-right' | 'orbit' | 'tilt-up' | 'handheld' | 'aerial';
 interface Version { v: number; videoKey: string; frameKey: string; prompt: string; seed: number; seconds: number; createdAt?: string }
 interface Shot { sid: string; prompt: string; duration: number; status: string; error?: string; active: number; versions: Version[] }
+interface SellerVoice { id: string; name: string; slug: string; seller: string; available: boolean; languages: string[] }
 interface Scene {
+  voiceSource?: 'preset' | 'upload' | 'marketplace'; voiceUploadId?: string; voiceProductId?: string;
   sid: string; title?: string; prompt: string; narration: string; voice: string; lang?: string; camera: Camera; transition?: string; duration: number;
   videoModel?: string; imageModel?: string; source: 'ai' | 'upload'; uploadId?: string; startUploadId?: string; chainPrev?: boolean; characterIds?: string[]; settingId?: string | null;
   status: string; error?: string; generation?: number; keyframes?: { v: number; frameKey: string }[]; shots: Shot[];
@@ -180,6 +183,7 @@ export function splitDuration(total: number): number[] {
               </select>
             </label>
             <p class="ed-muted">{{ t('film.lang.hint') }}</p>
+            @if (sel(); as c) { <ng-container [ngTemplateOutlet]="voiceSourceControls" [ngTemplateOutletContext]="{ $implicit: c }" /> }
             <h4>{{ t('film.voice.forLang', { l: langName(sel() ? langOf(sel()!) : projectLang()) }) }}</h4>
             @for (v of voices(); track v.id) {
               <button class="ed-row" [class.sel]="sel()?.voice === v.id" (click)="setVoice(v.id)" [attr.data-testid]="'film-voice-' + v.id">🎙 {{ voiceLabel(v) }}</button>
@@ -279,11 +283,14 @@ export function splitDuration(total: number): number[] {
             @for (l of langs(); track l.code) { <option [value]="l.code">{{ l.name }}</option> }
           </select>
         </label>
+        <ng-container [ngTemplateOutlet]="voiceSourceControls" [ngTemplateOutletContext]="{ $implicit: c }" />
+        @if (!c.voiceSource || c.voiceSource === 'preset') {
         <label>{{ t('film.ed.voice') }}
           <select [(ngModel)]="c.voice" (ngModelChange)="edit()" data-testid="film-voice">
             @for (v of voices(); track v.id) { <option [value]="v.id">{{ voiceLabel(v) }}</option> }
           </select>
         </label>
+        }
         @if (c.source === 'ai') {
           <label>{{ t('film.v2.duration', { n: c.duration, shots: splitLabel(c.duration, c.videoModel) }) }}
             <input type="range" min="5" max="60" step="5" [(ngModel)]="c.duration" (ngModelChange)="edit()" [disabled]="c.status === 'generating'" data-testid="film-duration" />
@@ -447,6 +454,32 @@ export function splitDuration(total: number): number[] {
       </div>
     } @empty { <p class="ed-muted">{{ t('film.v2.assetEmpty') }}</p> }
   </ng-template>
+
+  <ng-template #voiceSourceControls let-c>
+    <label class="ed-voice-source">{{ t('film.voice.source') }}
+      <select [ngModel]="c.voiceSource || 'preset'" (ngModelChange)="c.voiceSource = $event; edit()">
+        <option value="preset">{{ t('film.voice.platform') }}</option>
+        <option value="upload">{{ t('film.voice.upload') }}</option>
+        <option value="marketplace">{{ t('film.voice.marketplace') }}</option>
+      </select>
+    </label>
+    @if (c.voiceSource === 'upload') {
+      <p class="ed-muted">{{ t('film.voice.uploadHint') }}</p>
+      <select [(ngModel)]="c.voiceUploadId" (ngModelChange)="edit()" [attr.aria-label]="t('film.voice.chooseSample')">
+        <option value="">{{ t('film.voice.chooseSample') }}</option>
+        @for (u of uploads(); track u.uid) { @if (u.kind === 'audio' && u.status === 'ready' && (u.duration || 0) >= 6 && (u.duration || 0) <= 15 && u.size <= 12582912) { <option [value]="u.uid">{{ u.name }} · {{ u.duration }}s</option> } }
+      </select>
+      <label class="ed-btn ed-block">{{ t('film.voice.uploadAction') }}<input type="file" accept="audio/*" hidden (change)="upload($event, 'voice')" [disabled]="!project()" /></label>
+    }
+    @if (c.voiceSource === 'marketplace') {
+      <select [(ngModel)]="c.voiceProductId" (ngModelChange)="edit()" [attr.aria-label]="t('film.voice.chooseSeller')">
+        <option value="">{{ t('film.voice.chooseSeller') }}</option>
+        @for (v of sellerVoices(); track v.id) { @if (!v.languages.length || v.languages.includes(langOf(c))) { <option [value]="v.id" [disabled]="!v.available">{{ v.name }} · {{ v.seller }}{{ v.available ? '' : ' · ' + t('film.voice.license') }}</option> } }
+      </select>
+      <p class="ed-muted">{{ t('film.voice.licenseHint') }}</p>
+      <a class="ed-btn ed-block" routerLink="/training/voice-clone">{{ t('film.voice.browse') }} ↗</a>
+    }
+  </ng-template>
   @if (confirm(); as cf) {
     <div class="ed-modal" (click)="confirm.set(null)">
       <div class="ed-dlg" (click)="$event.stopPropagation()" data-testid="film-estimate">
@@ -473,6 +506,9 @@ export function splitDuration(total: number): number[] {
 </div>
 `,
   styles: [`
+.ed select,.ed textarea,.ed input:not([type="checkbox"]):not([type="range"]):not([type="file"]){box-sizing:border-box;max-width:100%;min-width:0;background:var(--p2);color:var(--t);border:1px solid var(--b);border-radius:8px;padding:7px 9px;font:inherit}
+.ed select{width:100%;color-scheme:dark;min-height:36px}.ed select option,.ed select optgroup{background:#202127;color:#f5f5f5}.ed select:focus-visible,.ed textarea:focus-visible{outline:2px solid var(--a);outline-offset:2px}.ed-voice-source{display:flex;flex-direction:column;gap:5px;margin:10px 0 6px}
+
 .ed-vc{border-top:1px solid var(--b, #2a2c33);padding-top:10px;margin-top:4px}.ed-vc-h{display:block;font-weight:600;margin-bottom:6px}
 .ed-fold{border:1px solid var(--b,#2a2c33);border-radius:8px;padding:8px 10px}.ed-fold summary{cursor:pointer;font-weight:600}
 :host{display:block;max-width:100%;min-width:0}
@@ -613,6 +649,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   readonly langs = computed<FilmLang[]>(() => this.cfg()?.languages?.length ? this.cfg()!.languages! : FALLBACK_LANGS);
   readonly projectLang = computed(() => this.project()?.lang || 'vi');
   /** Voices of the selected scene's language (the dropdown and the audio tab follow it). */
+  readonly sellerVoices = signal<SellerVoice[]>([]);
   readonly voices = computed<Voice[]>(() => this.voicesFor(this.sel() ? this.langOf(this.sel()!) : this.projectLang()));
   readonly selId = signal('');
   readonly playhead = signal(0);
@@ -660,6 +697,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   constructor() {
     this.i18n.extend(FILM_V2_MESSAGES);
     this.i18n.extend(FILM_LANG_MESSAGES);
+    this.i18n.extend(FILM_VOICE_MESSAGES);
     inject(SeoService).set({ title: this.i18n.t('film.title'), description: this.i18n.t('film.subtitle') });
   }
   t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
@@ -674,6 +712,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
       else await this.open(localStorage.getItem(LAST) && list.items.some((r) => r.id === localStorage.getItem(LAST)) ? localStorage.getItem(LAST)! : list.items[0].id);
     } catch (e) { this.note(this.apiError(e as HttpErrorResponse), true); }
     this.loadAssets();
+    this.http.get<{ items: SellerVoice[] }>(`${FILM}/voices`).subscribe({ next: r => this.sellerVoices.set(r.items), error: e => this.note(this.apiError(e), true) });
     this.poller = setInterval(() => this.poll(), 4000);
   }
   ngOnDestroy(): void {
@@ -760,7 +799,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
         subtitles: p.subtitles || 'off',
         music: p.music,
         scenes: sent.map((s) => ({
-          videoModel: s.videoModel, imageModel: s.imageModel, sid: s.sid, title: s.title, prompt: s.prompt, narration: s.narration, voice: s.voice, lang: s.lang || '', camera: s.camera, duration: s.duration,
+          videoModel: s.videoModel, imageModel: s.imageModel, sid: s.sid, title: s.title, prompt: s.prompt, narration: s.narration, voice: s.voice, voiceSource: s.voiceSource || 'preset', voiceUploadId: s.voiceUploadId || '', voiceProductId: s.voiceProductId || '', lang: s.lang || '', camera: s.camera, duration: s.duration,
           source: s.source, uploadId: s.uploadId, startUploadId: s.startUploadId || '', chainPrev: !!s.chainPrev, characterIds: s.characterIds || [], settingId: s.settingId || null,
           shots: (s.shots || []).map((sh) => ({ sid: sh.sid, prompt: sh.prompt })),
         })),
@@ -840,7 +879,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     this.edit();
   }
   duplicate(c: Scene): void {
-    this.addScene({ prompt: c.prompt, narration: c.narration, voice: c.voice, lang: c.lang || '', camera: c.camera, duration: c.duration, source: c.source, uploadId: c.uploadId, startUploadId: c.startUploadId, chainPrev: c.chainPrev, characterIds: [...(c.characterIds || [])], settingId: c.settingId || null }, this.index(c.sid) + 1);
+    this.addScene({ prompt: c.prompt, narration: c.narration, voice: c.voice, voiceSource: c.voiceSource, voiceUploadId: c.voiceUploadId, voiceProductId: c.voiceProductId, lang: c.lang || '', camera: c.camera, duration: c.duration, source: c.source, uploadId: c.uploadId, startUploadId: c.startUploadId, chainPrev: c.chainPrev, characterIds: [...(c.characterIds || [])], settingId: c.settingId || null }, this.index(c.sid) + 1);
   }
   removeScene(sid: string): void {
     const p = this.project();
@@ -856,7 +895,7 @@ export class AiFilmComponent implements OnInit, OnDestroy {
     this.seek(this.startOf(sid));
     if (this.mtab() === 'lib' && window.innerWidth < 900) this.mtab.set('props');
   }
-  setVoice(v: string): void { const c = this.sel(); if (c) { c.voice = v; this.edit(); } }
+  setVoice(v: string): void { const c = this.sel(); if (c) { c.voice = v; c.voiceSource = 'preset'; this.edit(); } }
   setMusic(uid: string): void { const p = this.project(); if (p) { this.project.set({ ...p, music: { ...p.music, uploadId: uid } }); this.edit(); } }
   setVolume(v: number): void { const p = this.project(); if (p) { this.project.set({ ...p, music: { ...p.music, volume: Number(v) } }); this.edit(); } }
   index(sid: string): number { return this.scenes().findIndex((c) => c.sid === sid); }
@@ -953,16 +992,18 @@ export class AiFilmComponent implements OnInit, OnDestroy {
   round(n: number): number { return Math.round(n); }
 
   // ---------- uploads (browser -> MinIO presigned PUT, then confirm) ----------
-  async upload(ev: Event): Promise<void> {
+  async upload(ev: Event, purpose: 'media' | 'voice' = 'media'): Promise<void> {
     const input = ev.target as HTMLInputElement;
     const files = Array.from(input.files || []);
     input.value = '';
     const p = this.project();
     if (!p) return;
     await this.flush();
+    const sceneId = this.sel()?.sid;
     for (const f of files) {
       const kind = f.type.split('/')[0];
       if (!['image', 'video', 'audio'].includes(kind)) continue;
+      if (purpose === 'voice' && (kind !== 'audio' || f.size > 12 * 1024 ** 2)) { this.note(this.t('film.voice.invalidSample'), true); continue; }
       const row = { name: f.name, p: 0 };
       this.uploading.update((a) => [...a, row]);
       try {
@@ -970,7 +1011,12 @@ export class AiFilmComponent implements OnInit, OnDestroy {
         await this.put(r.putUrl, f, r.headers, (pct) => { row.p = pct; this.uploading.update((a) => [...a]); });
         await firstValueFrom(this.http.post(`${FILM}/projects/${p.id}/uploads/${r.upload.uid}/confirm`, {}));
         this.merge(await firstValueFrom(this.http.get<Project>(`${FILM}/projects/${p.id}`)), false);
-        if (kind === 'audio' && !this.music().uploadId) this.setMusic(r.upload.uid);
+        if (purpose === 'voice') {
+          const sample = this.uploads().find(u => u.uid === r.upload.uid);
+          if (!sample || !sample.duration || sample.duration < 6 || sample.duration > 15) { this.note(this.t('film.voice.invalidSample'), true); continue; }
+          const scene = this.scenes().find(c => c.sid === sceneId);
+          if (scene) { scene.voiceSource = 'upload'; scene.voiceUploadId = sample.uid; this.edit(); }
+        } else if (kind === 'audio' && !this.music().uploadId) this.setMusic(r.upload.uid);
       } catch {
         this.note(this.t('film.v2.uploadFail', { name: f.name }), true);
       } finally {
