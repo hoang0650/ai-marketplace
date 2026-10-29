@@ -1,3 +1,4 @@
+import { AiResponseComponent } from '../../shared/components/ai-response.component';
 import { Component, HostListener, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { AffiliateService } from '../../services/affiliate.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -78,7 +79,7 @@ interface RequestLogEntry {
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent, StoryReaderComponent, VoiceControlsComponent, OnlineAccessPanelComponent],
+  imports: [AiResponseComponent, RouterLink, DatePipe, DecimalPipe, CurrencyPipe, FormsModule, NgTemplateOutlet, TPipe, TemplatePanelComponent, InvoiceChoiceComponent, PurchaseNoticeComponent, SeriesPlayerComponent, StoryReaderComponent, VoiceControlsComponent, OnlineAccessPanelComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })
@@ -221,6 +222,7 @@ export class ProductDetailComponent implements OnInit {
   readonly historyLoading = signal(false);
   readonly historyError = signal('');
   reasoningText = '';
+  resultModel = '';
   private historySequence = 0;
   private historyOwner = '';
   constructor() {
@@ -1737,6 +1739,8 @@ export class ProductDetailComponent implements OnInit {
 
 
   /** Which of image/video/audio/text the result is; the API reports it per RunPod model. */
+  isTextResult(p: Product): boolean { return this.resolveResultKind(p, undefined) === 'text'; }
+
   private resolveResultKind(p: Product, output: Record<string, unknown> | undefined): 'image' | 'video' | 'audio' | 'text' {
     if (isVoiceCategory(p.category) && (this.voicePlayMode === 'stt' || String(output?.['kind'] || '') === 'text')) {
       return 'text';
@@ -1758,6 +1762,9 @@ export class ProductDetailComponent implements OnInit {
 
   private applyPreview(p: Product, response: Record<string, unknown>): void {
     const output = response['output'] as Record<string, unknown> | undefined;
+    this.resultModel = String(response['model'] || output?.['model'] || this.modelVariant || p.name);
+    const reasoning = output?.['reasoning_summary'] || output?.['reasoning'];
+    this.reasoningText = typeof reasoning === 'string' ? reasoning : ''; 
     this.lastCost = Number(output?.['cost'] ?? this.lastCost) || 0;
     const kind = this.resolveResultKind(p, output);
     this.resultMediaKind = kind;
