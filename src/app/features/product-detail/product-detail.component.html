@@ -892,7 +892,9 @@
                 <p class="result-empty">Generate to see results here</p>
               }
             } @else if (runStatus() === 'running') {
-              <p class="result-empty pulse">Generating…</p>
+              @if (isTextResult(p)) {
+                <app-ai-response [busy]="true" [model]="modelVariant || p.name" />
+              } @else { <p class="result-empty pulse">Generating…</p> }
             } @else if (resultView() === 'json') {
               <pre class="result-json">{{ resultJson }}</pre>
             } @else if (resultMediaKind === 'video' && resultMediaUrl) {
@@ -912,7 +914,7 @@
                 <p class="result-caption">{{ previewText }}</p>
               </div>
             } @else {
-              <div>@if (reasoningText) { <details><summary>Thinking</summary><pre class="result-text">{{ reasoningText }}</pre></details> }<div class="result-text">{{ previewText }}</div></div>
+              <app-ai-response [text]="previewText" [reasoning]="reasoningText" [model]="resultModel || p.name" [durationMs]="lastLatencyMs" />
             }
           </div>
         </section>

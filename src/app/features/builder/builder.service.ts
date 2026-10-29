@@ -15,6 +15,7 @@ export interface BuilderFile {
 export interface BuilderMessage {
   id: string;
   role: 'user' | 'assistant';
+  durationMs?: number;
   content: string;
   files: string[];
   provider: string;
@@ -406,7 +407,7 @@ export class BuilderService {
   }
 
   /** Local provider: apply the reply generated on the user's machine (no key / URL is sent). */
-  localApply(id: string, body: { prompt: string; previewError?: string; text: string; model: string; finishReason?: string }): Observable<GenerateResult> {
+  localApply(id: string, body: { prompt: string; previewError?: string; text: string; model: string; finishReason?: string; durationMs?: number }): Observable<GenerateResult> {
     return this.http.post<GenerateResult>(`${this.base}/projects/${id}/local-apply`, body);
   }
 

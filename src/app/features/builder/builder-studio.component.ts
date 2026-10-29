@@ -1,3 +1,5 @@
+import { AiResponseComponent } from '../../shared/components/ai-response.component';
+import { builderStreamView } from '../../shared/components/ai-response-markdown';
 import { CodeEditorComponent } from './code-editor.component';
 import { MobileIdeComponent } from './mobile-ide.component';
 import {
@@ -15,7 +17,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { DatePipe, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -63,7 +65,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
 @Component({
   selector: 'app-builder-studio',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent, ExpoQrComponent, HandoffButtonComponent, CodeEditorComponent, MobileIdeComponent],
+  imports: [AiResponseComponent, FormsModule, RouterLink, TPipe, ByokKeysComponent, LocalProviderCardComponent, GitPanelComponent, DeviceFrameComponent, ExpoQrComponent, HandoffButtonComponent, CodeEditorComponent, MobileIdeComponent],
   styles: [
     `
       :host { display: block; }
@@ -89,7 +91,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
          composer / key bar sit right above the soft keyboard. */
       .m-studio { position: fixed; left: 0; right: 0; top: var(--vvt, 0px); height: var(--vvh, 100dvh); min-height: 0; z-index: 1000; margin: 0;
         padding: max(.375rem, env(safe-area-inset-top)) max(.5rem, env(safe-area-inset-right)) 0 max(.5rem, env(safe-area-inset-left));
-        gap: .375rem; overflow: hidden; background: var(--color-bg, #0b0f17); overscroll-behavior: contain; }
+        gap: .375rem; overflow: hidden; background: var(--color-paper, #f7f5f2); overscroll-behavior: contain; }
       .m-studio .icon-btn { height: 44px; min-width: 44px; font-size: .85rem; }
       .m-studio .chip { min-height: 44px; }
       .m-studio .btn { min-height: 44px; }
@@ -103,7 +105,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
       .m-p0 { padding: 0 !important; }
       .m-pane { min-height: 0 !important; flex: 1 1 auto; }
       .m-tabs { flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 calc(-1 * max(.5rem, env(safe-area-inset-left))); padding-bottom: env(safe-area-inset-bottom);
-        border-top: 1px solid var(--color-line, #1f2937); background: var(--color-panel, #0f1520); }
+        border-top: 1px solid var(--color-line, #1f2937); background: var(--color-surface, #ffffff); }
       .m-tabs > button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; font-size: 11px; font-weight: 600; color: var(--color-muted, #9ca3af); position: relative; }
       .m-tabs > button .ic { font-size: 18px; line-height: 1; }
       .m-tabs > button.on { color: var(--color-accent, #c9a45c); }
@@ -196,7 +198,7 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
           <button type="button" role="tab" [class.on]="pane() === 'preview'" [attr.aria-selected]="pane() === 'preview'" (click)="pane.set('preview')">{{ 'builder.tab.preview' | t }} / {{ 'builder.tab.code' | t }}</button>
         </div></div>
 
-        <div class="grid min-h-0 min-w-0 flex-1 grid-cols-[minmax(0,1fr)] gap-2 lg:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
+        <div class="grid min-h-0 min-w-0 flex-1 grid-cols-[minmax(0,1fr)] gap-2 lg:grid-cols-[minmax(360px,440px)_minmax(0,1fr)] xl:grid-cols-[minmax(390px,480px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
           <!-- chat: full height, messages scroll, composer pinned -->
           <div class="panel min-h-0 min-w-0 flex-col p-0 lg:flex" [class.flex]="pane() === 'chat'" [class.hidden]="pane() !== 'chat'" [class.m-pane]="mobile()" [style.min-height]="mobile() ? null : '60vh'">
             <div class="flex items-center justify-between border-b border-line px-3 py-2">
@@ -205,9 +207,9 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 <span class="truncate text-[11px] text-muted md:hidden">{{ providerLabel(provider()) }} · {{ model() || defaultModel() }}</span>
               }
             </div>
-            <div #chatScroll class="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-3">
+            <div #chatScroll role="log" aria-live="polite" aria-relevant="additions" (scroll)="onChatScroll($event)" class="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-3">
               @if (!(p.messages || []).length && !generating()) {
-                <div class="flex h-full flex-col justify-center gap-3 py-6">
+                <div class="flex flex-col justify-start gap-4 py-6">
                   <p class="text-sm text-muted">{{ 'builder.chatEmpty.' + p.kind | t }}</p>
                   <div class="flex flex-wrap gap-2">
                     @for (s of suggestions(); track s) {
@@ -217,34 +219,23 @@ const DEVICES: Record<'web' | 'app', Device[]> = {
                 </div>
               }
               @for (m of p.messages || []; track m.id) {
-                <div class="rounded-xl px-3 py-2 text-sm" [class.bubble-user]="m.role === 'user'" [class.border]="m.role === 'assistant'" [class.border-line]="m.role === 'assistant'">
-                  <p class="whitespace-pre-wrap">{{ m.content }}</p>
-                  @if (m.files.length) {
-                    <div class="mt-2 flex flex-wrap gap-1">
-                      @for (f of m.files; track f) {
-                        <button type="button" class="rounded bg-black/30 px-1.5 py-0.5 font-mono text-[11px]" (click)="openFile(f)">{{ f }}</button>
-                      }
-                    </div>
-                  }
-                  @if (m.role === 'assistant' && m.model) {
-                    <p class="mt-1 text-[11px] text-muted">{{ m.model }} · {{ m.createdAt | date: 'short' }}</p>
-                  }
-                </div>
+                @if (m.role === 'user') {
+                  <article class="ml-auto w-fit max-w-[92%] rounded-2xl bg-black/5 px-4 py-3 text-sm dark:bg-white/10"><p class="whitespace-pre-wrap break-words">{{ m.content }}</p></article>
+                } @else {
+                  <app-ai-response [text]="m.content" [model]="m.model" [durationMs]="m.durationMs || 0" [files]="m.files || []" (fileSelected)="openFile($event)" />
+                }
               }
               @if (generating()) {
-                <div class="space-y-2 rounded-xl border border-accent/50 px-3 py-2 text-sm">
-                  @if (pendingPrompt()) {
-                    <p class="whitespace-pre-wrap text-muted">{{ pendingPrompt() }}</p>
-                  }
-                  <p class="font-semibold">
-                    {{ writingFile() ? ('builder.writing' | t: { file: writingFile() }) : ('builder.thinking' | t) }}
-                  </p>
-                  <p class="text-[11px] text-muted">{{ streamModel() }} · {{ streamChars() }} {{ 'builder.chars' | t }}</p>
-                  <pre class="max-h-48 overflow-hidden whitespace-pre-wrap rounded-lg bg-black/40 p-2 font-mono text-[10px] leading-tight text-muted">{{ streamTail() }}</pre>
-                </div>
+                @if (pendingPrompt()) { <article class="ml-auto w-fit max-w-[92%] rounded-2xl bg-black/5 px-4 py-3 text-sm dark:bg-white/10"><p class="whitespace-pre-wrap break-words">{{ pendingPrompt() }}</p></article> }
+                <app-ai-response [text]="streamPreview().text" [busy]="true" [model]="streamModel()" [files]="streamPreview().files" [status]="writingFile() ? ('builder.writing' | t: { file: writingFile() }) : ''" />
+              } @else if (streamFailed()) {
+                @if (failedPrompt()) { <article class="ml-auto w-fit max-w-[92%] rounded-2xl bg-black/5 px-4 py-3 text-sm dark:bg-white/10"><p class="whitespace-pre-wrap break-words">{{ failedPrompt() }}</p></article> }
+                <p class="text-xs text-muted">{{ 'ai.interrupted' | t }}</p>
+                @if (streamPreview().text) { <app-ai-response [text]="streamPreview().text" [model]="streamModel()" /> }
               }
             </div>
 
+            @if (!chatAtBottom()) { <button type="button" class="mx-auto mb-2 rounded-full border border-line bg-panel px-3 py-1.5 text-xs" (click)="scrollChat(true)">{{ 'ai.jump' | t }} &#8595;</button> }
             <div class="space-y-2 border-t border-line p-3">
             @if (previewError(); as pe) {
               <div class="rounded-lg border border-red-500/40 bg-red-500/10 p-2 text-xs text-red-300">
@@ -513,6 +504,7 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
     const device = model ? `&device=${model}` : '';
     return this.sanitizer.bypassSecurityTrustResourceUrl(`${p.previewUrl}?v=${p.version}-${this.nonce()}${device}`);
   });
+  private runStartedAt = 0;
   readonly generating = signal(false);
   /** Another device of this user is generating in this project (sync feed). */
   readonly remoteGenerating = signal(false);
@@ -520,14 +512,11 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
   readonly pendingPrompt = signal('');
   readonly streamText = signal('');
   readonly streamModel = signal('');
-  readonly streamChars = computed(() => this.streamText().length);
-  readonly streamTail = computed(() => this.streamText().slice(-1800));
-  readonly writingFile = computed(() => {
-    const text = this.streamText();
-    const open = text.lastIndexOf('<file ');
-    if (open < 0 || text.indexOf('</file>', open) >= 0) return '';
-    return /path\s*=\s*["']([^"']+)/.exec(text.slice(open))?.[1] || '';
-  });
+  readonly streamFailed = signal(false);
+  readonly failedPrompt = signal('');
+  readonly chatAtBottom = signal(true);
+  readonly streamPreview = computed(() => builderStreamView(this.streamText()));
+  readonly writingFile = computed(() => this.streamPreview().activeFile);
   readonly previewError = signal('');
   readonly selectedPath = signal('');
   readonly draft = signal('');
@@ -769,8 +758,12 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
     const p = this.project();
     if (!p || this.generating()) return;
     this.generating.set(true);
+    this.runStartedAt = Date.now();
     this.pendingPrompt.set(prompt || this.i18n.t('builder.fixing'));
     this.streamText.set('');
+    this.streamFailed.set(false);
+    this.failedPrompt.set('');
+    this.chatAtBottom.set(true);
     this.streamModel.set(this.model() || this.defaultModel());
     this.error.set('');
     this.previewError.set('');
@@ -798,6 +791,8 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
       else if (result.rejected.length) this.error.set(this.i18n.t('builder.err.rejected', { files: result.rejected.join(', ') }));
       this.view.set('preview');
     } catch (e) {
+      this.streamFailed.set(true);
+      this.failedPrompt.set(this.pendingPrompt());
       if (e instanceof LocalProviderError) {
         const key = `builder.local.err.${e.code}`;
         const t = this.i18n.t(key);
@@ -841,7 +836,7 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
         this.scrollChat();
       },
     });
-    const result = await firstValueFrom(this.api.localApply(id, { ...body, text: out.text, model: out.model, finishReason: out.finishReason }));
+    const result = await firstValueFrom(this.api.localApply(id, { ...body, text: out.text, model: out.model, finishReason: out.finishReason, durationMs: Date.now() - this.runStartedAt }));
     this.applyProject(result.project);
     if (result.truncated) this.error.set(this.i18n.t('builder.err.truncated'));
     else if (result.rejected.length) this.error.set(this.i18n.t('builder.err.rejected', { files: result.rejected.join(', ') }));
@@ -1031,10 +1026,15 @@ export class BuilderStudioComponent implements OnInit, AfterViewInit {
     this.resizeObserver.observe(el);
   }
 
-  private scrollChat(): void {
+  onChatScroll(event: Event): void {
+    const el = event.target as HTMLElement;
+    this.chatAtBottom.set(el.scrollHeight - el.scrollTop - el.clientHeight < 100);
+  }
+
+  scrollChat(force = false): void {
     setTimeout(() => {
       const el = this.chatScroll()?.nativeElement;
-      if (el) el.scrollTop = el.scrollHeight;
+      if (el && (force || this.chatAtBottom())) { el.scrollTop = el.scrollHeight; this.chatAtBottom.set(true); }
     });
   }
 }
