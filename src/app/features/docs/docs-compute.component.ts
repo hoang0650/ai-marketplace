@@ -173,8 +173,8 @@ const app = express();
 app.post('/aim/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   const expected = crypto.createHmac('sha256', SECRET).update(req.body).digest('hex');
   const got = req.get('X-AIM-Signature') || '';
-  if (got.length !== expected.length ||
-      !crypto.timingSafeEqual(Buffer.from(got), Buffer.from(expected))) return res.sendStatus(401);
+  if (!/^[a-f0-9]{64}$/i.test(got) ||
+      !crypto.timingSafeEqual(Buffer.from(got, 'hex'), Buffer.from(expected, 'hex'))) return res.sendStatus(401);
   const evt = JSON.parse(req.body);
   if (evt.event === 'session.start') {
     return res.json({ streamHost: 'stream.your-domain.com', streamPort: 443, streamPath: '/', streamKind: 'novnc', streamTls: true });
