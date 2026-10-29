@@ -41,11 +41,11 @@ Authorization: Bearer <seller_token>
   "kind": "game",
   "webhookUrl": "https://seller.example.com/aim/webhook",
   "webhookSecret": "whsec_at_least_16_chars",
-  "streamHost": "203.0.113.10",
+  "streamHost": "stream.your-domain.com",
   "streamPort": 443,
   "streamKind": "novnc",
   "devices": ["pc", "mobile"],
-  "mobileStream": { "host": "203.0.113.11", "port": 8443, "kind": "hls" },
+  "mobileStream": { "host": "mobile-stream.your-domain.com", "port": 8443, "kind": "hls" },
   "healthUrl": "https://seller.example.com/health",
   "maxConcurrent": 4
 }
@@ -128,7 +128,7 @@ curl -sS -X POST "$API/seller/compute/nodes" \\
     "kind": "game",
     "webhookUrl": "https://seller.example.com/aim/webhook",
     "webhookSecret": "whsec_at_least_16_chars",
-    "streamHost": "203.0.113.10",
+    "streamHost": "stream.your-domain.com",
     "streamPort": 443,
     "streamKind": "novnc",
     "devices": ["pc"],
@@ -177,7 +177,7 @@ app.post('/aim/webhook', express.raw({ type: 'application/json' }), (req, res) =
       !crypto.timingSafeEqual(Buffer.from(got), Buffer.from(expected))) return res.sendStatus(401);
   const evt = JSON.parse(req.body);
   if (evt.event === 'session.start') {
-    return res.json({ streamHost: '203.0.113.10', streamPort: 6080, streamPath: '/', streamKind: 'novnc', streamTls: false });
+    return res.json({ streamHost: 'stream.your-domain.com', streamPort: 443, streamPath: '/', streamKind: 'novnc', streamTls: true });
   }
   res.json({ ok: true });
 });
