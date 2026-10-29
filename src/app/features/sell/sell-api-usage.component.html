@@ -96,4 +96,19 @@
   <footer class="seller-docs__foot">
     <p>{{ 'sellDocs.foot' | t: { email: supportEmail } }}</p>
   </footer>
+
+  <article id="runtime-metering" class="seller-docs__section">
+    <h2>{{ 'docsRuntime.meter.title' | t }}</h2>
+    <p>{{ 'docsRuntime.meter.body' | t }}</p><p>{{ 'docsRuntime.meter.tokens' | t }}</p><p>{{ 'docsRuntime.meter.audit' | t }}</p>
+    <pre class="seller-docs__code">POST https://api.aimarkets.vn/v1/chat/completions
+Authorization: Bearer mk_live_&lt;product_scoped_key&gt;
+Idempotency-Key: &lt;unique_request_id&gt;
+Content-Type: application/json
+
+{{ '{' }} "model": "your-product-slug", "messages": [{{ '{' }} "role": "user", "content": "Hello" {{ '}' }}], "max_tokens": 128 {{ '}' }}
+
+Backend OpenAI response: usage = {{ '{' }} "prompt_tokens": 12, "completion_tokens": 48, "total_tokens": 60 {{ '}' }}
+Gateway response: usage = {{ '{' }} "input_tokens": 12, "output_tokens": 48, "total_tokens": 60 {{ '}' }}</pre>
+    <a routerLink="/docs/compute-streaming">{{ 'docsRuntime.rdp.title' | t }} →</a>
+  </article>
 </section>

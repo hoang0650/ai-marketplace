@@ -1,3 +1,4 @@
+import { DOCS_RUNTIME_MESSAGES } from '../docs/docs-runtime.messages';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
@@ -51,6 +52,7 @@ export class SellApiUsageDocsComponent implements OnInit {
   }'`;
 
   readonly toc = [
+    { id: 'runtime-metering', labelKey: 'docsRuntime.meter.title' },
     { id: 'principle', labelKey: 'sellDocs.toc.principle' },
     { id: 'flow', labelKey: 'sellDocs.toc.flow' },
     { id: 'seller-setup', labelKey: 'sellDocs.toc.setup' },
@@ -67,6 +69,7 @@ export class SellApiUsageDocsComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.i18n.extend(DOCS_RUNTIME_MESSAGES);
     this.seo.set({ title: this.i18n.t('sellDocs.title') });
   }
 }
