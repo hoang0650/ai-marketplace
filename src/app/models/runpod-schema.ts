@@ -248,7 +248,7 @@ export function schemaFields(schema: RunpodModelSchema | null): RunpodField[] {
   const fields: RunpodField[] = [];
 
   for (const [name, spec] of Object.entries(schema.params)) {
-    if (HANDLED_ELSEWHERE.has(name)) continue;
+    if (HANDLED_ELSEWHERE.has(name) || (schema.kind === 'text' && name === 'prompt')) continue;
 
     if (spec.type === 'obj') {
       // Only the parent's documented defaults are pre-filled, so the request
