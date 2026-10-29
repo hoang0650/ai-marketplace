@@ -1245,7 +1245,7 @@ export class ProductDetailComponent implements OnInit {
     this.applySchema(fallbackSchema(product.category, ep), product, false);
     if (!ep) return;
     this.playgroundApi.modelSchema(ep.slug).subscribe({
-      next: (schema) => this.applySchema(schema, product, true),
+      next: (schema) => { if (this.product()?.id === product.id) this.applySchema(schema, product, true); },
       error: () => {
         /* offline or catalog unavailable — the fallback form stays in place */
       },
@@ -1254,10 +1254,11 @@ export class ProductDetailComponent implements OnInit {
 
   private applySchema(schema: RunpodModelSchema | null, product: Product, keepEdits: boolean): void {
     const previous = keepEdits ? this.paramValues : {};
+    const previousDefaults = defaultValues(this.modelSchema());
     const next = defaultValues(schema);
     for (const key of Object.keys(next)) {
       const edited = previous[key];
-      if (edited !== undefined && edited !== '' && !(Array.isArray(edited) && !edited.length)) {
+      if (edited !== undefined && edited !== '' && JSON.stringify(edited) !== JSON.stringify(previousDefaults[key]) && !(Array.isArray(edited) && !edited.length)) {
         next[key] = edited;
       }
     }
