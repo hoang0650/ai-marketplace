@@ -716,22 +716,23 @@
             <div class="field">
               <span class="field-label">Input type</span>
               <div class="segmented" role="group" aria-label="Input type">
-                <button type="button" [class.active]="inputMode === 'messages'" (click)="inputMode = 'messages'">Messages</button>
-                <button type="button" [class.active]="inputMode === 'prompt'" (click)="inputMode = 'prompt'">Prompt</button>
+                <button type="button" [class.active]="inputMode === 'messages'" (click)="setInputMode('messages')">Messages</button>
+                <button type="button" [class.active]="inputMode === 'prompt'" (click)="setInputMode('prompt')">Prompt</button>
               </div>
-            </div>
-            <div class="field">
-              <div class="field-label-row">
-                <label class="field-label" for="prompt">Prompt</label>
-                <span class="req">Required</span>
-              </div>
-              <textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" name="prompt" placeholder="Enter a prompt"></textarea>
             </div>
             @if (inputMode === 'messages') {
-              <div class="field">
-                <label class="field-label" for="system">System prompt</label>
-                <textarea id="system" class="input textarea" rows="3" [(ngModel)]="systemPrompt" name="systemPrompt"></textarea>
+              <div class="message-editor" aria-label="Messages">
+                @for (m of messages; track $index; let i = $index) {
+                  <div class="message-card">
+                    <div class="message-head"><select class="api-select" [(ngModel)]="m.role" [name]="'role-' + i" aria-label="Message role"><option value="system">system</option><option value="user">user</option><option value="assistant">assistant</option></select><button type="button" class="remove-message" (click)="messages.splice(i, 1)" aria-label="Remove message">×</button></div>
+                    <textarea class="input textarea" rows="3" [(ngModel)]="m.content" [name]="'message-' + i" maxlength="32000" aria-label="Message content"></textarea>
+                  </div>
+                }
+                <button type="button" class="btn btn-outline" (click)="addMessage()" [disabled]="messages.length >= 100">+ Add message</button>
               </div>
+            } @else {
+              <div class="field"><label class="field-label" for="prompt">Prompt <span class="req">Required</span></label><textarea id="prompt" class="input textarea" rows="5" [(ngModel)]="prompt" name="prompt" maxlength="32000"></textarea></div>
+              <div class="field"><label class="field-label" for="system">System prompt</label><textarea id="system" class="input textarea" rows="3" [(ngModel)]="systemPrompt" name="systemPrompt" maxlength="32000"></textarea></div>
             }
           }
 
@@ -911,7 +912,7 @@
                 <p class="result-caption">{{ previewText }}</p>
               </div>
             } @else {
-              <div class="result-text">{{ previewText }}</div>
+              <div>@if (reasoningText) { <details><summary>Thinking</summary><pre class="result-text">{{ reasoningText }}</pre></details> }<div class="result-text">{{ previewText }}</div></div>
             }
           </div>
         </section>
@@ -1221,7 +1222,7 @@
             <option value="30d">Last 30 days</option>
             <option value="all">All time</option>
           </select>
-          <p class="logs-hint">There may be a short delay before new requests appear in the history.</p>
+          <p class="logs-hint">Lịch sử riêng của tài khoản, đồng bộ giữa các thiết bị.</p>
         </div>
       } @else {
         <div class="logs-toolbar">
@@ -1231,6 +1232,8 @@
         </div>
       }
 
+      @if (historyLoading() && logsTab() === 'history') { <p role="status">Đang tải lịch sử…</p> }
+      @if (historyError() && logsTab() === 'history') { <p role="alert">{{ historyError() }}</p> }
       <div class="logs-table-wrap">
         <table class="logs-table">
           <thead>
@@ -1271,7 +1274,7 @@
         <select
           class="api-select"
           [ngModel]="logsPageSize()"
-          (ngModelChange)="logsPageSize.set(+$event); logsPage.set(1)"
+          (ngModelChange)="setLogsPageSize(+$event)"
           name="pageSize"
           aria-label="Rows per page"
         >

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, HostListener, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { AffiliateService } from '../../services/affiliate.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe, Location, NgTemplateOutlet } from '@angular/common';
@@ -65,7 +65,7 @@ interface RequestLogEntry {
   id: string;
   productId: string;
   productSlug: string;
-  status: 'COMPLETED' | 'FAILED' | 'IN_PROGRESS';
+  status: 'COMPLETED' | 'FAILED' | 'IN_PROGRESS' | 'RUNNING' | 'RECORDED';
   delayMs: number;
   executionMs: number;
   createdAt: string;
@@ -216,6 +216,32 @@ export class ProductDetailComponent implements OnInit {
     ];
   });
   inputMode: InputMode = 'messages';
+  messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: 'What is AI Markets?' }];
+  readonly historyTotal = signal(0);
+  readonly historyLoading = signal(false);
+  readonly historyError = signal('');
+  reasoningText = '';
+  private historySequence = 0;
+  private historyOwner = '';
+  constructor() {
+    effect(() => {
+      const owner = this.auth.user()?.id || '';
+      if (owner === this.historyOwner) return;
+      this.historyOwner = owner; this.historySequence++;
+      this.sessionLogs.set([]); this.historyLogs.set([]); this.selectedLog.set(null); this.historyTotal.set(0);
+      this.resultJson = ''; this.previewText = ''; this.reasoningText = ''; this.resultMediaUrl = ''; this.runStatus.set('idle'); this.messages = [{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: '' }];
+      const product = this.product(); if (owner && product) this.loadHistory(product.id);
+    });
+  }
+  setInputMode(mode: InputMode): void {
+    if (mode === this.inputMode) return;
+    if (mode === 'messages') this.messages = [...(this.systemPrompt.trim() ? [{ role: 'system' as const, content: this.systemPrompt }] : []), { role: 'user', content: this.prompt }];
+    else { this.systemPrompt = this.messages.find(m => m.role === 'system')?.content || ''; this.prompt = [...this.messages].reverse().find(m => m.role === 'user')?.content || ''; }
+    this.inputMode = mode;
+  }
+  addMessage(): void { if (this.messages.length < 100) this.messages.push({ role: 'user', content: '' }); }
+  setLogsPageSize(size: number): void { this.logsPageSize.set(size); this.logsPage.set(1); if (this.logsTab() === 'history' && this.product()) this.loadHistory(this.product()!.id); }
+
   modelVariant = '';
   systemPrompt = 'You are a helpful assistant.';
 
@@ -231,7 +257,7 @@ export class ProductDetailComponent implements OnInit {
   readonly fields = computed(() => schemaFields(this.modelSchema()));
   readonly primaryFields = computed(() => this.fields().filter((f) => !f.advanced));
   readonly advancedFields = computed(() => this.fields().filter((f) => f.advanced));
-  readonly isChatModel = computed(() => !!this.modelSchema()?.chatStyle);
+  readonly isChatModel = computed(() => this.modelSchema()?.kind === 'text');
 
   /** Variants served by one endpoint (Kimi), else the endpoint/OpenAI model ids. */
   readonly modelOptions = computed<Array<{ value: string; label: string }>>(() => {
@@ -355,6 +381,8 @@ export class ProductDetailComponent implements OnInit {
     if (!p) return '';
     const ep = this.runpodEndpoint();
     const schema = this.modelSchema();
+    const detailed = p.pricing as typeof p.pricing & { inputRate?: number; outputRate?: number; cachedInputRate?: number };
+    if (detailed.inputRate && detailed.outputRate) return 'USD / 1M tokens · input $' + detailed.inputRate + ' · output $' + detailed.outputRate + (detailed.cachedInputRate != null ? ' · cached input $' + detailed.cachedInputRate : '');
     if (schema) {
       const quote = quoteRunpod(schema, this.runpodInput());
       if (quote?.cost !== null && quote?.cost !== undefined) {
@@ -1183,13 +1211,14 @@ export class ProductDetailComponent implements OnInit {
     const product = p ?? this.product();
     this.runStatus.set('idle');
     this.previewText = '';
-    this.resultJson = '';
+    this.resultJson = ''; this.reasoningText = '';
     this.resultMediaUrl = '';
     this.resultMediaKind = '';
     this.lastLatencyMs = 0;
     this.lastCost = 0;
     this.resultView.set('preview');
     this.inputMode = 'messages';
+    this.messages = [{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: this.prompt || 'What is AI Markets?' }];
     this.ftMethod = 'qlora';
     this.ftEpochs = 3;
     this.enableSyncMode = true;
@@ -1216,7 +1245,7 @@ export class ProductDetailComponent implements OnInit {
     this.applySchema(fallbackSchema(product.category, ep), product, false);
     if (!ep) return;
     this.playgroundApi.modelSchema(ep.slug).subscribe({
-      next: (schema) => this.applySchema(schema, product, true),
+      next: (schema) => { if (this.product()?.id === product.id) this.applySchema(schema, product, true); },
       error: () => {
         /* offline or catalog unavailable — the fallback form stays in place */
       },
@@ -1225,10 +1254,11 @@ export class ProductDetailComponent implements OnInit {
 
   private applySchema(schema: RunpodModelSchema | null, product: Product, keepEdits: boolean): void {
     const previous = keepEdits ? this.paramValues : {};
+    const previousDefaults = defaultValues(this.modelSchema());
     const next = defaultValues(schema);
     for (const key of Object.keys(next)) {
       const edited = previous[key];
-      if (edited !== undefined && edited !== '' && !(Array.isArray(edited) && !edited.length)) {
+      if (edited !== undefined && edited !== '' && JSON.stringify(edited) !== JSON.stringify(previousDefaults[key]) && !(Array.isArray(edited) && !edited.length)) {
         next[key] = edited;
       }
     }
@@ -1262,6 +1292,7 @@ export class ProductDetailComponent implements OnInit {
       dataset: 'Request sample rows / schema preview.',
     };
     this.prompt = samples[product.category] ?? '';
+    this.messages = [{ role: 'system', content: this.systemPrompt }, { role: 'user', content: this.prompt }];
 
     if ('image' in this.paramValues || 'images' in this.paramValues) {
       const reference = product.coverUrl;
@@ -1407,7 +1438,7 @@ export class ProductDetailComponent implements OnInit {
       return !!this.sttAudioBase64;
     }
     if (this.isChatModel() || !this.fields().length) {
-      return p.category === 'fine-tune' || !!this.prompt.trim();
+      return p.category === 'fine-tune' || (this.isChatModel() && this.inputMode === 'messages' ? this.messages.some(m => m.role === 'user' && !!m.content.trim()) && this.messages.every(m => !!m.content.trim()) : !!this.prompt.trim());
     }
     return this.missingRequired().length === 0;
   }
@@ -1438,6 +1469,7 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
+    const runOwner = this.auth.user()?.id;
     const requestId = `req_${Math.random().toString(36).slice(2, 10)}`;
     this.runStatus.set('running');
     this.previewText = '';
@@ -1462,6 +1494,7 @@ export class ProductDetailComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
+          if (this.auth.user()?.id !== runOwner) return;
           const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
           this.lastLatencyMs = res.executionTime || Math.round(now - started);
           this.lastCost = Number(res.cost || 0);
@@ -1478,12 +1511,14 @@ export class ProductDetailComponent implements OnInit {
             cost: res.cost,
             sandbox: res.sandbox,
           };
+          this.reasoningText = String((res.output as unknown as Record<string, unknown>)?.['reasoning'] || '');
           this.resultJson = JSON.stringify(response, null, 2);
           this.applyPreview(p, response);
           this.runStatus.set('done');
-          this.pushLog(p, requestId, payload, 'COMPLETED', 0);
+          this.pushLog(p, (res as unknown as { requestLogId?: string }).requestLogId || requestId, payload, 'COMPLETED', res.delayTime || 0);
         },
         error: (err) => {
+          if (this.auth.user()?.id !== runOwner) return;
           const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
           this.lastLatencyMs = Math.round(now - started);
           const message =
@@ -1521,8 +1556,7 @@ export class ProductDetailComponent implements OnInit {
       responseJson: this.resultJson,
     };
     this.sessionLogs.update((list) => [entry, ...list]);
-    this.persistHistory(entry);
-    this.historyLogs.update((list) => [entry, ...list.filter((x) => x.id !== entry.id)]);
+    if (this.logsTab() === 'history') this.loadHistory(p.id);
   }
 
   openLogs(tab: LogsTab = 'session'): void {
@@ -1530,6 +1564,7 @@ export class ProductDetailComponent implements OnInit {
     this.logsPage.set(1);
     this.selectedLog.set(null);
     this.logsOpen.set(true);
+    if (this.product()) this.loadHistory(this.product()!.id);
   }
 
   closeLogs(): void {
@@ -1540,17 +1575,21 @@ export class ProductDetailComponent implements OnInit {
   setLogsTab(tab: LogsTab): void {
     this.logsTab.set(tab);
     this.logsPage.set(1);
+    if (tab === 'history' && this.product()) this.loadHistory(this.product()!.id);
     this.selectedLog.set(null);
   }
 
   setHistoryRange(range: HistoryRange): void {
     this.historyRange.set(range);
     this.logsPage.set(1);
+    if (this.product()) this.loadHistory(this.product()!.id);
     this.selectedLog.set(null);
   }
 
   selectLog(entry: RequestLogEntry): void {
-    this.selectedLog.set(entry);
+    if (this.logsTab() === 'session') { this.selectedLog.set(entry); return; }
+    const seq = this.historySequence, owner = this.auth.user()?.id;
+    this.http.get<RequestLogEntry>(environment.apiUrl + '/playground/requests/' + entry.id).subscribe({ next: row => { if (seq === this.historySequence && owner === this.auth.user()?.id) this.selectedLog.set(row); }, error: () => this.historyError.set('Không thể tải nội dung request.') });
   }
 
   clearSessionLogs(): void {
@@ -1575,23 +1614,26 @@ export class ProductDetailComponent implements OnInit {
   }
 
   pagedLogs(): RequestLogEntry[] {
-    const list = this.logsTab() === 'session' ? this.sessionLogs() : this.filteredHistory();
+    if (this.logsTab() === 'history') return this.historyLogs();
+    const list = this.sessionLogs();
     const start = (this.logsPage() - 1) * this.logsPageSize();
     return list.slice(start, start + this.logsPageSize());
   }
 
   logsTotalPages(): number {
     const total =
-      this.logsTab() === 'session' ? this.sessionLogs().length : this.filteredHistory().length;
+      this.logsTab() === 'session' ? this.sessionLogs().length : this.historyTotal();
     return Math.max(1, Math.ceil(total / this.logsPageSize()) || 1);
   }
 
   prevLogsPage(): void {
     this.logsPage.set(Math.max(1, this.logsPage() - 1));
+    if (this.logsTab() === 'history' && this.product()) this.loadHistory(this.product()!.id);
   }
 
   nextLogsPage(): void {
     this.logsPage.set(Math.min(this.logsTotalPages(), this.logsPage() + 1));
+    if (this.logsTab() === 'history' && this.product()) this.loadHistory(this.product()!.id);
   }
 
   formatMs(ms: number): string {
@@ -1600,33 +1642,14 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private loadHistory(productId: string): void {
-    try {
-      if (typeof localStorage === 'undefined') {
-        this.historyLogs.set([]);
-        return;
-      }
-      const raw = localStorage.getItem(this.historyStorageKey(productId));
-      const parsed = raw ? (JSON.parse(raw) as RequestLogEntry[]) : [];
-      this.historyLogs.set(Array.isArray(parsed) ? parsed : []);
-    } catch {
-      this.historyLogs.set([]);
-    }
-  }
-
-  private persistHistory(entry: RequestLogEntry): void {
-    try {
-      if (typeof localStorage === 'undefined') return;
-      const key = this.historyStorageKey(entry.productId);
-      const prev = this.historyLogs().filter((x) => x.id !== entry.id);
-      const next = [entry, ...prev].slice(0, 200);
-      localStorage.setItem(key, JSON.stringify(next));
-    } catch {
-      /* ignore quota */
-    }
-  }
-
-  private historyStorageKey(productId: string): string {
-    return `phai.requestLogs.${productId}`;
+    const owner = this.auth.user()?.id, seq = ++this.historySequence;
+    this.historyLogs.set([]); this.historyTotal.set(0); this.historyError.set('');
+    if (!owner) { this.historyLoading.set(false); return; }
+    this.historyLoading.set(true);
+    this.http.get<{ items: RequestLogEntry[]; total: number }>(environment.apiUrl + '/playground/requests', { params: { productId, range: this.historyRange(), page: this.logsPage(), limit: this.logsPageSize() } }).subscribe({
+      next: r => { if (seq !== this.historySequence || owner !== this.auth.user()?.id) return; this.historyLogs.set(r.items); this.historyTotal.set(r.total); this.historyLoading.set(false); },
+      error: () => { if (seq === this.historySequence) { this.historyLoading.set(false); this.historyError.set('Không thể tải lịch sử. Hãy đăng nhập và thử lại.'); } },
+    });
   }
 
   voiceLanguages(p: Product): string[] {
@@ -1702,14 +1725,11 @@ export class ProductDetailComponent implements OnInit {
 
     const extra: Record<string, unknown> = {};
     if (schema.params['model']) extra['model'] = this.modelVariant;
-    if (schema.chatStyle) {
+    if (schema.chatStyle || schema.kind === 'text') {
       if (this.inputMode === 'messages') {
-        extra['messages'] = [
-          { role: 'system', content: this.systemPrompt },
-          { role: 'user', content: this.prompt },
-        ];
+        extra['messages'] = this.messages.map(m => ({ role: m.role, content: m.content.trim() }));
       } else {
-        extra['prompt'] = this.prompt;
+        extra['messages'] = [...(this.systemPrompt.trim() ? [{ role: 'system', content: this.systemPrompt }] : []), { role: 'user', content: this.prompt }];
       }
     }
     return buildRunpodInput(schema, this.paramValues, extra);
