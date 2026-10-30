@@ -46,6 +46,7 @@ export interface AgentFee {
 
 /** Public price row from GET /agents/pricing. */
 export interface AgentPricing {
+  availability?: { available: boolean; code?: string; message?: string };
   agentId: AgentRuntimeKind;
   fee: AgentFee;
   /** Markup over the provider price on AI Markets-provided models (0.25 = +25%). */

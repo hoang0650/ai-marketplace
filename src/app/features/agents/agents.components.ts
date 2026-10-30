@@ -19,6 +19,7 @@ import { COMMUNITY_VOTE_MESSAGES } from './community-vote.messages';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { LaunchNoticeService } from './launch-notice.service';
+import { LAUNCH_NOTICE_MESSAGES } from './launch-notice.messages';
 
 @Component({
   selector: 'app-my-agents',
@@ -188,17 +189,22 @@ export class MyAgentsComponent implements OnInit {
                 type="button"
                 class="agents-btn agents-btn--launch"
                 (click)="launch(agent)"
-                [disabled]="busyId() === agent.id || !canLaunch(agent)"
+                [disabled]="busyId() === agent.id || !canLaunch(agent) || priceFor(agent)?.availability?.available === false"
                 [attr.title]="canLaunch(agent) ? 'Open Control UI / Dashboard' : gateway.comingSoonMessage(agent)"
               >
-                {{ busyId() === agent.id ? ('launchNotice.launching' | t) : canLaunch(agent) ? '🚀 Launch' : 'Soon' }}
+                {{ priceFor(agent)?.availability?.available === false ? ('launchNotice.maintenance' | t) : busyId() === agent.id ? ('launchNotice.launching' | t) : canLaunch(agent) ? '🚀 Launch' : 'Soon' }}
               </button>
               <a class="agents-btn agents-btn--ghost" [routerLink]="['/hire-agent', agent.id]">Details</a>
             </div>
-            @if (canLaunch(agent)) {
+            @if (priceFor(agent)?.availability?.available === false) {
+              <p class="agent-card__hint" role="status">{{ 'launchNotice.maintenanceDetail' | t }}</p>
+            } @else if (canLaunch(agent)) {
               <p class="agent-card__hint">Opens {{ hostFor(agent) }}</p>
             } @else {
               <p class="agent-card__hint">Setup later — other agents are live now</p>
+            }
+            @if (gateway.runtimeKind(agent) === 'paperclip') {
+              <p class="agent-card__hint">{{ 'launchNotice.paperclipFirstAgent' | t }}</p>
             }
           </article>
         } @empty {
@@ -251,6 +257,7 @@ export class AgentMarketplaceComponent implements OnInit {
 
   constructor() {
     this.i18n.extend(COMMUNITY_VOTE_MESSAGES);
+    this.i18n.extend(LAUNCH_NOTICE_MESSAGES);
   }
 
   canLaunch(agent: MarketplaceAgent): boolean {

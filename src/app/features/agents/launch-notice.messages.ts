@@ -3,6 +3,10 @@ import { AppLang } from '../../i18n/messages';
 /** Launch / rent result notice for hosted agents (loaded via I18nService.extend). */
 export const LAUNCH_NOTICE_MESSAGES: Record<AppLang, Record<string, string>> = {
   vi: {
+    'launchNotice.maintenance': 'Tạm ngưng',
+    'launchNotice.maintenanceTitle': '{{brand}} đang tạm ngưng',
+    'launchNotice.maintenanceDetail': 'Đang tách biệt môi trường và API key giữa người dùng. Tạm dừng thuê mới và gia hạn; bạn không cần đổi API key.',
+    'launchNotice.paperclipFirstAgent': 'Lần đầu mở Paperclip: nhập tên tại “Create your first agent”, rồi chọn Next để cấu hình agent. Đây là bước thiết lập ban đầu.',
     'launchNotice.successTitle': 'Đã thuê và khởi chạy {{brand}}',
     'launchNotice.openedTitle': 'Đã mở {{brand}}',
     'launchNotice.duplicateTitle': '{{brand}} đã được thuê trước đó',
@@ -27,6 +31,10 @@ export const LAUNCH_NOTICE_MESSAGES: Record<AppLang, Record<string, string>> = {
     'launchNotice.launching': 'Đang khởi chạy…',
   },
   en: {
+    'launchNotice.maintenance': 'Temporarily unavailable',
+    'launchNotice.maintenanceTitle': '{{brand}} is temporarily unavailable',
+    'launchNotice.maintenanceDetail': 'Buyer environments and API keys are being isolated. New rentals and renewals are paused; you do not need to change your API key.',
+    'launchNotice.paperclipFirstAgent': 'First Paperclip launch: enter a name under “Create your first agent”, then choose Next to configure it. This is initial setup.',
     'launchNotice.successTitle': '{{brand}} rented and launched',
     'launchNotice.openedTitle': '{{brand}} opened',
     'launchNotice.duplicateTitle': '{{brand}} was already rented',
@@ -51,6 +59,10 @@ export const LAUNCH_NOTICE_MESSAGES: Record<AppLang, Record<string, string>> = {
     'launchNotice.launching': 'Launching…',
   },
   zh: {
+    'launchNotice.maintenance': '暂停服务',
+    'launchNotice.maintenanceTitle': '{{brand}} 暂停服务',
+    'launchNotice.maintenanceDetail': '正在隔离各用户的运行环境和 API 密钥。新增租用和续费已暂停，无需更换 API 密钥。',
+    'launchNotice.paperclipFirstAgent': '首次打开 Paperclip：在“Create your first agent”输入名称，然后点击 Next 继续配置。这是初始设置。',
     'launchNotice.successTitle': '已租用并启动 {{brand}}',
     'launchNotice.openedTitle': '已打开 {{brand}}',
     'launchNotice.duplicateTitle': '{{brand}} 已租用',

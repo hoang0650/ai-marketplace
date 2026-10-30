@@ -727,6 +727,9 @@ export class OpenClawGatewayService {
     const nanoclaw = kind === 'nanoclaw';
     const spacebot = kind === 'spacebot';
     const sso = kind === 'openwebui' || kind === 'paperclip';
+    // Hosted buyer runtimes require the API's scoped credentials. A server
+    // rejection must never be replaced by a guessed URL or generic config error.
+    strict = strict || kind !== 'openclaw';
     const path = this.agentApiPath(agent);
     return this.http
       .post<OpenClawLaunchResult>(
@@ -745,7 +748,7 @@ export class OpenClawGatewayService {
               message: err?.error?.message || 'This agent needs an active monthly plan.',
             });
           }
-          if (strict) {
+          if (strict || err?.status > 0) {
             return of<OpenClawLaunchResult>({
               success: false,
               code: err?.error?.code || 'LAUNCH_FAILED',
@@ -763,7 +766,7 @@ export class OpenClawGatewayService {
         }),
         map((res) => {
           if (res?.success && res.url) return res;
-          if (res?.code === AGENT_SUBSCRIPTION_REQUIRED) return res;
+          if (res?.code) return res;
           if (strict) {
             return {
               success: false,

@@ -58,7 +58,9 @@ import { LaunchNoticeService } from './launch-notice.service';
           @if (n.kind === 'error' && svc.canRetry()) {
             <button type="button" class="ln-btn ln-btn--primary" (click)="svc.retry()">{{ 'launchNotice.retry' | t }}</button>
           }
-          <a class="ln-btn" [routerLink]="['/hire-agent', n.agentId, 'setup']" (click)="svc.close()">{{ 'launchNotice.setup' | t }}</a>
+          @if (n.result.code !== 'RUNTIME_ISOLATION_MAINTENANCE') {
+            <a class="ln-btn" [routerLink]="['/hire-agent', n.agentId, 'setup']" (click)="svc.close()">{{ 'launchNotice.setup' | t }}</a>
+          }
           <a class="ln-btn" [routerLink]="['/hire-agent', n.agentId]" (click)="svc.close()">{{ 'launchNotice.agentPage' | t }}</a>
           @if (rental()) {
             <a class="ln-btn" routerLink="/wallet" (click)="svc.close()">{{ 'launchNotice.wallet' | t }}</a>
@@ -112,6 +114,7 @@ export class LaunchNoticeComponent {
   readonly title = computed(() => {
     const n = this.n();
     if (!n) return '';
+    if (n.result.code === 'RUNTIME_ISOLATION_MAINTENANCE') return 'launchNotice.maintenanceTitle';
     if (n.kind === 'error') return n.result.refund?.refunded ? 'launchNotice.refundedTitle' : 'launchNotice.errorTitle';
     if (n.result.rental?.charged) return 'launchNotice.successTitle';
     if (n.result.rental?.duplicate) return 'launchNotice.duplicateTitle';

@@ -27,7 +27,7 @@ export class LaunchNoticeService {
   }
 
   canRetry(): boolean {
-    return Boolean(this.retryFn);
+    return Boolean(this.retryFn) && this.notice()?.result.code !== 'RUNTIME_ISOLATION_MAINTENANCE';
   }
 
   retry(): void {
