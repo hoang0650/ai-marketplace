@@ -80,9 +80,9 @@
           <dd>
             @if (shopHref(u); as href) {
               @if (href.startsWith('http')) {
-                <a [href]="href" target="_blank" rel="noopener">{{ u.creatorSlug || href }}</a>
+                <a [href]="href" target="_blank" rel="noopener">{{ u.shop?.displayName || u.name || u.creatorSlug || href }}</a>
               } @else {
-                <a [routerLink]="href">{{ u.creatorSlug || href }}</a>
+                <a [routerLink]="href">{{ u.shop?.displayName || u.name || u.creatorSlug || href }}</a>
               }
             } @else {
               {{ 'admin.user.shopMissing' | t }}

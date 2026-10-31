@@ -102,6 +102,7 @@ function detail(id: string): AdminDisputeDetail | null {
     productId: row.productId || 'prod-1',
     productName: row.productName,
     buyerName: row.buyerName,
+    sellerName: row.sellerName || '',
     sellerId: row.sellerId,
     amount: row.amount,
     currency: row.currency,

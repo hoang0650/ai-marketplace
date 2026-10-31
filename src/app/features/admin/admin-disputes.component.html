@@ -39,7 +39,8 @@
           <span class="adq-main">
             <span class="adq-title">{{ row.productName }} · {{ row.amount | currency: row.currency }}</span>
             <span class="adq-sub">
-              {{ row.buyerName || '—' }} · {{ row.sellerName || '—' }}
+              {{ 'admin.dispute.buyer' | t }}: {{ row.buyerName || '—' }}
+              · {{ 'admin.dispute.seller' | t }}: {{ row.sellerName || '—' }}
             </span>
             @if (row.disputeReason) {
               <span class="adq-sub">{{ row.disputeReason }}</span>

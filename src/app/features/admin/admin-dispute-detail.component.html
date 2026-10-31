@@ -42,12 +42,12 @@
           <div class="add-parties">
             <article>
               <p class="add-kicker">{{ 'admin.dispute.buyer' | t }}</p>
-              <a [routerLink]="d.buyer.href || ['/admin/users', d.buyer.id]">{{ d.buyer.name }}</a>
+              <a [routerLink]="d.buyer.href || ['/admin/users', d.buyer.id]">{{ d.buyerName || d.buyer.name }}</a>
               @if (d.buyer.email) { <span>{{ d.buyer.email }}</span> }
             </article>
             <article>
               <p class="add-kicker">{{ 'admin.dispute.seller' | t }}</p>
-              <a [routerLink]="d.seller.href || ['/admin/users', d.seller.id]">{{ d.seller.name }}</a>
+              <a [routerLink]="d.seller.href || ['/admin/users', d.seller.id]">{{ d.sellerName || d.seller.name }}</a>
               @if (d.seller.shopHref || d.seller.creatorSlug) {
                 <a [routerLink]="d.seller.shopHref || ['/store', d.seller.creatorSlug]">{{ d.seller.creatorSlug }}</a>
               }

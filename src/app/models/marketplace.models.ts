@@ -274,6 +274,8 @@ export interface AdminDisputePage extends AdminPage<AdminDisputeListItem> {
  * mapOrder fields are spread on the object; parties, money, thread, and audit are nested.
  */
 export interface AdminDisputeDetail extends Order {
+  /** Shop account name, else the seller profile display name. */
+  sellerName?: string;
   buyer: DisputeParty;
   seller: DisputeParty;
   product: { id: string; name: string; slug?: string; href?: string | null; adminHref?: string | null };
