@@ -1,6 +1,7 @@
 import { DecimalPipe, CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CurrencyService } from '../../i18n/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
 
 /** Minimal shape of the GPay dynamic-QR response used by this view. */
@@ -108,7 +109,7 @@ const TXT = {
           </div>
           <div class="gp-conv">
             <div><span class="gp-k">{{ t().credit }}</span><b>{{ estimateUsd() | currency: 'USD': 'symbol-narrow': '1.2-2' }}</b></div>
-            <div><span class="gp-k">{{ t().rate }}</span><span>{{ vndPerUsd | number: '1.0-0' }} ₫/USD</span></div>
+            <div><span class="gp-k">{{ t().rate }}</span><span>{{ rate() | number: '1.0-0' }} ₫/USD</span></div>
             @if (minVnd > 0) {
               <div><span class="gp-k">{{ t().min }}</span><span>{{ minVnd | number: '1.0-0' }} ₫</span></div>
             }
@@ -178,6 +179,7 @@ const TXT = {
 })
 export class GpayTopupComponent {
   private readonly i18n = inject(I18nService);
+  private readonly fx = inject(CurrencyService);
   readonly t = computed(() => (this.i18n.lang() === 'vi' ? TXT.vi : TXT.en));
 
   @Input() enabled = false;
@@ -188,7 +190,8 @@ export class GpayTopupComponent {
   @Input() qr: GpayQrView | null = null;
   @Input() qrSrc = '';
   @Input() quickAmounts: number[] = [];
-  @Input() vndPerUsd = 26500;
+  /** Passed from the wallet page (the shared quote). 0 uses CurrencyService directly. */
+  @Input() vndPerUsd = 0;
   @Input() minVnd = 0;
   @Input() amountVnd = 0;
   @Output() amountVndChange = new EventEmitter<number>();
@@ -198,9 +201,14 @@ export class GpayTopupComponent {
 
   readonly copied = signal(false);
 
+  /** Quote used for the credit estimate. The input wins when the parent passes it. */
+  rate(): number {
+    const n = Number(this.vndPerUsd);
+    return Number.isFinite(n) && n > 0 ? n : this.fx.vndPerUsd();
+  }
+
   estimateUsd(): number {
-    const rate = this.vndPerUsd || 26500;
-    return Math.round(((Number(this.amountVnd) || 0) / rate) * 100) / 100;
+    return Math.round(((Number(this.amountVnd) || 0) / this.rate()) * 100) / 100;
   }
 
   setAmount(v: number): void {

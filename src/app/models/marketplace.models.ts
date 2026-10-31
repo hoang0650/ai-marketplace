@@ -1390,6 +1390,18 @@ export interface AdminProductPage extends AdminPage<AdminProductRow> {
   facets?: { categories: AdminFacet[]; types: AdminFacet[]; sellers: AdminFacet[] };
 }
 
+/** Public USD quote from GET /v1/exchange-rates, also embedded on the admin overview. */
+export interface ExchangeRateQuote {
+  vndPerUsd: number;
+  cnyPerUsd: number;
+  source: string;
+  updatedAt: string | null;
+  base?: string;
+  provider?: string;
+  stale?: boolean;
+  rates?: { USD?: number; VND?: number; CNY?: number };
+}
+
 export interface AdminOverview {
   users: number;
   products: number;
@@ -1408,6 +1420,8 @@ export interface AdminOverview {
   sellerNet: number;
   buyerDeposits: number;
   buyerDepositCount: number;
+  /** Live VND/CNY quote. Older API builds omit it. */
+  exchangeRate?: ExchangeRateQuote | null;
   shops: AdminShopRevenue[];
   /** Last 30 days, oldest first (Vietnam time). */
   series?: AdminDailyPoint[];

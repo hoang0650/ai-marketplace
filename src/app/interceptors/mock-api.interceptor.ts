@@ -4,6 +4,7 @@ import { of, delay, switchMap, from } from 'rxjs';
 import { MockDataStore } from '../services/mock-data.store';
 import { mockAdminCommerce } from '../services/mock-admin-commerce';
 import { environment } from '../../environments/environment';
+import { FALLBACK_CNY_PER_USD, FALLBACK_VND_PER_USD } from '../i18n/currency.service';
 import { SignupRole } from '../models/marketplace.models';
 import { RUNPOD_PUBLIC_ENDPOINTS } from '../models/runpod-public-endpoints';
 
@@ -157,8 +158,29 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
           message: 'Configure OpenClaw env (AI_URL / OPENCLAW_GATEWAY_*) to launch gateway.',
         });
       }
+      if (req.method === 'GET' && path === '/exchange-rates') {
+        return jsonOk({
+          base: 'USD',
+          provider: 'exchangerate-api',
+          vndPerUsd: FALLBACK_VND_PER_USD,
+          cnyPerUsd: FALLBACK_CNY_PER_USD,
+          rates: { USD: 1, VND: FALLBACK_VND_PER_USD, CNY: FALLBACK_CNY_PER_USD },
+          source: 'fallback',
+          updatedAt: null,
+          stale: false,
+        });
+      }
       if (req.method === 'GET' && path === '/admin/overview') {
-        return jsonOk(store.adminOverview());
+        return jsonOk({
+          ...store.adminOverview(),
+          exchangeRate: {
+            base: 'USD',
+            vndPerUsd: FALLBACK_VND_PER_USD,
+            cnyPerUsd: FALLBACK_CNY_PER_USD,
+            source: 'fallback',
+            updatedAt: null,
+          },
+        });
       }
       if (req.method === 'POST' && path === '/billing/checkout') {
         return jsonOk({
