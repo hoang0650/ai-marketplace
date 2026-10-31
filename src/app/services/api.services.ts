@@ -14,6 +14,11 @@ import {
   AdminProductPage,
   AdminUserRow,
   AdminUserDetail,
+  AdminDisputePage,
+  AdminDisputeListItem,
+  AdminDisputeDetail,
+  AdminDisputeDecision,
+  DisputeMessage,
   ModerationStatus,
   Creator,
   DashboardSummary,
@@ -101,6 +106,59 @@ function compactParams(params: Record<string, string | number>): Record<string, 
     if (v !== '' && v !== null && v !== undefined) out[k] = String(v);
   }
   return out;
+}
+
+function unwrapDisputeMessage(res: unknown): DisputeMessage | null {
+  if (!res || typeof res !== 'object') return null;
+  const row = res as DisputeMessage & { message?: DisputeMessage };
+  if (typeof row.id === 'string' && typeof row.body === 'string') return row;
+  if (row.message && typeof row.message.id === 'string') return row.message;
+  return null;
+}
+
+function normalizeDisputeListItem(raw: Partial<AdminDisputeListItem> & { id?: string }): AdminDisputeListItem {
+  return {
+    id: String(raw.id || ''),
+    productId: raw.productId,
+    productName: raw.productName || '',
+    productSlug: raw.productSlug,
+    buyerId: raw.buyerId,
+    buyerName: raw.buyerName || '',
+    sellerId: raw.sellerId,
+    sellerName: raw.sellerName || '',
+    amount: Number(raw.amount) || 0,
+    currency: raw.currency || 'USD',
+    sellerNet: Number(raw.sellerNet) || 0,
+    held: raw.held == null ? undefined : Number(raw.held) || 0,
+    disputeStatus: raw.disputeStatus || 'open',
+    disputeReason: raw.disputeReason || '',
+    disputeOpenedAt: raw.disputeOpenedAt || null,
+    disputeResolvedAt: raw.disputeResolvedAt || null,
+  };
+}
+
+/** Accepts the paginated payload and the previous bare array of orders. */
+function normalizeAdminDisputePage(res: AdminDisputePage | AdminDisputeListItem[] | null | undefined): AdminDisputePage {
+  if (Array.isArray(res)) {
+    const items = res.map((row) => normalizeDisputeListItem(row));
+    return {
+      items,
+      total: items.length,
+      page: 1,
+      limit: Math.max(items.length, 1),
+      pages: 1,
+      openCount: items.filter((row) => row.disputeStatus === 'open').length,
+    };
+  }
+  const items = (res?.items || []).map((row) => normalizeDisputeListItem(row));
+  const limit = Number(res?.limit) || 20;
+  const total = Number(res?.total ?? items.length) || 0;
+  const page = Number(res?.page) || 1;
+  const pages = Number(res?.pages) || Math.max(1, Math.ceil(total / limit) || 1);
+  const openCount = res?.openCount == null
+    ? items.filter((row) => row.disputeStatus === 'open').length
+    : Number(res.openCount) || 0;
+  return { items, total, page, limit, pages, openCount };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -433,12 +491,70 @@ export class DashboardService {
     return this.http.get<Order[]>(`${this.base}/orders/disputes`);
   }
 
-  adminDisputes(): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.base}/admin/disputes`);
+  /**
+   * GET /v1/admin/disputes
+   * `status` is `open` or `resolved` (buyer_win, seller_win, split). `openCount` is the
+   * unfiltered number of open disputes so the tab badge stays stable while paging.
+   */
+  adminDisputes(params: {
+    status?: '' | 'open' | 'resolved';
+    q?: string;
+    page?: number;
+    limit?: number;
+  } = {}): Observable<AdminDisputePage> {
+    return this.http
+      .get<AdminDisputePage | AdminDisputeListItem[]>(`${this.base}/admin/disputes`, {
+        params: compactParams({
+          status: params.status || '',
+          q: params.q || '',
+          page: params.page || '',
+          limit: params.limit || '',
+        }),
+      })
+      .pipe(map((res) => normalizeAdminDisputePage(res)));
   }
 
-  resolveDispute(orderId: string, resolution: 'seller' | 'buyer', note?: string): Observable<Order> {
-    return this.http.patch<Order>(`${this.base}/admin/disputes/${orderId}`, { resolution, note });
+  /** GET /v1/admin/disputes/:id — order, parties, money, claim, evidence, timeline, outcome, audit, messages. */
+  adminDispute(id: string): Observable<AdminDisputeDetail> {
+    return this.http.get<AdminDisputeDetail>(`${this.base}/admin/disputes/${id}`);
+  }
+
+  /**
+   * PATCH /v1/admin/disputes/:id
+   * resolution: buyer_win (refundAmount = full order amount, or less for a partial refund),
+   * seller_win, or split (refundAmount is the buyer's share). `reason` and `note` carry the same text.
+   */
+  decideDispute(id: string, body: AdminDisputeDecision): Observable<AdminDisputeDetail> {
+    return this.http.patch<AdminDisputeDetail>(`${this.base}/admin/disputes/${id}`, body);
+  }
+
+  /**
+   * Admin joins the buyer/seller thread. Prefers POST /v1/admin/disputes/:id/messages and
+   * falls back to POST /v1/orders/:id/dispute/messages when that route is not mounted.
+   */
+  postAdminDisputeMessage(orderId: string, body: string): Observable<unknown> {
+    return this.http.post(`${this.base}/admin/disputes/${orderId}/messages`, { body }).pipe(
+      catchError((err: { status?: number }) => {
+        if (err?.status === 404 || err?.status === 405) {
+          return this.http.post(`${this.base}/orders/${orderId}/dispute/messages`, { body });
+        }
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  /** GET /v1/orders/:id/dispute/messages */
+  disputeMessages(orderId: string): Observable<DisputeMessage[]> {
+    return this.http
+      .get<DisputeMessage[] | { messages?: DisputeMessage[] }>(`${this.base}/orders/${orderId}/dispute/messages`)
+      .pipe(map((res) => (Array.isArray(res) ? res : res?.messages || [])));
+  }
+
+  /** POST /v1/orders/:id/dispute/messages */
+  postDisputeMessage(orderId: string, body: string): Observable<DisputeMessage | null> {
+    return this.http
+      .post<unknown>(`${this.base}/orders/${orderId}/dispute/messages`, { body })
+      .pipe(map((res) => unwrapDisputeMessage(res)));
   }
 
   complaints(as?: 'mine' | 'seller' | 'admin' | 'work'): Observable<Complaint[]> {

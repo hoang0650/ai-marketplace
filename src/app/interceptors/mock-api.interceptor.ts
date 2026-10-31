@@ -2,6 +2,7 @@ import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { of, delay, switchMap, from } from 'rxjs';
 import { MockDataStore } from '../services/mock-data.store';
+import { mockAdminCommerce } from '../services/mock-admin-commerce';
 import { environment } from '../../environments/environment';
 import { SignupRole } from '../models/marketplace.models';
 import { RUNPOD_PUBLIC_ENDPOINTS } from '../models/runpod-public-endpoints';
@@ -18,6 +19,11 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
   const store = inject(MockDataStore);
   const path = req.url.replace(environment.apiUrl, '').split('?')[0];
   const params = new URL(req.url, 'http://local').searchParams;
+  // HttpClient keeps query params on req.params until the request is sent.
+  for (const key of req.params.keys()) {
+    const value = req.params.get(key);
+    if (value != null) params.set(key, value);
+  }
 
   return from(store.ready()).pipe(
     switchMap(() => {
@@ -121,6 +127,15 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       }
       if (req.method === 'GET' && path === '/auth/me') {
         const auth = req.headers.get('Authorization') || '';
+        if (auth.includes('preview-admin')) {
+          return jsonOk({
+            id: 'preview-admin',
+            email: 'admin@aimarkets.vn',
+            name: 'AI Markets Admin',
+            role: 'admin',
+            createdAt: '2026-01-01T00:00:00.000Z',
+          });
+        }
         const id = auth.replace('Bearer mock.', '');
         const user = store.getUser(id);
         return user ? jsonOk(user) : jsonOk({ message: 'Unauthorized' }, 401);
@@ -232,6 +247,15 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
       if (req.method === 'DELETE' && path.startsWith('/products/')) {
         store.deleteProduct(path.split('/')[2]);
         return jsonOk({ ok: true });
+      }
+
+      const adminMock = mockAdminCommerce(req.method, path, params, req.body);
+      if (adminMock !== undefined) {
+        const wrapped = adminMock as { status?: number; body?: unknown };
+        if (wrapped && typeof wrapped.status === 'number' && 'body' in wrapped) {
+          return jsonOk(wrapped.body, wrapped.status);
+        }
+        return jsonOk(adminMock);
       }
 
       return jsonOk({ message: `Mock route missing: ${req.method} ${path}` }, 404);

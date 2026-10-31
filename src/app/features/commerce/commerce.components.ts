@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
@@ -6,9 +6,12 @@ import { DashboardService, ReviewService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import { AdminOverviewChartsComponent } from '../admin/admin-overview-charts.component';
 import { AdminPeopleComponent } from '../admin/admin-people.component';
+import { AdminDisputesComponent } from '../admin/admin-disputes.component';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
+import { ADMIN_DISPUTE_MESSAGES } from '../admin/admin-disputes.messages';
 import {
   AdminOverview,
-  Order,
   Review,
 } from '../../models/marketplace.models';
 
@@ -41,7 +44,7 @@ export class BillingComponent {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CurrencyPipe, DecimalPipe, PercentPipe, DatePipe, RouterLink, AdminOverviewChartsComponent, AdminPeopleComponent],
+  imports: [CurrencyPipe, DecimalPipe, PercentPipe, RouterLink, TPipe, AdminOverviewChartsComponent, AdminPeopleComponent, AdminDisputesComponent],
   template: `
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
@@ -57,7 +60,7 @@ export class BillingComponent {
       <div class="admin-tabs mt-6" role="tablist">
         @for (x of tabs; track x.id) {
           <button type="button" role="tab" [attr.aria-selected]="tab() === x.id" [class.active]="tab() === x.id" (click)="setTab(x.id)">
-            {{ x.label }}
+            {{ x.id === 'disputes' ? ('admin.dispute.tab' | t) : x.label }}
             @if (x.id === 'disputes' && openDisputes()) {
               <span class="admin-tabs__count">{{ openDisputes() }}</span>
             }
@@ -65,9 +68,9 @@ export class BillingComponent {
         }
       </div>
 
-      @if (data(); as d) {
         @switch (tab()) {
         @case ('overview') {
+        @if (data(); as d) {
         <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Tổng doanh thu sàn (GMV)</p>
@@ -112,8 +115,10 @@ export class BillingComponent {
 
         <app-admin-overview-charts [overview]="d" />
         }
+        }
 
         @case ('shops') {
+        @if (data(); as d) {
         <div class="panel mt-6">
           <h2 class="font-display text-2xl">Doanh thu từng shop</h2>
           <p class="mt-1 text-sm text-muted">Gross · phí sàn · seller payable — không đồng nhất với 80%</p>
@@ -157,6 +162,7 @@ export class BillingComponent {
           </div>
         </div>
         }
+        }
 
         @case ('people') {
         <app-admin-people />
@@ -197,36 +203,11 @@ export class BillingComponent {
         }
 
         @case ('disputes') {
-        <div class="panel mt-6">
-          <h2 class="font-display text-2xl">Disputes</h2>
-          <p class="mt-1 text-sm text-muted">Chỉ đóng băng seller net của đơn bị khiếu nại, không khóa cả ví.</p>
-          <ul class="mt-4 space-y-3 text-sm">
-            @for (o of disputes(); track o.id) {
-              <li class="border-b border-line py-3">
-                <p class="font-medium">{{ o.productName }} · {{ o.amount | currency: o.currency }}</p>
-                <p class="text-muted">{{ o.disputeStatus }} · {{ o.disputeReason }}</p>
-                <p class="text-xs text-muted">
-                  Held {{ o.sellerNet | currency: o.currency }} · {{ o.disputeOpenedAt | date: 'short' }}
-                </p>
-                @if (o.disputeStatus === 'open') {
-                  <div class="mt-2 flex flex-wrap gap-2">
-                    <button class="btn btn-fill text-xs" type="button" (click)="resolve(o, 'seller')">
-                      Seller keeps payout
-                    </button>
-                    <button class="btn btn-outline text-xs" type="button" (click)="resolve(o, 'buyer')">
-                      Refund buyer
-                    </button>
-                  </div>
-                }
-              </li>
-            } @empty {
-              <li class="text-muted">No disputes.</li>
-            }
-          </ul>
+        <div class="mt-6">
+          <app-admin-disputes (openCountChange)="openDisputes.set($event)" />
         </div>
         }
         }
-      }
     </section>
   `,
   styles: [
@@ -281,6 +262,7 @@ export class AdminComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly i18n = inject(I18nService);
   readonly tabs: { id: AdminTab; label: string }[] = [
     { id: 'overview', label: 'Tổng quan' },
     { id: 'shops', label: 'Doanh thu shop' },
@@ -290,8 +272,12 @@ export class AdminComponent implements OnInit {
   ];
   readonly tab = signal<AdminTab>('overview');
   readonly data = signal<AdminOverview | null>(null);
-  readonly disputes = signal<Order[]>([]);
-  readonly openDisputes = computed(() => this.disputes().filter((o) => o.disputeStatus === 'open').length);
+  readonly openDisputes = signal(0);
+
+  constructor() {
+    this.i18n.extend(ADMIN_DISPUTE_MESSAGES);
+  }
+
   ngOnInit(): void {
     this.seo.set({ title: 'Admin' });
     this.route.queryParamMap.subscribe((q) => {
@@ -299,17 +285,14 @@ export class AdminComponent implements OnInit {
       this.tab.set(t && this.tabs.some((x) => x.id === t) ? t : 'overview');
     });
     this.api.adminOverview().subscribe((d) => this.data.set(d));
-    this.api.adminDisputes().subscribe((list) => this.disputes.set(list));
+    this.api.adminDisputes({ limit: 1 }).subscribe({
+      next: (page) => this.openDisputes.set(page.openCount),
+      error: () => undefined,
+    });
   }
 
   setTab(id: AdminTab): void {
     void this.router.navigate([], { queryParams: { tab: id === 'overview' ? null : id }, replaceUrl: true });
-  }
-
-  resolve(o: Order, resolution: 'seller' | 'buyer'): void {
-    this.api.resolveDispute(o.id, resolution).subscribe((updated) => {
-      this.disputes.update((list) => list.map((row) => (row.id === updated.id ? updated : row)));
-    });
   }
 }
 

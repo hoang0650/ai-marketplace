@@ -1,0 +1,41 @@
+<section class="dthread">
+  <h2>{{ 'dispute.thread.title' | t }}</h2>
+  <p class="dthread__hint">{{ (hint() === 'admin' ? 'dispute.thread.hint.admin' : 'dispute.thread.hint.party') | t }}</p>
+  <ol class="dthread__list">
+    @for (m of messages(); track m.id) {
+      <li class="dthread__msg" [attr.data-role]="m.role" [class.is-me]="viewerId() && m.authorId === viewerId()">
+        <p class="dthread__meta">
+          <strong>{{ label(m) }}</strong>
+          @if (m.createdAt) {
+            <span> · {{ m.createdAt | date: 'short' }}</span>
+          }
+        </p>
+        <p class="dthread__body">{{ m.body }}</p>
+      </li>
+    } @empty {
+      <li class="dthread__empty">{{ 'dispute.thread.empty' | t }}</li>
+    }
+  </ol>
+  @if (closedNote() && !canReply()) {
+    <p class="dthread__hint">{{ 'dispute.thread.closed' | t }}</p>
+  }
+  @if (error()) {
+    <p class="dthread__err" role="alert">{{ error() }}</p>
+  }
+  @if (canReply()) {
+    <form class="dthread__form" (ngSubmit)="submit()">
+      <label class="visually-hidden" for="dispute-thread-draft">{{ 'dispute.thread.ph' | t }}</label>
+      <textarea
+        id="dispute-thread-draft"
+        class="input"
+        name="draft"
+        rows="3"
+        [(ngModel)]="draft"
+        [placeholder]="'dispute.thread.ph' | t"
+      ></textarea>
+      <button class="btn btn-fill" type="submit" [disabled]="busy() || !draft.trim()">
+        {{ 'dispute.thread.send' | t }}
+      </button>
+    </form>
+  }
+</section>

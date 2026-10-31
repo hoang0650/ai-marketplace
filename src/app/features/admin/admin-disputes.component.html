@@ -1,0 +1,86 @@
+<div class="panel adq">
+  <div class="adq-head">
+    <div>
+      <h2 class="font-display text-2xl">{{ 'admin.dispute.listTitle' | t }}</h2>
+      <p class="adq-lede">{{ 'admin.dispute.lede' | t }}</p>
+    </div>
+    @if (page(); as pg) {
+      <p class="adq-open">{{ 'admin.dispute.openCount' | t: { n: pg.openCount } }}</p>
+    }
+  </div>
+
+  <div class="adq-filters">
+    <div class="adq-seg" role="tablist" [attr.aria-label]="'admin.dispute.listTitle' | t">
+      @for (s of filters; track s) {
+        <button type="button" role="tab" [attr.aria-selected]="status() === s" [class.on]="status() === s" (click)="setStatus(s)">
+          {{ filterKey(s) | t }}
+        </button>
+      }
+    </div>
+    <input
+      class="adq-search"
+      type="search"
+      [placeholder]="'admin.dispute.search' | t"
+      [attr.aria-label]="'admin.dispute.search' | t"
+      [ngModel]="q()"
+      (ngModelChange)="onSearch($event)"
+    />
+    <select class="adq-search adq-size" [ngModel]="limit()" (ngModelChange)="setLimit(+$event)" [attr.aria-label]="'admin.dispute.perPage' | t: { n: limit() }">
+      @for (n of sizes; track n) {
+        <option [ngValue]="n">{{ 'admin.dispute.perPage' | t: { n } }}</option>
+      }
+    </select>
+  </div>
+
+  <ul class="adq-list" [class.is-busy]="loading()">
+    @for (row of page()?.items || []; track row.id) {
+      <li>
+        <a class="adq-row" [routerLink]="['/admin/disputes', row.id]">
+          <span class="adq-main">
+            <span class="adq-title">{{ row.productName }} · {{ row.amount | currency: row.currency }}</span>
+            <span class="adq-sub">
+              {{ row.buyerName || '—' }} · {{ row.sellerName || '—' }}
+            </span>
+            @if (row.disputeReason) {
+              <span class="adq-sub">{{ row.disputeReason }}</span>
+            }
+          </span>
+          <span class="adq-meta">
+            <span class="adq-pill" [attr.data-status]="row.disputeStatus">{{ statusLabel(row.disputeStatus) }}</span>
+            <span>{{ heldLabel(row) }}</span>
+            @if (row.disputeOpenedAt) {
+              <span>{{ row.disputeOpenedAt | date: 'short' }}</span>
+            }
+          </span>
+        </a>
+      </li>
+    } @empty {
+      @if (!loading()) {
+        <li class="adq-empty">{{ error() ? ('admin.dispute.error' | t) : ('admin.dispute.empty' | t) }}</li>
+      }
+    }
+  </ul>
+
+  @if (loading() && !page()) {
+    <p class="adq-empty">{{ 'admin.dispute.loading' | t }}</p>
+  }
+  @if (error()) {
+    <button type="button" class="adq-retry" (click)="load()">{{ 'admin.dispute.retry' | t }}</button>
+  }
+
+  @if (page(); as pg) {
+    <nav class="adq-pager" [attr.aria-label]="'admin.dispute.listTitle' | t">
+      <span>{{ rangeLabel(pg) }}</span>
+      <span class="adq-pages">
+        <button type="button" [disabled]="pg.page <= 1" (click)="go(pg.page - 1)" [attr.aria-label]="'admin.dispute.prev' | t">‹</button>
+        @for (n of pageList(pg); track $index) {
+          @if (n === 0) { <span class="adq-gap">…</span> }
+          @else {
+            <button type="button" [class.on]="n === pg.page" [attr.aria-current]="n === pg.page ? 'page' : null" (click)="go(n)" [attr.aria-label]="'admin.dispute.page' | t: { n }">{{ n }}</button>
+          }
+        }
+        <button type="button" [disabled]="pg.page >= pg.pages" (click)="go(pg.page + 1)" [attr.aria-label]="'admin.dispute.next' | t">›</button>
+      </span>
+    </nav>
+  }
+</div>

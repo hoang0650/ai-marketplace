@@ -216,8 +216,8 @@ export class DashboardHomeComponent implements OnInit {
                   >
                     Khiếu nại
                   </a>
-                } @else if (o.disputeStatus === 'open') {
-                  <a class="mt-1 block text-xs text-accent underline" routerLink="/complaints">Đang khiếu nại</a>
+                } @else if (o.disputeStatus && o.disputeStatus !== 'none') {
+                  <a class="mt-1 block text-xs text-accent underline" [routerLink]="['/orders', o.id]">Đang khiếu nại</a>
                 }
               </td>
               <td>{{ o.createdAt | date: 'short' }}</td>

@@ -938,7 +938,13 @@ export const routes: Routes = [
         path: 'admin/users/:id',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./features/commerce/admin-moderation.components').then((m) => m.AdminUserDetailComponent),
+          import('./features/admin/admin-user-detail.component').then((m) => m.AdminUserDetailComponent),
+      },
+      {
+        path: 'admin/disputes/:id',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/admin-dispute-detail.component').then((m) => m.AdminDisputeDetailComponent),
       },
       {
         path: 'admin/products/:id',
