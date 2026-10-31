@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
+import { CurrencyService } from '../../i18n/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
 
 export interface BankTopupConfig {
@@ -178,7 +179,7 @@ const TXT = {
           <label class="bt-label" for="btAmount">{{ t().amount }}</label>
           <div class="bt-input">
             <input id="btAmount" type="number" inputmode="decimal" [min]="currency === 'VND' ? 1000 : 1"
-              [step]="currency === 'VND' ? 1000 : 0.01" [(ngModel)]="amount" (ngModelChange)="changed()" name="btAmount" />
+              [step]="currency === 'VND' ? 1000 : 0.01" [ngModel]="shownAmount()" (ngModelChange)="setAmount($event)" name="btAmount" />
             <div class="bt-seg" role="group">
               <button type="button" [class.on]="currency === 'VND'" (click)="setCurrency('VND')">VND</button>
               <button type="button" [class.on]="currency === 'USD'" (click)="setCurrency('USD')">USD</button>
@@ -186,7 +187,7 @@ const TXT = {
           </div>
           <div class="bt-quick">
             @for (q of quick(); track q) {
-              <button type="button" [class.on]="+amount === q" (click)="amount = q; changed()">
+              <button type="button" [class.on]="+shownAmount() === q" (click)="setAmount(q)">
                 {{ currency === 'VND' ? (q | number: '1.0-0') + ' ₫' : '$' + q }}
               </button>
             }
@@ -194,7 +195,7 @@ const TXT = {
           <div class="bt-conv">
             <div><span class="bt-k">{{ t().willTransfer }}</span><b>{{ estVnd() | number: '1.0-0' }} ₫</b></div>
             <div><span class="bt-k">{{ t().willCredit }}</span><b>{{ estUsd() | currency: 'USD': 'symbol-narrow': '1.2-2' }}</b></div>
-            <div><span class="bt-k">{{ t().rate }}</span><span>{{ cfg()!.vndPerUsd | number: '1.0-0' }} ₫/USD</span></div>
+            <div><span class="bt-k">{{ t().rate }}</span><span>{{ fx.vndPerUsd() | number: '1.0-0' }} ₫/USD</span></div>
           </div>
           <button type="button" class="bt-btn bt-btn--primary" [disabled]="busy() || estVnd() <= 0" (click)="create()">
             {{ busy() ? t().creating : t().create }}
@@ -306,7 +307,10 @@ const TXT = {
 export class BankTopupComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly i18n = inject(I18nService);
+  readonly fx = inject(CurrencyService);
   private readonly base = `${environment.apiUrl}/wallet/bank-transfer`;
+  /** Vietnamese preset stays at 10 USD until the buyer edits the amount. */
+  private amountTouched = false;
 
   readonly cfg = signal<BankTopupConfig | null>(null);
   readonly dep = signal<BankDeposit | null>(null);
@@ -324,44 +328,70 @@ export class BankTopupComponent implements OnInit {
   @Input() initialVnd = 0;
   @Output() vndChange = new EventEmitter<number>();
 
-  changed(): void {
+  /**
+   * Untouched Vietnamese preset is 10 USD at the live quote, so it moves when the
+   * endpoint replaces the fallback. Editing or switching currency locks it.
+   */
+  shownAmount(): number {
+    if (!this.amountTouched && this.initialVnd <= 0 && this.currency === 'VND' && this.i18n.lang() === 'vi') {
+      return Math.round(10 * this.fx.vndPerUsd());
+    }
+    return Number(this.amount) || 0;
+  }
+
+  setAmount(v: number): void {
+    this.amountTouched = true;
+    this.amount = Number(v) || 0;
     this.vndChange.emit(this.estVnd());
   }
 
   quick(): number[] {
-    return this.currency === 'VND' ? [100000, 265000, 500000, 1000000] : [5, 10, 20, 50];
+    if (this.currency !== 'VND') return [5, 10, 20, 50];
+    const tenUsd = Math.round(10 * this.fx.vndPerUsd());
+    return [...new Set([100_000, tenUsd, 500_000, 1_000_000])];
   }
 
   setCurrency(c: 'USD' | 'VND'): void {
     if (c === this.currency) return;
-    this.amount = c === 'VND' ? this.estVnd() : this.estUsd();
+    const current = this.shownAmount();
+    const from = this.currency;
+    const rate = this.fx.vndPerUsd();
+    this.amountTouched = true;
+    this.amount =
+      c === 'VND'
+        ? from === 'VND'
+          ? Math.round(current)
+          : Math.round((Math.round(current * 100) * rate) / 100)
+        : from === 'USD'
+          ? Math.round(current * 100) / 100
+          : Math.round((Math.round(current) / rate) * 100) / 100;
     this.currency = c;
-    this.changed();
+    this.vndChange.emit(this.estVnd());
   }
 
   /** Mirrors API convertAmount: no rounding to 1,000đ. USD input → VND = cents * rate. */
   estVnd(): number {
-    const rate = this.cfg()?.vndPerUsd || 26500;
-    const n = Number(this.amount) || 0;
+    const rate = this.fx.vndPerUsd();
+    const n = this.shownAmount();
     if (this.currency === 'VND') return Math.round(n);
     return Math.round((Math.round(n * 100) * rate) / 100);
   }
 
   estUsd(): number {
-    const rate = this.cfg()?.vndPerUsd || 26500;
-    const n = Number(this.amount) || 0;
+    const rate = this.fx.vndPerUsd();
+    const n = this.shownAmount();
     if (this.currency === 'USD') return Math.round(n * 100) / 100;
     return Math.round((Math.round(n) / rate) * 100) / 100;
   }
 
   ngOnInit(): void {
-    if (this.i18n.lang() === 'vi') {
-      this.currency = 'VND';
-      this.amount = 265000;
-    }
     if (this.initialVnd > 0) {
       this.currency = 'VND';
       this.amount = Math.round(this.initialVnd);
+      this.amountTouched = true;
+    } else if (this.i18n.lang() === 'vi') {
+      this.currency = 'VND';
+      this.amount = Math.round(10 * this.fx.vndPerUsd());
     }
     this.http.get<BankTopupConfig>(`${this.base}/config`).subscribe({
       next: (c) => this.cfg.set(c),
