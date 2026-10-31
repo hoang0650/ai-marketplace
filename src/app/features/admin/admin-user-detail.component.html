@@ -1,0 +1,293 @@
+<section class="page route-enter aud">
+  <a routerLink="/admin" class="aud-back">{{ 'admin.user.back' | t }}</a>
+  <h1 class="section-title">{{ 'admin.user.title' | t }}</h1>
+
+  @if (item(); as u) {
+    <header class="aud-hero panel">
+      <div class="aud-hero__id">
+        @if (u.avatarUrl) {
+          <img class="aud-ava" [src]="u.avatarUrl" [alt]="u.name" />
+        } @else {
+          <span class="aud-ava aud-ava--blank" aria-hidden="true">{{ initial(u.name) }}</span>
+        }
+        <div class="min-w-0">
+          <h2 class="aud-name">{{ u.name }}</h2>
+          <p class="aud-tags">
+            <span class="aud-pill">{{ roleLabel(u.role) }}</span>
+            <span class="aud-pill" [attr.data-status]="u.accountStatus">{{ statusLabel(u.accountStatus) }}</span>
+            @if (u.kyc?.status) {
+              <span class="aud-pill" [attr.data-kyc]="u.kyc?.status">{{ kycStatus(u.kyc!.status) }}</span>
+            }
+          </p>
+        </div>
+      </div>
+      <dl class="aud-facts">
+        <dt>{{ 'admin.user.email' | t }}</dt>
+        <dd><a [href]="'mailto:' + u.email">{{ u.email }}</a></dd>
+        <dt>{{ 'admin.user.phone' | t }}</dt>
+        <dd>
+          @if (u.phone; as phone) {
+            <span class="aud-phone">{{ phone.number }}</span>
+            <span class="aud-source">{{ phoneSource(phone) }}</span>
+          } @else {
+            —
+          }
+        </dd>
+        <dt>{{ 'admin.user.ekyc' | t }}</dt>
+        <dd>
+          @if (u.kyc?.status) {
+            {{ kycStatus(u.kyc!.status) }}
+            @if (u.kyc?.subjectType) { · {{ kycSubject(u.kyc!.subjectType) }} }
+            @if (u.kyc?.fullName) { · {{ u.kyc!.fullName }} }
+            <a class="aud-inline" routerLink="/admin/kyc">{{ 'admin.user.ekycQueue' | t }}</a>
+          } @else {
+            {{ 'admin.user.ekycNone' | t }}
+          }
+        </dd>
+        @if (u.createdAt) {
+          <dt>{{ 'admin.user.created' | t }}</dt>
+          <dd>{{ u.createdAt | date: 'medium' }}</dd>
+        }
+      </dl>
+    </header>
+
+    <div class="aud-grid">
+      <section class="panel">
+        <h2>{{ 'admin.user.wallet' | t }}</h2>
+        <div class="aud-stats">
+          <div>
+            <p>{{ 'admin.user.balance' | t }}</p>
+            <strong>{{ u.wallet ? (u.wallet.balance | currency: u.wallet.currency) : '—' }}</strong>
+          </div>
+          <div>
+            <p>{{ 'admin.user.held' | t }}</p>
+            <strong>{{ u.wallet ? (u.wallet.held | currency: u.wallet.currency) : '—' }}</strong>
+          </div>
+          <div>
+            <p>{{ 'admin.user.available' | t }}</p>
+            <strong>{{ u.wallet ? (u.wallet.available | currency: u.wallet.currency) : '—' }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>{{ 'admin.user.links' | t }}</h2>
+        <dl class="aud-facts">
+          <dt>{{ 'admin.user.shop' | t }}</dt>
+          <dd>
+            @if (shopHref(u); as href) {
+              @if (href.startsWith('http')) {
+                <a [href]="href" target="_blank" rel="noopener">{{ u.creatorSlug || href }}</a>
+              } @else {
+                <a [routerLink]="href">{{ u.creatorSlug || href }}</a>
+              }
+            } @else {
+              {{ 'admin.user.shopMissing' | t }}
+            }
+          </dd>
+          <dt>{{ 'admin.user.account' | t }}</dt>
+          <dd>
+            @if (u.links?.account; as account) {
+              @if (account.startsWith('http')) {
+                <a [href]="account" target="_blank" rel="noopener">{{ u.email }}</a>
+              } @else {
+                <a [routerLink]="account">{{ u.email }}</a>
+              }
+            } @else {
+              {{ u.email }}
+            }
+            <span class="aud-id">{{ 'admin.user.accountId' | t }} · {{ u.id }}</span>
+          </dd>
+          <dt>{{ 'admin.user.lastLogin' | t }}</dt>
+          <dd>
+            @if (u.lastLogin?.at) {
+              {{ u.lastLogin!.at | date: 'medium' }}
+              @if (u.lastLogin?.ip) {
+                <span class="aud-id">{{ 'admin.user.lastLoginIp' | t }} {{ u.lastLogin!.ip }}</span>
+              }
+            } @else {
+              {{ 'admin.user.neverLogin' | t }}
+            }
+          </dd>
+          @if (u.suspendedUntil && u.accountStatus === 'suspended') {
+            <dt>{{ 'admin.user.suspendedUntil' | t }}</dt>
+            <dd>{{ u.suspendedUntil | date: 'medium' }}</dd>
+          }
+          @if (u.statusReason) {
+            <dt>{{ 'admin.user.reason' | t }}</dt>
+            <dd>{{ u.statusReason }}</dd>
+          }
+        </dl>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>
+        {{ 'admin.user.licenses' | t }}
+        <span class="aud-count">{{ 'admin.user.sectionCount' | t: { n: (u.licenses || []).length } }}</span>
+      </h2>
+      @if (u.licenses?.length) {
+        <ul class="aud-list">
+          @for (row of u.licenses; track row.id) {
+            <li>
+              <span class="aud-list__main">
+                <span class="aud-list__title">{{ row.productName || row.id }}</span>
+                @if (row.licenseKey) { <span class="aud-mono">{{ row.licenseKey }}</span> }
+              </span>
+              <span class="aud-list__meta">
+                @if (row.status) { <span>{{ licenseStatus(row.status) }}</span> }
+                @if (row.expiresAt) {
+                  <span>{{ 'admin.user.expires' | t }} {{ row.expiresAt | date: 'dd/MM/yyyy' }}</span>
+                } @else {
+                  <span>{{ 'admin.user.noExpiry' | t }}</span>
+                }
+                @if (row.orderId) {
+                  <a [routerLink]="['/orders', row.orderId]">{{ row.orderId }}</a>
+                }
+              </span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="aud-empty">{{ 'admin.user.licensesEmpty' | t }}</p>
+      }
+    </section>
+
+    <section class="panel">
+      <h2>
+        {{ 'admin.user.orders' | t }}
+        <span class="aud-count">{{ 'admin.user.sectionCount' | t: { n: u.orderCount ?? (u.recentOrders || []).length } }}</span>
+      </h2>
+      @if (u.recentOrders?.length) {
+        <ul class="aud-list">
+          @for (row of u.recentOrders; track row.id) {
+            <li>
+              <a class="aud-list__main" [routerLink]="['/orders', row.id]">
+                <span class="aud-list__title">{{ row.productName }}</span>
+                <span class="aud-id">{{ row.id }}</span>
+              </a>
+              <span class="aud-list__meta">
+                <span>{{ row.amount | currency: row.currency }}</span>
+                <span>{{ orderStatus(row.status) }}@if (row.role) { · {{ orderRole(row.role) }} }</span>
+                @if (row.disputeStatus && row.disputeStatus !== 'none') {
+                  <a [routerLink]="['/admin/disputes', row.id]">{{ disputeLabel(row.disputeStatus) }}</a>
+                }
+                <span>{{ row.createdAt | date: 'short' }}</span>
+              </span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="aud-empty">{{ 'admin.user.ordersEmpty' | t }}</p>
+      }
+    </section>
+
+    <section class="panel">
+      <h2>
+        {{ 'admin.user.products' | t }}
+        <span class="aud-count">{{ 'admin.user.sectionCount' | t: { n: u.productCount ?? (u.products || []).length } }}</span>
+      </h2>
+      @if (u.products?.length) {
+        <ul class="aud-list">
+          @for (row of u.products; track row.id) {
+            <li>
+              <a class="aud-list__main" [routerLink]="['/admin/products', row.id]">
+                <span class="aud-list__title">{{ row.name }}</span>
+                @if (row.slug) { <span class="aud-id">{{ row.slug }}</span> }
+              </a>
+              <span class="aud-list__meta">
+                @if (row.moderationStatus) { <span>{{ statusLabel(row.moderationStatus) }}</span> }
+                @if (row.salesCount != null) { <span>{{ row.salesCount | number }}</span> }
+                @if (row.slug) {
+                  <a [routerLink]="['/product', row.slug]">{{ 'admin.dispute.viewProduct' | t }}</a>
+                }
+              </span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="aud-empty">{{ 'admin.user.productsEmpty' | t }}</p>
+      }
+    </section>
+
+    <section class="panel">
+      <h2>
+        {{ 'admin.user.disputes' | t }}
+        <span class="aud-count">{{ 'admin.user.sectionCount' | t: { n: (u.disputes || []).length } }}</span>
+      </h2>
+      @if (u.disputes?.length) {
+        <ul class="aud-list">
+          @for (row of u.disputes; track row.id) {
+            <li>
+              <a class="aud-list__main" [routerLink]="['/admin/disputes', row.id]">
+                <span class="aud-list__title">{{ row.productName }}</span>
+                @if (row.disputeReason) { <span class="aud-id">{{ row.disputeReason }}</span> }
+              </a>
+              <span class="aud-list__meta">
+                <span class="aud-pill" [attr.data-dispute]="row.disputeStatus">{{ disputeLabel(row.disputeStatus) }}</span>
+                <span>{{ row.amount | currency: row.currency }}</span>
+                @if (row.disputeOpenedAt) { <span>{{ row.disputeOpenedAt | date: 'short' }}</span> }
+              </span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="aud-empty">{{ 'admin.user.disputesEmpty' | t }}</p>
+      }
+    </section>
+
+    <section class="panel">
+      <h2>{{ 'admin.user.affiliate' | t }}</h2>
+      @if (u.affiliate; as aff) {
+        <div class="aud-stats">
+          <div>
+            <p>{{ 'admin.user.affCode' | t }}</p>
+            <strong>{{ aff.code || '—' }}</strong>
+          </div>
+          <div>
+            <p>{{ 'admin.user.affClicks' | t }}</p>
+            <strong>{{ aff.clicks | number }}</strong>
+          </div>
+          <div>
+            <p>{{ 'admin.user.affConversions' | t }}</p>
+            <strong>{{ aff.conversions | number }}</strong>
+          </div>
+          <div>
+            <p>{{ 'admin.user.affEarnings' | t }}</p>
+            <strong>{{ aff.earnings | currency: aff.currency || 'USD' }}</strong>
+          </div>
+          @if (aff.orders != null) {
+            <div>
+              <p>{{ 'admin.user.affOrders' | t }}</p>
+              <strong>{{ aff.orders | number }}</strong>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="aud-empty">{{ 'admin.user.affiliateEmpty' | t }}</p>
+      }
+    </section>
+
+    <section class="panel">
+      <h2>{{ 'admin.user.moderation' | t }}</h2>
+      <app-admin-status-form
+        [current]="u.accountStatus"
+        [initialReason]="u.statusReason || ''"
+        [hideDelete]="isSelf()"
+        [deleteLabel]="'admin.user.deleteAccount' | t"
+        (saved)="save($event)"
+        (deleted)="remove()"
+      />
+      @if (actionError()) {
+        <p class="aud-err" role="alert">{{ actionError() }}</p>
+      }
+      @if (isSelf()) {
+        <p class="aud-note">{{ 'admin.user.selfGuard' | t }}</p>
+      }
+    </section>
+  } @else if (loadError()) {
+    <p class="aud-err">{{ loadError() }}</p>
+  } @else if (loading()) {
+    <p class="aud-note">{{ 'admin.user.loading' | t }}</p>
+  }
+</section>

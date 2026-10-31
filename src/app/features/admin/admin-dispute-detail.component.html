@@ -1,0 +1,252 @@
+<section class="page route-enter add">
+  <a class="add-back" routerLink="/admin" [queryParams]="{ tab: 'disputes' }">{{ 'admin.dispute.back' | t }}</a>
+  <h1 class="section-title">{{ 'admin.dispute.title' | t }}</h1>
+
+  @if (item(); as d) {
+    <p class="add-status">
+      <span class="add-pill" [attr.data-status]="d.disputeStatus">{{ statusLabel(d.disputeStatus) }}</span>
+      @if (notice()) { <span class="add-ok">{{ notice() }}</span> }
+    </p>
+
+    <div class="add-layout">
+      <div class="add-main">
+        <section class="panel">
+          <h2>{{ 'admin.dispute.order' | t }}</h2>
+          <dl class="add-facts">
+            <dt>{{ 'admin.dispute.order' | t }}</dt>
+            <dd>
+              <a [routerLink]="['/orders', d.order.id]">{{ d.order.id }}</a>
+              · {{ orderStatus(d.order.status) }}
+              · {{ d.order.createdAt | date: 'medium' }}
+            </dd>
+            <dt>{{ 'admin.dispute.product' | t }}</dt>
+            <dd>
+              <a [routerLink]="['/admin/products', d.product.id]">{{ d.product.name }}</a>
+              @if (d.product.slug) {
+                · <a [routerLink]="['/product', d.product.slug]">{{ 'admin.dispute.viewProduct' | t }}</a>
+              }
+            </dd>
+          </dl>
+        </section>
+
+        <section class="panel">
+          <h2>{{ 'admin.dispute.parties' | t }}</h2>
+          <div class="add-parties">
+            <article>
+              <p class="add-kicker">{{ 'admin.dispute.buyer' | t }}</p>
+              <a [routerLink]="['/admin/users', d.buyer.id]">{{ d.buyer.name }}</a>
+              @if (d.buyer.email) { <span>{{ d.buyer.email }}</span> }
+            </article>
+            <article>
+              <p class="add-kicker">{{ 'admin.dispute.seller' | t }}</p>
+              <a [routerLink]="['/admin/users', d.seller.id]">{{ d.seller.name }}</a>
+              @if (d.seller.creatorSlug) {
+                <a [routerLink]="['/store', d.seller.creatorSlug]">{{ d.seller.creatorSlug }}</a>
+              }
+              @if (d.seller.email) { <span>{{ d.seller.email }}</span> }
+            </article>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>{{ 'admin.dispute.money' | t }}</h2>
+          <div class="add-stats">
+            <div>
+              <p>{{ 'admin.dispute.amount' | t }}</p>
+              <strong>{{ orderAmount(d) | currency: currency(d) }}</strong>
+            </div>
+            <div>
+              <p>{{ 'admin.dispute.sellerNet' | t }}</p>
+              <strong>{{ (d.order.sellerNet ?? d.sellerNet) | currency: currency(d) }}</strong>
+            </div>
+            @if (hasFee(d)) {
+              <div>
+                <p>{{ 'admin.dispute.platformFee' | t }}</p>
+                <strong>{{ feeAmount(d) | currency: currency(d) }}</strong>
+              </div>
+            }
+            <div>
+              <p>{{ 'admin.dispute.heldFunds' | t }}</p>
+              <strong>{{ d.held | currency: currency(d) }}</strong>
+            </div>
+            @if (d.refunded != null) {
+              <div>
+                <p>{{ 'admin.dispute.refunded' | t }}</p>
+                <strong>{{ d.refunded | currency: currency(d) }}</strong>
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>{{ 'admin.dispute.claim' | t }}</h2>
+          @if (d.claim?.reason) {
+            <p class="add-copy">{{ d.claim!.reason }}</p>
+            <p class="add-meta">
+              @if (d.claim?.openedBy) { {{ 'admin.dispute.claimBy' | t }}: {{ roleLabel(d.claim!.openedBy) }} }
+              @if (d.claim?.openedAt) { · {{ d.claim!.openedAt | date: 'medium' }} }
+            </p>
+          } @else {
+            <p class="add-muted">{{ 'admin.dispute.claimEmpty' | t }}</p>
+          }
+        </section>
+
+        <section class="panel">
+          <h2>{{ 'admin.dispute.evidence' | t }}</h2>
+          @if (d.evidence?.length) {
+            <ul class="add-evidence">
+              @for (ev of d.evidence; track ev.url + (ev.id || '') + (ev.note || '')) {
+                <li>
+                  @if (ev.url) {
+                    <a [href]="ev.url" target="_blank" rel="noopener noreferrer">{{ ev.name || ev.url }}</a>
+                  }
+                  @if (ev.note) { <span>{{ ev.note }}</span> }
+                  @if (ev.createdAt) { <span class="add-meta">{{ ev.createdAt | date: 'short' }}</span> }
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="add-muted">{{ 'admin.dispute.evidenceEmpty' | t }}</p>
+          }
+        </section>
+
+        <section class="panel">
+          <h2>{{ 'admin.dispute.timeline' | t }}</h2>
+          @if (events(d.timeline).length) {
+            <ol class="add-log">
+              @for (ev of events(d.timeline); track ev.at + ev.action + (ev.note || '')) {
+                <li>
+                  <strong>{{ ev.action }}</strong>
+                  <span class="add-meta">
+                    @if (ev.actorRole) { {{ roleLabel(ev.actorRole) }} · }
+                    {{ ev.at | date: 'short' }}
+                  </span>
+                  @if (ev.note) { <p>{{ ev.note }}</p> }
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="add-muted">{{ 'admin.dispute.timelineEmpty' | t }}</p>
+          }
+        </section>
+
+        <section class="panel">
+          <h2>{{ 'admin.dispute.outcome' | t }}</h2>
+          @if (d.outcome; as outcome) {
+            <p class="add-copy">{{ statusLabel(outcome.resolution) }}</p>
+            @if (outcome.refundAmount != null) {
+              <p>{{ 'admin.dispute.refundAmount' | t }}: {{ outcome.refundAmount | currency: currency(d) }}</p>
+            }
+            @if (outcomeText(d)) { <p class="add-copy">{{ outcomeText(d) }}</p> }
+            <p class="add-meta">
+              @if (outcome.resolvedByName) { {{ outcome.resolvedByName }} · }
+              @if (outcome.resolvedAt) { {{ outcome.resolvedAt | date: 'medium' }} }
+            </p>
+          } @else {
+            <p class="add-muted">{{ 'admin.dispute.outcomeEmpty' | t }}</p>
+          }
+        </section>
+
+        <section class="panel">
+          <h2>{{ 'admin.dispute.audit' | t }}</h2>
+          @if (events(d.auditLog).length) {
+            <ol class="add-log">
+              @for (ev of events(d.auditLog); track ev.at + ev.action + (ev.note || '')) {
+                <li>
+                  <strong>{{ ev.action }}</strong>
+                  <span class="add-meta">
+                    @if (ev.actorName) { {{ ev.actorName }} · }
+                    @else if (ev.actorRole) { {{ roleLabel(ev.actorRole) }} · }
+                    {{ ev.at | date: 'short' }}
+                  </span>
+                  @if (ev.note) { <p>{{ ev.note }}</p> }
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="add-muted">{{ 'admin.dispute.auditEmpty' | t }}</p>
+          }
+        </section>
+      </div>
+
+      <aside class="add-side">
+        <section class="panel">
+          <app-dispute-thread
+            [messages]="messages()"
+            [canReply]="d.disputeStatus === 'open'"
+            [busy]="sending()"
+            hint="admin"
+            [closedNote]="d.disputeStatus !== 'open'"
+            [error]="threadError()"
+            [viewerId]="auth.user()?.id || ''"
+            (send)="send($event)"
+          />
+        </section>
+
+        <section class="panel">
+          <h2>{{ 'admin.dispute.decideTitle' | t }}</h2>
+          @if (d.disputeStatus === 'open') {
+            <p class="add-muted">{{ 'admin.dispute.decideHint' | t }}</p>
+            <form class="add-form" (ngSubmit)="review(d)">
+              <fieldset>
+                <legend class="visually-hidden">{{ 'admin.dispute.decision' | t }}</legend>
+                @for (opt of ['buyer_full', 'buyer_partial', 'seller_win', 'split']; track opt) {
+                  <label>
+                    <input type="radio" name="choice" [value]="opt" [(ngModel)]="choice" />
+                    {{ ('admin.dispute.outcome.' + opt) | t }}
+                  </label>
+                }
+              </fieldset>
+              @if (choice === 'buyer_full') {
+                <p class="add-meta">{{ 'admin.dispute.refundAmount' | t }}: {{ orderAmount(d) | currency: currency(d) }}</p>
+              }
+              @if (needsAmount()) {
+                <label class="add-field">
+                  <span>{{ 'admin.dispute.refundAmount' | t }}</span>
+                  <input class="input" type="number" name="refundAmount" min="0" step="any" [(ngModel)]="refundAmount" />
+                </label>
+              }
+              <label class="add-field">
+                <span>{{ 'admin.dispute.reason' | t }} · {{ 'admin.dispute.reasonCount' | t: { n: reason.trim().length } }}</span>
+                <textarea class="input" name="reason" rows="4" [(ngModel)]="reason" [placeholder]="'admin.dispute.reasonPh' | t"></textarea>
+              </label>
+              @if (decideError()) {
+                <p class="add-err" role="alert">{{ decideError() }}</p>
+              }
+              <button class="btn btn-fill" type="submit" [disabled]="deciding()">{{ 'admin.dispute.submit' | t }}</button>
+            </form>
+          } @else {
+            <p class="add-muted">{{ 'admin.dispute.closed' | t }}</p>
+          }
+        </section>
+      </aside>
+    </div>
+  } @else if (loadError()) {
+    <p class="add-err">{{ loadError() }}</p>
+  } @else if (loading()) {
+    <p class="add-muted">{{ 'admin.dispute.loading' | t }}</p>
+  }
+
+  @if (pending(); as decision) {
+    <div class="add-backdrop" (click)="closeDialog()">
+      <div class="add-dialog" role="dialog" aria-modal="true" [attr.aria-labelledby]="'dispute-confirm-title'" (click)="$event.stopPropagation()">
+        <h2 id="dispute-confirm-title">{{ 'admin.dispute.confirmTitle' | t }}</h2>
+        <p>{{ 'admin.dispute.confirmBody' | t }}</p>
+        <dl class="add-facts">
+          <dt>{{ 'admin.dispute.decision' | t }}</dt>
+          <dd>{{ ('admin.dispute.outcome.' + decision.choice) | t }}</dd>
+          @if (decision.refundAmount != null && item(); as d) {
+            <dt>{{ 'admin.dispute.refundAmount' | t }}</dt>
+            <dd>{{ decision.refundAmount | currency: currency(d) }}</dd>
+          }
+          <dt>{{ 'admin.dispute.reason' | t }}</dt>
+          <dd>{{ decision.reason }}</dd>
+        </dl>
+        <div class="add-dialog__actions">
+          <button type="button" class="btn btn-outline" [disabled]="deciding()" (click)="pending.set(null)">{{ 'admin.dispute.cancel' | t }}</button>
+          <button type="button" class="btn btn-fill" [disabled]="deciding()" (click)="confirm()">{{ 'admin.dispute.confirm' | t }}</button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

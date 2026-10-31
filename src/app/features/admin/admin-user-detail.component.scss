@@ -1,0 +1,250 @@
+.aud {
+  max-width: 68rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.aud-back {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.aud-back:hover {
+  color: var(--color-ink);
+}
+
+.aud h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.aud-hero__id {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.aud-ava {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 999px;
+  object-fit: cover;
+  background: var(--color-mist);
+  flex: none;
+}
+
+.aud-ava--blank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.4rem;
+  border: 1px solid var(--color-line);
+}
+
+.aud-name {
+  margin: 0;
+  font-size: 1.35rem;
+  overflow-wrap: anywhere;
+}
+
+.aud-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.4rem 0 0;
+}
+
+.aud-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  background: var(--color-mist);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.aud-pill[data-status='active'],
+.aud-pill[data-kyc='verified'] {
+  color: #15803d;
+}
+
+.aud-pill[data-status='suspended'],
+.aud-pill[data-kyc='pending'],
+.aud-pill[data-dispute='open'] {
+  color: #b45309;
+}
+
+.aud-pill[data-status='blocked'],
+.aud-pill[data-kyc='rejected'] {
+  color: #b91c1c;
+}
+
+.aud-facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.45rem 1rem;
+  margin: 1rem 0 0;
+  font-size: 0.92rem;
+}
+
+.aud-facts dt {
+  color: var(--color-muted);
+  font-weight: 650;
+}
+
+.aud-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.aud-phone {
+  font-variant-numeric: tabular-nums;
+}
+
+.aud-source,
+.aud-id,
+.aud-inline {
+  display: inline-block;
+  margin-left: 0.4rem;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.aud-inline {
+  color: var(--color-accent);
+}
+
+.aud-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.aud-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.aud-stats p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.aud-stats strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.aud-count {
+  margin-left: 0.35rem;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.aud-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.aud-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--color-line);
+  font-size: 0.9rem;
+}
+
+.aud-list__main {
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.aud-list__title {
+  display: block;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.aud-list__main:hover .aud-list__title {
+  color: var(--color-accent);
+}
+
+.aud-list__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 0.15rem;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  flex: none;
+}
+
+.aud-mono {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.aud-empty,
+.aud-note {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.aud-err {
+  margin: 0.75rem 0 0;
+  color: #b42318;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 800px) {
+  .aud-grid {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .aud-facts {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+
+  .aud-facts dd {
+    margin-bottom: 0.45rem;
+  }
+
+  .aud-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .aud-list__meta {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .aud-source,
+  .aud-id,
+  .aud-inline {
+    margin-left: 0;
+  }
+}

@@ -47,6 +47,85 @@ export type SignupRole = Exclude<UserRole, 'admin'>;
 
 export type ModerationStatus = 'active' | 'suspended' | 'blocked' | 'inactive';
 
+/** Phone on GET /v1/admin/users/:id. `source` is `shop` when it comes from the seller shop profile. */
+export interface AdminUserPhone {
+  number: string;
+  source: 'shop' | 'account' | 'kyc' | 'profile' | string;
+}
+
+export interface AdminUserWallet {
+  currency: string;
+  balance: number;
+  held: number;
+  available: number;
+}
+
+export interface AdminUserKycSummary {
+  status: string;
+  subjectType?: string;
+  fullName?: string;
+  verifiedAt?: string | null;
+  idNumberMasked?: string;
+}
+
+export interface AdminUserLastLogin {
+  at: string | null;
+  ip?: string | null;
+  userAgent?: string | null;
+}
+
+export interface AdminUserLicenseRow {
+  id: string;
+  licenseKey?: string;
+  productId?: string;
+  productName?: string;
+  orderId?: string;
+  status?: string;
+  term?: string;
+  expiresAt?: string | null;
+  valid?: boolean;
+}
+
+export interface AdminUserOrderRow {
+  id: string;
+  productId?: string;
+  productName: string;
+  amount: number;
+  currency: string;
+  status: string;
+  role?: 'buyer' | 'seller' | string;
+  createdAt: string;
+  disputeStatus?: string;
+}
+
+export interface AdminUserProductRow {
+  id: string;
+  name: string;
+  slug?: string;
+  published?: boolean;
+  moderationStatus?: string;
+  salesCount?: number;
+}
+
+export interface AdminUserDisputeRow {
+  id: string;
+  productName: string;
+  amount: number;
+  currency: string;
+  disputeStatus: string;
+  disputeOpenedAt?: string | null;
+  disputeReason?: string;
+}
+
+export interface AdminUserAffiliateSummary {
+  code: string | null;
+  clicks: number;
+  conversions: number;
+  earnings: number;
+  currency: string;
+  orders?: number;
+}
+
 export interface AdminUserDetail {
   id: string;
   email: string;
@@ -67,6 +146,128 @@ export interface AdminUserDetail {
   productCount?: number;
   orderCount?: number;
   walletByType?: Record<string, number>;
+  /** Null when the account has no phone on file. */
+  phone?: AdminUserPhone | null;
+  wallet?: AdminUserWallet | null;
+  kyc?: AdminUserKycSummary | null;
+  lastLogin?: AdminUserLastLogin | null;
+  licenses?: AdminUserLicenseRow[];
+  recentOrders?: AdminUserOrderRow[];
+  products?: AdminUserProductRow[];
+  disputes?: AdminUserDisputeRow[];
+  affiliate?: AdminUserAffiliateSummary | null;
+  /** Optional absolute or site paths. Shop falls back to /store/:creatorSlug. */
+  links?: { shop?: string; account?: string };
+}
+
+export type DisputePartyRole = 'buyer' | 'seller' | 'admin';
+
+export interface DisputeParty {
+  id: string;
+  name: string;
+  email?: string;
+  creatorSlug?: string;
+  avatarUrl?: string;
+}
+
+export interface DisputeEvidence {
+  id?: string;
+  url: string;
+  name?: string;
+  note?: string;
+  createdAt?: string | null;
+}
+
+export interface DisputeTimelineEvent {
+  at: string;
+  action: string;
+  note?: string;
+  actorRole?: string;
+  actorName?: string;
+}
+
+export interface DisputeMessage {
+  id: string;
+  authorId: string;
+  role: DisputePartyRole | string;
+  authorName?: string;
+  body: string;
+  createdAt: string;
+}
+
+export interface DisputeOutcome {
+  resolution: 'buyer_win' | 'seller_win' | 'split' | string;
+  reason?: string;
+  note?: string;
+  refundAmount?: number | null;
+  sellerAmount?: number | null;
+  resolvedAt?: string | null;
+  resolvedByName?: string;
+}
+
+export type AdminDisputeStatus = 'open' | 'buyer_win' | 'seller_win' | 'split';
+
+export interface AdminDisputeListItem {
+  id: string;
+  productId?: string;
+  productName: string;
+  productSlug?: string;
+  buyerId?: string;
+  buyerName: string;
+  sellerId?: string;
+  sellerName: string;
+  amount: number;
+  currency: string;
+  sellerNet: number;
+  held?: number;
+  disputeStatus: AdminDisputeStatus | string;
+  disputeReason: string;
+  disputeOpenedAt: string | null;
+  disputeResolvedAt?: string | null;
+}
+
+/** GET /v1/admin/disputes — status is open | resolved, plus search and pagination. */
+export interface AdminDisputePage extends AdminPage<AdminDisputeListItem> {
+  openCount: number;
+}
+
+export interface AdminDisputeDetail {
+  id: string;
+  disputeStatus: AdminDisputeStatus | string;
+  currency: string;
+  amount: number;
+  sellerNet: number;
+  platformFee?: number;
+  held: number;
+  refunded?: number | null;
+  order: {
+    id: string;
+    status: string;
+    amount: number;
+    currency: string;
+    sellerNet?: number;
+    platformFee?: number;
+    createdAt: string;
+    payoutHeld?: boolean;
+  };
+  product: { id: string; name: string; slug?: string };
+  buyer: DisputeParty;
+  seller: DisputeParty;
+  claim?: { reason: string; openedAt?: string | null; openedBy?: string };
+  evidence?: DisputeEvidence[];
+  timeline?: DisputeTimelineEvent[];
+  outcome?: DisputeOutcome | null;
+  auditLog?: DisputeTimelineEvent[];
+  messages?: DisputeMessage[];
+}
+
+export interface AdminDisputeDecision {
+  resolution: 'buyer_win' | 'seller_win' | 'split';
+  /** Major currency units. Omitted for a seller win. Full buyer win sends the order amount. */
+  refundAmount?: number;
+  reason: string;
+  /** Same text as reason — the previous resolve call used `note`. */
+  note: string;
 }
 
 export interface AdminProductDetail {
@@ -638,7 +839,7 @@ export interface Order {
   payoutHoldUntil?: string;
   payoutHeld?: boolean;
   payoutHoldKind?: 'protection_window' | 'dispute' | null;
-  disputeStatus?: 'none' | 'open' | 'seller_win' | 'buyer_win';
+  disputeStatus?: 'none' | 'open' | 'seller_win' | 'buyer_win' | 'split';
   disputeReason?: string;
   disputeOpenedAt?: string | null;
   disputeResolvedAt?: string | null;

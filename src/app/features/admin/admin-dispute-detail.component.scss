@@ -1,0 +1,221 @@
+.add {
+  max-width: 76rem;
+}
+
+.add-back {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.add h1 {
+  margin-top: 0.4rem;
+}
+
+.add h2 {
+  margin: 0 0 0.7rem;
+  font-size: 1.05rem;
+}
+
+.add-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.6rem 0 1rem;
+}
+
+.add-pill {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  background: var(--color-mist);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.add-pill[data-status='open'] { background: #fef3c7; color: #b45309; }
+.add-pill[data-status='buyer_win'] { background: #dcfce7; color: #15803d; }
+.add-pill[data-status='split'] { background: #f5edd6; color: #8a6a2f; }
+
+.add-ok { color: #15803d; font-size: 0.9rem; }
+.add-muted, .add-meta { color: var(--color-muted); font-size: 0.85rem; }
+.add-copy { margin: 0.2rem 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.add-err { color: #b42318; font-size: 0.9rem; }
+
+.add-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.add-main, .add-side {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.add-facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.4rem 0.9rem;
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.add-facts dt { color: var(--color-muted); font-weight: 650; }
+.add-facts dd { margin: 0; overflow-wrap: anywhere; }
+
+.add-parties {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.add-parties article {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.add-parties a, .add-parties span {
+  overflow-wrap: anywhere;
+}
+
+.add-kicker {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.add-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+}
+
+.add-stats p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.add-stats strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.add-evidence, .add-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.add-evidence li, .add-log li {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--color-line);
+  overflow-wrap: anywhere;
+}
+
+.add-log p { margin: 0.15rem 0 0; }
+
+.add-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.add-form fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.add-form label {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.add-field {
+  display: grid !important;
+  gap: 0.3rem;
+}
+
+.add-side {
+  position: sticky;
+  top: 5.5rem;
+}
+
+.add-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(17, 17, 17, 0.48);
+}
+
+.add-dialog {
+  width: min(32rem, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  padding: 1.2rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.add-dialog h2 { margin-top: 0; }
+.add-dialog .add-facts { margin-top: 0.8rem; }
+
+.add-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 980px) {
+  .add-layout {
+    grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.8fr);
+    align-items: start;
+  }
+
+  .add-parties {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 979px) {
+  .add-side { position: static; }
+  .add-facts { grid-template-columns: 1fr; gap: 0.15rem; }
+  .add-facts dd { margin-bottom: 0.45rem; }
+  .add-dialog__actions .btn { flex: 1; }
+}

@@ -4,20 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DashboardService } from '../../services/api.services';
-import { AuthService } from '../../services/auth.service';
 import { SeoService } from '../../services/seo.service';
-import {
-  AdminProductDetail,
-  AdminUserDetail,
-  ModerationStatus,
-} from '../../models/marketplace.models';
+import { I18nService } from '../../i18n/i18n.service';
+import { TPipe } from '../../i18n/t.pipe';
+import { AdminProductDetail, ModerationStatus } from '../../models/marketplace.models';
+import { ADMIN_USER_MESSAGES } from '../admin/admin-user.messages';
 
-const STATUS_OPTIONS: Array<{ id: ModerationStatus; label: string }> = [
-  { id: 'active', label: 'Hoạt động' },
-  { id: 'suspended', label: 'Đình chỉ (tạm thời)' },
-  { id: 'blocked', label: 'Bị chặn' },
-  { id: 'inactive', label: 'Không hoạt động' },
-];
+const STATUS_OPTIONS: ModerationStatus[] = ['active', 'suspended', 'blocked', 'inactive'];
 
 function errMessage(err: unknown): string {
   if (err instanceof HttpErrorResponse) {
@@ -31,20 +24,20 @@ function errMessage(err: unknown): string {
 @Component({
   selector: 'app-admin-status-form',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TPipe],
   template: `
-    <form class="mt-6 grid gap-3" (ngSubmit)="submit()">
-      <label class="text-xs uppercase tracking-wider text-muted">Trạng thái</label>
+    <form class="mt-2 grid gap-3" (ngSubmit)="submit()">
+      <label class="text-xs uppercase tracking-wider text-muted">{{ 'admin.user.statusLabel' | t }}</label>
       <select class="input" [(ngModel)]="status" name="status">
-        @for (opt of options; track opt.id) {
-          <option [value]="opt.id">{{ opt.label }}</option>
+        @for (opt of options; track opt) {
+          <option [value]="opt">{{ 'admin.user.status.' + opt | t }}</option>
         }
       </select>
       @if (status === 'suspended') {
-        <label class="text-xs uppercase tracking-wider text-muted">Số ngày đình chỉ</label>
+        <label class="text-xs uppercase tracking-wider text-muted">{{ 'admin.user.days' | t }}</label>
         <input class="input" type="number" min="1" max="365" name="days" [(ngModel)]="days" />
       }
-      <label class="text-xs uppercase tracking-wider text-muted">Lý do (tuỳ chọn)</label>
+      <label class="text-xs uppercase tracking-wider text-muted">{{ 'admin.user.reasonOptional' | t }}</label>
       <textarea class="input min-h-[88px]" name="reason" [(ngModel)]="reason"></textarea>
       @if (error()) {
         <p class="text-sm text-red-600">{{ error() }}</p>
@@ -53,17 +46,53 @@ function errMessage(err: unknown): string {
         <p class="text-sm text-muted">{{ ok() }}</p>
       }
       <div class="flex flex-wrap gap-2">
-        <button class="btn btn-fill" type="submit" [disabled]="busy()">Cập nhật trạng thái</button>
+        <button class="btn btn-fill" type="submit" [disabled]="busy()">{{ 'admin.user.updateStatus' | t }}</button>
         @if (!hideDelete()) {
-          <button class="btn btn-outline" type="button" [disabled]="busy()" (click)="confirmDelete()">
+          <button class="btn btn-outline" type="button" [disabled]="busy()" (click)="confirmOpen.set(true)">
             {{ deleteLabel() }}
           </button>
         }
       </div>
     </form>
+    @if (confirmOpen()) {
+      <div class="am-backdrop" (click)="confirmOpen.set(false)" (keydown.escape)="confirmOpen.set(false)">
+        <div class="am-dialog" role="dialog" aria-modal="true" [attr.aria-label]="deleteLabel()" (click)="$event.stopPropagation()">
+          <h2>{{ 'admin.user.confirmDeleteTitle' | t }}</h2>
+          <p>{{ 'admin.user.confirmDeleteBody' | t }}</p>
+          <div class="am-dialog__actions">
+            <button type="button" class="btn btn-outline" (click)="confirmOpen.set(false)">{{ 'admin.user.cancel' | t }}</button>
+            <button type="button" class="btn btn-fill" (click)="commitDelete()">{{ deleteLabel() }}</button>
+          </div>
+        </div>
+      </div>
+    }
+  `,
+  styles: `
+    .am-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(17, 17, 17, 0.48);
+    }
+    .am-dialog {
+      width: min(28rem, 100%);
+      background: var(--color-surface);
+      color: var(--color-ink);
+      border: 1px solid var(--color-line);
+      border-radius: 16px;
+      padding: 1.2rem;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+    }
+    .am-dialog h2 { margin: 0 0 0.4rem; font-size: 1.2rem; }
+    .am-dialog p { margin: 0; color: var(--color-muted); }
+    .am-dialog__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem; }
   `,
 })
 export class AdminStatusFormComponent {
+  private readonly i18n = inject(I18nService);
   readonly current = input<ModerationStatus>('active');
   readonly initialReason = input('');
   readonly hideDelete = input(false);
@@ -75,15 +104,22 @@ export class AdminStatusFormComponent {
   readonly busy = signal(false);
   readonly error = signal('');
   readonly ok = signal('');
+  readonly confirmOpen = signal(false);
   status: ModerationStatus = 'active';
   days = 7;
   reason = '';
 
   constructor() {
+    this.i18n.extend(ADMIN_USER_MESSAGES);
     effect(() => {
       this.status = this.current();
       this.reason = this.initialReason();
     });
+  }
+
+  commitDelete(): void {
+    this.confirmOpen.set(false);
+    this.deleted.emit();
   }
 
   submit(): void {
@@ -96,100 +132,6 @@ export class AdminStatusFormComponent {
     });
   }
 
-  confirmDelete(): void {
-    const ok = window.confirm('Xóa vĩnh viễn? Hành động này không hoàn tác.');
-    if (ok) this.deleted.emit();
-  }
-}
-
-@Component({
-  selector: 'app-admin-user-detail',
-  standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, AdminStatusFormComponent],
-  template: `
-    <section class="page route-enter max-w-3xl">
-      <a routerLink="/admin" class="text-sm text-muted">← Admin dashboard</a>
-      <h1 class="section-title mt-4">Chi tiết người dùng</h1>
-      @if (item(); as u) {
-        <div class="panel mt-8 grid gap-2 text-sm">
-          <p><span class="text-muted">Tên</span> · {{ u.name }}</p>
-          <p><span class="text-muted">Email</span> · {{ u.email }}</p>
-          <p><span class="text-muted">Vai trò</span> · {{ u.role }}</p>
-          <p><span class="text-muted">Shop</span> · {{ u.creatorSlug || '—' }}</p>
-          <p><span class="text-muted">Trạng thái</span> · {{ statusLabel(u.accountStatus) }}</p>
-          @if (u.suspendedUntil && u.accountStatus === 'suspended') {
-            <p><span class="text-muted">Đình chỉ đến</span> · {{ u.suspendedUntil | date: 'medium' }}</p>
-          }
-          @if (u.statusReason) {
-            <p><span class="text-muted">Lý do</span> · {{ u.statusReason }}</p>
-          }
-          <p><span class="text-muted">Sản phẩm</span> · {{ u.productCount | number }}</p>
-          <p><span class="text-muted">Đơn hàng</span> · {{ u.orderCount | number }}</p>
-          @if (u.createdAt) {
-            <p><span class="text-muted">Tạo lúc</span> · {{ u.createdAt | date: 'medium' }}</p>
-          }
-        </div>
-        <app-admin-status-form
-          [current]="u.accountStatus"
-          [initialReason]="u.statusReason || ''"
-          [hideDelete]="isSelf()"
-          deleteLabel="Xóa tài khoản"
-          (saved)="save($event)"
-          (deleted)="remove()"
-        />
-        @if (isSelf()) {
-          <p class="mt-3 text-sm text-muted">Bạn không thể tự đình chỉ, chặn hoặc xóa tài khoản admin của mình.</p>
-        }
-      } @else if (loadError()) {
-        <p class="mt-8 text-sm text-muted">{{ loadError() }}</p>
-      }
-    </section>
-  `,
-})
-export class AdminUserDetailComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly api = inject(DashboardService);
-  private readonly auth = inject(AuthService);
-  private readonly seo = inject(SeoService);
-
-  readonly item = signal<AdminUserDetail | null>(null);
-  readonly loadError = signal('');
-  readonly isSelf = signal(false);
-
-  ngOnInit(): void {
-    this.seo.set({ title: 'Admin · User' });
-    const id = this.route.snapshot.paramMap.get('id') || '';
-    this.api.adminUser(id).subscribe({
-      next: (u) => {
-        this.item.set(u);
-        this.isSelf.set(this.auth.user()?.id === u.id);
-      },
-      error: (err) => this.loadError.set(errMessage(err)),
-    });
-  }
-
-  statusLabel(s: ModerationStatus): string {
-    return STATUS_OPTIONS.find((o) => o.id === s)?.label || s;
-  }
-
-  save(body: { status: ModerationStatus; days?: number; reason?: string }): void {
-    const u = this.item();
-    if (!u) return;
-    this.api.updateUserStatus(u.id, body).subscribe({
-      next: (next) => this.item.set(next),
-      error: (err) => alert(errMessage(err)),
-    });
-  }
-
-  remove(): void {
-    const u = this.item();
-    if (!u) return;
-    this.api.deleteUser(u.id).subscribe({
-      next: () => void this.router.navigateByUrl('/admin'),
-      error: (err) => alert(errMessage(err)),
-    });
-  }
 }
 
 @Component({
@@ -235,9 +177,14 @@ export class AdminProductDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly api = inject(DashboardService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
 
   readonly item = signal<AdminProductDetail | null>(null);
   readonly loadError = signal('');
+
+  constructor() {
+    this.i18n.extend(ADMIN_USER_MESSAGES);
+  }
 
   ngOnInit(): void {
     this.seo.set({ title: 'Admin · Product' });
@@ -249,7 +196,9 @@ export class AdminProductDetailComponent implements OnInit {
   }
 
   statusLabel(s: ModerationStatus): string {
-    return STATUS_OPTIONS.find((o) => o.id === s)?.label || s;
+    const key = `admin.user.status.${s}`;
+    const text = this.i18n.t(key);
+    return text === key ? s : text;
   }
 
   save(body: { status: ModerationStatus; days?: number; reason?: string }): void {
