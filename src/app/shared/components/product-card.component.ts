@@ -2,6 +2,8 @@ import { Component, Input, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Product } from '../../models/marketplace.models';
+import { canonicalCategory } from '../../models/categories';
+import { categoryCoverDataUrl, isGenericCover } from '../cover-fallback';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -9,21 +11,43 @@ import { AuthService } from '../../services/auth.service';
 import { WishlistService } from '../../services/api.services';
 import { CartService } from '../../features/cart/cart.service';
 
+const UNIT_KEYS: Record<string, string> = {
+  minute: 'card.unit.minute',
+  minutes: 'card.unit.minute',
+  month: 'card.unit.month',
+  token: 'card.unit.tokens',
+  tokens: 'card.unit.tokens',
+  '1m tokens': 'card.unit.mtokens',
+  second: 'card.unit.second',
+  seconds: 'card.unit.second',
+  image: 'card.unit.image',
+  video: 'card.unit.video',
+  megapixel: 'card.unit.megapixel',
+  hour: 'card.unit.hour',
+  hours: 'card.unit.hour',
+  '1k characters': 'card.unit.kchars',
+  '1k chars': 'card.unit.kchars',
+  year: 'card.unit.year',
+  day: 'card.unit.day',
+  request: 'card.unit.request',
+};
+
 @Component({
   selector: 'app-product-card',
   standalone: true,
   imports: [RouterLink, DecimalPipe, TPipe],
+  host: { '[class.catalog]': 'catalog' },
   template: `
     @if (variant === 'luxury' && layout === 'list') {
       <a [routerLink]="['/product', product.slug]" class="lux-list">
         <div class="lux-list__thumb">
           <img
-            [src]="product.coverUrl || placeholder"
+            [src]="coverSrc"
             [alt]="product.name"
             loading="lazy"
             width="112"
             height="112"
-            (error)="onImgError($event)"
+            (load)="onImgLoad($event)" (error)="onImgError($event)"
           />
           @if (onSale) {
             <span class="lux-list__sale">Sale</span>
@@ -43,8 +67,12 @@ import { CartService } from '../../features/cart/cart.service';
           <div class="lux-list__meta">
             <span class="lux-list__creator">{{ product.creatorName }}</span>
             <span class="lux-list__badge">{{ sellerBadge }}</span>
-            <span class="lux-list__rating">★ {{ product.rating | number: '1.1-1' }}</span>
-            <span>{{ 'card.sold' | t: { n: (product.salesCount || 0) } }}</span>
+            @if (!catalog || product.rating > 0) {
+              <span class="lux-list__rating">★ {{ product.rating | number: '1.1-1' }}</span>
+            }
+            @if (!catalog || (product.salesCount || 0) > 0) {
+              <span>{{ 'card.sold' | t: { n: (product.salesCount || 0) } }}</span>
+            }
             <span class="lux-list__ago">{{ ago }}</span>
           </div>
         </div>
@@ -53,7 +81,11 @@ import { CartService } from '../../features/cart/cart.service';
             @if (onSale) {
               <span class="lux-list__was">{{ wasPrice }}</span>
             }
-            {{ shopPrice }}
+            @if (catalog) {
+              {{ priceAmount }}<span class="lux-card__unit">{{ priceUnit }}</span>
+            } @else {
+              {{ shopPrice }}
+            }
           </p>
           <span class="lux-list__cta">{{ 'card.view' | t }} →</span>
         </div>
@@ -62,13 +94,13 @@ import { CartService } from '../../features/cart/cart.service';
       <a [routerLink]="['/product', product.slug]" class="lux-card" [class.lux-card--compact]="compact">
         <div class="lux-card__media">
           <img
-            [src]="product.coverUrl || placeholder"
+            [src]="coverSrc"
             [alt]="product.name"
             [attr.loading]="priority ? 'eager' : 'lazy'"
             [attr.fetchpriority]="priority ? 'high' : null"
             width="400"
             height="500"
-            (error)="onImgError($event)"
+            (load)="onImgLoad($event)" (error)="onImgError($event)"
           />
           @if (onSale) {
             <span class="lux-card__sale">Sale</span>
@@ -89,13 +121,35 @@ import { CartService } from '../../features/cart/cart.service';
           </div>
         </div>
         <div class="lux-card__body">
+          @if (catalog) {
+            <p class="lux-card__tags">
+              <span class="lux-card__chip">{{ label }}</span>
+              @if (product.featured) {
+                <span class="lux-card__feat">{{ 'card.featured' | t }}</span>
+              }
+            </p>
+          }
           <p class="lux-card__seller">{{ sellerBadge }} · {{ product.creatorName }}</p>
           <h3 class="lux-card__title">{{ product.name }}</h3>
+          @if (catalog) {
+            <p class="lux-card__meta">
+              @if (product.rating > 0) {
+                <span class="lux-card__rate" [attr.aria-label]="'mkt.rating' | t: { n: ratingText }">★ {{ ratingText }}</span>
+              }
+              @if ((product.salesCount || 0) > 0) {
+                <span>{{ 'card.sold' | t: { n: (product.salesCount || 0) } }}</span>
+              }
+            </p>
+          }
           <p class="lux-card__price">
             @if (onSale) {
               <span class="lux-card__was">{{ wasPrice }}</span>
             }
-            {{ shopPrice }}
+            @if (catalog) {
+              {{ priceAmount }}<span class="lux-card__unit">{{ priceUnit }}</span>
+            } @else {
+              {{ shopPrice }}
+            }
           </p>
         </div>
       </a>
@@ -103,13 +157,13 @@ import { CartService } from '../../features/cart/cart.service';
       <a [routerLink]="['/product', product.slug]" class="shop-card">
         <div class="shop-card__media">
           <img
-            [src]="product.coverUrl || placeholder"
+            [src]="coverSrc"
             [alt]="product.name"
             [attr.loading]="priority ? 'eager' : 'lazy'"
             [attr.fetchpriority]="priority ? 'high' : null"
             width="400"
             height="400"
-            (error)="onImgError($event)"
+            (load)="onImgLoad($event)" (error)="onImgError($event)"
           />
           @if (isRunpod) {
             <span class="shop-card__badge">GPU Cloud</span>
@@ -131,13 +185,13 @@ import { CartService } from '../../features/cart/cart.service';
       <a [routerLink]="['/product', product.slug]" class="ct-card group">
         <div class="ct-card__media">
           <img
-            [src]="product.coverUrl || placeholder"
+            [src]="coverSrc"
             [alt]="product.name"
             [attr.loading]="priority ? 'eager' : 'lazy'"
             [attr.fetchpriority]="priority ? 'high' : null"
             width="480"
             height="480"
-            (error)="onImgError($event)"
+            (load)="onImgLoad($event)" (error)="onImgError($event)"
           />
           <button
             type="button"
@@ -180,6 +234,13 @@ import { CartService } from '../../features/cart/cart.service';
       }
       .lux-card:hover {
         transform: translateY(-4px);
+      }
+      .lux-card:focus-visible,
+      .lux-list:focus-visible,
+      .ct-card:focus-visible,
+      .shop-card:focus-visible {
+        outline: 2px solid var(--color-lux-gold, #c9a961);
+        outline-offset: 3px;
       }
       .lux-card__media {
         position: relative;
@@ -229,9 +290,17 @@ import { CartService } from '../../features/cart/cart.service';
         transform: translateY(100%);
         transition: opacity 0.25s ease, transform 0.25s ease;
       }
-      .lux-card:hover .lux-card__actions {
+      .lux-card:hover .lux-card__actions,
+      .lux-card:focus-within .lux-card__actions {
         opacity: 1;
         transform: translateY(0);
+      }
+      .lux-card__btn:focus-visible,
+      .lux-card__wish:focus-visible,
+      .ct-card__heart:focus-visible,
+      .shop-card__cart:focus-visible {
+        outline: 2px solid var(--color-lux-gold, #c9a961);
+        outline-offset: -2px;
       }
       .lux-card__btn {
         flex: 1;
@@ -706,6 +775,116 @@ import { CartService } from '../../features/cart/cart.service';
       .shop-card__cart:hover {
         background: #ffe8e6;
       }
+
+      :host.catalog {
+        display: block;
+        height: 100%;
+      }
+      :host.catalog .lux-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        border: 1px solid var(--color-line);
+        border-radius: 12px;
+        background: var(--color-surface);
+        overflow: hidden;
+      }
+      :host.catalog .lux-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--color-lux-gold, #c9a961);
+      }
+      :host.catalog .lux-card__media {
+        aspect-ratio: 16 / 9;
+        background: #14120e;
+      }
+      :host.catalog .lux-card__media img {
+        object-fit: contain;
+      }
+      :host.catalog .lux-card__body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        text-align: left;
+        padding: 0.7rem 0.8rem 0.8rem;
+        gap: 0.28rem;
+      }
+      :host.catalog .lux-card__tags {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin: 0;
+        min-width: 0;
+      }
+      :host.catalog .lux-card__chip,
+      :host.catalog .lux-card__feat {
+        display: inline-block;
+        max-width: 100%;
+        padding: 0.12rem 0.45rem;
+        border-radius: 999px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      :host.catalog .lux-card__chip {
+        background: color-mix(in srgb, var(--color-lux-gold, #c9a961) 22%, transparent);
+        color: #6d5420;
+      }
+      :host-context([data-theme='dark']).catalog .lux-card__chip {
+        color: #f3e6c4;
+      }
+      :host.catalog .lux-card__feat {
+        background: var(--color-mist);
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        flex: none;
+      }
+      :host.catalog .lux-card__seller {
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      :host.catalog .lux-card__title {
+        font-weight: 700;
+        font-size: 0.92rem;
+        min-height: 2.6em;
+      }
+      :host.catalog .lux-card__meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.35rem 0.65rem;
+        min-height: 1.15rem;
+        margin: 0;
+        font-size: 0.75rem;
+        color: var(--color-muted);
+      }
+      :host.catalog .lux-card__rate {
+        color: #8a6d2f;
+        font-weight: 700;
+      }
+      :host-context([data-theme='dark']).catalog .lux-card__rate {
+        color: #e6d3a3;
+      }
+      :host.catalog .lux-card__price {
+        margin-top: auto;
+        padding-top: 0.35rem;
+      }
+      .lux-card__unit {
+        margin-left: 0.12rem;
+        font-weight: 700;
+        font-size: 0.78em;
+        color: var(--color-muted);
+      }
+      :host.catalog .lux-list__title {
+        -webkit-line-clamp: 2;
+        min-height: 0;
+      }
     `,
   ],
 })
@@ -724,20 +903,52 @@ export class ProductCardComponent {
   @Input() priority = false;
   /** Landscape 4:3 cover for horizontal rails (luxury grid variant only). */
   @Input() compact = false;
+  /** Marketplace catalog: 16:9 cover, category chip, rating, and a price unit. */
+  @Input() catalog = false;
 
-  readonly placeholder =
-    'data:image/svg+xml,' +
-    encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480"><rect fill="#eee" width="100%" height="100%"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-family="sans-serif" font-size="22">AI</text></svg>`,
-    );
+  private coverMemo = '';
+  private coverKey = '';
+
+  get coverSrc(): string {
+    const url = this.product?.coverUrl || '';
+    return isGenericCover(url) ? this.generatedCover() : url;
+  }
+
+  onImgLoad(event: Event): void {
+    if (!this.catalog) return;
+    const img = event.target as HTMLImageElement;
+    const w = img.naturalWidth;
+    const h = img.naturalHeight;
+    if (!w || !h) return;
+    // Wide banners (Minecraft and other designed covers) keep every pixel so baked-in text is not cropped.
+    img.style.objectFit = w / h >= 1.68 ? 'contain' : 'cover';
+  }
 
   onImgError(event: Event): void {
     const img = event.target as HTMLImageElement;
-    if (img.src !== this.placeholder) img.src = this.placeholder;
+    if (img.dataset['fallback'] === '1') return;
+    img.dataset['fallback'] = '1';
+    img.src = this.generatedCover();
+    img.style.objectFit = 'contain';
+  }
+
+  private generatedCover(): string {
+    const category = canonicalCategory(this.product?.category);
+    const name = this.product?.name || '';
+    const key = `${category}|${name}|${this.i18n.lang()}`;
+    if (key !== this.coverKey) {
+      this.coverKey = key;
+      this.coverMemo = categoryCoverDataUrl({ category, name, label: this.label });
+    }
+    return this.coverMemo;
   }
 
   get label(): string {
     return this.i18n.catLabel(this.product.category);
+  }
+
+  get ratingText(): string {
+    return (Number(this.product.rating) || 0).toFixed(1);
   }
 
   get isRunpod(): boolean {
@@ -778,6 +989,28 @@ export class ProductCardComponent {
     const list = Number(this.product.pricing?.compareAtPrice) || 0;
     if (!(list > 0)) return '';
     return this.currencySvc.formatFromUsd(list, this.currency);
+  }
+
+  /** Amount only. The unit is `priceUnit` so "/minute" stays readable and translatable. */
+  get priceAmount(): string {
+    const p = this.product.pricing;
+    if (!p || p.model === 'free') return this.shopPrice;
+    const usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
+    return this.currencySvc.formatRateFromUsd(usd, this.currency);
+  }
+
+  get priceUnit(): string {
+    const p = this.product.pricing;
+    if (!p || p.model === 'free') return '';
+    if (p.model === 'usage') return this.unitLabel(p.usageUnit);
+    if (p.model === 'subscription') return this.unitLabel(p.interval);
+    return '';
+  }
+
+  private unitLabel(raw?: string): string {
+    const key = UNIT_KEYS[String(raw || '').trim().toLowerCase()];
+    if (!key) return raw ? `/${raw}` : '';
+    return this.i18n.t(key);
   }
 
   get shopPrice(): string {

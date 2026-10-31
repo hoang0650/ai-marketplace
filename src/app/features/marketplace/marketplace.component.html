@@ -3,42 +3,51 @@
     <a routerLink="/">{{ 'mkt.home' | t }}</a>
     <span aria-hidden="true">/</span>
     <a routerLink="/marketplace">{{ 'mkt.products' | t }}</a>
-    @if (selectedCategory()) {
-      <span aria-hidden="true">/</span>
-      <span>{{ categoryTitle() }}</span>
-    } @else {
-      <span aria-hidden="true">/</span>
-      <span>{{ 'mkt.all' | t }}</span>
-    }
+    <span aria-hidden="true">/</span>
+    <span>{{ selectedCategory() ? categoryTitle() : ('mkt.all' | t) }}</span>
   </nav>
 
   <div class="mkt__layout">
-    <aside class="mkt-filter">
-      <h2 class="mkt-filter__title">
-        <span aria-hidden="true">⚙</span> {{ 'mkt.filters' | t }}
-      </h2>
+    @if (filtersOpen() && isMobile()) {
+      <button type="button" class="mkt-filter-backdrop" (click)="closeFilters()" [attr.aria-label]="'mkt.closeFilters' | t"></button>
+    }
 
-      <div class="mkt-filter__body">
+    <aside
+      id="mkt-filters"
+      class="mkt-filter"
+      [class.mkt-filter--open]="filtersOpen()"
+      [attr.role]="isMobile() && filtersOpen() ? 'dialog' : null"
+      [attr.aria-modal]="isMobile() && filtersOpen() ? 'true' : null"
+      [attr.aria-labelledby]="'mkt-filter-title'"
+      [attr.inert]="isMobile() && !filtersOpen() ? '' : null"
+    >
+      <div class="mkt-filter__head">
+        <h2 id="mkt-filter-title" class="mkt-filter__title">{{ 'mkt.filters' | t }}</h2>
+        <button type="button" class="mkt-filter__text" (click)="resetFilters()">{{ 'mkt.reset' | t }}</button>
+        <button #filterClose type="button" class="mkt-filter__close" (click)="closeFilters()" [attr.aria-label]="'mkt.closeFilters' | t">×</button>
+      </div>
 
       <label class="mkt-filter__search">
         <span aria-hidden="true">⌕</span>
         <input
           type="search"
-          [(ngModel)]="filterQuery"
+          [ngModel]="filterQuery"
+          (ngModelChange)="onQueryDraft($event)"
           [placeholder]="'mkt.searchPh' | t"
           [attr.aria-label]="'home.searchAria' | t"
         />
       </label>
 
       <div class="mkt-filter__block">
-        <p class="mkt-filter__label">{{ 'mkt.categories' | t }}</p>
+        <h3 class="mkt-filter__label">{{ 'mkt.categories' | t }}</h3>
         <ul class="mkt-filter__cats">
           <li>
             <button
               type="button"
               class="mkt-filter__cat"
-              [class.active]="!draftCategory"
-              (click)="draftCategory = ''"
+              [class.active]="!selectedCategory()"
+              [attr.aria-pressed]="!selectedCategory()"
+              (click)="selectCategory('')"
             >
               <span>{{ 'home.allCats' | t }}</span>
               <span class="mkt-filter__count">{{ totalCount() }}</span>
@@ -47,196 +56,256 @@
         </ul>
 
         @if (generateCategories().length) {
-          <p class="mkt-filter__lane">{{ 'group.generate' | t }}</p>
-          <ul class="mkt-filter__cats">
-            @for (c of generateCategories(); track c.id) {
-              <li>
-                <button
-                  type="button"
-                  class="mkt-filter__cat"
-                  [class.active]="draftCategory === c.id"
-                  (click)="draftCategory = c.id"
-                >
-                  <span>{{ ('cat.' + c.id + '.label') | t }}</span>
-                  <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
-                </button>
-              </li>
+          <div class="mkt-filter__group">
+            <button type="button" class="mkt-filter__summary" [attr.aria-expanded]="isOpen('generate')" (click)="toggleGroup('generate')">
+              <span>{{ 'group.generate' | t }}</span>
+              <span class="mkt-filter__count">{{ groupCount(generateCategories()) }}</span>
+              <span class="mkt-filter__chev" aria-hidden="true">{{ isOpen('generate') ? '▾' : '▸' }}</span>
+            </button>
+            @if (isOpen('generate')) {
+              <ul class="mkt-filter__cats">
+                @for (c of generateCategories(); track c.id) {
+                  <li>
+                    <button type="button" class="mkt-filter__cat" [class.active]="selectedCategory() === c.id" [attr.aria-pressed]="selectedCategory() === c.id" (click)="selectCategory(c.id)">
+                      <span>{{ ('cat.' + c.id + '.label') | t }}</span>
+                      <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
             }
-          </ul>
+          </div>
         }
 
         @if (apiCategories().length) {
-          <p class="mkt-filter__lane">{{ 'group.apis' | t }}</p>
-          <ul class="mkt-filter__cats">
-            @for (c of apiCategories(); track c.id) {
-              <li>
-                <button
-                  type="button"
-                  class="mkt-filter__cat"
-                  [class.active]="draftCategory === c.id"
-                  (click)="draftCategory = c.id"
-                >
-                  <span>{{ ('cat.' + c.id + '.label') | t }}</span>
-                  <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
-                </button>
-              </li>
+          <div class="mkt-filter__group">
+            <button type="button" class="mkt-filter__summary" [attr.aria-expanded]="isOpen('apis')" (click)="toggleGroup('apis')">
+              <span>{{ 'group.apis' | t }}</span>
+              <span class="mkt-filter__count">{{ groupCount(apiCategories()) }}</span>
+              <span class="mkt-filter__chev" aria-hidden="true">{{ isOpen('apis') ? '▾' : '▸' }}</span>
+            </button>
+            @if (isOpen('apis')) {
+              <ul class="mkt-filter__cats">
+                @for (c of apiCategories(); track c.id) {
+                  <li>
+                    <button type="button" class="mkt-filter__cat" [class.active]="selectedCategory() === c.id" [attr.aria-pressed]="selectedCategory() === c.id" (click)="selectCategory(c.id)">
+                      <span>{{ ('cat.' + c.id + '.label') | t }}</span>
+                      <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
             }
-          </ul>
+          </div>
         }
 
         @if (platformCategories().length) {
-          <p class="mkt-filter__lane">{{ 'group.platform' | t }}</p>
-          <ul class="mkt-filter__cats">
-            @for (c of platformCategories(); track c.id) {
-              <li>
-                <button
-                  type="button"
-                  class="mkt-filter__cat"
-                  [class.active]="draftCategory === c.id"
-                  (click)="draftCategory = c.id"
-                >
-                  <span>{{ ('cat.' + c.id + '.label') | t }}</span>
-                  <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
-                </button>
-              </li>
+          <div class="mkt-filter__group">
+            <button type="button" class="mkt-filter__summary" [attr.aria-expanded]="isOpen('platform')" (click)="toggleGroup('platform')">
+              <span>{{ 'group.platform' | t }}</span>
+              <span class="mkt-filter__count">{{ groupCount(platformCategories()) }}</span>
+              <span class="mkt-filter__chev" aria-hidden="true">{{ isOpen('platform') ? '▾' : '▸' }}</span>
+            </button>
+            @if (isOpen('platform')) {
+              <ul class="mkt-filter__cats">
+                @for (c of platformCategories(); track c.id) {
+                  <li>
+                    <button type="button" class="mkt-filter__cat" [class.active]="selectedCategory() === c.id" [attr.aria-pressed]="selectedCategory() === c.id" (click)="selectCategory(c.id)">
+                      <span>{{ ('cat.' + c.id + '.label') | t }}</span>
+                      <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
             }
-          </ul>
+          </div>
         }
 
         @if (talentCategories().length) {
-          <p class="mkt-filter__lane">{{ 'group.talent' | t }}</p>
-          <ul class="mkt-filter__cats">
-            @for (c of talentCategories(); track c.id) {
-              <li>
-                <button
-                  type="button"
-                  class="mkt-filter__cat"
-                  [class.active]="draftCategory === c.id"
-                  (click)="draftCategory = c.id"
-                >
-                  <span>{{ ('cat.' + c.id + '.label') | t }}</span>
-                  <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
-                </button>
-              </li>
+          <div class="mkt-filter__group">
+            <button type="button" class="mkt-filter__summary" [attr.aria-expanded]="isOpen('talent')" (click)="toggleGroup('talent')">
+              <span>{{ 'group.talent' | t }}</span>
+              <span class="mkt-filter__count">{{ groupCount(talentCategories()) }}</span>
+              <span class="mkt-filter__chev" aria-hidden="true">{{ isOpen('talent') ? '▾' : '▸' }}</span>
+            </button>
+            @if (isOpen('talent')) {
+              <ul class="mkt-filter__cats">
+                @for (c of talentCategories(); track c.id) {
+                  <li>
+                    <button type="button" class="mkt-filter__cat" [class.active]="selectedCategory() === c.id" [attr.aria-pressed]="selectedCategory() === c.id" (click)="selectCategory(c.id)">
+                      <span>{{ ('cat.' + c.id + '.label') | t }}</span>
+                      <span class="mkt-filter__count">{{ categoryCount(c.id) }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
             }
-          </ul>
+          </div>
         }
       </div>
 
-      <div class="mkt-filter__block">
-        <p class="mkt-filter__label">{{ 'mkt.price' | t }}</p>
-        <div class="mkt-filter__range">
-          <input type="range" min="0" [max]="priceCeiling" step="1" [(ngModel)]="priceMin" />
-          <input type="range" min="0" [max]="priceCeiling" step="1" [(ngModel)]="priceMax" />
-        </div>
-        <div class="mkt-filter__price-inputs">
-          <label>
-            {{ 'mkt.from' | t }}
-            <input type="number" min="0" [(ngModel)]="priceMin" />
-          </label>
-          <label>
-            {{ 'mkt.to' | t }}
-            <input type="number" min="0" [(ngModel)]="priceMax" />
-          </label>
-        </div>
+      <div class="mkt-filter__group">
+        <button type="button" class="mkt-filter__summary" [attr.aria-expanded]="isOpen('price')" (click)="toggleGroup('price')">
+          <span>{{ 'mkt.price' | t }}</span>
+          <span class="mkt-filter__chev" aria-hidden="true">{{ isOpen('price') ? '▾' : '▸' }}</span>
+        </button>
+        @if (isOpen('price')) {
+          <div class="mkt-filter__range">
+            <label class="sr-only" for="mkt-min-range">{{ 'mkt.from' | t }}</label>
+            <input id="mkt-min-range" type="range" min="0" [max]="priceCeiling" step="1" [value]="priceMin" (pointerdown)="armPrice()" (keydown)="armPrice()" (input)="onPriceInput('min', $event)" />
+            <label class="sr-only" for="mkt-max-range">{{ 'mkt.to' | t }}</label>
+            <input id="mkt-max-range" type="range" min="0" [max]="priceCeiling" step="1" [value]="priceMax" (pointerdown)="armPrice()" (keydown)="armPrice()" (input)="onPriceInput('max', $event)" />
+          </div>
+          <div class="mkt-filter__price-inputs">
+            <label>
+              {{ 'mkt.from' | t }}
+              <input type="number" min="0" [max]="priceCeiling" [value]="priceMin" (focus)="armPrice()" (input)="onPriceInput('min', $event)" />
+            </label>
+            <label>
+              {{ 'mkt.to' | t }}
+              <input type="number" min="0" [max]="priceCeiling" [value]="priceMax" (focus)="armPrice()" (input)="onPriceInput('max', $event)" />
+            </label>
+          </div>
+        }
       </div>
 
-      <div class="mkt-filter__block">
-        <p class="mkt-filter__label">{{ 'mkt.currency' | t }}</p>
-        <select class="mkt-filter__select" [(ngModel)]="currency" (ngModelChange)="currencySvc.setCurrency($event)">
-          <option value="USD">{{ 'currency.usd' | t }}</option>
-          <option value="VND">{{ 'currency.vnd' | t }}</option>
-          <option value="CNY">{{ 'currency.cny' | t }}</option>
-        </select>
+      <div class="mkt-filter__group">
+        <button type="button" class="mkt-filter__summary" [attr.aria-expanded]="isOpen('currency')" (click)="toggleGroup('currency')">
+          <span>{{ 'mkt.currency' | t }}</span>
+          <span class="mkt-filter__chev" aria-hidden="true">{{ isOpen('currency') ? '▾' : '▸' }}</span>
+        </button>
+        @if (isOpen('currency')) {
+          <select class="mkt-filter__select" [ngModel]="currency" (ngModelChange)="onCurrency($event)" [attr.aria-label]="'mkt.currency' | t">
+            <option value="USD">{{ 'currency.usd' | t }}</option>
+            <option value="VND">{{ 'currency.vnd' | t }}</option>
+            <option value="CNY">{{ 'currency.cny' | t }}</option>
+          </select>
+        }
       </div>
 
       <label class="mkt-filter__check">
         <input type="checkbox" [(ngModel)]="inStockOnly" />
         {{ 'mkt.available' | t }}
       </label>
-      </div>
-
-      <div class="mkt-filter__actions">
-        <button type="button" class="mkt-filter__apply" (click)="applyFilters()">{{ 'mkt.apply' | t }}</button>
-        <button type="button" class="mkt-filter__reset" (click)="resetFilters()">{{ 'mkt.reset' | t }}</button>
-      </div>
     </aside>
 
     <div class="mkt-main">
       <header class="mkt-main__head">
-        <h1 class="mkt-main__title">
-          {{ selectedCategory() ? categoryTitle() : ('mkt.all' | t) }}
-          <span class="mkt-main__badge">{{ 'mkt.results' | t: { n: displayed().length } }}</span>
-        </h1>
+        <h1 class="mkt-main__title">{{ selectedCategory() ? categoryTitle() : ('mkt.all' | t) }}</h1>
       </header>
 
-      <div class="mkt-toolbar">
-        <div class="mkt-toolbar__sort">
-          <span class="mkt-toolbar__label">{{ 'mkt.sort' | t }}</span>
-          @for (s of sorts; track s.id) {
-            <button
-              type="button"
-              class="mkt-sort"
-              [class.active]="sort() === s.id"
-              (click)="setSort(s.id)"
-            >
-              {{ s.key | t }}
-            </button>
-          }
-        </div>
-        <div class="mkt-toolbar__view">
-          <button
-            type="button"
-            class="mkt-view"
-            [class.active]="view() === 'grid'"
-            (click)="view.set('grid')"
-            [attr.aria-label]="'mkt.grid' | t"
-          >
-            ▦ {{ 'mkt.grid' | t }}
-          </button>
-          <button
-            type="button"
-            class="mkt-view"
-            [class.active]="view() === 'list'"
-            (click)="view.set('list')"
-            [attr.aria-label]="'mkt.list' | t"
-          >
-            ☰ {{ 'mkt.list' | t }}
-          </button>
-        </div>
-      </div>
-
-      <aside class="mkt-banner">
-        <div class="mkt-banner__copy">
-          <p class="mkt-banner__eyebrow">{{ 'mkt.week' | t }}</p>
-          <h2 class="mkt-banner__title">{{ 'mkt.deals' | t }}</h2>
+      @if (!bannerHidden()) {
+        <aside class="mkt-banner" [attr.aria-label]="'mkt.deals' | t">
+          <div class="mkt-banner__copy">
+            <p class="mkt-banner__eyebrow">{{ 'mkt.week' | t }}</p>
+            <h2 class="mkt-banner__title">{{ 'mkt.deals' | t }}</h2>
+          </div>
           <p class="mkt-banner__desc">{{ 'mkt.dealsDesc' | t }}</p>
           <a routerLink="/models" class="mkt-banner__cta">{{ 'mkt.dealsCta' | t }}</a>
-        </div>
-        <div class="mkt-banner__art" aria-hidden="true">
-          <span>🧠</span><span>🤖</span><span>⚡</span><span>🎬</span>
-        </div>
-      </aside>
+          <button type="button" class="mkt-banner__close" (click)="dismissBanner()" [attr.aria-label]="'mkt.dismiss' | t">×</button>
+        </aside>
+      }
 
-      <div class="mkt-grid" [class.mkt-grid--list]="view() === 'list'">
-        @for (p of displayed(); track p.id) {
-          <app-product-card
-            [product]="p"
-            variant="luxury"
-            [layout]="view()"
-            [currency]="currency"
-          />
-        } @empty {
-          @if (loadError()) {
-            <p class="mkt-empty mkt-empty--error">
-              Không tải được sản phẩm từ API. Kiểm tra CORS (<code>www.aimarkets.vn</code>) trên Dokploy
-              hoặc thử tải lại trang.
-            </p>
-          } @else {
-            <p class="mkt-empty">{{ 'mkt.empty' | t }}</p>
+      <div class="mkt-toolbar" id="mkt-results">
+        <div class="mkt-toolbar__lead">
+          <button
+            #filterToggle
+            type="button"
+            class="mkt-filter-toggle"
+            (click)="openFilters()"
+            [attr.aria-expanded]="filtersOpen()"
+            aria-controls="mkt-filters"
+          >
+            {{ 'mkt.filters' | t }}
+            @if (chips().length) {
+              <span class="mkt-filter-toggle__n">{{ chips().length }}</span>
+            }
+          </button>
+          <p class="mkt-count" aria-live="polite">{{ 'mkt.results' | t: { n: displayed().length } }}</p>
+          @if (chips().length) {
+            <ul class="mkt-chips" [attr.aria-label]="'mkt.activeFilters' | t">
+              @for (chip of chips(); track chip.id) {
+                <li>
+                  <button type="button" class="mkt-chip" (click)="clearChip(chip.id)" [attr.aria-label]="'mkt.removeChip' | t: { label: chip.label }">
+                    <span>{{ chip.label }}</span>
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </li>
+              }
+              <li>
+                <button type="button" class="mkt-chip mkt-chip--clear" (click)="resetFilters()">{{ 'mkt.reset' | t }}</button>
+              </li>
+            </ul>
           }
-        }
+        </div>
+        <div class="mkt-toolbar__tools">
+          <label class="mkt-sort-label">
+            <span>{{ 'mkt.sort' | t }}</span>
+            <select [ngModel]="sort()" (ngModelChange)="setSort($event)">
+              @for (s of sorts; track s.id) {
+                <option [value]="s.id">{{ s.key | t }}</option>
+              }
+            </select>
+          </label>
+          <div class="mkt-toolbar__view" role="group" [attr.aria-label]="'mkt.view' | t">
+            <button type="button" class="mkt-view" [class.active]="view() === 'grid'" [attr.aria-pressed]="view() === 'grid'" (click)="setView('grid')">
+              <span aria-hidden="true">▦</span> {{ 'mkt.grid' | t }}
+            </button>
+            <button type="button" class="mkt-view" [class.active]="view() === 'list'" [attr.aria-pressed]="view() === 'list'" (click)="setView('list')">
+              <span aria-hidden="true">☰</span> {{ 'mkt.list' | t }}
+            </button>
+          </div>
+        </div>
       </div>
+
+      @if (loading()) {
+        <div class="mkt-grid" aria-hidden="true">
+          @for (i of skeletonSlots; track i) {
+            <div class="mkt-skel">
+              <div class="mkt-skel__media"></div>
+              <div class="mkt-skel__line mkt-skel__line--short"></div>
+              <div class="mkt-skel__line"></div>
+              <div class="mkt-skel__line mkt-skel__line--price"></div>
+            </div>
+          }
+        </div>
+        <p class="sr-only" role="status">{{ 'mkt.loading' | t }}</p>
+      } @else if (loadError() && !catalog().length) {
+        <p class="mkt-empty mkt-empty--error" role="alert">{{ 'mkt.loadError' | t }}</p>
+      } @else if (!displayed().length) {
+        <div class="mkt-empty" role="status">
+          <p class="mkt-empty__mark" aria-hidden="true">⌕</p>
+          <p class="mkt-empty__title">{{ 'mkt.emptyTitle' | t }}</p>
+          <p>{{ 'mkt.empty' | t }}</p>
+          <button type="button" class="mkt-empty__reset" (click)="resetFilters()">{{ 'mkt.reset' | t }}</button>
+        </div>
+      } @else {
+        <div class="mkt-grid" [class.mkt-grid--list]="view() === 'list'">
+          @for (p of paged(); track p.id) {
+            <app-product-card
+              [product]="p"
+              variant="luxury"
+              [layout]="view()"
+              [currency]="currency"
+              [catalog]="true"
+            />
+          }
+        </div>
+
+        @if (pageCount() > 1) {
+          <nav class="mkt-pager" [attr.aria-label]="'mkt.pagination' | t">
+            <button type="button" (click)="goPage(safePage() - 1)" [disabled]="safePage() <= 1">{{ 'mkt.prev' | t }}</button>
+            @for (n of pageList(); track $index) {
+              @if (n < 0) {
+                <span class="mkt-pager__gap" aria-hidden="true">…</span>
+              } @else {
+                <button type="button" [class.active]="n === safePage()" [attr.aria-current]="n === safePage() ? 'page' : null" (click)="goPage(n)">{{ n }}</button>
+              }
+            }
+            <button type="button" (click)="goPage(safePage() + 1)" [disabled]="safePage() >= pageCount()">{{ 'mkt.next' | t }}</button>
+          </nav>
+        }
+      }
     </div>
   </div>
 </section>
