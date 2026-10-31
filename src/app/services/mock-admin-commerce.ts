@@ -9,7 +9,7 @@ const messages: DisputeMessage[] = [
     role: 'buyer',
     authorName: 'Minh Buyer',
     body: 'The delivered site is still the placeholder from phase 1. Please refund or finish the agreed pages.',
-    createdAt: '2026-10-28T04:10:00.000Z',
+    at: '2026-10-28T04:10:00.000Z',
   },
   {
     id: 'msg-2',
@@ -17,7 +17,7 @@ const messages: DisputeMessage[] = [
     role: 'seller',
     authorName: 'Ngô Vũ Tuấn Anh',
     body: 'Phase 2 was scoped separately. The $199 order covers the ops agent, not the extra pages.',
-    createdAt: '2026-10-28T09:40:00.000Z',
+    at: '2026-10-28T09:40:00.000Z',
   },
 ];
 
@@ -26,7 +26,6 @@ const list: AdminDisputeListItem[] = [
     id: 'ord-open-1',
     productId: 'prod-ops',
     productName: 'OpenClaw Ops Agent',
-    productSlug: 'openclaw-ops-agent',
     buyerId: 'buyer-1',
     buyerName: 'Minh Buyer',
     sellerId: 'user-tuan',
@@ -34,7 +33,7 @@ const list: AdminDisputeListItem[] = [
     amount: 199,
     currency: 'USD',
     sellerNet: 159.2,
-    held: 159.2,
+    payoutHeld: true,
     disputeStatus: 'open',
     disputeReason: 'Delivered workspace does not match the listing.',
     disputeOpenedAt: '2026-10-28T04:00:00.000Z',
@@ -50,7 +49,8 @@ const list: AdminDisputeListItem[] = [
     amount: 2,
     currency: 'USD',
     sellerNet: 1.6,
-    held: 0,
+    payoutHeld: false,
+    disputeOutcome: 'buyer_full',
     disputeStatus: 'buyer_win',
     disputeReason: 'Phase 3 was missing and the fix was never deployed.',
     disputeOpenedAt: '2026-10-12T03:09:00.000Z',
@@ -66,7 +66,8 @@ const list: AdminDisputeListItem[] = [
     amount: 2,
     currency: 'USD',
     sellerNet: 1.6,
-    held: 0,
+    payoutHeld: false,
+    disputeOutcome: 'seller',
     disputeStatus: 'seller_win',
     disputeReason: 'Phase 2 matches the brief that was accepted.',
     disputeOpenedAt: '2026-10-12T04:59:00.000Z',
@@ -82,7 +83,8 @@ const list: AdminDisputeListItem[] = [
     amount: 29,
     currency: 'USD',
     sellerNet: 23.2,
-    held: 0,
+    payoutHeld: false,
+    disputeOutcome: 'split',
     disputeStatus: 'split',
     disputeReason: 'Half the prepaid credits were never issued.',
     disputeOpenedAt: '2026-10-20T02:15:00.000Z',
@@ -94,56 +96,78 @@ function detail(id: string): AdminDisputeDetail | null {
   const row = list.find((item) => item.id === id);
   if (!row) return null;
   const open = row.disputeStatus === 'open';
+  const refund = open ? 0 : row.disputeOutcome === 'seller' ? 0 : row.disputeOutcome === 'split' ? 14.5 : row.amount;
   return {
     id: row.id,
-    disputeStatus: row.disputeStatus,
-    currency: row.currency,
+    productId: row.productId || 'prod-1',
+    productName: row.productName,
+    buyerName: row.buyerName,
+    sellerName: row.sellerName || '',
+    sellerId: row.sellerId,
     amount: row.amount,
+    currency: row.currency,
     sellerNet: row.sellerNet,
     platformFee: Math.round((row.amount - row.sellerNet) * 100) / 100,
-    held: row.held ?? 0,
-    refunded: open ? null : row.disputeStatus === 'seller_win' ? 0 : row.disputeStatus === 'split' ? 14.5 : row.amount,
-    order: {
-      id: row.id,
-      status: open ? 'paid' : row.disputeStatus === 'seller_win' ? 'paid' : 'refunded',
-      amount: row.amount,
-      currency: row.currency,
-      sellerNet: row.sellerNet,
-      platformFee: Math.round((row.amount - row.sellerNet) * 100) / 100,
-      createdAt: '2026-10-20T08:00:00.000Z',
-      payoutHeld: open,
+    status: open || row.disputeStatus === 'seller_win' ? 'paid' : 'refunded',
+    provider: 'wallet',
+    createdAt: '2026-10-20T08:00:00.000Z',
+    payoutHeld: !!row.payoutHeld,
+    disputeStatus: row.disputeStatus,
+    disputeReason: row.disputeReason,
+    disputeOpenedAt: row.disputeOpenedAt,
+    disputeResolvedAt: row.disputeResolvedAt || null,
+    disputeOutcome: row.disputeOutcome || '',
+    disputeResolutionNote: open ? '' : 'Reviewed the delivery against the listing and the message thread.',
+    buyer: {
+      id: row.buyerId || 'buyer-1',
+      name: row.buyerName,
+      email: 'minh.buyer@example.com',
+      href: `/admin/users/${row.buyerId || 'buyer-1'}`,
     },
-    product: { id: row.productId || 'prod-1', name: row.productName, slug: row.productSlug || 'brand-web-rebuild' },
-    buyer: { id: row.buyerId || 'buyer-1', name: row.buyerName, email: 'minh.buyer@example.com' },
     seller: {
       id: row.sellerId || 'user-tuan',
-      name: row.sellerName,
+      name: row.sellerName || '',
       email: 'ngovutuananh@gmail.com',
       creatorSlug: 'ngo-vu-tuan-anh',
+      href: `/admin/users/${row.sellerId || 'user-tuan'}`,
+      shopHref: '/store/ngo-vu-tuan-anh',
     },
-    claim: { reason: row.disputeReason, openedAt: row.disputeOpenedAt, openedBy: 'buyer' },
-    evidence: open
-      ? [{ id: 'ev-1', url: 'https://example.com/evidence/deploy-log.txt', name: 'deploy-log.txt', note: 'Log shows the workspace never left maintenance mode.', createdAt: row.disputeOpenedAt }]
-      : [],
+    product: {
+      id: row.productId || 'prod-1',
+      name: row.productName,
+      slug: 'openclaw-ops-agent',
+      href: '/product/openclaw-ops-agent',
+      adminHref: `/admin/products/${row.productId || 'prod-1'}`,
+    },
+    orderHref: `/orders/${row.id}`,
+    amounts: {
+      gross: row.amount,
+      currency: row.currency,
+      sellerNet: row.sellerNet,
+      held: row.payoutHeld ? row.sellerNet : 0,
+      payoutHeld: !!row.payoutHeld,
+      refund,
+      sellerKept: Math.max(0, row.sellerNet - refund),
+    },
+    evidenceUrls: open ? ['https://example.com/evidence/deploy-log.txt'] : [],
+    outcome: row.disputeOutcome || '',
+    resolutionNote: open ? '' : 'Reviewed the delivery against the listing and the message thread.',
+    messages: row.id === 'ord-open-1' ? messages.slice() : [],
     timeline: [
-      { at: row.disputeOpenedAt || NOW, action: 'opened', actorRole: 'buyer', note: row.disputeReason },
-      ...(open ? [] : [{ at: row.disputeResolvedAt || NOW, action: 'resolved', actorRole: 'admin', note: 'Decision recorded.' }]),
+      { at: row.disputeOpenedAt, action: 'opened', actorRole: 'buyer', note: row.disputeReason },
+      ...(open ? [] : [{ at: row.disputeResolvedAt || NOW, action: 'resolved', actorRole: 'admin', note: row.disputeOutcome || '' }]),
     ],
-    outcome: open
-      ? null
-      : {
-          resolution: row.disputeStatus,
+    complaint: null,
+    audit: open
+      ? []
+      : [{
+          id: `audit-${row.id}`,
+          action: 'dispute.resolve',
           reason: 'Reviewed the delivery against the listing and the message thread.',
-          refundAmount: row.disputeStatus === 'seller_win' ? 0 : row.disputeStatus === 'split' ? 14.5 : row.amount,
-          resolvedAt: row.disputeResolvedAt,
-          resolvedByName: 'AI Markets (Admin)',
-        },
-    auditLog: [
-      { at: row.disputeOpenedAt || NOW, action: 'dispute.opened', actorRole: 'buyer', actorName: row.buyerName, note: row.disputeReason },
-      ...(open ? [] : [{ at: row.disputeResolvedAt || NOW, action: 'dispute.resolved', actorRole: 'admin', actorName: 'AI Markets (Admin)', note: row.disputeStatus }]),
-    ],
-    messages: row.id === 'ord-open-1' ? messages : [],
-  };
+          actorId: 'preview-admin',
+          createdAt: row.disputeResolvedAt || NOW,
+        }],
+  } as AdminDisputeDetail;
 }
 
 const user: AdminUserDetail = {
@@ -158,26 +182,27 @@ const user: AdminUserDetail = {
   createdAt: NOW,
   productCount: 2,
   orderCount: 3,
-  phone: { number: '0901 234 567', source: 'shop' },
+  phone: { number: '0901 234 567', source: 'shop', verified: null },
   wallet: { currency: 'USD', balance: 248.4, held: 159.2, available: 89.2 },
-  kyc: { status: 'verified', subjectType: 'individual', fullName: 'Ngô Vũ Tuấn Anh', verifiedAt: '2026-10-20T03:12:00.000Z' },
-  lastLogin: { at: '2026-10-31T13:40:00.000Z', ip: '113.22.10.18' },
+  kyc: { status: 'verified', subjectType: 'individual', fullName: 'Ngô Vũ Tuấn Anh', reviewedAt: '2026-10-20T03:12:00.000Z' },
+  lastLoginAt: '2026-10-31T13:40:00.000Z',
+  links: { admin: '/admin/users/user-tuan', shop: '/store/ngo-vu-tuan-anh' },
   licenses: [
-    { id: 'lic-1', licenseKey: 'AIM-OPS-9F2C-4410', productName: 'OpenClaw Ops Agent', orderId: 'ord-open-1', status: 'active', expiresAt: '2027-10-20T00:00:00.000Z' },
+    { id: 'lic-1', licenseKeyMasked: '••••4410', productName: 'OpenClaw Ops Agent', side: 'seller', status: 'active', expiresAt: '2027-10-20T00:00:00.000Z' },
   ],
   recentOrders: [
-    { id: 'ord-open-1', productName: 'OpenClaw Ops Agent', amount: 199, currency: 'USD', status: 'paid', role: 'seller', createdAt: '2026-10-20T08:00:00.000Z', disputeStatus: 'open' },
-    { id: 'ord-split-1', productName: 'Kimi K3 Chat', amount: 29, currency: 'USD', status: 'refunded', role: 'seller', createdAt: '2026-10-18T08:00:00.000Z', disputeStatus: 'split' },
+    { id: 'ord-open-1', productName: 'OpenClaw Ops Agent', amount: 199, currency: 'USD', status: 'paid', side: 'seller', createdAt: '2026-10-20T08:00:00.000Z', disputeStatus: 'open' },
+    { id: 'ord-split-1', productName: 'Kimi K3 Chat', amount: 29, currency: 'USD', status: 'refunded', side: 'seller', createdAt: '2026-10-18T08:00:00.000Z', disputeStatus: 'split' },
   ],
   products: [
     { id: 'prod-ops', name: 'OpenClaw Ops Agent', slug: 'openclaw-ops-agent', published: true, moderationStatus: 'active', salesCount: 4 },
     { id: 'prod-kimi', name: 'Kimi K3 Chat', slug: 'kimi-k3-chat', published: true, moderationStatus: 'active', salesCount: 12 },
   ],
   disputes: [
-    { id: 'ord-open-1', productName: 'OpenClaw Ops Agent', amount: 199, currency: 'USD', disputeStatus: 'open', disputeOpenedAt: '2026-10-28T04:00:00.000Z', disputeReason: 'Delivered workspace does not match the listing.' },
-    { id: 'ord-split-1', productName: 'Kimi K3 Chat', amount: 29, currency: 'USD', disputeStatus: 'split', disputeOpenedAt: '2026-10-20T02:15:00.000Z', disputeReason: 'Half the prepaid credits were never issued.' },
+    { id: 'ord-open-1', productName: 'OpenClaw Ops Agent', amount: 199, currency: 'USD', disputeStatus: 'open', disputeOutcome: '', side: 'seller', disputeOpenedAt: '2026-10-28T04:00:00.000Z' },
+    { id: 'ord-split-1', productName: 'Kimi K3 Chat', amount: 29, currency: 'USD', disputeStatus: 'split', disputeOutcome: 'split', side: 'seller', disputeOpenedAt: '2026-10-20T02:15:00.000Z' },
   ],
-  affiliate: { code: 'TUANANH', clicks: 128, conversions: 6, earnings: 42.5, currency: 'USD', orders: 6 },
+  affiliate: { code: 'TUANANH', clicks: 128, conversions: 6, earnings: 42.5, pitStatus: 'none', pitYear: null },
 };
 
 function filtered(params: URLSearchParams) {
@@ -212,49 +237,69 @@ export function mockAdminCommerce(method: string, path: string, params: URLSearc
     return { ...user, accountStatus: patch.status || user.accountStatus, statusReason: patch.reason || '' };
   }
   if (method === 'GET' && path === '/admin/disputes') return filtered(params);
-  const dispute = path.match(/^\/admin\/disputes\/([^/]+)$/);
-  if (dispute && method === 'GET') return detail(decodeURIComponent(dispute[1]));
-  if (dispute && method === 'PATCH') {
-    const id = decodeURIComponent(dispute[1]);
+  const decision = path.match(/^\/admin\/disputes\/([^/]+)\/decision$/);
+  if (decision && method === 'POST') {
+    const id = decodeURIComponent(decision[1]);
     const row = list.find((item) => item.id === id);
     if (!row) return { status: 404, body: { message: 'Not found' } };
-    const decision = body as { resolution?: string; reason?: string };
-    row.disputeStatus = decision.resolution || row.disputeStatus;
-    row.held = 0;
+    const payload = body as { resolution?: string; note?: string; reason?: string; refundAmount?: number };
+    const note = String(payload.note || payload.reason || '');
+    if (payload.resolution === 'split') {
+      row.disputeStatus = 'split';
+      row.disputeOutcome = 'split';
+    } else if (payload.resolution === 'buyer') {
+      row.disputeStatus = 'buyer_win';
+      row.disputeOutcome = payload.refundAmount != null && payload.refundAmount < row.amount ? 'buyer_partial' : 'buyer_full';
+    } else {
+      row.disputeStatus = 'seller_win';
+      row.disputeOutcome = 'seller';
+    }
+    row.payoutHeld = false;
     row.disputeResolvedAt = new Date().toISOString();
-    row.disputeReason = decision.reason || row.disputeReason;
-    return detail(id);
-  }
-  const adminMsg = path.match(/^\/admin\/disputes\/([^/]+)\/messages$/);
-  if (adminMsg && method === 'POST') {
-    const text = String((body as { body?: string })?.body || '');
-    const message: DisputeMessage = {
+    row.disputeResolutionNote = note;
+    messages.push({
       id: `msg-${Date.now()}`,
       authorId: 'preview-admin',
       role: 'admin',
-      authorName: 'AI Markets Admin',
+      authorName: 'AI Markets (Admin)',
+      kind: 'decision',
+      outcome: row.disputeOutcome,
+      body: note,
+      at: row.disputeResolvedAt,
+    });
+    return detail(id);
+  }
+  const dispute = path.match(/^\/admin\/disputes\/([^/]+)$/);
+  if (dispute && method === 'GET') return detail(decodeURIComponent(dispute[1]));
+  const adminMsg = path.match(/^\/admin\/disputes\/([^/]+)\/messages$/);
+  if (adminMsg && method === 'POST') {
+    const text = String((body as { body?: string })?.body || '');
+    messages.push({
+      id: `msg-${Date.now()}`,
+      authorId: 'preview-admin',
+      role: 'admin',
+      authorName: 'AI Markets (Admin)',
+      kind: 'message',
       body: text,
-      createdAt: new Date().toISOString(),
-    };
-    messages.push(message);
-    return message;
+      at: new Date().toISOString(),
+    });
+    return detail(decodeURIComponent(adminMsg[1]));
   }
+  const orderDispute = path.match(/^\/orders\/([^/]+)\/dispute$/);
+  if (orderDispute && method === 'GET') return detail(decodeURIComponent(orderDispute[1]));
   const thread = path.match(/^\/orders\/([^/]+)\/dispute\/messages$/);
-  if (thread && method === 'GET') {
-    return decodeURIComponent(thread[1]) === 'ord-open-1' ? { messages: messages.slice() } : { messages: [] };
-  }
   if (thread && method === 'POST') {
     const text = String((body as { body?: string })?.body || '');
-    const message: DisputeMessage = {
+    messages.push({
       id: `msg-${Date.now()}`,
       authorId: 'buyer-1',
       role: 'buyer',
       authorName: 'Minh Buyer',
+      kind: 'message',
       body: text,
-      createdAt: new Date().toISOString(),
-    };
-    messages.push(message);
-    return message;
+      at: new Date().toISOString(),
+    });
+    return detail(decodeURIComponent(thread[1]));
   }
   if (method === 'GET' && path === '/orders/disputes') {
     return list.map((row) => ({ id: row.id, disputeStatus: row.disputeStatus }));

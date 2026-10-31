@@ -115,7 +115,7 @@ export class OrderDetailComponent implements OnInit {
       next: (rows) => {
         const status = (rows || []).find((o) => o.id === id)?.disputeStatus || 'none';
         this.dispute.set(status);
-        if (status !== 'none') this.loadMessages(id);
+        if (status !== 'none') this.loadThread(id);
       },
       error: () => this.dispute.set('none'),
     });
@@ -125,10 +125,11 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
-  private loadMessages(id: string): void {
-    this.orders.disputeMessages(id).subscribe({
-      next: (rows) => {
-        this.messages.set(rows);
+  private loadThread(id: string): void {
+    this.orders.orderDispute(id).subscribe({
+      next: (row) => {
+        this.messages.set(row.messages || []);
+        if (row.disputeStatus) this.dispute.set(row.disputeStatus);
         this.threadLoaded.set(true);
       },
       error: (err: HttpErrorResponse) => {
@@ -144,17 +145,11 @@ export class OrderDetailComponent implements OnInit {
     this.sending.set(true);
     this.threadError.set('');
     this.orders.postDisputeMessage(id, body).subscribe({
-      next: (message) => {
+      next: (row) => {
         this.sending.set(false);
         this.thread?.clear();
-        if (message) this.messages.update((list) => [...list, message]);
-        else {
-          this.orders.disputeMessages(id).subscribe({
-            next: (rows) => this.messages.set(rows),
-            error: () => undefined,
-          });
-        }
-        if (this.dispute() === 'none') this.dispute.set('open');
+        this.messages.set(row.messages || []);
+        if (row.disputeStatus) this.dispute.set(row.disputeStatus);
         this.threadLoaded.set(true);
       },
       error: (err) => {

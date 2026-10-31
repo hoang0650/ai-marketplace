@@ -39,7 +39,8 @@
           <span class="adq-main">
             <span class="adq-title">{{ row.productName }} · {{ row.amount | currency: row.currency }}</span>
             <span class="adq-sub">
-              {{ row.buyerName || '—' }} · {{ row.sellerName || '—' }}
+              {{ 'admin.dispute.buyer' | t }}: {{ row.buyerName || '—' }}
+              · {{ 'admin.dispute.seller' | t }}: {{ row.sellerName || '—' }}
             </span>
             @if (row.disputeReason) {
               <span class="adq-sub">{{ row.disputeReason }}</span>
@@ -47,7 +48,7 @@
           </span>
           <span class="adq-meta">
             <span class="adq-pill" [attr.data-status]="row.disputeStatus">{{ statusLabel(row.disputeStatus) }}</span>
-            <span>{{ heldLabel(row) }}</span>
+            @if (heldLabel(row); as held) { <span>{{ held }}</span> }
             @if (row.disputeOpenedAt) {
               <span>{{ row.disputeOpenedAt | date: 'short' }}</span>
             }
