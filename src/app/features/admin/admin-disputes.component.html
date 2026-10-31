@@ -47,7 +47,7 @@
           </span>
           <span class="adq-meta">
             <span class="adq-pill" [attr.data-status]="row.disputeStatus">{{ statusLabel(row.disputeStatus) }}</span>
-            <span>{{ heldLabel(row) }}</span>
+            @if (heldLabel(row); as held) { <span>{{ held }}</span> }
             @if (row.disputeOpenedAt) {
               <span>{{ row.disputeOpenedAt | date: 'short' }}</span>
             }

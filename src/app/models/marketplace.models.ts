@@ -47,10 +47,15 @@ export type SignupRole = Exclude<UserRole, 'admin'>;
 
 export type ModerationStatus = 'active' | 'suspended' | 'blocked' | 'inactive';
 
-/** Phone on GET /v1/admin/users/:id. `source` is `shop` when it comes from the seller shop profile. */
+/**
+ * Phone on GET /v1/admin/users/:id. The object is always present.
+ * `number` and `source` are null when no shop contact phone is stored.
+ * `source` is `shop` when the number comes from SellerProfile.contactPhone.
+ */
 export interface AdminUserPhone {
-  number: string;
-  source: 'shop' | 'account' | 'kyc' | 'profile' | string;
+  number: string | null;
+  source: 'shop' | null;
+  verified: boolean | null;
 }
 
 export interface AdminUserWallet {
@@ -64,38 +69,33 @@ export interface AdminUserKycSummary {
   status: string;
   subjectType?: string;
   fullName?: string;
-  verifiedAt?: string | null;
   idNumberMasked?: string;
-}
-
-export interface AdminUserLastLogin {
-  at: string | null;
-  ip?: string | null;
-  userAgent?: string | null;
+  reviewedAt?: string | null;
+  submittedAt?: string | null;
+  rejectReason?: string;
 }
 
 export interface AdminUserLicenseRow {
   id: string;
-  licenseKey?: string;
-  productId?: string;
   productName?: string;
-  orderId?: string;
-  status?: string;
   term?: string;
+  status?: string;
   expiresAt?: string | null;
-  valid?: boolean;
+  licenseKeyMasked?: string;
+  side?: 'buyer' | 'seller' | string;
+  createdAt?: string | null;
 }
 
 export interface AdminUserOrderRow {
   id: string;
-  productId?: string;
   productName: string;
   amount: number;
   currency: string;
   status: string;
-  role?: 'buyer' | 'seller' | string;
-  createdAt: string;
   disputeStatus?: string;
+  side?: 'buyer' | 'seller' | string;
+  createdAt: string;
+  href?: string;
 }
 
 export interface AdminUserProductRow {
@@ -113,17 +113,19 @@ export interface AdminUserDisputeRow {
   amount: number;
   currency: string;
   disputeStatus: string;
+  disputeOutcome?: string;
+  side?: 'buyer' | 'seller' | string;
   disputeOpenedAt?: string | null;
-  disputeReason?: string;
+  href?: string;
 }
 
 export interface AdminUserAffiliateSummary {
-  code: string | null;
+  code: string;
   clicks: number;
   conversions: number;
   earnings: number;
-  currency: string;
-  orders?: number;
+  pitStatus?: string;
+  pitYear?: number | null;
 }
 
 export interface AdminUserDetail {
@@ -146,18 +148,31 @@ export interface AdminUserDetail {
   productCount?: number;
   orderCount?: number;
   walletByType?: Record<string, number>;
-  /** Null when the account has no phone on file. */
+  licenseCount?: number;
+  disputeCount?: number;
+  kycStatus?: string;
+  /** Always sent. `number` is null when the shop has no contact phone. */
   phone?: AdminUserPhone | null;
   wallet?: AdminUserWallet | null;
   kyc?: AdminUserKycSummary | null;
-  lastLogin?: AdminUserLastLogin | null;
+  lastLoginAt?: string | null;
   licenses?: AdminUserLicenseRow[];
   recentOrders?: AdminUserOrderRow[];
   products?: AdminUserProductRow[];
   disputes?: AdminUserDisputeRow[];
   affiliate?: AdminUserAffiliateSummary | null;
-  /** Optional absolute or site paths. Shop falls back to /store/:creatorSlug. */
-  links?: { shop?: string; account?: string };
+  links?: { admin?: string; shop?: string | null };
+  shop?: {
+    id: string;
+    sellerType?: string;
+    legalName?: string;
+    displayName?: string;
+    contactEmail?: string;
+    contactPhone?: string;
+    verificationStatus?: string;
+    identityVerificationStatus?: string;
+    href?: string | null;
+  } | null;
 }
 
 export type DisputePartyRole = 'buyer' | 'seller' | 'admin';
@@ -166,24 +181,28 @@ export interface DisputeParty {
   id: string;
   name: string;
   email?: string;
-  creatorSlug?: string;
   avatarUrl?: string;
+  role?: string;
+  creatorSlug?: string;
+  href?: string | null;
+  shopHref?: string | null;
 }
 
-export interface DisputeEvidence {
-  id?: string;
+export interface DisputeAttachment {
+  id: string;
+  name: string;
+  mime?: string;
+  size?: number;
+  kind?: string;
   url: string;
-  name?: string;
-  note?: string;
-  createdAt?: string | null;
+  downloadUrl?: string;
 }
 
 export interface DisputeTimelineEvent {
-  at: string;
+  at: string | null;
   action: string;
   note?: string;
   actorRole?: string;
-  actorName?: string;
 }
 
 export interface DisputeMessage {
@@ -191,37 +210,56 @@ export interface DisputeMessage {
   authorId: string;
   role: DisputePartyRole | string;
   authorName?: string;
+  label?: string;
+  kind?: 'message' | 'opened' | 'decision' | string;
+  outcome?: string;
   body: string;
-  createdAt: string;
+  attachments?: DisputeAttachment[];
+  /** ISO time. The API field is `at`. */
+  at: string | null;
 }
 
-export interface DisputeOutcome {
-  resolution: 'buyer_win' | 'seller_win' | 'split' | string;
-  reason?: string;
-  note?: string;
-  refundAmount?: number | null;
-  sellerAmount?: number | null;
-  resolvedAt?: string | null;
-  resolvedByName?: string;
+export type DisputeOutcomeCode = '' | 'buyer_full' | 'buyer_partial' | 'seller' | 'split';
+
+export interface DisputeAuditEntry {
+  id: string;
+  action: string;
+  reason: string;
+  actorId: string;
+  oldValue?: unknown;
+  newValue?: unknown;
+  createdAt: string | null;
+}
+
+export interface DisputeAmounts {
+  gross: number;
+  currency: string;
+  sellerNet: number;
+  held: number;
+  payoutHeld: boolean;
+  refund: number;
+  sellerKept: number;
 }
 
 export type AdminDisputeStatus = 'open' | 'buyer_win' | 'seller_win' | 'split';
 
+/** One row of GET /v1/admin/disputes. This is mapOrder(); there is no sellerName. */
 export interface AdminDisputeListItem {
   id: string;
   productId?: string;
   productName: string;
-  productSlug?: string;
   buyerId?: string;
   buyerName: string;
   sellerId?: string;
-  sellerName: string;
+  sellerName?: string;
   amount: number;
   currency: string;
   sellerNet: number;
-  held?: number;
+  payoutHeld?: boolean;
   disputeStatus: AdminDisputeStatus | string;
   disputeReason: string;
+  disputeOutcome?: string;
+  disputeResolutionNote?: string;
   disputeOpenedAt: string | null;
   disputeResolvedAt?: string | null;
 }
@@ -231,42 +269,33 @@ export interface AdminDisputePage extends AdminPage<AdminDisputeListItem> {
   openCount: number;
 }
 
-export interface AdminDisputeDetail {
-  id: string;
-  disputeStatus: AdminDisputeStatus | string;
-  currency: string;
-  amount: number;
-  sellerNet: number;
-  platformFee?: number;
-  held: number;
-  refunded?: number | null;
-  order: {
-    id: string;
-    status: string;
-    amount: number;
-    currency: string;
-    sellerNet?: number;
-    platformFee?: number;
-    createdAt: string;
-    payoutHeld?: boolean;
-  };
-  product: { id: string; name: string; slug?: string };
+/**
+ * GET /v1/admin/disputes/:id and GET /v1/orders/:id/dispute.
+ * mapOrder fields are spread on the object; parties, money, thread, and audit are nested.
+ */
+export interface AdminDisputeDetail extends Order {
   buyer: DisputeParty;
   seller: DisputeParty;
-  claim?: { reason: string; openedAt?: string | null; openedBy?: string };
-  evidence?: DisputeEvidence[];
-  timeline?: DisputeTimelineEvent[];
-  outcome?: DisputeOutcome | null;
-  auditLog?: DisputeTimelineEvent[];
-  messages?: DisputeMessage[];
+  product: { id: string; name: string; slug?: string; href?: string | null; adminHref?: string | null };
+  orderHref?: string;
+  amounts: DisputeAmounts;
+  evidenceUrls: string[];
+  /** buyer_full | buyer_partial | seller | split, or '' while open. */
+  outcome: DisputeOutcomeCode | string;
+  resolutionNote: string;
+  messages: DisputeMessage[];
+  timeline: DisputeTimelineEvent[];
+  complaint?: { id: string; caseRef: string; status: string; href: string } | null;
+  /** Admin only. Parties receive []. */
+  audit: DisputeAuditEntry[];
 }
 
+/** POST /v1/admin/disputes/:id/decision. resolution is buyer | seller | split, not the disputeStatus enum. */
 export interface AdminDisputeDecision {
-  resolution: 'buyer_win' | 'seller_win' | 'split';
-  /** Major currency units. Omitted for a seller win. Full buyer win sends the order amount. */
+  resolution: 'buyer' | 'seller' | 'split';
+  /** Omitted for a seller win and for a full buyer refund. */
   refundAmount?: number;
   reason: string;
-  /** Same text as reason — the previous resolve call used `note`. */
   note: string;
 }
 
@@ -843,6 +872,11 @@ export interface Order {
   disputeReason?: string;
   disputeOpenedAt?: string | null;
   disputeResolvedAt?: string | null;
+  /** buyer_full | buyer_partial | seller | split, empty while open. */
+  disputeOutcome?: '' | 'buyer_full' | 'buyer_partial' | 'seller' | 'split' | string;
+  disputeResolutionNote?: string;
+  disputeRefundAmount?: number;
+  disputeSellerKeptAmount?: number;
   canDispute?: boolean;
 }
 

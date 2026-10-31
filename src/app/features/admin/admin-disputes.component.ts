@@ -54,8 +54,8 @@ export class AdminDisputesComponent implements OnDestroy {
   }
 
   heldLabel(row: AdminDisputeListItem): string {
-    const amount = row.held != null ? row.held : row.sellerNet;
-    return this.i18n.t('admin.dispute.held', { amount: this.format(amount, row.currency) });
+    if (row.disputeStatus !== 'open' && !row.payoutHeld) return '';
+    return this.i18n.t('admin.dispute.held', { amount: this.format(row.sellerNet, row.currency) });
   }
 
   statusLabel(status: string): string {

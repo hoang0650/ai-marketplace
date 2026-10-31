@@ -6,11 +6,18 @@
       <li class="dthread__msg" [attr.data-role]="m.role" [class.is-me]="viewerId() && m.authorId === viewerId()">
         <p class="dthread__meta">
           <strong>{{ label(m) }}</strong>
-          @if (m.createdAt) {
-            <span> · {{ m.createdAt | date: 'short' }}</span>
+          @if (m.at) {
+            <span> · {{ m.at | date: 'short' }}</span>
           }
         </p>
-        <p class="dthread__body">{{ m.body }}</p>
+        @if (m.body) { <p class="dthread__body">{{ m.body }}</p> }
+        @if (m.attachments?.length) {
+          <p class="dthread__files">
+            @for (a of m.attachments; track a.id) {
+              <a [href]="a.url" target="_blank" rel="noopener noreferrer">{{ a.name || a.id }}</a>
+            }
+          </p>
+        }
       </li>
     } @empty {
       <li class="dthread__empty">{{ 'dispute.thread.empty' | t }}</li>

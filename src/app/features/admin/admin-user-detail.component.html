@@ -26,9 +26,11 @@
         <dd><a [href]="'mailto:' + u.email">{{ u.email }}</a></dd>
         <dt>{{ 'admin.user.phone' | t }}</dt>
         <dd>
-          @if (u.phone; as phone) {
-            <span class="aud-phone">{{ phone.number }}</span>
-            <span class="aud-source">{{ phoneSource(phone) }}</span>
+          @if (u.phone?.number) {
+            <span class="aud-phone">{{ u.phone!.number }}</span>
+            @if (u.phone!.source) {
+              <span class="aud-source">{{ phoneSource(u.phone!) }}</span>
+            }
           } @else {
             —
           }
@@ -39,6 +41,7 @@
             {{ kycStatus(u.kyc!.status) }}
             @if (u.kyc?.subjectType) { · {{ kycSubject(u.kyc!.subjectType) }} }
             @if (u.kyc?.fullName) { · {{ u.kyc!.fullName }} }
+            @if (u.kyc?.reviewedAt) { · {{ u.kyc!.reviewedAt | date: 'medium' }} }
             <a class="aud-inline" routerLink="/admin/kyc">{{ 'admin.user.ekycQueue' | t }}</a>
           } @else {
             {{ 'admin.user.ekycNone' | t }}
@@ -87,24 +90,13 @@
           </dd>
           <dt>{{ 'admin.user.account' | t }}</dt>
           <dd>
-            @if (u.links?.account; as account) {
-              @if (account.startsWith('http')) {
-                <a [href]="account" target="_blank" rel="noopener">{{ u.email }}</a>
-              } @else {
-                <a [routerLink]="account">{{ u.email }}</a>
-              }
-            } @else {
-              {{ u.email }}
-            }
+            {{ u.email }}
             <span class="aud-id">{{ 'admin.user.accountId' | t }} · {{ u.id }}</span>
           </dd>
           <dt>{{ 'admin.user.lastLogin' | t }}</dt>
           <dd>
-            @if (u.lastLogin?.at) {
-              {{ u.lastLogin!.at | date: 'medium' }}
-              @if (u.lastLogin?.ip) {
-                <span class="aud-id">{{ 'admin.user.lastLoginIp' | t }} {{ u.lastLogin!.ip }}</span>
-              }
+            @if (u.lastLoginAt) {
+              {{ u.lastLoginAt | date: 'medium' }}
             } @else {
               {{ 'admin.user.neverLogin' | t }}
             }
@@ -132,7 +124,7 @@
             <li>
               <span class="aud-list__main">
                 <span class="aud-list__title">{{ row.productName || row.id }}</span>
-                @if (row.licenseKey) { <span class="aud-mono">{{ row.licenseKey }}</span> }
+                @if (row.licenseKeyMasked) { <span class="aud-mono">{{ row.licenseKeyMasked }}</span> }
               </span>
               <span class="aud-list__meta">
                 @if (row.status) { <span>{{ licenseStatus(row.status) }}</span> }
@@ -141,9 +133,7 @@
                 } @else {
                   <span>{{ 'admin.user.noExpiry' | t }}</span>
                 }
-                @if (row.orderId) {
-                  <a [routerLink]="['/orders', row.orderId]">{{ row.orderId }}</a>
-                }
+                @if (row.side) { <span>{{ orderRole(row.side) }}</span> }
               </span>
             </li>
           }
@@ -168,7 +158,7 @@
               </a>
               <span class="aud-list__meta">
                 <span>{{ row.amount | currency: row.currency }}</span>
-                <span>{{ orderStatus(row.status) }}@if (row.role) { · {{ orderRole(row.role) }} }</span>
+                <span>{{ orderStatus(row.status) }}@if (row.side) { · {{ orderRole(row.side) }} }</span>
                 @if (row.disputeStatus && row.disputeStatus !== 'none') {
                   <a [routerLink]="['/admin/disputes', row.id]">{{ disputeLabel(row.disputeStatus) }}</a>
                 }
@@ -221,7 +211,7 @@
             <li>
               <a class="aud-list__main" [routerLink]="['/admin/disputes', row.id]">
                 <span class="aud-list__title">{{ row.productName }}</span>
-                @if (row.disputeReason) { <span class="aud-id">{{ row.disputeReason }}</span> }
+                @if (row.disputeOutcome) { <span class="aud-id">{{ outcomeLabel(row.disputeOutcome) }}</span> }
               </a>
               <span class="aud-list__meta">
                 <span class="aud-pill" [attr.data-dispute]="row.disputeStatus">{{ disputeLabel(row.disputeStatus) }}</span>
@@ -254,12 +244,12 @@
           </div>
           <div>
             <p>{{ 'admin.user.affEarnings' | t }}</p>
-            <strong>{{ aff.earnings | currency: aff.currency || 'USD' }}</strong>
+            <strong>{{ aff.earnings | currency: 'USD' }}</strong>
           </div>
-          @if (aff.orders != null) {
+          @if (aff.pitStatus && aff.pitStatus !== 'none') {
             <div>
-              <p>{{ 'admin.user.affOrders' | t }}</p>
-              <strong>{{ aff.orders | number }}</strong>
+              <p>{{ 'admin.user.affPit' | t }}</p>
+              <strong>{{ aff.pitStatus }}@if (aff.pitYear) { · {{ aff.pitYear }} }</strong>
             </div>
           }
         </div>

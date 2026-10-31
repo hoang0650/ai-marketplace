@@ -74,8 +74,13 @@ export class AdminUserDetailComponent implements OnInit {
     return this.lookup(`admin.dispute.status.${s}`, s);
   }
 
+  outcomeLabel(code: string): string {
+    const key = code === 'seller' ? 'admin.dispute.outcome.seller_win' : `admin.dispute.outcome.${code}`;
+    return this.lookup(key, code);
+  }
+
   phoneSource(phone: AdminUserPhone): string {
-    return this.lookup(`admin.user.phoneSource.${phone.source}`, phone.source);
+    return this.lookup(`admin.user.phoneSource.${phone.source || ''}`, phone.source || '');
   }
 
   kycStatus(status: string): string {

@@ -18,7 +18,6 @@ import {
   AdminDisputeListItem,
   AdminDisputeDetail,
   AdminDisputeDecision,
-  DisputeMessage,
   ModerationStatus,
   Creator,
   DashboardSummary,
@@ -108,20 +107,11 @@ function compactParams(params: Record<string, string | number>): Record<string, 
   return out;
 }
 
-function unwrapDisputeMessage(res: unknown): DisputeMessage | null {
-  if (!res || typeof res !== 'object') return null;
-  const row = res as DisputeMessage & { message?: DisputeMessage };
-  if (typeof row.id === 'string' && typeof row.body === 'string') return row;
-  if (row.message && typeof row.message.id === 'string') return row.message;
-  return null;
-}
-
 function normalizeDisputeListItem(raw: Partial<AdminDisputeListItem> & { id?: string }): AdminDisputeListItem {
   return {
     id: String(raw.id || ''),
     productId: raw.productId,
     productName: raw.productName || '',
-    productSlug: raw.productSlug,
     buyerId: raw.buyerId,
     buyerName: raw.buyerName || '',
     sellerId: raw.sellerId,
@@ -129,9 +119,10 @@ function normalizeDisputeListItem(raw: Partial<AdminDisputeListItem> & { id?: st
     amount: Number(raw.amount) || 0,
     currency: raw.currency || 'USD',
     sellerNet: Number(raw.sellerNet) || 0,
-    held: raw.held == null ? undefined : Number(raw.held) || 0,
+    payoutHeld: raw.payoutHeld,
     disputeStatus: raw.disputeStatus || 'open',
     disputeReason: raw.disputeReason || '',
+    disputeOutcome: raw.disputeOutcome || '',
     disputeOpenedAt: raw.disputeOpenedAt || null,
     disputeResolvedAt: raw.disputeResolvedAt || null,
   };
@@ -520,41 +511,28 @@ export class DashboardService {
   }
 
   /**
-   * PATCH /v1/admin/disputes/:id
-   * resolution: buyer_win (refundAmount = full order amount, or less for a partial refund),
-   * seller_win, or split (refundAmount is the buyer's share). `reason` and `note` carry the same text.
+   * POST /v1/admin/disputes/:id/decision
+   * resolution is `buyer` | `seller` | `split` (not buyer_win / seller_win).
+   * Omit refundAmount for a full buyer refund and for a seller win.
+   * `note` and `reason` carry the same text; the server reads note, then reason.
    */
   decideDispute(id: string, body: AdminDisputeDecision): Observable<AdminDisputeDetail> {
-    return this.http.patch<AdminDisputeDetail>(`${this.base}/admin/disputes/${id}`, body);
+    return this.http.post<AdminDisputeDetail>(`${this.base}/admin/disputes/${id}/decision`, body);
   }
 
-  /**
-   * Admin joins the buyer/seller thread. Prefers POST /v1/admin/disputes/:id/messages and
-   * falls back to POST /v1/orders/:id/dispute/messages when that route is not mounted.
-   */
-  postAdminDisputeMessage(orderId: string, body: string): Observable<unknown> {
-    return this.http.post(`${this.base}/admin/disputes/${orderId}/messages`, { body }).pipe(
-      catchError((err: { status?: number }) => {
-        if (err?.status === 404 || err?.status === 405) {
-          return this.http.post(`${this.base}/orders/${orderId}/dispute/messages`, { body });
-        }
-        return throwError(() => err);
-      }),
-    );
+  /** POST /v1/admin/disputes/:id/messages — returns the updated dispute detail (201). */
+  postAdminDisputeMessage(orderId: string, body: string): Observable<AdminDisputeDetail> {
+    return this.http.post<AdminDisputeDetail>(`${this.base}/admin/disputes/${orderId}/messages`, { body });
   }
 
-  /** GET /v1/orders/:id/dispute/messages */
-  disputeMessages(orderId: string): Observable<DisputeMessage[]> {
-    return this.http
-      .get<DisputeMessage[] | { messages?: DisputeMessage[] }>(`${this.base}/orders/${orderId}/dispute/messages`)
-      .pipe(map((res) => (Array.isArray(res) ? res : res?.messages || [])));
+  /** GET /v1/orders/:id/dispute — shared thread for buyer, seller, and admin. */
+  orderDispute(orderId: string): Observable<AdminDisputeDetail> {
+    return this.http.get<AdminDisputeDetail>(`${this.base}/orders/${orderId}/dispute`);
   }
 
-  /** POST /v1/orders/:id/dispute/messages */
-  postDisputeMessage(orderId: string, body: string): Observable<DisputeMessage | null> {
-    return this.http
-      .post<unknown>(`${this.base}/orders/${orderId}/dispute/messages`, { body })
-      .pipe(map((res) => unwrapDisputeMessage(res)));
+  /** POST /v1/orders/:id/dispute/messages — returns the updated dispute detail (201). */
+  postDisputeMessage(orderId: string, body: string): Observable<AdminDisputeDetail> {
+    return this.http.post<AdminDisputeDetail>(`${this.base}/orders/${orderId}/dispute/messages`, { body });
   }
 
   complaints(as?: 'mine' | 'seller' | 'admin' | 'work'): Observable<Complaint[]> {

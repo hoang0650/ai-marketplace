@@ -4,7 +4,7 @@
 
   @if (item(); as d) {
     <p class="add-status">
-      <span class="add-pill" [attr.data-status]="d.disputeStatus">{{ statusLabel(d.disputeStatus) }}</span>
+      <span class="add-pill" [attr.data-status]="d.disputeStatus || 'none'">{{ statusLabel(d.disputeStatus || 'none') }}</span>
       @if (notice()) { <span class="add-ok">{{ notice() }}</span> }
     </p>
 
@@ -15,17 +15,25 @@
           <dl class="add-facts">
             <dt>{{ 'admin.dispute.order' | t }}</dt>
             <dd>
-              <a [routerLink]="['/orders', d.order.id]">{{ d.order.id }}</a>
-              · {{ orderStatus(d.order.status) }}
-              · {{ d.order.createdAt | date: 'medium' }}
+              <a [routerLink]="['/orders', d.id]">{{ d.id }}</a>
+              · {{ orderStatus(d.status) }}
+              · {{ d.createdAt | date: 'medium' }}
             </dd>
             <dt>{{ 'admin.dispute.product' | t }}</dt>
             <dd>
-              <a [routerLink]="['/admin/products', d.product.id]">{{ d.product.name }}</a>
-              @if (d.product.slug) {
+              @if (d.product?.id) {
+                <a [routerLink]="['/admin/products', d.product.id]">{{ d.product.name }}</a>
+              } @else {
+                {{ d.productName }}
+              }
+              @if (d.product?.slug) {
                 · <a [routerLink]="['/product', d.product.slug]">{{ 'admin.dispute.viewProduct' | t }}</a>
               }
             </dd>
+            @if (d.complaint?.caseRef) {
+              <dt>{{ 'admin.dispute.complaint' | t }}</dt>
+              <dd><a [routerLink]="d.complaint!.href">{{ d.complaint!.caseRef }}</a></dd>
+            }
           </dl>
         </section>
 
@@ -34,14 +42,14 @@
           <div class="add-parties">
             <article>
               <p class="add-kicker">{{ 'admin.dispute.buyer' | t }}</p>
-              <a [routerLink]="['/admin/users', d.buyer.id]">{{ d.buyer.name }}</a>
+              <a [routerLink]="d.buyer.href || ['/admin/users', d.buyer.id]">{{ d.buyer.name }}</a>
               @if (d.buyer.email) { <span>{{ d.buyer.email }}</span> }
             </article>
             <article>
               <p class="add-kicker">{{ 'admin.dispute.seller' | t }}</p>
-              <a [routerLink]="['/admin/users', d.seller.id]">{{ d.seller.name }}</a>
-              @if (d.seller.creatorSlug) {
-                <a [routerLink]="['/store', d.seller.creatorSlug]">{{ d.seller.creatorSlug }}</a>
+              <a [routerLink]="d.seller.href || ['/admin/users', d.seller.id]">{{ d.seller.name }}</a>
+              @if (d.seller.shopHref || d.seller.creatorSlug) {
+                <a [routerLink]="d.seller.shopHref || ['/store', d.seller.creatorSlug]">{{ d.seller.creatorSlug }}</a>
               }
               @if (d.seller.email) { <span>{{ d.seller.email }}</span> }
             </article>
@@ -57,7 +65,7 @@
             </div>
             <div>
               <p>{{ 'admin.dispute.sellerNet' | t }}</p>
-              <strong>{{ (d.order.sellerNet ?? d.sellerNet) | currency: currency(d) }}</strong>
+              <strong>{{ (d.amounts?.sellerNet ?? d.sellerNet) | currency: currency(d) }}</strong>
             </div>
             @if (hasFee(d)) {
               <div>
@@ -67,12 +75,18 @@
             }
             <div>
               <p>{{ 'admin.dispute.heldFunds' | t }}</p>
-              <strong>{{ d.held | currency: currency(d) }}</strong>
+              <strong>{{ heldAmount(d) | currency: currency(d) }}</strong>
             </div>
-            @if (d.refunded != null) {
+            @if (d.amounts?.refund) {
               <div>
                 <p>{{ 'admin.dispute.refunded' | t }}</p>
-                <strong>{{ d.refunded | currency: currency(d) }}</strong>
+                <strong>{{ d.amounts.refund | currency: currency(d) }}</strong>
+              </div>
+            }
+            @if (d.disputeStatus !== 'open' && d.amounts?.sellerKept != null) {
+              <div>
+                <p>{{ 'admin.dispute.sellerKept' | t }}</p>
+                <strong>{{ d.amounts.sellerKept | currency: currency(d) }}</strong>
               </div>
             }
           </div>
@@ -80,11 +94,11 @@
 
         <section class="panel">
           <h2>{{ 'admin.dispute.claim' | t }}</h2>
-          @if (d.claim?.reason) {
-            <p class="add-copy">{{ d.claim!.reason }}</p>
+          @if (d.disputeReason) {
+            <p class="add-copy">{{ d.disputeReason }}</p>
             <p class="add-meta">
-              @if (d.claim?.openedBy) { {{ 'admin.dispute.claimBy' | t }}: {{ roleLabel(d.claim!.openedBy) }} }
-              @if (d.claim?.openedAt) { · {{ d.claim!.openedAt | date: 'medium' }} }
+              {{ 'admin.dispute.claimBy' | t }}: {{ roleLabel('buyer') }}
+              @if (d.disputeOpenedAt) { · {{ d.disputeOpenedAt | date: 'medium' }} }
             </p>
           } @else {
             <p class="add-muted">{{ 'admin.dispute.claimEmpty' | t }}</p>
@@ -93,16 +107,10 @@
 
         <section class="panel">
           <h2>{{ 'admin.dispute.evidence' | t }}</h2>
-          @if (d.evidence?.length) {
+          @if (d.evidenceUrls?.length) {
             <ul class="add-evidence">
-              @for (ev of d.evidence; track ev.url + (ev.id || '') + (ev.note || '')) {
-                <li>
-                  @if (ev.url) {
-                    <a [href]="ev.url" target="_blank" rel="noopener noreferrer">{{ ev.name || ev.url }}</a>
-                  }
-                  @if (ev.note) { <span>{{ ev.note }}</span> }
-                  @if (ev.createdAt) { <span class="add-meta">{{ ev.createdAt | date: 'short' }}</span> }
-                </li>
+              @for (url of d.evidenceUrls; track url) {
+                <li><a [href]="url" target="_blank" rel="noopener noreferrer">{{ url }}</a></li>
               }
             </ul>
           } @else {
@@ -132,16 +140,15 @@
 
         <section class="panel">
           <h2>{{ 'admin.dispute.outcome' | t }}</h2>
-          @if (d.outcome; as outcome) {
-            <p class="add-copy">{{ statusLabel(outcome.resolution) }}</p>
-            @if (outcome.refundAmount != null) {
-              <p>{{ 'admin.dispute.refundAmount' | t }}: {{ outcome.refundAmount | currency: currency(d) }}</p>
+          @if (d.outcome) {
+            <p class="add-copy">{{ outcomeLabel(d.outcome) }}</p>
+            @if (d.amounts?.refund) {
+              <p>{{ 'admin.dispute.refundAmount' | t }}: {{ d.amounts.refund | currency: currency(d) }}</p>
             }
             @if (outcomeText(d)) { <p class="add-copy">{{ outcomeText(d) }}</p> }
-            <p class="add-meta">
-              @if (outcome.resolvedByName) { {{ outcome.resolvedByName }} · }
-              @if (outcome.resolvedAt) { {{ outcome.resolvedAt | date: 'medium' }} }
-            </p>
+            @if (d.disputeResolvedAt) {
+              <p class="add-meta">{{ d.disputeResolvedAt | date: 'medium' }}</p>
+            }
           } @else {
             <p class="add-muted">{{ 'admin.dispute.outcomeEmpty' | t }}</p>
           }
@@ -149,17 +156,16 @@
 
         <section class="panel">
           <h2>{{ 'admin.dispute.audit' | t }}</h2>
-          @if (events(d.auditLog).length) {
+          @if (d.audit?.length) {
             <ol class="add-log">
-              @for (ev of events(d.auditLog); track ev.at + ev.action + (ev.note || '')) {
+              @for (ev of d.audit; track ev.id) {
                 <li>
                   <strong>{{ ev.action }}</strong>
                   <span class="add-meta">
-                    @if (ev.actorName) { {{ ev.actorName }} · }
-                    @else if (ev.actorRole) { {{ roleLabel(ev.actorRole) }} · }
-                    {{ ev.at | date: 'short' }}
+                    @if (ev.actorId) { {{ ev.actorId }} · }
+                    @if (ev.createdAt) { {{ ev.createdAt | date: 'short' }} }
                   </span>
-                  @if (ev.note) { <p>{{ ev.note }}</p> }
+                  @if (ev.reason) { <p>{{ ev.reason }}</p> }
                 </li>
               }
             </ol>

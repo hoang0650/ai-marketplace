@@ -16,7 +16,7 @@ type Choice = 'buyer_full' | 'buyer_partial' | 'seller_win' | 'split';
 
 interface PendingDecision {
   choice: Choice;
-  resolution: 'buyer_win' | 'seller_win' | 'split';
+  resolution: 'buyer' | 'seller' | 'split';
   refundAmount?: number;
   reason: string;
 }
@@ -97,7 +97,13 @@ export class AdminDisputeDetailComponent implements OnInit {
   }
 
   outcomeText(row: AdminDisputeDetail): string {
-    return (row.outcome?.reason || row.outcome?.note || '').trim();
+    return (row.resolutionNote || row.disputeResolutionNote || '').trim();
+  }
+
+  outcomeLabel(code: string): string {
+    const key = code === 'seller' ? 'admin.dispute.outcome.seller_win' : `admin.dispute.outcome.${code}`;
+    const text = this.i18n.t(key);
+    return text === key ? this.statusLabel(code) : text;
   }
 
   events(list: DisputeTimelineEvent[] | undefined): DisputeTimelineEvent[] {
@@ -109,8 +115,7 @@ export class AdminDisputeDetailComponent implements OnInit {
   }
 
   fee(row: AdminDisputeDetail): number | null {
-    const value = row.platformFee ?? row.order?.platformFee;
-    return value == null ? null : value;
+    return row.platformFee == null ? null : row.platformFee;
   }
 
   hasFee(row: AdminDisputeDetail): boolean {
@@ -122,11 +127,15 @@ export class AdminDisputeDetailComponent implements OnInit {
   }
 
   orderAmount(row: AdminDisputeDetail): number {
-    return Number(row.order?.amount ?? row.amount) || 0;
+    return Number(row.amounts?.gross ?? row.amount) || 0;
   }
 
   currency(row: AdminDisputeDetail): string {
-    return row.order?.currency || row.currency || 'USD';
+    return row.amounts?.currency || row.currency || 'USD';
+  }
+
+  heldAmount(row: AdminDisputeDetail): number {
+    return Number(row.amounts?.held) || 0;
   }
 
   review(row: AdminDisputeDetail): void {
@@ -136,13 +145,12 @@ export class AdminDisputeDetailComponent implements OnInit {
       return;
     }
     const orderAmount = this.orderAmount(row);
-    let resolution: PendingDecision['resolution'] = 'seller_win';
+    let resolution: PendingDecision['resolution'] = 'seller';
     let refundAmount: number | undefined;
     if (this.choice === 'buyer_full') {
-      resolution = 'buyer_win';
-      refundAmount = orderAmount || undefined;
+      resolution = 'buyer';
     } else if (this.choice === 'buyer_partial' || this.choice === 'split') {
-      resolution = this.choice === 'split' ? 'split' : 'buyer_win';
+      resolution = this.choice === 'split' ? 'split' : 'buyer';
       const amount = Number(this.refundAmount);
       if (!Number.isFinite(amount) || amount <= 0) {
         this.decideError.set(this.i18n.t('admin.dispute.amountInvalid'));
@@ -172,12 +180,13 @@ export class AdminDisputeDetailComponent implements OnInit {
         ...(decision.refundAmount != null ? { refundAmount: decision.refundAmount } : {}),
       })
       .subscribe({
-        next: () => {
+        next: (next) => {
           this.pending.set(null);
           this.deciding.set(false);
           this.notice.set(this.i18n.t('admin.dispute.decided'));
           this.reason = '';
-          this.reload();
+          if (next?.id) this.apply(next);
+          else this.reload();
         },
         error: (err) => {
           this.deciding.set(false);
@@ -192,12 +201,13 @@ export class AdminDisputeDetailComponent implements OnInit {
     if (!row || this.sending()) return;
     this.sending.set(true);
     this.threadError.set('');
-    this.api.postAdminDisputeMessage(row.order?.id || row.id, body).subscribe({
-      next: () => {
+    this.api.postAdminDisputeMessage(row.id, body).subscribe({
+      next: (next) => {
         this.thread?.clear();
         this.sending.set(false);
         this.notice.set(this.i18n.t('admin.dispute.sent'));
-        this.reload();
+        if (next?.id) this.apply(next);
+        else this.reload();
       },
       error: (err) => {
         this.sending.set(false);
@@ -211,13 +221,5 @@ export class AdminDisputeDetailComponent implements OnInit {
     this.messages.set(row.messages || []);
     this.loading.set(false);
     this.loadError.set('');
-    const orderId = row.order?.id || row.id;
-    this.api.disputeMessages(orderId).subscribe({
-      next: (msgs) => {
-        if (this.item()?.id !== row.id) return;
-        if (msgs.length || !(row.messages || []).length) this.messages.set(msgs);
-      },
-      error: () => undefined,
-    });
   }
 }
