@@ -268,7 +268,8 @@ export class AffiliateComponent implements OnInit {
     if (!w) return;
     const vnd = Math.floor(Number(this.wdVnd) || 0);
     if (vnd < w.minWithdrawVnd || vnd > w.availableVnd) return;
-    const fx = w.available > 0 && w.availableVnd > 0 ? w.availableVnd / w.available : 26_500;
+    const implied = w.available > 0 && w.availableVnd > 0 ? w.availableVnd / w.available : 0;
+    const fx = implied > 0 ? implied : this.currency.vndPerUsd();
     const amount = vnd >= w.availableVnd ? w.available : Math.round((vnd / fx) * 100) / 100;
     this.wdMsg.set('');
     this.busy.set(true);

@@ -44,7 +44,7 @@ export class BillingComponent {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CurrencyPipe, DecimalPipe, PercentPipe, RouterLink, TPipe, AdminOverviewChartsComponent, AdminPeopleComponent, AdminDisputesComponent],
+  imports: [CurrencyPipe, DatePipe, DecimalPipe, PercentPipe, RouterLink, TPipe, AdminOverviewChartsComponent, AdminPeopleComponent, AdminDisputesComponent],
   template: `
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
@@ -112,6 +112,23 @@ export class BillingComponent {
             <p class="font-display text-3xl">{{ d.orders | number }}</p>
           </div>
         </div>
+
+        @if (d.exchangeRate; as quote) {
+          <div class="panel mt-4">
+            <p class="text-xs uppercase tracking-wider text-muted">Tỷ giá USD</p>
+            <p class="mt-2 text-lg font-semibold">
+              {{ quote.vndPerUsd | number: '1.0-2' }} ₫/USD
+              <span class="text-muted"> · </span>
+              {{ quote.cnyPerUsd | number: '1.2-4' }} ¥/USD
+            </p>
+            <p class="mt-1 text-xs text-muted">
+              {{ quote.source }}
+              @if (quote.updatedAt) {
+                <span> · {{ quote.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              }
+            </p>
+          </div>
+        }
 
         <app-admin-overview-charts [overview]="d" />
         }

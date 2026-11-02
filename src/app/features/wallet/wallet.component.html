@@ -108,7 +108,7 @@
               [qr]="gpayQr()"
               [qrSrc]="gpayQrSrc()"
               [quickAmounts]="gpayQuickAmounts()"
-              [vndPerUsd]="gpayVndPerUsd()"
+              [vndPerUsd]="fx.vndPerUsd()"
               [minVnd]="gpayMinTopupVnd()"
               [amountVnd]="depositVnd"
               (amountVndChange)="onTopupVnd($event)"
