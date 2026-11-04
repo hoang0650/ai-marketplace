@@ -429,7 +429,12 @@ export class DashboardAnalyticsComponent implements OnInit {
         @if (isHireDraft()) {
           <div>
             <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Giá trọn gói (USD)</label>
-            <input class="input" type="number" min="1" step="1" [(ngModel)]="draft.price" name="hirePrice" />
+            <input class="input" type="number" min="1" step="1" [(ngModel)]="draft.price" name="hirePrice" required />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Thời gian hoàn thành (ngày)</label>
+            <input class="input" type="number" min="1" max="365" step="1" [(ngModel)]="draft.serviceDeliveryDays" name="serviceDeliveryDays" required />
+            <p class="mt-1 text-xs text-muted">Cam kết tính từ khi đơn dịch vụ được xác nhận.</p>
           </div>
           <div class="md:col-span-2">
             <p class="mt-1 text-xs text-muted">
@@ -911,6 +916,7 @@ export class DashboardProductsComponent implements OnInit {
       negotiable: true,
       affiliatePct: '' as number | string,
       acceptOnlineTerms: false,
+      serviceDeliveryDays: 7,
     };
   }
 
@@ -1113,6 +1119,13 @@ export class DashboardProductsComponent implements OnInit {
       this.kindError = this.i18nT('productKind.required');
       return;
     }
+    if (this.isHireDraft()) {
+      const deliveryDays = Number(this.draft.serviceDeliveryDays);
+      if (!Number.isInteger(deliveryDays) || deliveryDays < 1 || deliveryDays > 365) {
+        this.publishError = 'Vui lòng nhập thời gian hoàn thành từ 1 đến 365 ngày.';
+        return;
+      }
+    }
     if (this.isVoiceDraft() && !String(this.draft.voiceSampleUrl || '').trim()) {
       this.voiceUploadError = 'Upload MP3 giọng của bạn trước — hệ thống sẽ tự clone.';
       return;
@@ -1220,6 +1233,7 @@ export class DashboardProductsComponent implements OnInit {
         category: this.draft.category,
         productKind: this.draft.productKind || 'DIGITAL',
         pricing,
+        serviceDeliveryDays: this.isHireDraft() ? Number(this.draft.serviceDeliveryDays) : undefined,
         affiliateRate: this.draftAffiliateRate(),
         ...(this.isOnlineTermsDraft() ? { acceptOnlineTerms: !!this.draft.acceptOnlineTerms } : {}),
         contentMeta,

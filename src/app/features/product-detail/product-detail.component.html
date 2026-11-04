@@ -262,6 +262,9 @@
         }
         @if (isHireRequest(p.category)) {
           <p class="pd-hire-note">{{ 'svc.priceNote' | t: { price: displayPrice(p, 1) } }}</p>
+          @if (p.serviceDeliveryDays) {
+            <p class="pd-hire-note">Thời gian hoàn thành: {{ p.serviceDeliveryDays }} ngày kể từ khi xác nhận đơn.</p>
+          }
         }
         @if (!isHireRequest(p.category)) {
         <button type="button" class="pd-buy__cart" (click)="addToCart()">
@@ -536,6 +539,9 @@
         <aside class="pg-pane">
           <div class="pg-pane__head"><h2>{{ 'svc.price' | t }}</h2></div>
           <p class="hire-price">{{ displayPrice(p, 1) }}</p>
+          @if (p.serviceDeliveryDays) {
+            <p class="cost-hint"><strong>Thời gian hoàn thành:</strong> {{ p.serviceDeliveryDays }} ngày kể từ khi xác nhận đơn.</p>
+          }
           <p class="cost-hint">{{ 'svc.fixedHint' | t }}</p>
           <p class="cost-hint">{{ 'svc.walletHint' | t }}</p>
           @if (p.apiDocsMarkdown) {
