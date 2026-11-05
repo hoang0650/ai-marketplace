@@ -23,6 +23,39 @@
     </div>
   </header>
 
+  <nav class="legal-hub__required" aria-labelledby="required-legal-title">
+    <div class="legal-hub__required-head">
+      <div>
+        <p class="legal-hub__eyebrow">Thông tin công khai</p>
+        <h2 id="required-legal-title">Chính sách công khai bắt buộc</h2>
+      </div>
+      <span>12 mục</span>
+    </div>
+    <p class="legal-hub__required-lead">
+      Chọn từng mục để xem chính sách độc lập. Nội dung này được công khai thường xuyên và
+      có thể truy cập trực tiếp bằng đường dẫn riêng.
+    </p>
+    <ul>
+      @for (item of requiredSections; track item.label) {
+        <li>
+          <a [routerLink]="['/legal', item.policy.slug]">
+            <span class="legal-hub__required-index">{{ $index + 1 }}</span>
+            <span>
+              <strong>{{ item.label }}</strong>
+              <small>{{ item.description }}</small>
+            </span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="legal-hub__all-head">
+    <h2>Toàn bộ văn bản và quy trình</h2>
+    <p>Các quy định chi tiết, biểu mẫu và quy trình vận hành bổ trợ.</p>
+  </div>
+
   @for (group of groups; track group.id) {
     @if (docsIn(group.id).length) {
       <section class="legal-hub__group">

@@ -7,8 +7,9 @@
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 12/10/2026  
-**Phiên bản:** 2026.10.12
+**Ngày công bố:** 05/11/2026
+**Ngày hiệu lực:** 05/12/2026
+**Phiên bản:** 2026.11.05
 
 ---
 
@@ -22,7 +23,7 @@
 
 ## Điều 2. Tham gia chương trình
 
-1. Người dùng đã đăng nhập **và đã hoàn tất xác minh danh tính (eKYC)** mới được nhận mã giới thiệu và lấy liên kết, mã giới thiệu cho từng sản phẩm hoặc gian hàng tại trang **Affiliate**. Liên kết có dạng `https://aimarkets.vn/product/<sản-phẩm>?ref=<mã>` hoặc `https://aimarkets.vn/store/<gian-hàng>?ref=<mã>`.
+1. Từ ngày 01/07/2026, người dùng đã đăng nhập **và hoàn tất định danh điện tử qua VNeID hoặc tổ chức cung cấp dịch vụ xác thực điện tử được cấp phép** mới được nhận mã giới thiệu và lấy liên kết, mã giới thiệu cho từng sản phẩm hoặc gian hàng tại trang **Affiliate**. Liên kết có dạng `https://aimarkets.vn/product/<sản-phẩm>?ref=<mã>` hoặc `https://aimarkets.vn/store/<gian-hàng>?ref=<mã>`.
 2. Tài khoản chưa xác minh eKYC không được cấp mã, không tạo được liên kết và lượt nhấp, đơn hàng qua mã của tài khoản chưa xác minh không được ghi nhận hoa hồng. Hoa hồng được rút về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh.
 3. Việc tham gia của người bán là tự nguyện. Mặc định tỷ lệ hoa hồng là 0%, nghĩa là sản phẩm không tham gia chương trình.
 
@@ -55,7 +56,7 @@
 
 ## Điều 6. Thuế thu nhập cá nhân
 
-1. Đối với người giới thiệu là cá nhân, hoa hồng được ghi có đủ (chưa khấu trừ thuế) và nền tảng khấu trừ **10% thuế TNCN trên mỗi lần rút hoa hồng** (Luật Thuế TNCN; Thông tư 111/2013/TT-BTC). Người giới thiệu chỉ có thu nhập thuộc diện khấu trừ nhưng ước tính tổng thu nhập chịu thuế trong năm sau giảm trừ gia cảnh chưa đến mức phải nộp thuế được tải lên **Cam kết Mẫu 08/CK-TNCN** (Thông tư 80/2021/TT-BTC) tại trang Affiliate; sau khi nền tảng duyệt, không khấu trừ đối với các lần rút trong năm cam kết. Ví dụ: rút 2.500.000 đ — khấu trừ 250.000 đ, người giới thiệu nhận 2.250.000 đ (khấu trừ 0 đ nếu có Cam kết Mẫu 08/CK-TNCN đã được duyệt); số dư 1.500.000 đ — chưa được rút.
+1. Đối với người giới thiệu là cá nhân, nghĩa vụ thuế phát sinh khi hoa hồng được chi trả, được dùng để thanh toán đơn hàng hoặc được bù trừ theo quy định thuế hiện hành. Nền tảng thực hiện khấu trừ, khai và nộp thay theo hồ sơ thuế áp dụng tại thời điểm phát sinh; trường hợp chi trả bằng tiền thuộc diện khấu trừ 10%, số thuế được khấu trừ trước khi chuyển khoản. Việc áp dụng Cam kết Mẫu 08/CK-TNCN chỉ thực hiện khi đủ điều kiện pháp luật tại thời điểm chi trả.
 2. Cam kết Mẫu 08/CK-TNCN được nộp và duyệt tương tự quy trình eKYC: người giới thiệu tải lên bản đã ký (PDF/ảnh), chọn năm cam kết và mã số thuế cá nhân; quản trị viên duyệt hoặc từ chối (nêu lý do). Người cam kết chịu trách nhiệm về tính trung thực của cam kết theo pháp luật.
 3. Khoản đã khấu trừ được ghi trên lịch sử ví; nền tảng báo cáo số thuế TNCN đã khấu trừ cho cơ quan thuế theo quý và cuối năm cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu.
 4. Mức khấu trừ, mức rút tối thiểu có thể được điều chỉnh để phù hợp quy định pháp luật về thuế; người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.

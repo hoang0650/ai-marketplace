@@ -57,13 +57,15 @@ Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
 
 Nền tảng **không mua bán dữ liệu cá nhân**.
 
-## Điều 7. Chuyển dữ liệu ra nước ngoài
+## Điều 7. Lưu trữ tại Việt Nam, truy cập qua mạng riêng và xử lý xuyên biên giới
 
-Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) (trung tâm dữ liệu của 123HOST tại TP. Hồ Chí Minh, địa chỉ IP 103.97.127.39). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (Điều 5) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
+Cơ sở dữ liệu và bản lưu bền vững dữ liệu cá nhân được đặt tại Việt Nam trên máy chủ 123HOST (Công ty TNHH Lưu Trữ Số, MST 0312088232). Cơ sở dữ liệu không mở cổng công khai ra Internet. Các dịch vụ API vận hành trên hạ tầng Hostinger chỉ kết nối tới dịch vụ dữ liệu tại Việt Nam qua mạng riêng Tailscale được mã hóa, có xác thực thiết bị, danh sách kiểm soát truy cập và nhật ký; máy chủ API không lưu bản sao cơ sở dữ liệu lâu dài.
+
+Việc truy cập/xử lý dữ liệu từ máy chủ đặt ngoài Việt Nam qua Tailscale **vẫn có thể là xử lý xuyên biên giới**. Nội dung gửi tới nhà cung cấp mô hình AI/GPU ở nước ngoài chỉ được chuyển trong phạm vi cần thiết, theo lựa chọn và cơ sở pháp lý phù hợp. Công ty lập/cập nhật hồ sơ đánh giá tác động xử lý và chuyển dữ liệu ra nước ngoài khi pháp luật yêu cầu, ghi rõ quốc gia, nhà cung cấp, loại dữ liệu, mục đích, thời hạn, biện pháp bảo vệ và cơ chế xóa. Tailscale giảm bề mặt tấn công nhưng không phải cam kết “an toàn tuyệt đối”.
 
 ## Điều 8. Biện pháp bảo vệ
 
-Mã hóa đường truyền HTTPS/TLS; mật khẩu băm; khóa API của người dùng được mã hóa khi lưu; phân quyền theo vai trò; giới hạn tần suất truy cập; khóa bí mật hệ thống lưu trong biến môi trường; cơ sở dữ liệu không mở ra Internet; nhật ký thao tác quản trị; phiên đăng nhập có thể thu hồi từ xa; mã skill của bên thứ ba chạy trong container cách ly (gốc chỉ đọc, không có mạng, không có khóa bí mật, giới hạn CPU, bộ nhớ, thời gian).
+Mã hóa HTTPS/TLS và đường hầm Tailscale; ACL chỉ cho đúng dịch vụ API truy cập đúng cổng dữ liệu; xác thực/thu hồi thiết bị; mật khẩu băm; khóa API mã hóa khi lưu; phân quyền; giới hạn tần suất; bí mật hệ thống trong biến môi trường; cơ sở dữ liệu không mở ra Internet; nhật ký quản trị; phiên đăng nhập có thể thu hồi; mã skill bên thứ ba chạy trong container cách ly.
 
 ## Điều 9. Quyền của chủ thể dữ liệu
 

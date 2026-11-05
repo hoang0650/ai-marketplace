@@ -74,7 +74,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Chính sách sử dụng chấp nhận được (AUP):** các quy định về hàng hóa, dịch vụ cấm kinh doanh và hành vi bị cấm tại Mục XV của Quy chế này.
 
-- **Ví (ví AI Markets):** số dư của người dùng trên nền tảng, được hiển thị theo đơn vị tiền tệ người dùng lựa chọn (VNĐ, USD hoặc Nhân dân tệ – CNY); được nạp qua các phương thức nạp tiền được công bố (chuyển khoản ngân hàng qua Mã QR VietQR vào Tài khoản thanh toán của Công ty, thanh toán trong ứng dụng); là phương thức duy nhất để thanh toán đơn hàng trên nền tảng; người mua được rút số dư sau khi hoàn tất xác minh danh tính (eKYC).
+- **Tín dụng dịch vụ AI Markets:** quyền sử dụng dịch vụ nội bộ, không phải ví điện tử, tiền gửi hay phương tiện thanh toán; không sinh lãi, không chuyển nhượng và không được rút thành tiền.
 
 - **Mã giảm giá (voucher, coupon):** khoản giảm trừ do người bán hoặc nền tảng áp dụng vào giá trị đơn hàng theo khoản 2 Mục XI.
 
@@ -508,7 +508,7 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ### 2. Giá và mã giảm giá
 
-a) Giá sản phẩm, dịch vụ và số dư ví có thể được hiển thị bằng **VNĐ, USD hoặc Nhân dân tệ (CNY)** theo đơn vị tiền tệ hiển thị do người dùng lựa chọn. Khi nạp ví, số tiền nạp được quy đổi theo tỷ giá hiển thị trên trang nạp tiền tại thời điểm nạp (tỷ giá quy đổi tham chiếu: 26.500 VNĐ/USD). Giá trị nêu trong Quy chế này bằng một loại tiền được hiểu là bao gồm giá trị tương đương theo đơn vị tiền tệ hiển thị.
+a) Giá thanh toán, hóa đơn và đối soát tại Việt Nam được xác định bằng **VND**. USD/CNY nếu hiển thị chỉ là ước tính tham khảo, có nhãn rõ ràng và được quy đổi theo tỷ giá trực tuyến tại thời điểm hiển thị từ nhà cung cấp dữ liệu tỷ giá; hệ thống lưu nguồn, thời điểm cập nhật và tỷ giá đã áp dụng. Khi nguồn tỷ giá tạm thời không khả dụng, hệ thống dùng tỷ giá thành công gần nhất còn hiệu lực hoặc tạm ngừng báo giá; **không ấn định cứng mức 26.500 VND/USD**. Số tiền VND tại bước xác nhận thanh toán là số tiền có hiệu lực.
 
 b) Giá hiển thị phải nêu rõ: loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Người mua thanh toán **giá sau giảm (nếu có)**; phí sàn do người bán chịu và không cộng thêm vào giá của người mua.
 
@@ -520,7 +520,7 @@ a) Người mua nạp tiền vào ví bằng chuyển khoản ngân hàng (Mã Q
 
 b) Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
-c) Người mua được **rút số dư ví** tại mục “Withdraw” của ví sau khi hoàn tất xác minh danh tính (eKYC) bằng CCCD/hộ chiếu; khi chưa xác minh, chức năng rút tiền chưa được sử dụng. Tiền hoàn được trả về ví hoặc phương thức thanh toán ban đầu theo Mục XIII của Quy chế này.
+c) Người mua không được rút, chuyển nhượng hoặc đổi tín dụng dịch vụ thành tiền. Tiền hoàn được ưu tiên trả về phương thức thanh toán ban đầu; tín dụng dịch vụ chỉ được ghi có khi kênh ban đầu không hỗ trợ và pháp luật cho phép.
 
 d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát; không phải tài khoản tiền gửi hay tài khoản thanh toán, không được trả lãi.
 
@@ -722,7 +722,7 @@ d) Khi được chấp thuận, tiền được hoàn ngay vào ví; trường h
 
 ### 6. Nơi nhận tiền hoàn
 
-Tiền hoàn được trả về ví AI Markets hoặc phương thức thanh toán ban đầu. Số dư ví được rút theo điểm c khoản 3 Mục XI sau khi người mua hoàn tất xác minh danh tính (eKYC).
+Tiền hoàn được ưu tiên trả về phương thức thanh toán ban đầu. Khi kênh ban đầu không hỗ trợ và pháp luật cho phép, khoản hoàn có thể ghi có thành tín dụng dịch vụ nội bộ không rút/chuyển nhượng.
 
 ### 7. Chấm dứt dịch vụ
 

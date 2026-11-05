@@ -35,7 +35,7 @@ Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử d�
 | Thuê GPU, máy chủ trò chơi (theo phút) | Phút đã sử dụng không được hoàn, trừ thời gian máy không hoạt động do lỗi của nền tảng hoặc tính sai được xác minh. |
 | Thuê bao AI agent (199.000 VNĐ/30 ngày hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị) | Phí của chu kỳ đang hiệu lực không hoàn theo tỷ lệ khi người mua tự ngừng sử dụng; tắt tự động gia hạn để không bị trừ phí chu kỳ sau. Được hoàn khi agent không khả dụng do lỗi của nền tảng hoặc bị trừ phí sai. Phí token đã phát sinh không hoàn, trừ trường hợp tính sai. |
 | Dịch vụ chuyên môn trọn gói | Chỉ giai đoạn đã nghiệm thu bị thu tiền; giai đoạn chưa nghiệm thu bị hủy khi chấm dứt và không thu. Hoàn khi người bán không bàn giao kết quả hoặc kết quả không đúng mô tả đã công bố và không khắc phục được trong thời hạn giải quyết khiếu nại. |
-| Khoản nạp ví qua Apple In-App Purchase / Google Play Billing | Một số yêu cầu hoàn tiền phải gửi qua Apple/Google theo chính sách của họ. Khi kho ứng dụng hoàn tiền, số dư ví hoặc quyền lợi tương ứng bị thu hồi. |
+| Khoản mua qua Apple In-App Purchase / Google Play Billing | Yêu cầu hoàn tiền được gửi qua Apple/Google khi quy tắc của họ yêu cầu. Khi kho ứng dụng hoàn tiền, tín dụng số hoặc quyền lợi tương ứng bị thu hồi. |
 
 ## Điều 4. Thời hạn yêu cầu
 
@@ -51,7 +51,7 @@ Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử d�
 
 ## Điều 6. Nơi nhận tiền hoàn
 
-Tiền hoàn được trả về ví AI Markets hoặc phương thức thanh toán ban đầu. Người mua được rút số dư ví sau khi hoàn tất xác minh danh tính (eKYC) theo [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
+Tiền hoàn được ưu tiên trả về phương thức thanh toán ban đầu. Nếu kênh ban đầu không hỗ trợ và pháp luật cho phép, AI Markets có thể ghi có tín dụng dịch vụ nội bộ; tín dụng này không được rút, chuyển nhượng hoặc đổi thành tiền. Xem [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
 
 ## Điều 7. Chấm dứt dịch vụ
 

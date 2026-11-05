@@ -16,10 +16,17 @@ export const LEGAL_POLICY_GROUPS: { id: LegalPolicyMeta['group']; label: string 
 /** Public catalog — maps to AI_Marketplace_Policies/*.md (served from /assets/legal). */
 export const LEGAL_POLICIES: LegalPolicyMeta[] = [
   {
+    slug: 'thong-tin-chu-quan-nen-tang',
+    file: '24-thong-tin-chu-quan-nen-tang.md',
+    title: 'Thông tin chủ quản nền tảng',
+    summary: 'Thông tin pháp lý, địa chỉ, mã số thuế và đầu mối liên hệ của đơn vị chủ quản AI Markets.',
+    group: 'core',
+  },
+  {
     slug: 'quy-che-hoat-dong-san-tmdt',
     file: '01-quy-che-hoat-dong-san-tmdt.md',
     title: 'Quy chế hoạt động sàn TMĐT',
-    summary: 'Mô hình sàn, sản phẩm được phép, phí và thuế, thanh toán bằng ví và giải quyết khiếu nại.',
+    summary: 'Mô hình sàn, sản phẩm được phép, phí và thuế, thanh toán và giải quyết khiếu nại.',
     group: 'core',
   },
   {
@@ -40,14 +47,14 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-nguoi-mua',
     file: '04-chinh-sach-nguoi-mua.md',
     title: 'Chính sách người mua',
-    summary: 'Quyền, nghĩa vụ người mua; thanh toán bằng ví, rút số dư sau eKYC; GPU, phút chơi game, thuê bao agent và dịch vụ chuyên môn trọn gói.',
+    summary: 'Quyền, nghĩa vụ người mua; tín dụng dịch vụ không rút tiền; GPU, máy chủ trò chơi, agent và dịch vụ chuyên môn.',
     group: 'commerce',
   },
   {
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Mọi đơn thanh toán bằng ví; chuyển khoản ngân hàng (VietQR), Apple/Google IAP chỉ để nạp ví; rút ví sau eKYC; đối soát và cấm giao dịch ngoài sàn.',
+    summary: 'Thanh toán bằng VND; tín dụng dịch vụ không phải ví điện tử, không rút/chuyển nhượng; đối soát và cấm giao dịch ngoài sàn.',
     group: 'commerce',
   },
   {
@@ -155,6 +162,48 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     summary: 'Phiên bản 2026.10.12: hoa hồng 0–25% giá trị đơn do người bán chi trả, last-click 30 ngày, giữ 48 giờ, thuế TNCN, hành vi cấm và thu hồi hoa hồng.',
     group: 'commerce',
   },
+  {
+    slug: 'chinh-sach-xep-hang-uu-tien-hien-thi',
+    file: '21-chinh-sach-xep-hang-uu-tien-hien-thi.md',
+    title: 'Xếp hạng và ưu tiên hiển thị',
+    summary: 'Tiêu chí xếp hạng, nhãn quảng cáo, sản phẩm bán bởi sàn và giảm giá của nền tảng.',
+    group: 'commerce',
+  },
+  {
+    slug: 'quy-che-livestream-ban-hang',
+    file: '22-quy-che-livestream-ban-hang.md',
+    title: 'Quy chế livestream bán hàng',
+    summary: 'Trạng thái tính năng livestream và điều kiện tuân thủ trước khi vận hành.',
+    group: 'ops',
+  },
+  {
+    slug: 'chinh-sach-giao-nhan-san-pham-so',
+    file: '23-chinh-sach-giao-nhan-san-pham-so.md',
+    title: 'Giao nhận hàng hóa và dịch vụ',
+    summary: 'Bàn giao sản phẩm số, thời hạn dịch vụ chuyên môn và điều kiện giao hàng vật lý.',
+    group: 'commerce',
+  },
+  {
+    slug: 'quyen-va-nghia-vu-cac-ben',
+    file: '25-quyen-va-nghia-vu-cac-ben.md',
+    title: 'Quyền và nghĩa vụ của các bên',
+    summary: 'Quyền và nghĩa vụ của chủ quản nền tảng, người bán, người mua và người tiếp thị liên kết.',
+    group: 'core',
+  },
+  {
+    slug: 'chinh-sach-gia-ca',
+    file: '26-chinh-sach-gia-ca.md',
+    title: 'Chính sách giá cả',
+    summary: 'Nguyên tắc niêm yết giá bằng VND, giá tham khảo ngoại tệ, phí, thuế và khuyến mại.',
+    group: 'commerce',
+  },
+  {
+    slug: 'phuong-thuc-cung-cap-va-cham-dut-dich-vu',
+    file: '27-phuong-thuc-cung-cap-va-cham-dut-dich-vu.md',
+    title: 'Cung cấp và chấm dứt dịch vụ',
+    summary: 'Phương thức kích hoạt, bàn giao, tạm ngừng, chấm dứt và xử lý dữ liệu, khoản tiền còn lại.',
+    group: 'core',
+  },
 ];
 
 const ALIASES: Record<string, string> = {
@@ -178,6 +227,9 @@ const ALIASES: Record<string, string> = {
   'invoice-policy': 'chinh-sach-hoa-don',
   'affiliate-policy': 'chinh-sach-affiliate',
   affiliate: 'chinh-sach-affiliate',
+  ranking: 'chinh-sach-xep-hang-uu-tien-hien-thi',
+  livestream: 'quy-che-livestream-ban-hang',
+  delivery: 'chinh-sach-giao-nhan-san-pham-so',
 };
 
 export function resolveLegalPolicy(slugOrAlias: string | null | undefined): LegalPolicyMeta | undefined {

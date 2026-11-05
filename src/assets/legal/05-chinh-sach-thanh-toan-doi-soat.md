@@ -7,40 +7,41 @@
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
-**Ngày hiệu lực:** 04/10/2026  
-**Phiên bản:** 2.0
+**Ngày công bố:** 05/11/2026
+**Ngày hiệu lực:** 05/12/2026
+**Phiên bản:** 2.2
 
 ---
 
 ## Điều 1. Đối tác và phương thức thanh toán
 
-Mọi đơn hàng trên website và ứng dụng được thanh toán **duy nhất bằng số dư ví AI Markets** (“Pay with AI Markets wallet only”). Sàn TMĐT aimarkets.vn áp dụng phương thức thanh toán trực tiếp qua Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup và Ví số dư nội bộ. Chuyển khoản ngân hàng (Mã QR VietQR) và các phương thức khác dưới đây chỉ dùng để nạp tiền vào ví, không dùng để thanh toán trực tiếp đơn hàng.
+AI Markets không cung cấp ví điện tử, tài khoản thanh toán hoặc dịch vụ trung gian thanh toán. “Số dư AI Markets” là **tín dụng dịch vụ nội bộ, không chuyển nhượng, không sinh lãi và không được rút thành tiền mặt**; chỉ dùng để thanh toán hàng hóa, dịch vụ đủ điều kiện trên AI Markets. Khoản thanh toán bằng tiền được thực hiện qua ngân hàng, Apple hoặc Google theo phạm vi pháp luật và quy tắc của từng kênh.
 
 | Kênh | Đối tác | Phương thức | Mục đích |
 |---|---|---|---|
-| Website | Chuyển khoản ngân hàng vào Tài khoản thanh toán của Công ty TNHH Giải pháp Công nghệ PHGroup | Mã QR VietQR (chuyển khoản từ tài khoản ngân hàng của người mua) | Nạp tiền vào ví |
-| Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple của người mua | Nạp tiền vào ví |
-| Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play của người mua | Nạp tiền vào ví |
-| Website và ứng dụng | Ví AI Markets | Số dư đã nạp qua các kênh trên | Thanh toán đơn hàng |
+| Website | Ngân hàng nơi Công ty mở tài khoản thanh toán (thông tin hiển thị tại bước thanh toán) | VietQR/chuyển khoản | Mua tín dụng dịch vụ hoặc thanh toán đơn hàng theo nội dung hiển thị |
+| Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple | Mua nội dung/tín dụng số đủ điều kiện; không được quy đổi/rút tiền |
+| Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play | Mua nội dung/tín dụng số đủ điều kiện; không được quy đổi/rút tiền |
+| Website và ứng dụng | Tín dụng dịch vụ AI Markets | Số dư nội bộ không phải tiền gửi | Thanh toán hàng hóa, dịch vụ đủ điều kiện trên nền tảng |
 
 Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiện không nhận thanh toán qua PayPal hoặc phương thức khác ngoài danh sách trên.
 
 ## Điều 2. Giá và mã giảm giá
 
-1. Giá sản phẩm, dịch vụ và số dư ví có thể được hiển thị bằng VNĐ, USD hoặc Nhân dân tệ (CNY) theo đơn vị tiền tệ hiển thị do người dùng lựa chọn. Khi nạp ví, số tiền nạp được quy đổi theo tỷ giá hiển thị trên trang nạp tiền tại thời điểm nạp.
+1. Giá bán, số tiền thanh toán, hóa đơn và đối soát tại Việt Nam được xác định bằng **đồng Việt Nam (VND)**. USD/CNY, nếu hiển thị, chỉ là giá tham khảo có nhãn “ước tính”, quy đổi theo tỷ giá tham chiếu công khai tại thời điểm hiển thị; số tiền VND tại bước xác nhận thanh toán là số tiền có hiệu lực.
 2. Giá hiển thị phải nêu rõ: loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Người mua thanh toán giá sau giảm (nếu có); phí sàn do người bán chịu và không cộng thêm vào giá của người mua.
 3. Mã giảm giá: khoản giảm giá được áp dụng vào giá trị đơn hàng trước khi tính phí sàn; khoản giảm giá do người bán phát hành do người bán chịu. Giỏ hàng có thể hiển thị khoản giảm giá của người bán và khoản giảm giá của nền tảng (“Platform discount”).
 
-## Điều 3. Ví người mua
+## Điều 3. Tín dụng dịch vụ của người mua
 
 1. Người mua nạp tiền vào ví bằng chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website hoặc hệ thống thanh toán trong ứng dụng; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp.
 2. Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn.
-3. Người mua **được rút số dư ví** tại mục “Withdraw” của ví sau khi hoàn tất xác minh danh tính (eKYC) bằng CCCD/hộ chiếu; khi chưa xác minh, chức năng rút tiền chưa được sử dụng. Tiền hoàn được trả về ví hoặc phương thức thanh toán ban đầu theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
-4. Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát; không phải tài khoản tiền gửi hay tài khoản thanh toán, không được trả lãi.
+3. Người mua **không được rút, chuyển nhượng hoặc đổi tín dụng dịch vụ thành tiền**. Hoàn tiền được ưu tiên trả về phương thức thanh toán ban đầu; chỉ khi kênh thanh toán không hỗ trợ và pháp luật cho phép mới ghi có tín dụng dịch vụ không rút được theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
+4. Số dư và sổ cái nội bộ chỉ phản ánh quyền sử dụng dịch vụ, không phải tiền gửi, tài khoản thanh toán hay phương tiện thanh toán.
 
 ## Điều 4. Thanh toán trong ứng dụng
 
-Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website. Nền tảng không khấu trừ phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán.
+Trên ứng dụng, Apple In-App Purchase và Google Play Billing chỉ áp dụng cho nội dung/tín dụng số đủ điều kiện theo quy tắc của kho ứng dụng. Khoản mua qua Apple/Google không được rút hoặc chuyển sang người dùng khác; yêu cầu hoàn tiền được xử lý theo kênh ban đầu và chính sách của Apple/Google.
 
 ## Điều 5. Đơn hàng
 
@@ -56,7 +57,11 @@ Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; 
 
 1. Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%) − hoa hồng affiliate (nếu có) − hoàn tiền/điều chỉnh. Ví dụ đơn hàng 1.000.000 đồng, tỷ lệ affiliate 25%: (i) người bán là cá nhân kinh doanh — phí sàn 200.000 đồng; thuế khấu trừ 70.000 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 480.000 đồng; (ii) người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đồng; thuế 0 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 550.000 đồng. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng.
 2. Doanh thu được **tạm giữ 48 giờ** kể từ khi ghi nhận; khoản liên quan khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ.
-3. Chi trả theo yêu cầu rút tiền của người bán đã xác minh (bao gồm eKYC), về tài khoản ngân hàng đứng tên người bán, khi khoản tiền đủ điều kiện và thông tin nhận tiền hợp lệ.
+3. Khoản phải trả cho người bán là nghĩa vụ đối soát theo hợp đồng điện tử, không phải số dư ví của người mua. Công ty chi trả về tài khoản ngân hàng **đứng tên người bán/Bên B** sau khi hết thời gian tạm giữ, đối soát hoàn tất và hồ sơ xác minh hợp lệ. Chu kỳ, thời điểm chuyển tiền và chứng từ được ghi trong Thỏa thuận người bán.
+
+## Điều 7A. Phạm vi pháp lý của cơ chế thanh toán
+
+AI Markets không nhận tiền gửi, không cho người dùng chuyển tiền lẫn nhau và không cho rút tín dụng dịch vụ. Trước khi triển khai bất kỳ cơ chế thu hộ/chi hộ hoặc lưu giữ tiền có tính chất dịch vụ trung gian thanh toán, Công ty phải ký hợp đồng với tổ chức được cấp phép, công bố tên tổ chức/luồng tiền và cập nhật chính sách này. Thông tin tài khoản ngân hàng, hợp đồng đối tác thanh toán và quy trình đối soát được cung cấp cho cơ quan quản lý trong hồ sơ đăng ký.
 
 ## Điều 8. Hoàn tiền và bồi hoàn
 

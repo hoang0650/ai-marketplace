@@ -19,7 +19,7 @@ Nội dung dưới đây là các điều khoản của mẫu Hợp đồng dị
 
 - Sàn AI Markets (Nền tảng): sàn giao dịch thương mại điện tử tại https://aimarkets.vn và ứng dụng di động “AI Markets” (iOS, Android) do Bên A sở hữu, vận hành.
 - Quy chế: Quy chế hoạt động sàn giao dịch thương mại điện tử AI Markets (bản hợp nhất các chính sách của Nền tảng) được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal), kể cả các sửa đổi, bổ sung được thông báo theo Điều 17.
-- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; thanh toán đơn hàng duy nhất bằng số dư Ví; được rút số dư Ví sau khi hoàn tất xác minh danh tính (eKYC).
+- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; có thể dùng tín dụng dịch vụ nội bộ không rút/chuyển nhượng để thanh toán sản phẩm đủ điều kiện.
 - Sản phẩm: hàng hóa số, dịch vụ trực tuyến do Bên B đăng bán, gắn nhãn “Bán bởi Seller – tên cửa hàng”, phân biệt với sản phẩm “Bán bởi sàn” do Bên A trực tiếp cung cấp.
 - Ví AI Markets (Ví): số dư của người dùng trên Nền tảng, là phương thức duy nhất để thanh toán đơn hàng.
 - Kênh người bán: khu vực quản lý dành cho Bên B (hồ sơ cửa hàng, xác minh, sản phẩm, đơn hàng, khiếu nại, mã giảm giá, thanh toán, rút tiền, sổ cái).
@@ -71,7 +71,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 5. Giá, đơn vị tiền tệ và mã giảm giá
 
-1. Giá hiển thị phải nêu rõ loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Giá sản phẩm và số dư ví có thể được hiển thị bằng VNĐ, USD hoặc Nhân dân tệ (CNY) theo đơn vị tiền tệ hiển thị do người dùng lựa chọn; số tiền nạp ví được quy đổi theo tỷ giá hiển thị trên trang nạp tiền tại thời điểm nạp.
+1. Giá phải nêu rõ đơn vị tính, phí bổ sung và điều kiện áp dụng. Giá thanh toán, hóa đơn và đối soát tại Việt Nam bằng VND; USD/CNY nếu hiển thị chỉ là ước tính tham khảo có nhãn rõ ràng.
 
 2. Người mua thanh toán giá sau giảm (nếu có); phí sàn do Bên B chịu và không cộng thêm vào giá của Người mua.
 
@@ -85,7 +85,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 3. Thuế khấu trừ theo loại người bán, tính trên giá trị đơn hàng sau giảm giá tại thời điểm đơn hàng hoàn tất, căn cứ Luật Thuế thu nhập cá nhân, Nghị định số 117/2025/NĐ-CP (tổ chức quản lý nền tảng thương mại điện tử có chức năng thanh toán khấu trừ, khai, nộp thay thuế của cá nhân kinh doanh) và Thông tư số 40/2021/TT-BTC: (a) Bên B là cá nhân kinh doanh: Bên A khấu trừ, khai, nộp thay 7% (5% GTGT + 2% TNCN) đối với dịch vụ, phần mềm, sản phẩm số và 1,5% (1% GTGT + 0,5% TNCN) đối với hàng hóa vật lý; không khấu trừ khi doanh thu năm không vượt ngưỡng 100.000.000 đồng/năm (theo quy định hiện hành); (b) Bên B là hộ kinh doanh: không khấu trừ (0%), Bên B tự kê khai, nộp thuế và xuất hóa đơn; (c) Bên B là doanh nghiệp/tổ chức: không khấu trừ (0%), Bên A xuất hóa đơn GTGT (10%) cho phí sàn 20%. Không có phí kho ứng dụng. Số thuế đã khấu trừ được hiển thị trên đối soát từng đơn hàng; Bên A lập và nộp báo cáo theo quý (trong tháng 1, 4, 7, 10) cho cơ quan thuế về doanh thu của cá nhân kinh doanh, hộ kinh doanh trên Bên A và số thuế đã khấu trừ, nộp thay (bao gồm thuế TNCN đã khấu trừ của người giới thiệu affiliate); cuối năm, Bên A cấp chứng từ khấu trừ thuế TNCN cho cá nhân đã bị khấu trừ. Ví dụ đơn hàng 1.000.000 đồng, tỷ lệ affiliate 25%: (i) người bán là cá nhân kinh doanh — phí sàn 200.000 đồng; thuế khấu trừ 70.000 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 480.000 đồng; (ii) người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đồng; thuế 0 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 550.000 đồng.
 
-4. Phí kho ứng dụng: Không áp dụng. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tiền vào ví; mọi đơn hàng (trên website và ứng dụng) được thanh toán bằng số dư ví nên không có phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán.
+4. Apple In-App Purchase/Google Play Billing chỉ áp dụng cho nội dung số đủ điều kiện theo quy tắc kho ứng dụng. Phí của kho ứng dụng (nếu có) được hạch toán riêng và không được mô tả là phí của đơn hàng người bán nếu người bán không phải bên cung cấp nội dung đó.
 
 5. Việc khấu trừ, nộp thay (nếu có) không thay thế các nghĩa vụ thuế khác của Bên B. Bên B tự chịu trách nhiệm kê khai, quyết toán, nộp các khoản thuế khác (nếu có) và xuất hóa đơn cho Người mua theo quy định; Bên A xuất hóa đơn phí dịch vụ sàn cho Bên B.
 
