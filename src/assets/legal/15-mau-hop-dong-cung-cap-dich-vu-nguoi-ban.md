@@ -79,7 +79,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 6. Thanh toán, phí dịch vụ và thuế
 
-1. Mọi đơn hàng được Người mua thanh toán duy nhất bằng số dư Ví AI Markets. Chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website và Apple In-App Purchase, Google Play Billing trên ứng dụng chỉ dùng để nạp tiền vào ví. Bên A thu tiền của Người mua thông qua ví; Bên A không lưu thông tin thẻ của Người mua.
+1. Mọi đơn hàng được Người mua thanh toán bằng tín dụng dịch vụ AI Markets. Trên website, giao dịch bằng tiền được xử lý qua **Công ty Cổ phần Thanh toán G (GPay)** — đơn vị trung gian thanh toán theo Giấy phép số **37/GP-NHNN ngày 15/04/2020** — và ngân hàng liên kết; trên ứng dụng, giao dịch đủ điều kiện được xử lý qua Apple In-App Purchase hoặc Google Play Billing. Bên A không trực tiếp cung cấp dịch vụ trung gian thanh toán và không lưu thông tin thẻ của Người mua.
 
 2. Phí sàn: mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho Bên B), lưu cố định tại thời điểm giao kết từng đơn hàng.
 
@@ -97,7 +97,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 2. Với dịch vụ chuyên môn trọn gói, doanh thu được ghi nhận theo từng giai đoạn khi người mua nghiệm thu (mặc định 30% – 40% – 30%); giai đoạn chưa nghiệm thu bị hủy khi người mua chấm dứt; Bên B bàn giao, chỉnh sửa theo yêu cầu và phản hồi khiếu nại trong không gian dự án. Doanh thu được tạm giữ 48 giờ kể từ khi ghi nhận để giải quyết hoàn tiền, khiếu nại; khoản liên quan đến khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
 
-3. Bên B đã xác minh (bao gồm eKYC) gửi yêu cầu rút số dư khả dụng về tài khoản ngân hàng đứng tên Bên B (hoặc tổ chức người bán đại diện). Yêu cầu được xử lý khi thông tin xác minh, tài khoản nhận tiền hợp lệ; khoản tiền đã hết thời gian tạm giữ; không thuộc khiếu nại, tranh chấp đang giải quyết. Thời gian chuyển tiền: … ngày làm việc kể từ khi yêu cầu hợp lệ.
+3. Bên B đã xác minh (bao gồm eKYC) gửi yêu cầu chi trả số dư khả dụng về tài khoản ngân hàng đứng tên Bên B (hoặc tổ chức người bán đại diện). Yêu cầu được xử lý khi thông tin xác minh, tài khoản nhận tiền hợp lệ; khoản tiền đã hết thời gian tạm giữ; không thuộc khiếu nại, tranh chấp đang giải quyết. Việc chi trả được thực hiện qua GPay/ngân hàng liên kết trong vòng **03 ngày làm việc** kể từ khi kết thúc thời hạn tạm giữ 48 giờ và yêu cầu hợp lệ.
 
 4. Bên A có quyền tạm dừng chi trả khi có dấu hiệu gian lận, yêu cầu của cơ quan có thẩm quyền hoặc khoản hoàn tiền/bồi hoàn chưa được bù trừ. Số dư của Bên B là khoản phải trả theo đối soát, không phải tiền gửi.
 

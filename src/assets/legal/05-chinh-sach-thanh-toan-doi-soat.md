@@ -15,11 +15,11 @@
 
 ## Điều 1. Đối tác và phương thức thanh toán
 
-AI Markets không cung cấp ví điện tử, tài khoản thanh toán hoặc dịch vụ trung gian thanh toán. “Số dư AI Markets” là **tín dụng dịch vụ nội bộ, không chuyển nhượng, không sinh lãi và không được rút thành tiền mặt**; chỉ dùng để thanh toán hàng hóa, dịch vụ đủ điều kiện trên AI Markets. Khoản thanh toán bằng tiền được thực hiện qua ngân hàng, Apple hoặc Google theo phạm vi pháp luật và quy tắc của từng kênh.
+AI Markets không trực tiếp cung cấp ví điện tử, tài khoản thanh toán hoặc dịch vụ trung gian thanh toán. Đơn vị trung gian thanh toán được xác định trong hồ sơ là **Công ty Cổ phần Thanh toán G (GPay)**, Giấy phép cung ứng dịch vụ trung gian thanh toán số **37/GP-NHNN ngày 15/04/2020** do Ngân hàng Nhà nước Việt Nam cấp, với phạm vi dịch vụ gồm cổng thanh toán điện tử và hỗ trợ thu hộ, chi hộ. “Số dư AI Markets” là **tín dụng dịch vụ nội bộ, không chuyển nhượng, không sinh lãi và không được rút thành tiền mặt**; chỉ dùng để thanh toán hàng hóa, dịch vụ đủ điều kiện trên AI Markets. Khoản thanh toán bằng tiền được thực hiện qua GPay/ngân hàng, Apple hoặc Google theo phạm vi pháp luật, hợp đồng dịch vụ và quy tắc của từng kênh.
 
 | Kênh | Đối tác | Phương thức | Mục đích |
 |---|---|---|---|
-| Website | Ngân hàng nơi Công ty mở tài khoản thanh toán (thông tin hiển thị tại bước thanh toán) | VietQR/chuyển khoản | Mua tín dụng dịch vụ hoặc thanh toán đơn hàng theo nội dung hiển thị |
+| Website | Công ty Cổ phần Thanh toán G (GPay) và ngân hàng liên kết | Cổng thanh toán, VietQR/chuyển khoản, hỗ trợ thu hộ | Mua tín dụng dịch vụ hoặc thanh toán đơn hàng theo nội dung hiển thị |
 | Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple | Mua nội dung/tín dụng số đủ điều kiện; không được quy đổi/rút tiền |
 | Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play | Mua nội dung/tín dụng số đủ điều kiện; không được quy đổi/rút tiền |
 | Website và ứng dụng | Tín dụng dịch vụ AI Markets | Số dư nội bộ không phải tiền gửi | Thanh toán hàng hóa, dịch vụ đủ điều kiện trên nền tảng |
@@ -34,7 +34,7 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ## Điều 3. Tín dụng dịch vụ của người mua
 
-1. Người mua nạp tiền vào ví bằng chuyển khoản ngân hàng (Mã QR VietQR) vào Tài khoản thanh toán của Công ty trên website hoặc hệ thống thanh toán trong ứng dụng; số tiền nạp được quy đổi theo tỷ giá hiển thị tại thời điểm nạp.
+1. Người mua mua tín dụng dịch vụ bằng cổng thanh toán/VietQR do GPay và ngân hàng liên kết xử lý trên website hoặc bằng hệ thống thanh toán trong ứng dụng; số tiền được ghi nhận bằng VND theo giao dịch xác nhận thành công của kênh thanh toán.
 2. Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn.
 3. Người mua **không được rút, chuyển nhượng hoặc đổi tín dụng dịch vụ thành tiền**. Hoàn tiền được ưu tiên trả về phương thức thanh toán ban đầu; chỉ khi kênh thanh toán không hỗ trợ và pháp luật cho phép mới ghi có tín dụng dịch vụ không rút được theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
 4. Số dư và sổ cái nội bộ chỉ phản ánh quyền sử dụng dịch vụ, không phải tiền gửi, tài khoản thanh toán hay phương tiện thanh toán.
@@ -61,7 +61,7 @@ Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; 
 
 ## Điều 7A. Phạm vi pháp lý của cơ chế thanh toán
 
-AI Markets không nhận tiền gửi, không cho người dùng chuyển tiền lẫn nhau và không cho rút tín dụng dịch vụ. Trước khi triển khai bất kỳ cơ chế thu hộ/chi hộ hoặc lưu giữ tiền có tính chất dịch vụ trung gian thanh toán, Công ty phải ký hợp đồng với tổ chức được cấp phép, công bố tên tổ chức/luồng tiền và cập nhật chính sách này. Thông tin tài khoản ngân hàng, hợp đồng đối tác thanh toán và quy trình đối soát được cung cấp cho cơ quan quản lý trong hồ sơ đăng ký.
+AI Markets không nhận tiền gửi, không cho người dùng chuyển tiền lẫn nhau và không cho rút tín dụng dịch vụ. Cơ chế cổng thanh toán, thu hộ và chi hộ được thực hiện thông qua **Công ty Cổ phần Thanh toán G (GPay)** theo phạm vi Giấy phép số **37/GP-NHNN ngày 15/04/2020** và hợp đồng dịch vụ giữa các bên. Số hợp đồng, ngày ký, tài khoản chuyên dùng/đối soát và sơ đồ luồng tiền phải được đính kèm hồ sơ đăng ký theo chứng từ thực tế; không được coi chính sách này là tài liệu thay thế hợp đồng với GPay.
 
 ## Điều 8. Hoàn tiền và bồi hoàn
 

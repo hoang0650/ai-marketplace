@@ -6,4 +6,4 @@ Disallow: /auth
 Disallow: /wallet
 Disallow: /billing
 
-Sitemap: https://ai-market.phhotel.vn/sitemap.xml
+Sitemap: https://aimarkets.vn/sitemap.xml
