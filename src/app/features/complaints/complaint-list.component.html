@@ -1,16 +1,27 @@
 <section class="complaint-page page route-enter">
-  <h1>{{ titleKey() | t }}</h1>
-  <p class="complaint-lede">{{ 'complaint.list.lede' | t }}</p>
-  <div class="complaint-actions">
-    <a routerLink="/complaints/new" class="btn btn-fill">{{ 'complaint.cta.file' | t }}</a>
-    <a routerLink="/legal/chinh-sach-khieu-nai-tranh-chap" class="btn btn-outline">{{ 'complaint.cta.policy' | t }}</a>
+  <header class="complaint-hero">
+    <div>
+      <span class="complaint-eyebrow">{{ 'complaint.eyebrow' | t }}</span>
+      <h1>{{ titleKey() | t }}</h1>
+      <p class="complaint-lede">{{ 'complaint.list.lede' | t }}</p>
+    </div>
+    <div class="complaint-actions">
+      <a routerLink="/complaints/new" class="btn btn-fill">{{ 'complaint.cta.file' | t }}</a>
+      <a routerLink="/legal/chinh-sach-khieu-nai-tranh-chap" class="btn btn-outline">{{ 'complaint.cta.policy' | t }}</a>
+    </div>
+  </header>
+  <div class="complaint-process" [attr.aria-label]="'complaint.eyebrow' | t">
+    <div><b>1</b><span>{{ 'complaint.process.receive' | t }}</span></div>
+    <div><b>2</b><span>{{ 'complaint.process.verify' | t }}</span></div>
+    <div><b>3</b><span>{{ 'complaint.process.review' | t }}</span></div>
+    <div><b>4</b><span>{{ 'complaint.process.resolve' | t }}</span></div>
   </div>
   @if (loading()) {
     <p class="complaint-meta">{{ 'complaint.list.loading' | t }}</p>
   } @else if (error()) {
     <p class="complaint-error">{{ error() }}</p>
   } @else if (!items().length) {
-    <p class="complaint-meta">{{ 'complaint.list.empty' | t }}</p>
+    <div class="complaint-empty panel"><span aria-hidden="true">✓</span><p>{{ 'complaint.list.empty' | t }}</p><a routerLink="/support">{{ 'complaint.help' | t }}</a></div>
   } @else {
     <ul class="complaint-list">
       @for (c of items(); track c.id) {

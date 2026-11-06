@@ -84,7 +84,8 @@ export class MarketplaceComponent implements OnInit {
     currency: false,
   });
 
-  readonly pageSize = 12;
+  /** Keep catalog pages useful without making a single response excessively heavy. */
+  readonly pageSize = 40;
   readonly skeletonSlots = [0, 1, 2, 3, 4, 5, 6, 7];
 
   /** Published listings per canonical category (api-endpoint folds into inference). */

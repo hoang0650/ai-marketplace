@@ -2,10 +2,11 @@
   <p class="complaint-meta">
     <a routerLink="/complaints">{{ 'complaint.back' | t }}</a>
   </p>
-  <h1>{{ 'complaint.form.title' | t }}</h1>
-  <p class="complaint-lede">{{ (isWork() ? 'complaint.form.ledeWork' : 'complaint.form.lede') | t }}</p>
+  <header class="complaint-hero complaint-hero--compact"><div><span class="complaint-eyebrow">{{ 'complaint.eyebrow' | t }}</span><h1>{{ 'complaint.form.title' | t }}</h1><p class="complaint-lede">{{ (isWork() ? 'complaint.form.ledeWork' : 'complaint.form.lede') | t }}</p></div></header>
 
   <form class="complaint-form panel" (ngSubmit)="submit()">
+    <h2 class="complaint-section-title">{{ 'complaint.form.contactSection' | t }}</h2>
+    <div class="complaint-fields-2">
     <div class="complaint-field">
       <label for="c-name">{{ 'complaint.form.name' | t }}</label>
       <input id="c-name" class="input" [(ngModel)]="name" name="name" required />
@@ -14,6 +15,8 @@
       <label for="c-email">{{ 'complaint.form.email' | t }}</label>
       <input id="c-email" class="input" type="email" [(ngModel)]="email" name="email" required />
     </div>
+    </div>
+    <h2 class="complaint-section-title">{{ 'complaint.form.caseSection' | t }}</h2>
     <div class="complaint-field">
       <p>{{ 'complaint.form.kind' | t }}</p>
       <div class="complaint-radios">

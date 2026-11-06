@@ -1,21 +1,29 @@
 <section class="support page route-enter">
   <div class="support-hero">
     <div class="support-hero__copy">
+      <span class="support-eyebrow">{{ 'support.eyebrow' | t }}</span>
       <h1>{{ 'support.title' | t }}</h1>
-      <p>{{ 'support.lede' | t }}</p>
+      <p>{{ 'support.lede' | t: { brand } }}</p>
       <div class="support-hero__actions">
-        <a routerLink="/sell/products" class="btn btn-fill">{{ 'support.createProduct' | t }}</a>
         <a routerLink="/complaints/new" class="btn btn-fill">{{ 'complaint.cta.file' | t }}</a>
-        <a [href]="'mailto:' + supportEmail" class="btn btn-outline">{{ 'support.private' | t }}</a>
+        <a routerLink="/complaints" class="btn btn-outline">{{ 'complaint.cta.track' | t }}</a>
+        <a [href]="'mailto:' + supportEmail" class="support-mail">{{ supportEmail }}</a>
+      </div>
+      <div class="support-promises" [attr.aria-label]="'support.eyebrow' | t">
+        <div><strong>{{ 'support.promise.always' | t }}</strong><span>{{ 'support.promise.intake' | t }}</span></div>
+        <div><strong>{{ 'support.promise.oneDay' | t }}</strong><span>{{ 'support.promise.verify' | t }}</span></div>
+        <div><strong>{{ 'support.promise.sevenDays' | t }}</strong><span>{{ 'support.promise.resolve' | t }}</span></div>
       </div>
     </div>
     <aside class="support-hero__video panel">
-      <h2>{{ 'support.videoTitle' | t }}</h2>
-      <p>{{ 'support.videoDesc' | t }}</p>
-      <div class="support-hero__thumb" aria-hidden="true">
-        <span>▶</span>
+      <span class="support-card__icon" aria-hidden="true">?</span>
+      <h2>{{ 'support.quickTitle' | t }}</h2>
+      <p>{{ 'support.quickDesc' | t }}</p>
+      <div class="support-quicklinks">
+        <a routerLink="/sell/products"><span>{{ 'support.createProduct' | t }}</span><b aria-hidden="true">→</b></a>
+        <a routerLink="/docs"><span>{{ 'support.docs' | t }}</span><b aria-hidden="true">→</b></a>
+        <a routerLink="/legal"><span>{{ 'support.policies' | t }}</span><b aria-hidden="true">→</b></a>
       </div>
-      <a routerLink="/sell" class="support-hero__link">{{ 'support.videoCta' | t }}</a>
     </aside>
   </div>
 
@@ -44,8 +52,11 @@
   </div>
 
   <div class="support-contact panel">
-    <h2>{{ 'support.contactTitle' | t }}</h2>
-    <p>{{ 'support.contactDesc' | t }}</p>
-    <p><a [href]="'mailto:' + supportEmail">{{ supportEmail }}</a></p>
+    <div>
+      <span class="support-eyebrow">{{ 'support.contactEyebrow' | t }}</span>
+      <h2>{{ 'support.contactTitle' | t }}</h2>
+      <p>{{ 'support.contactDesc' | t }}</p>
+    </div>
+    <a [href]="'mailto:' + supportEmail" class="btn btn-fill">{{ 'support.private' | t }}</a>
   </div>
 </section>
