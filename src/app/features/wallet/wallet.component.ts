@@ -4,16 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { WalletBalanceService } from '../../services/wallet-balance.service';
-import { DashboardService, KycService } from '../../services/api.services';
+import { DashboardService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
 import {
   WalletTx,
   GpayOrder,
   GpayQrResponse,
-  KycProfile,
-  PayoutPersona,
-  PayoutPolicy,
-  WalletSummary,
 } from '../../models/marketplace.models';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
@@ -28,7 +24,7 @@ declare const paypal: {
   Buttons: (opts: Record<string, unknown>) => { render: (sel: string) => Promise<unknown> };
 };
 
-type WalletTab = 'deposit' | 'withdraw' | 'history';
+type WalletTab = 'deposit' | 'history';
 type DepositMethod = 'paypal' | 'gpay';
 
 /** PayPal is hidden on the web (GPay only); the /v1/paypal API stays so it can be re-enabled. */
@@ -56,29 +52,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
   private readonly route = inject(ActivatedRoute);
-  private readonly kycApi = inject(KycService);
   readonly auth = inject(AuthService);
-
-  /** Withdraw tab: eKYC profile (always fetched fresh, never from the cached session user). */
-  readonly kyc = signal<KycProfile | null>(null);
-  readonly kycLoaded = signal(false);
-  readonly wdSummary = signal<WalletSummary | null>(null);
-  readonly wdPersonas = signal<PayoutPersona[]>([]);
-  readonly wdPolicy = signal<PayoutPolicy | null>(null);
-  readonly wdBusy = signal(false);
-  readonly wdMsg = signal('');
-  readonly wdErr = signal(false);
-  wdAmount: number | null = null;
-  wdBankName = '';
-  wdAccountNumber = '';
-  wdAccountName = '';
-  wdSaveAccount = true;
-  readonly wdHasSaved = signal(false);
-
-  /** Approved eKYC (or admin) unlocks withdrawals; seller verification is not required for buyers. */
-  readonly kycVerified = computed(() => this.auth.user()?.role === 'admin' || !!this.kyc()?.withdrawAllowed || this.kyc()?.status === 'verified');
-  /** Seller-like accounts withdraw under the seller policy in the seller center; buyers withdraw here. */
-  readonly sellerLike = computed(() => this.wdPersonas().some((p) => p === 'seller' || p === 'talent' || p === 'freelancer'));
 
   readonly brand = environment.brandName;
   readonly txs = signal<WalletTx[]>([]);
@@ -180,7 +154,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('wallet.title') });
     this.reload();
-    if (this.route.snapshot.queryParamMap.get('tab') === 'withdraw') this.setTab('withdraw');
+    // Buyer marketplace credit is non-withdrawable. Legacy links to the old withdraw tab
+    // return to the deposit view; Seller/Affiliate payouts remain in their dedicated centers.
+    if (this.route.snapshot.queryParamMap.get('tab') === 'withdraw') this.setTab('deposit');
     const payStatus = this.route.snapshot.queryParamMap.get('paymentStatus');
     if (payStatus === 'success') this.setMsg(this.i18n.t('wallet.msg.paypalOk'), false);
     if (payStatus === 'cancel') this.setMsg(this.i18n.t('wallet.msg.paypalCancel'), true);
@@ -231,96 +207,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stopGpayPolling();
   }
 
-  loadWithdraw(): void {
-    this.kycApi.me().subscribe({
-      next: (k) => {
-        this.kyc.set(k);
-        this.kycLoaded.set(true);
-      },
-      error: () => this.kycLoaded.set(true),
-    });
-    this.api.walletSummary().subscribe({ next: (s) => this.wdSummary.set(s), error: () => undefined });
-    this.api.payoutAccount().subscribe({
-      next: (r) => {
-        if (r.account) {
-          this.wdHasSaved.set(true);
-          this.wdSaveAccount = false;
-          if (!this.wdBankName) this.wdBankName = r.account.bankName;
-          if (!this.wdAccountNumber) this.wdAccountNumber = r.account.accountNumber;
-          if (!this.wdAccountName) this.wdAccountName = r.account.accountName;
-        } else if (!this.wdAccountName && r.holderName) {
-          this.wdAccountName = r.holderName;
-        }
-      },
-      error: () => undefined,
-    });
-    this.api.payoutPolicy('buyer').subscribe({
-      next: (r) => {
-        this.wdPersonas.set(r.personas || []);
-        this.wdPolicy.set(r.policy);
-      },
-      error: () => undefined,
-    });
-  }
-
-  wdAvailable(): number {
-    return Math.max(0, Number(this.wdSummary()?.available) || 0);
-  }
-
-  canSubmitWithdraw(): boolean {
-    const a = Number(this.wdAmount);
-    return (
-      this.kycVerified() &&
-      !this.sellerLike() &&
-      !this.wdBusy() &&
-      Number.isFinite(a) &&
-      a > 0 &&
-      a <= this.wdAvailable() &&
-      this.wdBankName.trim().length >= 2 &&
-      /^\d{6,20}$/.test(this.wdAccountNumber.replace(/[\s.-]/g, '')) &&
-      this.wdAccountName.trim().length >= 2
-    );
-  }
-
-  submitWithdraw(): void {
-    if (!this.canSubmitWithdraw()) {
-      this.wdErr.set(true);
-      this.wdMsg.set(this.i18n.t('wallet.wd.invalid'));
-      return;
-    }
-    const amount = Math.round(Number(this.wdAmount) * 100) / 100;
-    if (!confirm(this.i18n.t('wallet.wd.confirm', { amount }))) return;
-    this.wdBusy.set(true);
-    this.wdMsg.set('');
-    this.api
-      .withdraw(amount, 'buyer', {
-        bankName: this.wdBankName.trim(),
-        accountNumber: this.wdAccountNumber.replace(/[\s.-]/g, ''),
-        accountName: this.wdAccountName.trim(),
-      }, this.wdSaveAccount)
-      .subscribe({
-        next: (tx) => {
-          this.wdBusy.set(false);
-          this.wdErr.set(false);
-          this.wdMsg.set(this.i18n.t('sell.wd.sent', { amount: tx.amount }));
-          this.wdAmount = null;
-          this.reload();
-          this.loadWithdraw();
-        },
-        error: (err) => {
-          this.wdBusy.set(false);
-          this.wdErr.set(true);
-          this.wdMsg.set(
-            err?.error?.code === 'ACCOUNT_NAME_MISMATCH' ? this.i18n.t('payacc.nameMismatch') : err?.error?.message || this.i18n.t('sell.wd.fail'),
-          );
-        },
-      });
-  }
-
   setTab(tab: WalletTab): void {
     this.tab.set(tab);
     this.setMsg('', false);
-    if (tab === 'withdraw') this.loadWithdraw();
     if (tab === 'deposit') setTimeout(() => this.ensurePayPalButtons(), 50);
   }
 

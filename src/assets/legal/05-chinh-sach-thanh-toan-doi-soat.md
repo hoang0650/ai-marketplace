@@ -57,7 +57,7 @@ Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; 
 
 1. Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%) − hoa hồng affiliate (nếu có) − hoàn tiền/điều chỉnh. Ví dụ đơn hàng 1.000.000 đồng, tỷ lệ affiliate 25%: (i) người bán là cá nhân kinh doanh — phí sàn 200.000 đồng; thuế khấu trừ 70.000 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 480.000 đồng; (ii) người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đồng; thuế 0 đồng; hoa hồng affiliate 250.000 đồng; người bán thực nhận 550.000 đồng. Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là số dư ròng.
 2. Doanh thu được **tạm giữ 48 giờ** kể từ khi ghi nhận; khoản liên quan khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ.
-3. Khoản phải trả cho người bán là nghĩa vụ đối soát theo hợp đồng điện tử, không phải số dư ví của người mua. Công ty chi trả về tài khoản ngân hàng **đứng tên người bán/Bên B** sau khi hết thời gian tạm giữ, đối soát hoàn tất và hồ sơ xác minh hợp lệ. Chu kỳ, thời điểm chuyển tiền và chứng từ được ghi trong Thỏa thuận người bán.
+3. Khoản phải trả cho người bán là nghĩa vụ đối soát theo hợp đồng điện tử, không phải số dư ví của người mua. Công ty chi trả bằng **VND** vào tài khoản ngân hàng **đứng tên người bán/Bên B** trong vòng **03 ngày làm việc kể từ khi kết thúc thời hạn tạm giữ 48 giờ**, với điều kiện đối soát hoàn tất, hồ sơ xác minh hợp lệ và khoản tiền không liên quan đến khiếu nại hoặc tranh chấp. Chứng từ chi trả được lưu cùng hồ sơ đối soát.
 
 ## Điều 7A. Phạm vi pháp lý của cơ chế thanh toán
 

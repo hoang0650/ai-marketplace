@@ -60,7 +60,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Người bán:** tổ chức, hộ kinh doanh, cá nhân đã đăng ký và được xác minh, đăng bán sản phẩm, dịch vụ trên nền tảng. Khi đăng ký, người bán bắt buộc chọn một trong ba loại: cá nhân kinh doanh, hộ kinh doanh, doanh nghiệp/tổ chức, và cung cấp mã số thuế (hộ kinh doanh, doanh nghiệp/tổ chức kèm giấy chứng nhận đăng ký kinh doanh); loại người bán là căn cứ xác định mức khấu trừ thuế.
 
-- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán duy nhất bằng số dư ví AI Markets; người mua được rút số dư ví sau khi hoàn tất xác minh danh tính (eKYC).
+- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán duy nhất bằng tín dụng dịch vụ AI Markets. Tín dụng của Người mua không hỗ trợ rút tiền mặt, chuyển nhượng hoặc chuyển khoản nội bộ; khoản hoàn đủ điều kiện được trả về đúng phương thức thanh toán ban đầu.
 
 - **Người giới thiệu (affiliate, người tiếp thị liên kết):** người dùng đã hoàn tất xác minh danh tính (eKYC) tham gia Chương trình Affiliate, chia sẻ liên kết sản phẩm, gian hàng và nhận hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá do người bán chi trả; chỉ rút hoa hồng khi số dư hoa hồng khả dụng từ 2.000.000 đ (mỗi lần rút tối thiểu 2.000.000 đ), khấu trừ 10% thuế TNCN mỗi lần rút hoặc 0% khi có Bản cam kết Mẫu 08/CK-TNCN được duyệt. Người giới thiệu là một tư cách của tài khoản, không phải loại tài khoản riêng; một tài khoản có thể đồng thời là người mua, người bán và người giới thiệu.
 
@@ -508,7 +508,7 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ### 2. Giá và mã giảm giá
 
-a) Giá thanh toán, hóa đơn và đối soát tại Việt Nam được xác định bằng **VND**. USD/CNY nếu hiển thị chỉ là ước tính tham khảo, có nhãn rõ ràng và được quy đổi theo tỷ giá trực tuyến tại thời điểm hiển thị từ nhà cung cấp dữ liệu tỷ giá; hệ thống lưu nguồn, thời điểm cập nhật và tỷ giá đã áp dụng. Khi nguồn tỷ giá tạm thời không khả dụng, hệ thống dùng tỷ giá thành công gần nhất còn hiệu lực hoặc tạm ngừng báo giá; **không ấn định cứng mức 26.500 VND/USD**. Số tiền VND tại bước xác nhận thanh toán là số tiền có hiệu lực.
+a) Giá thanh toán, hóa đơn và đối soát tại Việt Nam được xác định bằng **VND**. USD/CNY nếu hiển thị chỉ là ước tính tham khảo, có nhãn rõ ràng và được quy đổi theo tỷ giá trực tuyến tại thời điểm hiển thị từ nhà cung cấp dữ liệu tỷ giá; hệ thống lưu nguồn, thời điểm cập nhật và tỷ giá đã áp dụng. Khi nguồn tỷ giá tạm thời không khả dụng, hệ thống dùng tỷ giá thành công gần nhất còn hiệu lực hoặc tạm ngừng báo giá; **không ấn định cứng một tỷ giá USD/VND**. Số tiền VND tại bước xác nhận thanh toán là số tiền có hiệu lực.
 
 b) Giá hiển thị phải nêu rõ: loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Người mua thanh toán **giá sau giảm (nếu có)**; phí sàn do người bán chịu và không cộng thêm vào giá của người mua.
 
@@ -999,7 +999,7 @@ Mục này được xây dựng theo Luật Bảo vệ dữ liệu cá nhân s�
 | Tài khoản | Email, họ tên, mật khẩu (lưu dạng băm), liên kết Google (nếu dùng), ngôn ngữ | Người dùng, Google |
 | Hồ sơ công khai | Ảnh đại diện, ảnh bìa, giới thiệu, khu vực, website, liên kết mạng xã hội — chỉ khi người dùng tự nhập | Người dùng |
 | Xác minh người bán | Họ tên, loại và số giấy tờ tùy thân, ảnh hai mặt giấy tờ (có ảnh chân dung), mã số thuế, thông tin tổ chức, bản chụp/bản scan giấy chứng nhận đăng ký hộ kinh doanh/doanh nghiệp (giấy phép kinh doanh), người đại diện, tài khoản nhận tiền | Người bán |
-| Xác minh danh tính người mua (eKYC) | Thông tin giấy tờ tùy thân (CCCD/hộ chiếu) khi người mua rút số dư ví | Người mua |
+| Xác minh danh tính người mua (eKYC) | Chỉ thu thập khi một nghiệp vụ khác có căn cứ pháp luật và thông báo riêng; không dùng để mở chức năng rút tín dụng dịch vụ | Người mua |
 | Giao dịch | Đơn hàng, giỏ hàng, danh sách yêu thích, thanh toán, số dư ví, hoàn tiền, khiếu nại, đánh giá | Hệ thống |
 | Sử dụng dịch vụ | Lượt gọi API, số token, thời gian GPU/máy chủ trò chơi, thuê bao agent, khóa API (BYOK) đã mã hóa, khóa SSH công khai | Hệ thống, người dùng |
 | Kỹ thuật, bảo mật | Địa chỉ IP, thời điểm đăng nhập, nhật ký hoạt động tài khoản, nhật ký máy chủ và lỗi | Hệ thống |

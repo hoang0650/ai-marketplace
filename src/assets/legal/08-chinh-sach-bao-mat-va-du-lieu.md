@@ -61,11 +61,17 @@ Nền tảng **không mua bán dữ liệu cá nhân**.
 
 Cơ sở dữ liệu và bản lưu bền vững dữ liệu cá nhân được đặt tại Việt Nam trên máy chủ 123HOST (Công ty TNHH Lưu Trữ Số, MST 0312088232). Cơ sở dữ liệu không mở cổng công khai ra Internet. Các dịch vụ API vận hành trên hạ tầng Hostinger chỉ kết nối tới dịch vụ dữ liệu tại Việt Nam qua mạng riêng Tailscale được mã hóa, có xác thực thiết bị, danh sách kiểm soát truy cập và nhật ký; máy chủ API không lưu bản sao cơ sở dữ liệu lâu dài.
 
+- **Máy chủ Web/API:** VPS Hostinger International Ltd., IP 72.62.72.165, đặt tại Kuala Lumpur, Malaysia; quản trị và kết nối dữ liệu qua mạng riêng Tailscale.
+- **Máy chủ dữ liệu/cơ sở dữ liệu:** NVMe VPS của Công ty TNHH Lưu Trữ Số (123HOST), IP 103.97.127.39, đặt tại TP. Hồ Chí Minh, Việt Nam. Toàn bộ cơ sở dữ liệu hệ thống, thông tin người dùng và dữ liệu cá nhân được lưu trữ thường xuyên, tập trung tại đây.
+- **Hạ tầng GPU/API AI nước ngoài:** RunPod, OpenRouter/Featherless, OpenAI, Anthropic và nhà cung cấp tương tự chỉ nhận dữ liệu cần thiết để thực hiện yêu cầu suy luận. Công ty quản lý hoạt động này theo hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và quy định pháp luật áp dụng.
+
 Việc truy cập/xử lý dữ liệu từ máy chủ đặt ngoài Việt Nam qua Tailscale **vẫn có thể là xử lý xuyên biên giới**. Nội dung gửi tới nhà cung cấp mô hình AI/GPU ở nước ngoài chỉ được chuyển trong phạm vi cần thiết, theo lựa chọn và cơ sở pháp lý phù hợp. Công ty lập/cập nhật hồ sơ đánh giá tác động xử lý và chuyển dữ liệu ra nước ngoài khi pháp luật yêu cầu, ghi rõ quốc gia, nhà cung cấp, loại dữ liệu, mục đích, thời hạn, biện pháp bảo vệ và cơ chế xóa. Tailscale giảm bề mặt tấn công nhưng không phải cam kết “an toàn tuyệt đối”.
 
 ## Điều 8. Biện pháp bảo vệ
 
 Mã hóa HTTPS/TLS và đường hầm Tailscale; ACL chỉ cho đúng dịch vụ API truy cập đúng cổng dữ liệu; xác thực/thu hồi thiết bị; mật khẩu băm; khóa API mã hóa khi lưu; phân quyền; giới hạn tần suất; bí mật hệ thống trong biến môi trường; cơ sở dữ liệu không mở ra Internet; nhật ký quản trị; phiên đăng nhập có thể thu hồi; mã skill bên thứ ba chạy trong container cách ly.
+
+Chủ quản nền tảng cam kết lập, thẩm định và phê duyệt hồ sơ đề xuất cấp độ an toàn hệ thống thông tin **Cấp độ 3** cho hệ thống thực tế đang vận hành; tổ chức thực hiện đầy đủ phương án bảo đảm an toàn theo cấp độ được phê duyệt và rà soát lại khi kiến trúc, phạm vi hoặc mức độ rủi ro thay đổi.
 
 ## Điều 9. Quyền của chủ thể dữ liệu
 

@@ -246,10 +246,8 @@ export class SellOrdersComponent implements OnInit {
     <section class="pay">
       <p class="crumb">{{ 'sell.ws.seller.sub' | t }} · {{ shop.statusLabel() }} · {{ 'sell.nav.payment' | t }}</p>
       <h1>{{ 'sell.nav.payment' | t }}</h1>
-      <!-- Any eKYC-verified user (buyer or seller) can save a payout account; unverified users see the eKYC prompt. -->
-      <app-payout-account-form />
       @if (!isSeller()) {
-        <p class="buyer-note">{{ 'payacc.buyerNote' | t }} <a routerLink="/wallet" [queryParams]="{ tab: 'withdraw' }" class="link">{{ 'wallet.wd.goWallet' | t }} ›</a></p>
+        <p class="buyer-note">{{ 'payacc.buyerNote' | t }}</p>
       } @else if (!shop.started() || shop.profile().status === 'draft') {
         <div class="gate">
           <span class="gate__icon">ℹ</span>
@@ -258,6 +256,7 @@ export class SellOrdersComponent implements OnInit {
           <a routerLink="/sell/profile" class="btn">{{ 'sell.pay.gateBtn' | t }}</a>
         </div>
       } @else {
+        <app-payout-account-form />
         <div class="card">
           <h2>{{ 'sell.pay.setupTitle' | t }}</h2>
           <p>{{ 'sell.pay.setupDesc' | t: { status: shop.statusLabel() } }}</p>
@@ -345,7 +344,6 @@ export class SellPaymentComponent {
       @if (persona() === 'buyer') {
         <div class="policy">
           <p>{{ 'wallet.wd.buyerHere' | t }}</p>
-          <a routerLink="/wallet" [queryParams]="{ tab: 'withdraw' }" class="link">{{ 'wallet.wd.goWallet' | t }} →</a>
         </div>
       }
 
@@ -503,7 +501,7 @@ export class SellWithdrawComponent implements OnInit {
   }
 
   canWithdraw(): boolean {
-    // Buyers withdraw from /wallet (bank account form); the seller center is for seller payouts.
+    // Buyer marketplace credit is non-withdrawable; only payout-bearing personas continue.
     if (this.persona() === 'buyer') return false;
     if (this.auth.user()?.role === 'admin') return true;
     if (!this.policy()?.canWithdraw) return false;

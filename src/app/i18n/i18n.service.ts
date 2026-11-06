@@ -1,6 +1,11 @@
 import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AppLang, LANGS, MESSAGES } from './messages';
+import { MESSAGE_OVERRIDES } from './messages.overrides';
+
+for (const lang of Object.keys(MESSAGE_OVERRIDES) as AppLang[]) {
+  Object.assign(MESSAGES[lang], MESSAGE_OVERRIDES[lang]);
+}
 
 const STORAGE_KEY = 'aimarkets.lang';
 

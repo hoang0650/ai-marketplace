@@ -1512,7 +1512,7 @@ export interface KycAdminDocuments {
   documents: KycDocumentInfo[];
 }
 
-/** Bank account sent with a buyer wallet withdrawal (buyers have no seller payout account on file). */
+/** Bank account used for an eligible seller, talent, freelancer or affiliate payout. */
 export interface PayoutBankAccount {
   bankName: string;
   accountNumber: string;
