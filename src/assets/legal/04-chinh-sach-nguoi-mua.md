@@ -72,7 +72,7 @@ Người mua xem demo trực tiếp trước khi mua. Sau khi thanh toán, ngư�
 8. Trao đổi và tệp trong dự án: người mua và người bán gửi tin nhắn, hình ảnh và tệp (PDF, ZIP, DOCX, XLSX, PPTX… tối đa 25 MB/tệp, theo danh sách định dạng cho phép; tệp thực thi bị từ chối). Tệp được lưu riêng tư, chỉ người tham gia và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn; nội dung trao đổi là căn cứ khi giải quyết khiếu nại.
 9. Phí sàn, khấu trừ thuế, tạm giữ, hoàn tiền và giải quyết khiếu nại áp dụng như đối với các sản phẩm khác, tính trên giá trị từng giai đoạn.
 
-![Không gian dự án theo giai đoạn](assets/legal/img/h08-khong-gian-du-an.jpg)
+Chưa có ảnh mới của không gian dự án theo giai đoạn. Các bước nghiệm thu, chỉnh sửa và chấm dứt vẫn thực hiện trên trang dự án như các khoản trên.
 
 ## Điều 9. Khóa API và bảo mật
 
