@@ -14,21 +14,24 @@ function read(name: string): string {
 test('seller eKYC guide matches the individual and organization form', () => {
   const guide = read('13-quy-trinh-xac-minh-nguoi-ban.md');
   const rules = read('01-quy-che-hoat-dong-san-tmdt.md');
-  for (const body of [guide, rules]) {
+  const seller = read('03-chinh-sach-nguoi-ban.md');
+  for (const body of [guide, rules, seller]) {
     assert.match(body, /https:\/\/aimarkets\.vn\/settings\/kyc/);
-    assert.match(body, /Cá nhân/);
-    assert.match(body, /Tổ chức|Hộ kinh doanh/);
-    assert.match(body, /PDF/);
     assert.match(body, /Người mua thông thường không/);
     assert.equal(/đã tích hợp VNeID/.test(body), false);
     assert.equal(/VNeID đã hoàn tất/.test(body), false);
   }
   assert.match(guide, /không khẳng định VNeID đã được tích hợp/);
-  assert.match(guide, /https:\/\/aimarkets\.vn\/sell\/kyc/);
-  assert.match(guide, /CMND/);
-  assert.match(guide, /Dùng số CCCD/);
-  assert.match(guide, /không phải quyết định đã duyệt người bán/);
-  assert.equal(guide.includes('!['), false);
+  assert.match(guide, /v7-k01-ho-so-ca-nhan\.png/);
+  assert.match(guide, /v7-k02-ho-so-to-chuc\.png/);
+  assert.match(guide, /v7-k03-giay-to-dai-dien\.png/);
+  assert.match(seller, /13-quy-trinh-xac-minh-nguoi-ban\.md/);
+  const figures = [...rules.matchAll(/^!\[([^\]]*)\]\((assets\/legal\/img\/v7-[^)]+)\)/gm)];
+  assert.equal(figures.length, 22);
+  for (const [, caption] of figures) {
+    assert.equal(/cccd/i.test(caption), false, caption);
+    assert.equal(/\d{9,}/.test(caption), false, caption);
+  }
 });
 
 test('published legal figures point at files that exist', () => {

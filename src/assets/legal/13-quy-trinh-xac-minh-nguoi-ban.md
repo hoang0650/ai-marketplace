@@ -74,4 +74,10 @@ Biểu mẫu có hai lựa chọn ở mục “Loại hồ sơ”.
 
 Nút gửi là “Gửi xác minh”. Sau khi gửi, nếu hồ sơ chưa được duyệt, trang ghi “Hồ sơ đang chờ sàn duyệt”. Ảnh và tệp PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán, không phải nhãn xác thực điện tử, và không phải bằng chứng đã chi trả về ngân hàng. Tài khoản nhận tiền là bước riêng, chỉ dùng cho doanh thu người bán hoặc hoa hồng affiliate đã đủ điều kiện.
 
-Hình minh họa của biểu mẫu này chỉ được đăng khi có bộ ảnh đã duyệt. Trang không dùng ảnh che đen toàn bộ thẻ và không chèn ô ảnh trống cho bước chưa được chụp.
+Ba ảnh ngày 07/11/2026 dưới đây là đúng biểu mẫu đó. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ, tên và các trường còn lại giữ như ảnh đã duyệt. Ô tệp không phải giấy chứng nhận đã được kiểm chứng.
+
+![Hình K01. Biểu mẫu hồ sơ cá nhân với tài liệu đã lưu. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ và các trường còn lại giữ như ảnh đã duyệt. Không phải kết quả đã duyệt.](assets/legal/img/v7-k01-ho-so-ca-nhan.png)
+
+![Hình K02. Biểu mẫu hồ sơ tổ chức trên cùng trang. Số giấy tờ đã được che. Tên tổ chức và các ô còn lại giữ như ảnh đã duyệt. Không phải kết quả đã duyệt.](assets/legal/img/v7-k02-ho-so-to-chuc.png)
+
+![Hình K03. Giấy tờ của người đại diện và ô tệp đăng ký. Số trên giấy tờ đã được che. Ảnh giấy tờ và tên tệp giữ như ảnh đã duyệt. Ô tệp không chứng minh giấy chứng nhận đã được đối chiếu.](assets/legal/img/v7-k03-giay-to-dai-dien.png)

@@ -416,7 +416,21 @@
 }
 
 :host ::ng-deep .legal-doc__body figure.legal-fig {
-  margin: 1.25rem 0;
-  img { display: block; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 6px; }
-  figcaption { margin-top: 0.4rem; font-size: 0.85rem; font-style: italic; text-align: center; opacity: 0.75; }
+  margin: 1.25rem auto;
+  max-width: 100%;
+  img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+  }
+  figcaption {
+    margin-top: 0.45rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
 }

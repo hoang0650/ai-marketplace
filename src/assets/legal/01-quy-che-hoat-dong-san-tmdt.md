@@ -126,6 +126,10 @@ a) Người dùng đăng ký bằng email (có xác minh email) hoặc tài kho�
 
 b) Mở và duy trì tài khoản người mua, người bán là miễn phí.
 
+Ảnh dưới đây là màn hình đăng nhập khi khách mở giỏ hàng ngày 07/11/2026. Bộ ảnh này không có biểu mẫu đăng ký.
+
+![Hình P10. Màn hình đăng nhập khi khách mở giỏ. Chưa có ảnh biểu mẫu đăng ký. Nguồn aimarkets.vn/auth/login, ngày 07/11/2026.](assets/legal/img/v7-p10-dang-nhap.png)
+
 ### 2. Bảo mật và quản lý tài khoản
 
 a) Người dùng chịu trách nhiệm về mọi hoạt động phát sinh từ tài khoản của mình và phải tự bảo vệ, bảo mật mật khẩu, khóa API, khóa SSH.
@@ -150,7 +154,9 @@ Người bán phải hoàn tất Quy trình xác minh người bán và xác nh�
 
 ## V. QUY TRÌNH GIAO DỊCH TRÊN WEBSITE
 
-Các bước dưới đây mô tả thao tác thực tế trên website https://aimarkets.vn. Hình minh họa được chụp từ giao diện website (ngôn ngữ hiển thị tiếng Anh) bằng tài khoản thử nghiệm; số liệu trên hình chỉ mang tính minh họa. Quy định chi tiết áp dụng theo các Mục được dẫn chiếu của Quy chế này. Hình minh họa các chức năng mới (danh mục Suy luận, dịch vụ chuyên môn theo giai đoạn, tin nhắn kèm tệp, Bảng điều khiển người mua) được chụp từ giao diện tiếng Việt, tháng 10/2026.
+Các bước dưới đây mô tả thao tác thực tế trên website https://aimarkets.vn. Hình minh họa được chụp từ giao diện website (ngôn ngữ hiển thị tiếng Anh) bằng tài khoản thử nghiệm; số liệu trên hình chỉ mang tính minh họa. Quy định chi tiết áp dụng theo các Mục được dẫn chiếu của Quy chế này. Hình minh họa các chức năng mới (danh mục Suy luận, dịch vụ chuyên môn theo giai đoạn, tin nhắn kèm tệp, Bảng điều khiển người mua) được chụp từ giao diện tiếng Việt, tháng 10/2026. Các ảnh bổ sung ngày 07/11/2026 chỉ thay cho đúng màn hình đã chụp. Bước chưa có ảnh mới vẫn dùng hình cũ hoặc được ghi là chưa chụp; không thêm ô ảnh trống.
+
+![Hình V01. Trang chủ tiếng Việt, phần đầu bị cắt header. Chưa thấy đủ menu và chân trang. Nguồn aimarkets.vn, ngày 07/11/2026. Không chứng minh hồ sơ đã được duyệt.](assets/legal/img/v7-v01-trang-chu.png)
 
 ### 1. Quy trình dành cho Người mua
 
@@ -162,11 +168,15 @@ Các bước dưới đây mô tả thao tác thực tế trên website https://
 
 ![Hình 2: Trang danh sách sản phẩm, bộ lọc danh mục và tìm kiếm](assets/legal/img/qc-02.jpg)
 
+![Hình V02. Danh sách sản phẩm và bộ lọc tiếng Việt ngày 07/11/2026. Giá trên ảnh vẫn hiển thị USD. Ảnh không chứng minh tiêu chí ưu tiên hiển thị. Nguồn aimarkets.vn/marketplace.](assets/legal/img/v7-v02-san-giao-dich.png)
+
 ![Hình 3: Danh mục Suy luận (gộp API mô hình và hạ tầng suy luận)](assets/legal/img/qc-03.jpg)
 
 **Bước 3:** Xem chi tiết sản phẩm. Trang sản phẩm hiển thị mô tả, đánh giá, các gói dịch vụ (package) và giá theo đơn vị tính, số lượng, thời hạn sử dụng/giấy phép (ngày/tháng/năm), khung thanh toán bằng ví AI Markets (số dư, nút nạp tiền “Top up”) và các nút “Add to cart” (Thêm vào giỏ hàng), “Chat with seller” (Trao đổi với người bán).
 
 ![Hình 4: Trang chi tiết sản phẩm, gói dịch vụ, giá và khung thanh toán](assets/legal/img/qc-04.jpg)
+
+![Hình B06. Trang chi tiết một gói khi đã đăng nhập, ngày 07/11/2026. Ảnh còn giá USD và nút mua. Chưa có ảnh checkout hoàn chỉnh. Nguồn aimarkets.vn/product/phai-inference-api.](assets/legal/img/v7-b06-chi-tiet-san-pham.png)
 
 Người mua có thể xem trang cửa hàng của người bán: nhãn “Verified seller” (người bán đã xác minh), số sản phẩm, lượt bán, đánh giá và chính sách cửa hàng (thanh toán qua ví AI Markets; khiếu nại, tranh chấp được giải quyết trên nền tảng, không gửi đường dẫn ra ngoài nền tảng trong tin nhắn).
 
@@ -196,6 +206,10 @@ Người mua có thể xem trang cửa hàng của người bán: nhãn “Verif
 
 ![Hình 13: Chi tiết đơn hàng – hóa đơn, Khiếu nại, Yêu cầu hoàn tiền](assets/legal/img/qc-13.jpg)
 
+![Hình B02. Danh sách đơn có sẵn trong bảng điều khiển người mua, ngày 07/11/2026. Nhãn hoàn trên ảnh là ghi nhận trong tài khoản, không chứng minh tiền đã trả về ngân hàng hoặc kênh gốc. Nguồn aimarkets.vn/account/console.](assets/legal/img/v7-b02-don-hang-nguoi-mua.png)
+
+![Hình B03. Chi tiết một đơn đã có, ngày 07/11/2026. Hóa đơn trên ảnh ở trạng thái chờ, không phải hóa đơn đã phát hành.](assets/legal/img/v7-b03-chi-tiet-don.png)
+
 ![Hình 14: Bảng điều khiển người mua – Hoàn tiền](assets/legal/img/qc-14.jpg)
 
 **Bước 7: Khiếu nại (nếu có). Tại mục “Complaints” → “File a complaint”, người mua điền tên/tài khoản, email, loại khiếu nại (Người mua – Người bán; Người mua – Nền tảng; Người bán – Nền tảng), mã đơn hàng, sản phẩm, nội dung khiếu nại, yêu cầu xử lý và bằng chứng (mỗi dòng một đường dẫn https). Không gửi mật khẩu, khóa API hoặc thông tin bí mật không cần thiết. Hồ sơ được xử lý theo Mục XVII. Trên trang chi tiết khiếu nại, người mua, người bán và Ban quản lý trao đổi trực tiếp, gửi thêm hình ảnh, tệp bằng chứng (tối đa 25 MB/tệp); trong mục “Tin nhắn” và không gian dự án, các bên cũng gửi được hình ảnh (xem trước) và tệp (tải về). Tệp được lưu riêng tư, chỉ các bên liên quan và Ban quản lý truy cập được.**
@@ -218,9 +232,17 @@ Người mua có thể xem trang cửa hàng của người bán: nhãn “Verif
 
 ![Hình 20: Trang tổng quan Kênh người bán (Seller Center)](assets/legal/img/qc-20.jpg)
 
+![Hình S01. Kênh bán hàng khi hồ sơ gian hàng còn nháp, ngày 07/11/2026. Nhãn xác minh trên ảnh không phải quyết định người bán đã được duyệt. Nguồn aimarkets.vn/sell.](assets/legal/img/v7-s01-kenh-ban-hang.png)
+
+![Hình T01. Phiên khác của kênh bán hàng: hồ sơ nháp và xác minh bị từ chối, ngày 07/11/2026. Phần đầu ảnh giữ nguyên vùng che có sẵn từ ảnh nguồn. Không phải người bán đã được duyệt. Nguồn aimarkets.vn/sell.](assets/legal/img/v7-t01-kenh-ban-hang-tu-choi.png)
+
 **Bước 2:** Xác minh người bán. Tại “Seller verification”, người bán chọn loại người bán (bắt buộc: Cá nhân, Hộ kinh doanh hoặc Doanh nghiệp/Tổ chức – căn cứ xác định mức khấu trừ thuế theo khoản 3 Mục XII), nhập tên pháp lý, tên hiển thị, mã số thuế (bắt buộc; cá nhân có thể dùng số CCCD 12 số), số đăng ký kinh doanh (bắt buộc đối với hộ kinh doanh, doanh nghiệp/tổ chức), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII.
 
 ![Hình 21: Biểu mẫu xác minh người bán và Thỏa thuận người bán](assets/legal/img/qc-21.jpg)
+
+![Hình S03. Biểu mẫu xác minh người bán trước khi gửi, các ô còn trống, ngày 07/11/2026. Nguồn aimarkets.vn/sell/verification.](assets/legal/img/v7-s03-xac-minh-nguoi-ban.png)
+
+![Hình S05. Hồ sơ gian hàng ở trạng thái nháp, chưa lưu, ngày 07/11/2026. Không phải gian hàng đã duyệt. Nguồn aimarkets.vn/sell/profile.](assets/legal/img/v7-s05-ho-so-gian-hang.png)
 
 **Bước 3:** Đăng sản phẩm. Tại “Products” → “New product”, người bán nhập tên, tagline, mô tả, danh mục AI, mô hình tính giá (ví dụ theo mức sử dụng – Usage), đơn giá (hình minh họa hiển thị đơn giá bằng USD), đơn vị tính (ví dụ 1K tokens), giá gốc so sánh (nếu có), ảnh bìa, thẻ (tags) và thông tin kỹ thuật. Sản phẩm được gửi kiểm duyệt theo Mục IX và chỉ hiển thị sau khi được duyệt.
 
@@ -230,6 +252,8 @@ Người mua có thể xem trang cửa hàng của người bán: nhãn “Verif
 
 ![Hình 23: Danh sách sản phẩm của người bán](assets/legal/img/qc-23.jpg)
 
+![Hình T02. Danh sách sản phẩm đang có của một phiên chưa được duyệt, ngày 07/11/2026. Nút đăng sản phẩm trên phiên này không mở được biểu mẫu mới, nên bộ ảnh không có form đăng sản phẩm. Nguồn aimarkets.vn/sell/products.](assets/legal/img/v7-t02-danh-sach-san-pham.png)
+
 **Bước 5:** Tạo mã giảm giá (nếu có). Tại “Coupons”, người bán tạo mã cho toàn cửa hàng hoặc từng sản phẩm: mã, loại giảm giá (phần trăm), giá trị, phạm vi áp dụng, giá trị đơn tối thiểu, mức giảm tối đa, số lượt sử dụng, ngày hết hạn. Giao diện ghi: khoản giảm giá được áp dụng vào đơn hàng trước khi tính phí sàn và người bán chịu khoản giảm giá.
 
 ![Hình 24: Trang tạo mã giảm giá của người bán](assets/legal/img/qc-24.jpg)
@@ -237,6 +261,8 @@ Người mua có thể xem trang cửa hàng của người bán: nhãn “Verif
 **Bước 6:** Theo dõi đơn hàng. Tại “Orders”, người bán xem mã đơn hàng, sản phẩm, người mua, số tiền, trạng thái (ví dụ “Paid” – đã thanh toán) và ngày giao dịch; cung cấp sản phẩm, dịch vụ theo cam kết.
 
 ![Hình 25: Danh sách đơn hàng người bán nhận được](assets/legal/img/qc-25.jpg)
+
+![Hình T03. Danh sách đơn trong kênh bán hàng, ngày 07/11/2026. Cột khách hàng giữ nguyên vùng che có sẵn từ ảnh nguồn. Chưa có ảnh chi tiết đơn hoặc bàn giao. Nguồn aimarkets.vn/sell/orders.](assets/legal/img/v7-t03-don-kenh-ban.png)
 
 **Bước 7: Xử lý khiếu nại. Tại “Complaints”, người bán theo dõi khiếu nại của người mua theo quy trình: tiếp nhận, xác minh, phân loại, người bán phản hồi, xem xét bằng chứng, quyết định và đóng hồ sơ; thời hạn phản hồi theo khoản 4 Mục XVII. Với dịch vụ chuyên môn theo giai đoạn, người bán bàn giao từng giai đoạn trong không gian dự án và phản hồi khiếu nại tại trang chi tiết khiếu nại.**
 
@@ -259,6 +285,10 @@ Người mua thanh toán đơn hàng thông qua ví AI Markets; nền tảng thu
 **Bước 2:** Kiểm tra giỏ hàng và thanh toán. Quy trình gồm 3 bước: 1 Giỏ hàng (Cart) → 2 Thanh toán (Checkout) → 3 Hoàn tất (Done). Mỗi sản phẩm được thanh toán riêng; phim, truyện và gói kỹ năng được cấp một giấy phép cho mỗi listing, kể cả cùng cửa hàng. Khung thanh toán hiển thị tạm tính, giảm giá của người bán, giảm giá của nền tảng, ô nhập mã giảm giá và tổng đơn hàng. Phương thức thanh toán trên giao diện là ví AI Markets (“Pay with AI Markets wallet only”); người mua chọn “Pay with AI Markets wallet”. Nếu số dư không đủ, người mua nạp thêm theo Bước 1.
 
 ![Hình 30: Giỏ hàng và thanh toán bằng ví AI Markets](assets/legal/img/qc-30.jpg)
+
+Ảnh ngày 07/11/2026 dưới đây là giỏ đang trống. Bộ ảnh không có giỏ đã có hàng, màn hình xem lại trước khi đặt, mã VietQR hoặc cổng GPay đang hoạt động.
+
+![Hình B07. Giỏ hàng đang trống, dừng ở bước đầu. Không phải thanh toán đã hoàn tất. Nguồn aimarkets.vn/cart, ngày 07/11/2026.](assets/legal/img/v7-b07-gio-trong.png)
 
 **Bước 3:** Hoàn tất giao dịch. Hệ thống trừ số dư ví, tạo mã đơn hàng, lưu bản chụp giá, phí, thuế tại thời điểm giao kết và gửi email xác nhận; đơn hàng hiển thị trạng thái đã thanh toán ở trang của người mua và Kênh người bán. Doanh thu của người bán được ghi nhận và tạm giữ 48 giờ (khoản 8 Mục XI). Sau khi mua thành công, người mua chọn lấy hoặc không lấy hóa đơn điện tử (mặc định không lấy) theo khoản 9 Mục XII. Hoàn tiền (nếu có) thực hiện theo Mục XIII.
 
@@ -380,6 +410,14 @@ Nền tảng có thể yêu cầu xác minh lại khi: thay đổi thông tin ph
 ### 7. Xác minh danh tính (eKYC) và định danh điện tử
 
 Người bán và người giới thiệu affiliate hoàn tất biểu mẫu eKYC tại https://aimarkets.vn/settings/kyc hoặc https://aimarkets.vn/sell/kyc trước khi hồ sơ người bán được phê duyệt, trước khi chi trả doanh thu người bán, và trước khi nhận mã affiliate. Người mua thông thường không nộp biểu mẫu này để mua, nạp, dùng dịch vụ, khiếu nại hoặc yêu cầu hoàn. Khi chưa có hồ sơ chi trả được duyệt, chức năng chi trả doanh thu bị khóa. Tín dụng nạp của người mua không được rút hoặc chuyển. Biểu mẫu có loại hồ sơ Cá nhân và Tổ chức. Cá nhân nhập họ tên trên giấy tờ, loại giấy tờ (CCCD, CMND, hộ chiếu hoặc khác), số giấy tờ, mã số thuế cá nhân, rồi tải ảnh mặt trước và mặt sau. Tổ chức chọn Hộ kinh doanh hoặc Công ty / doanh nghiệp, nhập tên theo giấy chứng nhận, mã số thuế, địa chỉ, giấy tờ người đại diện, và tải giấy chứng nhận đăng ký bằng PDF tối đa 10 MB. Ảnh hoặc PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán và không phải tích hợp VNeID. Dòng ghi chú trên biểu mẫu về mốc 01/01/2027 là mốc rà soát định danh điện tử, không phải xác nhận tích hợp đã hoàn tất.
+
+Ba ảnh dưới đây là biểu mẫu đã lưu tài liệu tại https://aimarkets.vn/settings/kyc, ngày 07/11/2026. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ, tên và các trường còn lại giữ như ảnh đã duyệt. Ảnh không phải quyết định đã duyệt người bán, không phải tích hợp định danh điện tử, và ô tệp không phải giấy chứng nhận đăng ký đã được kiểm chứng.
+
+![Hình K01. Biểu mẫu hồ sơ cá nhân với tài liệu đã lưu. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ và các trường còn lại giữ như ảnh đã duyệt. Không phải kết quả đã duyệt.](assets/legal/img/v7-k01-ho-so-ca-nhan.png)
+
+![Hình K02. Biểu mẫu hồ sơ tổ chức trên cùng trang. Số giấy tờ đã được che. Tên tổ chức và các ô còn lại giữ như ảnh đã duyệt. Không phải kết quả đã duyệt.](assets/legal/img/v7-k02-ho-so-to-chuc.png)
+
+![Hình K03. Giấy tờ của người đại diện và ô tệp đăng ký. Số trên giấy tờ đã được che. Ảnh giấy tờ và tên tệp giữ như ảnh đã duyệt. Ô tệp không chứng minh giấy chứng nhận đã được đối chiếu.](assets/legal/img/v7-k03-giay-to-dai-dien.png)
 
 ## IX. KIỂM DUYỆT SẢN PHẨM AI
 
@@ -564,6 +602,12 @@ b) Thời gian tạm giữ đối soát là **48 giờ** từ khi giao dịch ho
 c) Người bán theo dõi doanh thu, số tạm giữ, số khả dụng, thuế đã khấu trừ và lịch sử đối soát tại Kênh người bán.
 
 d) Người bán đã xác minh (bao gồm xác minh danh tính eKYC theo khoản 7 Mục VIII) gửi yêu cầu rút số dư khả dụng về tài khoản ngân hàng đứng tên người bán (hoặc tổ chức người bán đại diện). Yêu cầu được xử lý khi: thông tin xác minh, tài khoản nhận tiền hợp lệ; khoản tiền đã hết thời gian tạm giữ; không thuộc khiếu nại, tranh chấp đang giải quyết.
+
+Hai ảnh ngày 07/11/2026 dưới đây là điểm dừng, không phải chi trả đã thực hiện.
+
+![Hình S07. Trang thanh toán người bán bị chặn vì chưa có hồ sơ. Không phải chi trả đã hoàn tất. Nguồn aimarkets.vn/sell/payment, ngày 07/11/2026.](assets/legal/img/v7-s07-thanh-toan-chua-mo.png)
+
+![Hình T06. Trang rút doanh thu người bán khi xác minh bị từ chối. Không phải lệnh chi đã thực hiện. Tỷ lệ trên ảnh không được dùng làm biểu phí đã được chứng minh ngoài Quy chế. Nguồn aimarkets.vn/sell/withdraw, ngày 07/11/2026.](assets/legal/img/v7-t06-rut-bi-tu-choi.png)
 
 đ) Nền tảng có quyền tạm dừng chi trả khi có dấu hiệu gian lận, yêu cầu của cơ quan có thẩm quyền hoặc khoản hoàn tiền/bồi hoàn chưa được bù trừ.
 
@@ -935,6 +979,14 @@ Người khiếu nại nên cung cấp: tài khoản; mã đơn hàng; sản ph�
 
 Không gửi mật khẩu, khóa API, khóa SSH, khóa bí mật hoặc dữ liệu bí mật không cần thiết trong hồ sơ khiếu nại.
 
+Ảnh ngày 07/11/2026: danh sách khiếu nại đang có, một phần biểu mẫu chưa gửi, và trang khiếu nại trong kênh bán hàng khi chưa có hồ sơ. Bộ ảnh không có chi tiết trao đổi, kết quả xử lý, hoặc biểu mẫu yêu cầu hoàn trước khi gửi.
+
+![Hình B04. Danh sách khiếu nại đang có. Chưa có ảnh chi tiết trao đổi hoặc kết quả. Nguồn aimarkets.vn/complaints, ngày 07/11/2026.](assets/legal/img/v7-b04-khieu-nai-danh-sach.png)
+
+![Hình B05. Một phần biểu mẫu gửi khiếu nại, chưa gửi. Ảnh không gồm ô bằng chứng và nút gửi. Nguồn aimarkets.vn/complaints/new, ngày 07/11/2026.](assets/legal/img/v7-b05-khieu-nai-form.png)
+
+![Hình T04. Trang khiếu nại trong kênh bán hàng, chưa có hồ sơ. Không chứng minh người bán đã phản hồi. Nguồn aimarkets.vn/sell/complaints, ngày 07/11/2026.](assets/legal/img/v7-t04-khieu-nai-kenh-ban.png)
+
 ### 3. Phân loại khiếu nại
 
 - Người mua – người bán;
@@ -1276,6 +1328,8 @@ Ngân hàng nơi hiển thị tài khoản nhận chuyển khoản VietQR, Công
 3. Người dùng tiếp tục sử dụng sau ngày hiệu lực được coi là đồng ý; nếu không đồng ý, người dùng có thể ngừng sử dụng và đóng tài khoản.
 
 4. Đơn hàng đã giao kết tiếp tục áp dụng điều kiện tại thời điểm giao kết.
+
+![Hình V04. Phần đầu trung tâm chính sách tiếng Việt, ngày 07/11/2026. Ảnh chưa hiện đủ mọi trang chính sách. Nguồn aimarkets.vn/legal.](assets/legal/img/v7-v04-trung-tam-phap-ly.png)
 
 ## XXVI. ĐIỀU KHOẢN CAM KẾT
 
