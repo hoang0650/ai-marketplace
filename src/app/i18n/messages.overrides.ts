@@ -43,6 +43,8 @@ export const MESSAGE_OVERRIDES: Partial<Record<AppLang, Record<string, string>>>
     'legal.policy.chinh-sach-gia-ca.summary': 'Nguyên tắc niêm yết giá bằng VND, giá tham khảo ngoại tệ, phí, thuế và khuyến mại.',
     'legal.policy.phuong-thuc-cung-cap-va-cham-dut-dich-vu.title': 'Cung cấp và chấm dứt dịch vụ',
     'legal.policy.phuong-thuc-cung-cap-va-cham-dut-dich-vu.summary': 'Phương thức kích hoạt, bàn giao, tạm ngừng, chấm dứt và xử lý dữ liệu, khoản tiền còn lại.',
+    'legal.policy.dieu-kien-va-han-che-cung-cap.title': 'Điều kiện và hạn chế cung cấp dịch vụ',
+    'legal.policy.dieu-kien-va-han-che-cung-cap.summary': 'Phạm vi Việt Nam, năng lực giao kết, không cam kết vận hành 24/7 và không giao hàng vật lý.',
   },
   en: {
     'support.eyebrow': 'Help center',
@@ -84,6 +86,8 @@ export const MESSAGE_OVERRIDES: Partial<Record<AppLang, Record<string, string>>>
     'legal.policy.chinh-sach-gia-ca.summary': 'VND price listing, reference foreign-currency values, fees, taxes and promotions.',
     'legal.policy.phuong-thuc-cung-cap-va-cham-dut-dich-vu.title': 'Service provision and termination',
     'legal.policy.phuong-thuc-cung-cap-va-cham-dut-dich-vu.summary': 'Activation, delivery, suspension, termination, data handling and remaining balances.',
+    'legal.policy.dieu-kien-va-han-che-cung-cap.title': 'Conditions and limits of supply',
+    'legal.policy.dieu-kien-va-han-che-cung-cap.summary': 'Vietnam as the main market, legal capacity, no unconditional 24/7 promise, and no physical delivery.',
   },
   zh: {
     'support.eyebrow': '帮助中心',
@@ -125,5 +129,7 @@ export const MESSAGE_OVERRIDES: Partial<Record<AppLang, Record<string, string>>>
     'legal.policy.chinh-sach-gia-ca.summary': '越南盾标价、外币参考价、费用、税费与促销原则。',
     'legal.policy.phuong-thuc-cung-cap-va-cham-dut-dich-vu.title': '服务提供与终止',
     'legal.policy.phuong-thuc-cung-cap-va-cham-dut-dich-vu.summary': '服务激活、交付、暂停、终止、数据处理及剩余款项安排。',
+    'legal.policy.dieu-kien-va-han-che-cung-cap.title': '服务提供条件与限制',
+    'legal.policy.dieu-kien-va-han-che-cung-cap.summary': '主要市场为越南，需具备缔约能力，不承诺无条件全天候运行，且无实物配送。',
   },
 };

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Observable, ReplaySubject, tap, map, of, catchError, shareReplay, switchMap, filter, take } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User, UserRole, SignupRole, UserPreferences, UserProfileExtras } from '../models/marketplace.models';
+import { payoutIdentityRequired } from '../features/wallet/buyer-credit';
 
 interface AuthResponse {
   token: string;
@@ -68,6 +69,12 @@ export class AuthService {
     const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
     return role === 'seller' || role === 'admin';
   });
+
+  /** Identity documents are for seller payout and affiliate codes, not ordinary buying. */
+  needsPayoutIdentity(): boolean {
+    const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;
+    return payoutIdentityRequired(role);
+  }
   /** Freelancer — applies to jobs and delivers work. */
   readonly isFreelancer = computed(() => {
     const role = this.userSignal()?.role || decodeJwt(this.tokenSignal() || '')?.role;

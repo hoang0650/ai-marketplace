@@ -55,11 +55,15 @@ export class LegalPolicyPageComponent implements OnInit {
   }
 
   policyTitle(p: LegalPolicyMeta): string {
-    return this.i18n.t(`legal.policy.${p.slug}.title`);
+    const key = `legal.policy.${p.slug}.title`;
+    const translated = this.i18n.t(key);
+    return translated === key ? p.title : translated;
   }
 
   policySummary(p: LegalPolicyMeta): string {
-    return this.i18n.t(`legal.policy.${p.slug}.summary`);
+    const key = `legal.policy.${p.slug}.summary`;
+    const translated = this.i18n.t(key);
+    return translated === key ? p.summary : translated;
   }
 
   ngOnInit(): void {

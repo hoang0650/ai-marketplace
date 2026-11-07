@@ -50,7 +50,7 @@ Người bán không phản hồi trong thời hạn ở bước 3 thì nền t�
 ## Điều 5. Tạm giữ tiền khi có khiếu nại
 
 1. Doanh thu của người bán được tạm giữ 48 giờ kể từ khi ghi nhận. Khiếu nại về đơn hàng gửi trong thời gian này giữ nguyên khoản tạm giữ cho đến khi có quyết định.
-2. Chỉ tạm giữ khoản liên quan đến hồ sơ, không giữ toàn bộ số dư vì một khiếu nại. Hoàn tiền ưu tiên đúng nguồn thanh toán ban đầu. Khoản tương ứng của người bán bị điều chỉnh theo quyết định.
+2. Chỉ tạm giữ khoản liên quan đến hồ sơ, không giữ toàn bộ số dư vì một khiếu nại. Quyết định hoàn, nếu có, hiện ghi có vào tín dụng dịch vụ của người mua. Trả về kênh thanh toán gốc chưa có quy trình đã kiểm chứng. Khoản tương ứng của người bán bị điều chỉnh theo quyết định.
 
 ## Điều 6. Vai trò của nền tảng
 

@@ -119,6 +119,9 @@ const UNIT_KEYS: Record<string, string> = {
               {{ saved ? '♥' : '♡' }}
             </button>
           </div>
+          @if (cartNote) {
+            <p class="lux-card__note" role="alert">{{ cartNote }}</p>
+          }
         </div>
         <div class="lux-card__body">
           @if (catalog) {
@@ -249,6 +252,8 @@ const UNIT_KEYS: Record<string, string> = {
         overflow: hidden;
       }
       .lux-card__media img {
+        position: relative;
+        z-index: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -284,16 +289,40 @@ const UNIT_KEYS: Record<string, string> = {
       .lux-card__actions {
         position: absolute;
         inset: auto 0 0;
+        z-index: 3;
         display: flex;
         align-items: stretch;
         opacity: 0;
         transform: translateY(100%);
+        pointer-events: none;
         transition: opacity 0.25s ease, transform 0.25s ease;
       }
       .lux-card:hover .lux-card__actions,
       .lux-card:focus-within .lux-card__actions {
         opacity: 1;
         transform: translateY(0);
+        pointer-events: auto;
+      }
+      @media (hover: none) {
+        .lux-card__actions {
+          opacity: 1;
+          transform: none;
+          pointer-events: auto;
+        }
+      }
+      .lux-card__note {
+        position: absolute;
+        left: 0.4rem;
+        right: 0.4rem;
+        bottom: 0.35rem;
+        z-index: 4;
+        margin: 0;
+        padding: 0.25rem 0.4rem;
+        border-radius: 6px;
+        background: #111;
+        color: #fff;
+        font-size: 0.72rem;
+        line-height: 1.3;
       }
       .lux-card__btn:focus-visible,
       .lux-card__wish:focus-visible,
@@ -1065,6 +1094,8 @@ export class ProductCardComponent {
     this.wishlist.toggle(this.product.id).subscribe();
   }
 
+  cartNote = '';
+
   onCart(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
@@ -1073,6 +1104,15 @@ export class ProductCardComponent {
       void this.router.navigate(['/cart']);
       return;
     }
-    this.cart.add(this.product.id).subscribe();
+    this.cartNote = '';
+    this.cart.add(this.product.id).subscribe({
+      next: (lines) => {
+        const added = lines.some((line) => line.product?.id === this.product.id);
+        this.cartNote = this.i18n.t(added ? 'cart.added' : 'cart.err.addFail');
+      },
+      error: (err) => {
+        this.cartNote = err?.error?.message || this.i18n.t('cart.err.addFail');
+      },
+    });
   }
 }

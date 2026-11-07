@@ -2,6 +2,7 @@ import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AppLang, LANGS, MESSAGES } from './messages';
 import { MESSAGE_OVERRIDES } from './messages.overrides';
+import { interpolate } from './interpolate';
 
 for (const lang of Object.keys(MESSAGE_OVERRIDES) as AppLang[]) {
   Object.assign(MESSAGES[lang], MESSAGE_OVERRIDES[lang]);
@@ -18,12 +19,7 @@ export class I18nService {
   t(key: string, params?: Record<string, string | number>): string {
     const dict = MESSAGES[this.lang()] || MESSAGES.en;
     let text = dict[key] || MESSAGES.en[key] || MESSAGES.vi[key] || key;
-    if (params) {
-      for (const [k, v] of Object.entries(params)) {
-        text = text.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
-      }
-    }
-    return text;
+    return interpolate(text, params);
   }
 
   /** Merge strings shipped with a lazy-loaded page so they stay out of the initial bundle. */

@@ -21,6 +21,7 @@ import { PayoutAccountFormComponent } from '../wallet/payout-account-form.compon
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { PersonaToggleComponent } from './persona-toggle.component';
+import { buyerCashoutClosed, cashoutErrorKind, earnedPayoutCap } from '../wallet/buyer-credit';
 
 @Component({
   selector: 'app-sell-images',
@@ -304,10 +305,10 @@ export class SellPaymentComponent {
       }
 
       @if (policy(); as pol) {
-        @if (!pol.canWithdraw) {
+        @if (!pol.canWithdraw && persona() !== 'buyer' && pol.persona !== 'buyer') {
           <div class="blocked">
-            <p>{{ 'payout.buyerBlocked' | t }}</p>
-            <p class="hint">{{ 'payout.buyerBlockedHint' | t }}</p>
+            <p>{{ 'kyc.withdrawBlocked' | t }}</p>
+            <p class="hint">{{ 'sell.wd.kycFirst' | t }}</p>
             <a routerLink="/sell" class="link">{{ 'payout.goSeller' | t }} →</a>
           </div>
         } @else {
@@ -341,12 +342,14 @@ export class SellPaymentComponent {
         }
       }
 
-      @if (persona() === 'buyer') {
-        <div class="policy">
-          <p>{{ 'wallet.wd.buyerHere' | t }}</p>
+      @if (persona() === 'buyer' || policy()?.persona === 'buyer' || buyerCreditClosed()) {
+        <div class="blocked">
+          <p>{{ 'payout.buyerBlocked' | t }}</p>
+          <p class="hint">{{ 'payout.buyerBlockedHint' | t }}</p>
+          <p class="hint">{{ 'wallet.wd.buyerHere' | t }}</p>
+          <a routerLink="/complaints/new" class="link">{{ 'complaint.cta.file' | t }}</a>
         </div>
-      }
-
+      } @else {
       @if (kyc(); as k) {
         @if (!k.withdrawAllowed && auth.user()?.role !== 'admin') {
           <div class="kyc-block">
@@ -361,6 +364,9 @@ export class SellPaymentComponent {
         <form class="card" (ngSubmit)="withdraw()">
           @if (summary(); as s) {
             <p class="ok">{{ 'sell.wd.available' | t }}: {{ s.available | currency: s.currency }} · {{ 'sell.wd.held' | t }}: {{ s.held | currency: s.currency }}</p>
+            @if (s.prepaidWithdrawable === false) {
+              <p class="hint">{{ 'payout.prepaidCap' | t:{ amount: payableCap().toFixed(2) } }}</p>
+            }
             @if (s.holds.length) {
               <ul>
                 @for (h of s.holds; track h.orderId) {
@@ -409,6 +415,7 @@ export class SellPaymentComponent {
           </ul>
         </div>
       </div>
+      }
     </section>
   `,
   styles: `
@@ -501,11 +508,29 @@ export class SellWithdrawComponent implements OnInit {
   }
 
   canWithdraw(): boolean {
-    // Buyer marketplace credit is non-withdrawable; only payout-bearing personas continue.
-    if (this.persona() === 'buyer') return false;
+    if (this.buyerCreditClosed()) return false;
     if (this.auth.user()?.role === 'admin') return true;
     if (!this.policy()?.canWithdraw) return false;
+    if (Number(this.amount) > this.payableCap()) return false;
     return !!this.kyc()?.withdrawAllowed;
+  }
+
+  buyerCreditClosed(): boolean {
+    const s = this.summary();
+    return buyerCashoutClosed({
+      persona: this.persona(),
+      policyPersona: this.policy()?.persona,
+      role: this.auth.user()?.role,
+      buyerCashoutAllowed: s?.buyerCashoutAllowed,
+      payableAmount: s?.payableAmount,
+      personas: s?.personas?.length ? s.personas : this.personas(),
+    });
+  }
+
+  payableCap(): number {
+    const s = this.summary();
+    if (!s) return 0;
+    return Math.floor(earnedPayoutCap(s) * 100) / 100;
   }
 
   isErr(): boolean {
@@ -513,9 +538,14 @@ export class SellWithdrawComponent implements OnInit {
   }
 
   withdraw(): void {
-    if (!this.policy()?.canWithdraw) {
+    if (this.buyerCreditClosed()) {
       this.errFlag.set(true);
-      this.msg.set(this.i18n.t('sell.wd.buyerBlocked'));
+      this.msg.set(this.i18n.t('payout.buyerBlocked'));
+      return;
+    }
+    if (Number(this.amount) > this.payableCap()) {
+      this.errFlag.set(true);
+      this.msg.set(this.i18n.t('payout.prepaidCap', { amount: this.payableCap().toFixed(2) }));
       return;
     }
     if (!this.canWithdraw()) {
@@ -532,7 +562,12 @@ export class SellWithdrawComponent implements OnInit {
       },
       error: (err) => {
         this.errFlag.set(true);
-        this.msg.set(err?.error?.message || this.i18n.t('sell.wd.fail'));
+        const kind = cashoutErrorKind(err?.error?.code);
+        if (kind === 'buyer') this.msg.set(this.i18n.t('payout.buyerBlocked'));
+        else if (kind === 'prepaid_cap') this.msg.set(this.i18n.t('payout.prepaidCap', { amount: this.payableCap().toFixed(2) }));
+        else if (kind === 'kyc') this.msg.set(this.i18n.t('sell.wd.kycFirst'));
+        else if (kind === 'affiliate_short') this.msg.set(this.i18n.t('aff.wd.exceeds_available'));
+        else this.msg.set(err?.error?.message || this.i18n.t('sell.wd.fail'));
       },
     });
   }

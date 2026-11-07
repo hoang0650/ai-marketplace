@@ -2114,6 +2114,10 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
     this.cart.add(p.id, 1, isLicenseCategory(p.category) ? this.licenseTerm : undefined).subscribe({
+      next: (lines) => {
+        const added = lines.some((line) => line.product?.id === p.id);
+        this.checkoutMsg.set(this.i18n.t(added ? 'cart.added' : 'cart.err.addFail'));
+      },
       error: (err) => this.checkoutMsg.set(err?.error?.message || this.i18n.t('cart.err.addFail')),
     });
   }

@@ -305,7 +305,11 @@ export class AffiliateComponent implements OnInit {
         this.api.dashboard().subscribe((s) => this.stats.set(s));
       },
       error: (err) => {
-        this.wdMsg.set(err?.error?.message || this.i18n.t('aff.pit08.fail'));
+        const kind = err?.error?.code;
+        if (kind === 'KYC_REQUIRED') this.wdMsg.set(this.i18n.t('aff.kycNotice'));
+        else if (kind === 'AFFILIATE_INSUFFICIENT') this.wdMsg.set(this.i18n.t('aff.wd.exceeds_available'));
+        else if (kind === 'BUYER_CREDIT_NON_WITHDRAWABLE' || kind === 'PREPAID_NOT_WITHDRAWABLE') this.wdMsg.set(this.i18n.t('payout.buyerBlocked'));
+        else this.wdMsg.set(err?.error?.message || this.i18n.t('aff.pit08.fail'));
         this.busy.set(false);
       },
     });

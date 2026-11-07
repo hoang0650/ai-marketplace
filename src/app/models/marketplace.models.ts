@@ -1030,6 +1030,12 @@ export interface WalletSummary {
   available: number;
   persona?: PayoutPersona;
   personas?: PayoutPersona[];
+  /** Earned amount that can be paid out. Prepaid buyer credit is outside this cap. */
+  payableAmount?: number;
+  payableCode?: string;
+  buyerIdentityRequired?: boolean;
+  buyerCashoutAllowed?: boolean;
+  prepaidWithdrawable?: boolean;
   policy?: PayoutPolicy;
   holds: Array<{
     orderId: string;
