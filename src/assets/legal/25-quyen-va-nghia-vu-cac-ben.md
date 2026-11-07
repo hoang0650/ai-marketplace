@@ -10,7 +10,7 @@ Người bán cung cấp thông tin pháp lý trung thực, duy trì giấy phé
 
 ## Người mua
 
-Người mua cung cấp thông tin chính xác, thanh toán theo phương thức công bố, sử dụng sản phẩm đúng giấy phép và không thực hiện hành vi gian lận. Người mua có quyền nhận đủ thông tin trước khi giao kết, nhận sản phẩm hoặc dịch vụ đúng cam kết, yêu cầu hóa đơn, hoàn tiền và khiếu nại theo chính sách.
+Người mua cung cấp thông tin chính xác, thanh toán theo phương thức đang mở, sử dụng sản phẩm đúng giấy phép và không thực hiện hành vi gian lận. Người mua có quyền nhận thông tin trung thực trước khi giao kết, được bảo vệ dữ liệu, khiếu nại và hoàn tiền theo chính sách. Điều khoản của nền tảng không loại trừ quyền của người tiêu dùng mà pháp luật không cho phép loại trừ. Việc hạn chế hoặc khóa tài khoản phải có căn cứ, được thông báo và có đường xem xét lại.
 
 ## Người tiếp thị liên kết
 

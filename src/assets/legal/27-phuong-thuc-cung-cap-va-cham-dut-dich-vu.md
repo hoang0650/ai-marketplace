@@ -2,7 +2,9 @@
 
 ## Phương thức cung cấp
 
-Sản phẩm số và quyền truy cập API được kích hoạt trên tài khoản sau khi thanh toán thành công. GPU, máy chủ và agent được cấp theo thời hạn hoặc mức sử dụng hiển thị tại trang đặt hàng. Dịch vụ chuyên môn được thực hiện theo phạm vi, mốc bàn giao và thời gian hoàn thành do người bán công bố trước khi người mua đặt hàng.
+Sản phẩm số và quyền truy cập API được kích hoạt trên tài khoản sau khi thanh toán thành công và đủ điều kiện của trang sản phẩm. GPU, máy chủ và agent được cấp theo thời hạn hoặc mức sử dụng hiển thị tại trang đặt hàng. Dịch vụ chuyên môn theo mốc nghiệm thu đã được chấp thuận trước dự án. Không mặc định mọi sản phẩm là không giới hạn. Cấu hình, hạn mức và thời hạn cụ thể của từng nhóm sản phẩm là nội dung trên trang sản phẩm đó, chưa được xác nhận lại trong bản rà soát này.
+
+Tự gia hạn chỉ thực hiện khi đã có thông báo rõ và chấp thuận được lưu. Người dùng tắt gia hạn trước chu kỳ kế tiếp. Trạng thái bật sẵn không được dùng làm bằng chứng đồng ý.
 
 ## Tạm ngừng dịch vụ
 
@@ -10,7 +12,7 @@ Dịch vụ có thể bị tạm ngừng khi hết thời hạn, không đủ t�
 
 ## Chấm dứt theo yêu cầu người dùng
 
-Người dùng có thể tắt gia hạn, dừng tài nguyên hoặc yêu cầu xóa tài khoản. Dịch vụ đã thực hiện được xử lý theo điều kiện hoàn tiền; khoản chưa thực hiện được hoàn về phương thức thanh toán ban đầu khi đủ điều kiện. Tín dụng dịch vụ nội bộ không được rút hoặc chuyển nhượng.
+Người dùng dừng phiên GPU, tắt gia hạn hoặc gửi yêu cầu chấm dứt tại trang đơn, mục hỗ trợ hoặc support@aimarkets.vn. Yêu cầu được tiếp nhận trong 24 giờ. Với yêu cầu chấm dứt ngay, thời điểm thông báo hợp lệ là thời điểm chấm dứt, trừ khi một mốc khác đã được công bố và chấp thuận. Tắt gia hạn làm dừng kỳ kế tiếp, không xóa quyền của kỳ đã trả. Chỉ tính phí hợp lệ đến mốc chấm dứt. Giai đoạn chưa nghiệm thu không bị thu. Phần trả trước chưa dùng và đủ điều kiện hoàn được đối soát, không mặc định mất. Hoàn tiền ưu tiên đúng nguồn thanh toán ban đầu.
 
 ## Chấm dứt do vi phạm
 

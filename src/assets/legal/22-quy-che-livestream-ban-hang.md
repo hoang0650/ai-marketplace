@@ -4,4 +4,4 @@
 **Ngày hiệu lực:** 05/12/2026  
 **Phiên bản:** 1.0
 
-AI Markets hiện **không có và không cung cấp tính năng livestream bán hàng**. Người bán không được phát trực tiếp hoặc nhúng nội dung phát trực tiếp nhằm chốt đơn ngoài hệ thống. Nếu mô hình kinh doanh thay đổi trong tương lai, AI Markets chỉ triển khai sau khi hoàn tất thủ tục pháp lý và công bố quy chế mới trước ngày vận hành.
+AI Markets không cung cấp tính năng livestream bán hàng trong phạm vi hồ sơ này. Trang này không mô tả một quy trình livestream đang vận hành. Người bán không được nhúng nội dung phát trực tiếp để chốt đơn ngoài hệ thống. Nếu bổ sung tính năng, phải có điều kiện, quy chế, chức năng cảnh báo và thủ tục cập nhật trước khi sử dụng.

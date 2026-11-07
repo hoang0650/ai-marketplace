@@ -45,7 +45,7 @@ Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; x
 4. Tệp, hình ảnh gửi trong tin nhắn và không gian dự án được lưu trữ riêng tư, chỉ người tham gia hội thoại/dự án và Ban quản lý (khi giải quyết khiếu nại) truy cập được qua đường dẫn có thời hạn.
 2. Để trả kết quả, nội dung được chuyển tới nhà cung cấp mô hình AI tương ứng (có thể ở nước ngoài) và xử lý theo điều khoản của nhà cung cấp đó. Khi dùng BYOK, nội dung đi trực tiếp tới nhà cung cấp theo tài khoản của người dùng.
 3. Người dùng chỉ đưa dữ liệu cá nhân của người khác vào AI khi có cơ sở pháp lý phù hợp.
-5. **Chạy gói kỹ năng (skill) phía máy chủ:** tham số và tệp người mua gửi để chạy skill được xử lý trên máy chủ của Công ty tại Việt Nam (123HOST), trong môi trường cách ly riêng cho từng lần chạy: không có kết nối mạng, không có khóa bí mật của hệ thống, không truy cập được dữ liệu của lần chạy hoặc người dùng khác. Dữ liệu chỉ dùng để thực hiện lần chạy đó, không chuyển ra nước ngoài, không chia sẻ với người bán skill, không dùng để huấn luyện mô hình, và **bị xóa ngay sau khi lần chạy kết thúc** (kết quả được trả về cho người mua). Nền tảng chỉ lưu số lượt chạy, thời điểm và mã truy vết theo giấy phép để tính hạn mức và chống lạm dụng.
+5. **Chạy gói kỹ năng (skill) phía máy chủ:** tham số và tệp người mua gửi để chạy skill được thiết kế để xử lý trong môi trường cách ly của lần chạy đó: không có khóa bí mật của hệ thống, không truy cập dữ liệu của lần chạy hoặc người dùng khác, không chia sẻ với người bán skill, không dùng để huấn luyện mô hình, và bị xóa khi lần chạy kết thúc. Mô tả này không phải cam kết rằng mọi dữ liệu cá nhân của nền tảng đều nằm trong Việt Nam.
 
 ## Điều 6. Chia sẻ dữ liệu
 
@@ -59,11 +59,11 @@ Nền tảng **không mua bán dữ liệu cá nhân**.
 
 ## Điều 7. Lưu trữ tại Việt Nam, truy cập qua mạng riêng và xử lý xuyên biên giới
 
-Cơ sở dữ liệu và bản lưu bền vững dữ liệu cá nhân được đặt tại Việt Nam trên máy chủ 123HOST (Công ty TNHH Lưu Trữ Số, MST 0312088232). Cơ sở dữ liệu không mở cổng công khai ra Internet. Các dịch vụ API vận hành trên hạ tầng Hostinger chỉ kết nối tới dịch vụ dữ liệu tại Việt Nam qua mạng riêng Tailscale được mã hóa, có xác thực thiết bị, danh sách kiểm soát truy cập và nhật ký; máy chủ API không lưu bản sao cơ sở dữ liệu lâu dài.
+Thông tin 123HOST tại Việt Nam và Hostinger tại Malaysia trong hồ sơ nguồn chưa phải báo cáo kiểm chứng hạ tầng và không phải chứng nhận. Máy chủ web ở nước ngoài, GPU, API mô hình AI và truy cập quản trị xuyên biên giới có thể xử lý dữ liệu cá nhân ngoài Việt Nam dù cơ sở dữ liệu gốc được mô tả là đặt tại Việt Nam và có đường kết nối riêng. Trang này không khẳng định dữ liệu không ra khỏi Việt Nam.
 
 - **Máy chủ Web/API:** VPS Hostinger International Ltd., IP 72.62.72.165, đặt tại Kuala Lumpur, Malaysia; quản trị và kết nối dữ liệu qua mạng riêng Tailscale.
 - **Máy chủ dữ liệu/cơ sở dữ liệu:** NVMe VPS của Công ty TNHH Lưu Trữ Số (123HOST), IP 103.97.127.39, đặt tại TP. Hồ Chí Minh, Việt Nam. Toàn bộ cơ sở dữ liệu hệ thống, thông tin người dùng và dữ liệu cá nhân được lưu trữ thường xuyên, tập trung tại đây.
-- **Hạ tầng GPU/API AI nước ngoài:** RunPod, OpenRouter/Featherless, OpenAI, Anthropic và nhà cung cấp tương tự chỉ nhận dữ liệu cần thiết để thực hiện yêu cầu suy luận. Công ty quản lý hoạt động này theo hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và quy định pháp luật áp dụng.
+- **Hạ tầng GPU/API AI:** nhà cung cấp suy luận có thể ở ngoài Việt Nam và chỉ nên nhận dữ liệu cần cho yêu cầu. Bản đồ dữ liệu, quốc gia hoặc region của từng nhà cung cấp, bên nhận, mục đích, thời hạn, hợp đồng xử lý dữ liệu và hồ sơ đánh giá tác động chưa được đính kèm trang này.
 
 Việc truy cập/xử lý dữ liệu từ máy chủ đặt ngoài Việt Nam qua Tailscale **vẫn có thể là xử lý xuyên biên giới**. Nội dung gửi tới nhà cung cấp mô hình AI/GPU ở nước ngoài chỉ được chuyển trong phạm vi cần thiết, theo lựa chọn và cơ sở pháp lý phù hợp. Công ty lập/cập nhật hồ sơ đánh giá tác động xử lý và chuyển dữ liệu ra nước ngoài khi pháp luật yêu cầu, ghi rõ quốc gia, nhà cung cấp, loại dữ liệu, mục đích, thời hạn, biện pháp bảo vệ và cơ chế xóa. Tailscale giảm bề mặt tấn công nhưng không phải cam kết “an toàn tuyệt đối”.
 
@@ -71,7 +71,7 @@ Việc truy cập/xử lý dữ liệu từ máy chủ đặt ngoài Việt Nam 
 
 Mã hóa HTTPS/TLS và đường hầm Tailscale; ACL chỉ cho đúng dịch vụ API truy cập đúng cổng dữ liệu; xác thực/thu hồi thiết bị; mật khẩu băm; khóa API mã hóa khi lưu; phân quyền; giới hạn tần suất; bí mật hệ thống trong biến môi trường; cơ sở dữ liệu không mở ra Internet; nhật ký quản trị; phiên đăng nhập có thể thu hồi; mã skill bên thứ ba chạy trong container cách ly.
 
-Chủ quản nền tảng cam kết lập, thẩm định và phê duyệt hồ sơ đề xuất cấp độ an toàn hệ thống thông tin **Cấp độ 3** cho hệ thống thực tế đang vận hành; tổ chức thực hiện đầy đủ phương án bảo đảm an toàn theo cấp độ được phê duyệt và rà soát lại khi kiến trúc, phạm vi hoặc mức độ rủi ro thay đổi.
+Trang này không mô tả hệ thống đã được phê duyệt cấp độ an toàn thông tin cấp độ 3, và không mô tả đã có kết quả đăng ký dịch vụ điện toán đám mây. Chưa có các văn bản đó trong hồ sơ công bố.
 
 ## Điều 9. Quyền của chủ thể dữ liệu
 

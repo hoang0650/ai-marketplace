@@ -2,21 +2,28 @@
 
 **Ngày công bố:** 05/11/2026  
 **Ngày hiệu lực:** 05/12/2026  
-**Phiên bản:** 1.0
+**Phiên bản:** 1.1
 
-AI Markets công khai các tiêu chí chính dùng để sắp xếp kết quả nhằm giúp người dùng hiểu vì sao một sản phẩm được hiển thị trước.
+Trang này chỉ mô tả các cách sắp xếp mà website đang đưa cho người mua chọn, và các nhãn phải phân biệt với nhau. Trang này không khẳng định một thuật toán doanh số, đánh giá, cá nhân hóa hoặc trọng số nội bộ ngoài các cách sắp xếp đó.
 
-## 1. Tiêu chí xếp hạng
+## 1. Cách sắp xếp đang có trên sàn
 
-Theo từng trang, hệ thống có thể dùng: mức độ liên quan với từ khóa/danh mục; tính đầy đủ và độ mới của thông tin; trạng thái xác minh người bán; khả năng cung cấp; chất lượng dịch vụ, tỷ lệ hoàn thành, đánh giá đã xác minh; tỷ lệ khiếu nại/hoàn tiền; giá và khuyến mại hợp lệ; mức độ phổ biến và thời điểm đăng. Đối với bộ sưu tập **Sản phẩm nổi bật/Giảm giá**, ba tiêu chí chính là **doanh số bán ra, tỷ lệ đánh giá tích cực và độ tương quan từ khóa**.
+Người mua có thể chọn:
+
+- **Nổi bật:** sản phẩm được đánh dấu nổi bật đứng trước; trong cùng nhóm, điểm đánh giá cao hơn đứng trước.
+- **Bán chạy:** theo số lượt bán đang ghi nhận, giảm dần.
+- **Giá tăng** hoặc **giá giảm**.
+- **Mới nhất:** theo thời điểm đăng.
+
+“Nổi bật” không có nghĩa là “giảm giá”. Giảm giá chỉ phản ánh giá hoặc ưu đãi thật và không tự chứng minh mức độ nổi bật.
 
 ## 2. Nội dung tài trợ và sản phẩm do sàn cung cấp
 
-Vị trí có trả phí can thiệp thứ tự hiển thị phải gắn nhãn “Tài trợ/Quảng cáo”. Các sản phẩm, dịch vụ do Công ty PHGroup trực tiếp cung cấp (bao gồm thuê bao AI Agent, GPU, API và dịch vụ tương tự) phải gắn nhãn **“Bán bởi sàn”** và **không mặc nhiên được ưu tiên** chỉ vì do sàn cung cấp. Nếu có ưu tiên thương mại, nhãn và tiêu chí được hiển thị ngay tại kết quả.
+Vị trí có trả phí phải gắn nhãn “Quảng cáo” hoặc “Tài trợ”. Sản phẩm, dịch vụ do Công ty trực tiếp cung cấp mang nhãn **“Bán bởi sàn”** và không được trình bày như người bán độc lập. Nhãn “Bán bởi sàn” không tự tạo thứ tự ưu tiên.
 
-## 3. “Nổi bật” và “Giảm giá của nền tảng”
+## 3. Việc chưa được công bố
 
-“Nổi bật” là bộ sưu tập biên tập dựa trên chất lượng, mức độ phù hợp, tính mới và độ tin cậy; không đồng nghĩa vị trí trả phí. “Giảm giá của nền tảng” là phần ưu đãi do AI Markets tài trợ và được tách khỏi giảm giá của người bán.
+Tiêu chí chọn thủ công cho từng mục nổi bật, việc có hoặc không thu phí cho một vị trí cụ thể, và mọi trọng số ngoài bốn cách sắp xếp ở Mục 1 chưa được đối chiếu để công bố trên trang này.
 
 ## 4. Kiểm soát và khiếu nại
 

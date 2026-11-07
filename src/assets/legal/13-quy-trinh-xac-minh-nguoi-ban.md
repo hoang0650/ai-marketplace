@@ -12,7 +12,11 @@
 
 ---
 
-## Điều 1. Trạng thái hồ sơ
+## Điều 1. Hồ sơ thủ công và xác thực điện tử
+
+Ảnh CCCD hoặc hộ chiếu và việc nhân sự nội bộ duyệt hồ sơ là kiểm tra hồ sơ. Việc đó không đồng nghĩa người bán đã được xác thực điện tử qua VNeID hoặc qua nhà cung cấp xác thực được cấp phép. Nghĩa vụ xác thực điện tử đối với người bán được rà soát theo Nghị định 248/2026/NĐ-CP với mốc 01/01/2027. Trang này không khẳng định khoản điều luật cụ thể đã được đối chiếu trên bản PDF đã ký, và không khẳng định đã có nhà cung cấp xác thực hoặc tích hợp. Người bán vẫn phải hoàn tất kiểm tra hồ sơ trước khi gian hàng được hiển thị và trước khi được chi trả. Trạng thái “Đã xác minh” trên hệ thống, nếu có, là kết quả kiểm tra hồ sơ, không phải nhãn xác thực điện tử hoàn tất.
+
+## Điều 1A. Trạng thái hồ sơ
 
 ```text
 Chờ xử lý
@@ -27,7 +31,7 @@ Hồ sơ cũng có thể ở trạng thái: **Từ chối**, **Tạm ngừng**, 
 
 | Loại người bán | Thông tin cần cung cấp |
 |---|---|
-| Cá nhân kinh doanh | Loại người bán (bắt buộc); họ tên, loại và số giấy tờ tùy thân (CCCD/hộ chiếu), ảnh hai mặt giấy tờ, mã số thuế cá nhân (bắt buộc; có thể dùng số CCCD), tài khoản nhận tiền đứng tên mình. Nền tảng khấu trừ, nộp thay thuế 7% / 1,5% theo Nghị định 117/2025/NĐ-CP |
+| Cá nhân kinh doanh | Loại người bán (bắt buộc); họ tên, loại và số giấy tờ tùy thân (CCCD/hộ chiếu), ảnh hai mặt giấy tờ, mã số thuế cá nhân (bắt buộc; có thể dùng số CCCD), tài khoản nhận tiền đứng tên mình. Ảnh giấy tờ không phải xác thực điện tử. Mức thuế không được ghi bằng một tỷ lệ cố định trên trang này. |
 | Hộ kinh doanh | Loại người bán (bắt buộc); tên hộ kinh doanh, mã số thuế (bắt buộc), số ĐKKD, địa chỉ; Giấy chứng nhận đăng ký hộ kinh doanh (giấy phép kinh doanh) (bản chụp/bản scan); giấy tờ tùy thân của chủ hộ; tài khoản nhận tiền đứng tên hộ kinh doanh hoặc chủ hộ |
 | Doanh nghiệp, tổ chức | Loại người bán (bắt buộc); tên, mã số thuế (bắt buộc), số ĐKKD, địa chỉ của tổ chức; Giấy chứng nhận đăng ký doanh nghiệp / giấy phép kinh doanh hoặc giấy tờ thành lập tương đương (bản chụp/bản scan); giấy tờ tùy thân của người đại diện theo pháp luật; tài khoản nhận tiền đứng tên tổ chức |
 

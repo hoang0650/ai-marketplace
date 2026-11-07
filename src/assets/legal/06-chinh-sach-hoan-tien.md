@@ -47,11 +47,11 @@ Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử d�
 1. Người mua gửi yêu cầu hoàn tiền hoặc khiếu nại tại trang đơn hàng hoặc https://aimarkets.vn/complaints/new.
 2. Nền tảng xác nhận tiếp nhận trong **24 giờ**, xác minh đơn hàng, thanh toán, mức sử dụng; lấy ý kiến người bán nếu cần.
 3. Nền tảng ra quyết định trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ, theo [Chính sách khiếu nại và tranh chấp](07-chinh-sach-khieu-nai-tranh-chap.md).
-4. Khi được chấp thuận, tiền được hoàn ngay vào ví; trường hợp hoàn về phương thức thanh toán ban đầu, thời gian nhận tiền phụ thuộc đối tác thanh toán hoặc kho ứng dụng.
+4. Khi được chấp thuận, nền tảng khởi tạo lệnh hoàn trong 03 ngày làm việc và cung cấp mã theo dõi nếu kênh thanh toán có mã. Thời điểm tiền vào tài khoản phụ thuộc đơn vị thanh toán và được thông báo theo kênh thực tế. Không hoàn trùng với khoản hoàn của Apple hoặc Google.
 
 ## Điều 6. Nơi nhận tiền hoàn
 
-Tiền hoàn được ưu tiên trả về phương thức thanh toán ban đầu. Nếu kênh ban đầu không hỗ trợ và pháp luật cho phép, AI Markets có thể ghi có tín dụng dịch vụ nội bộ; tín dụng này không được rút, chuyển nhượng hoặc đổi thành tiền. Xem [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
+Hoàn tiền theo kết quả xử lý, ưu tiên đúng phương thức và nguồn thanh toán ban đầu. Nền tảng không ép người mua nhận số dư dịch vụ thay cho tiền hoàn. Nếu nguồn ban đầu không nhận được hoàn, nền tảng xác minh chủ thể và thỏa thuận phương thức hợp pháp khác, có ghi lý do, và không chuyển sang tài khoản của bên thứ ba chưa được xác minh. Không thu phí xử lý hoàn khi lỗi thuộc người bán hoặc nền tảng. Phần dịch vụ đã dùng chỉ không hoàn trong phạm vi pháp luật cho phép. Xem [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
 
 ## Điều 7. Chấm dứt dịch vụ
 
