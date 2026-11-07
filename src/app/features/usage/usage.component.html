@@ -25,6 +25,10 @@
       <p class="value">{{ summary().totalInputTokens | number }}</p>
     </div>
     <div class="usage-stat">
+      <p class="label">{{ 'usage.stat.cache' | t }}</p>
+      <p class="value">{{ $any(summary()).totalCachedTokens | number }}</p>
+    </div>
+    <div class="usage-stat">
       <p class="label">{{ 'usage.stat.output' | t }}</p>
       <p class="value">{{ summary().totalOutputTokens | number }}</p>
     </div>
@@ -55,7 +59,9 @@
               <th>{{ 'usage.col.source' | t }}</th>
               <th>{{ 'usage.col.detail' | t }}</th>
               <th class="num">{{ 'usage.col.in' | t }}</th>
+              <th class="num">{{ 'usage.col.cache' | t }}</th>
               <th class="num">{{ 'usage.col.out' | t }}</th>
+              <th class="num">{{ 'usage.col.usage' | t }}</th>
               <th class="num">{{ 'usage.col.amount' | t }}</th>
             </tr>
           </thead>
@@ -73,7 +79,9 @@
                   }
                 </td>
                 <td class="num" [attr.data-label]="'usage.col.in' | t">{{ row.inputTokens | number }}</td>
+                <td class="num" [attr.data-label]="'usage.col.cache' | t">{{ $any(row).cachedTokens | number }}</td>
                 <td class="num" [attr.data-label]="'usage.col.out' | t">{{ row.outputTokens | number }}</td>
+                <td class="num" [attr.data-label]="'usage.col.usage' | t">{{ $any(row).quantity | number }} {{ $any(row).unit }}</td>
                 <td class="num amount" [attr.data-label]="'usage.col.amount' | t">
                   −{{ row.amount | currency: row.currency || currency(): 'symbol-narrow': '1.2-6' }}
                 </td>

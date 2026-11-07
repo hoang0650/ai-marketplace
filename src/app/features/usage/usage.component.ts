@@ -27,6 +27,7 @@ export class UsageComponent implements OnInit {
     requests: 0,
     totalCharged: 0,
     totalInputTokens: 0,
+    totalCachedTokens: 0,
     totalOutputTokens: 0,
     totalTokens: 0,
   });
@@ -42,7 +43,11 @@ export class UsageComponent implements OnInit {
     this.api.myUsage().subscribe({
       next: (feed: BuyerUsageFeed) => {
         this.currency.set(feed.currency || 'USD');
-        this.summary.set(feed.summary || this.summary());
+        const summary = feed.summary;
+        this.summary.set(summary ? {
+          ...summary,
+          totalCachedTokens: Number((summary as { totalCachedTokens?: number }).totalCachedTokens || 0),
+        } : this.summary());
         this.items.set(feed.items || []);
         this.loading.set(false);
       },
