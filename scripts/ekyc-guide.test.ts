@@ -28,9 +28,15 @@ test('seller eKYC guide matches the individual and organization form', () => {
   assert.match(seller, /13-quy-trinh-xac-minh-nguoi-ban\.md/);
   const figures = [...rules.matchAll(/^!\[([^\]]*)\]\((assets\/legal\/img\/v7-[^)]+)\)/gm)];
   assert.equal(figures.length, 22);
+  const names = figures.map((row) => row[2]);
+  assert.equal(new Set(names).size, 22);
   for (const [, caption] of figures) {
     assert.equal(/cccd/i.test(caption), false, caption);
     assert.equal(/\d{9,}/.test(caption), false, caption);
+  }
+  for (const file of ['01-quy-che-hoat-dong-san-tmdt.md', '13-quy-trinh-xac-minh-nguoi-ban.md', '03-chinh-sach-nguoi-ban.md', '04-chinh-sach-nguoi-mua.md']) {
+    const body = read(file);
+    assert.equal(/assets\/legal\/img\/(?:qc-|h\d)/.test(body), false, file);
   }
 });
 
@@ -48,5 +54,5 @@ test('published legal figures point at files that exist', () => {
       assert.equal(existsSync(join(root, 'src', rel)), true, `${file} -> ${rel}`);
     }
   }
-  assert.ok(figures > 0);
+  assert.equal(figures, 25);
 });
