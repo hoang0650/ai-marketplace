@@ -27,13 +27,14 @@
 - Sử dụng sản phẩm đúng giấy phép và [Chính sách sử dụng chấp nhận được](10-chinh-sach-su-dung-chap-nhan-duoc.md);
 - Không chia sẻ khóa API, tài khoản trái phép; không dịch ngược nhằm vượt qua cơ chế bảo mật; không lạm dụng GPU, API;
 - Duy trì đủ số dư ví với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
+- Người mua thông thường không phải nộp CCCD hoặc hồ sơ eKYC của người bán để đặt hàng, nạp tín dụng, sử dụng dịch vụ, gửi khiếu nại hoặc yêu cầu hoàn tiền. Đăng nhập và bảo mật tài khoản vẫn bắt buộc. Một yêu cầu hoàn cụ thể có thể cần chứng minh chủ giao dịch khi kênh thanh toán yêu cầu việc đó. Khoản hoàn đã được duyệt hiện ghi có vào tín dụng dịch vụ dùng được trên sàn; chưa có quy trình đã kiểm chứng để trả về ngân hàng hoặc kênh thanh toán gốc. Việc không cho rút tín dụng nạp không có nghĩa số dư dùng cho nhiều người bán đã được cấp phép dịch vụ trung gian thanh toán.
 
 ## Điều 3. Đặt hàng và thanh toán
 
 1. Người mua có thể lưu sản phẩm vào giỏ hàng, danh sách yêu thích (đồng bộ giữa website và ứng dụng), kiểm tra tổng giá rồi xác nhận thanh toán.
 2. Đơn hàng đủ điều kiện có thể thanh toán bằng tín dụng dịch vụ AI Markets. Đây không phải ví điện tử hay tiền gửi; không chuyển nhượng, không sinh lãi và không rút thành tiền.
 3. Giá thanh toán, hóa đơn và đối soát tại Việt Nam bằng VND. USD/CNY nếu có chỉ là giá ước tính tham khảo; số tiền VND tại bước xác nhận là số tiền có hiệu lực.
-4. Hoàn tiền được ưu tiên về phương thức thanh toán ban đầu; tín dụng dịch vụ chỉ được ghi có khi kênh ban đầu không hỗ trợ và pháp luật cho phép. Chi tiết tại [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
+4. Người mua giữ quyền yêu cầu hoàn tiền và quyền được xem xét theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md). Khoản được duyệt hiện ghi có vào tín dụng dịch vụ dùng được trên sàn. Việc trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng trên hệ thống.
 
 ## Điều 4. Dịch vụ theo mức sử dụng (API, token)
 

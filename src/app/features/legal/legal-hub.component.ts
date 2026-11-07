@@ -28,7 +28,7 @@ export class LegalHubComponent {
     this.requiredSection('Ưu tiên hiển thị', 'Nổi bật, giảm giá và nhãn quảng cáo', 'chinh-sach-xep-hang-uu-tien-hien-thi'),
     this.requiredSection('Livestream', 'Tính năng chưa cung cấp', 'quy-che-livestream-ban-hang'),
     this.requiredSection('Giao nhận', 'Bàn giao sản phẩm số', 'chinh-sach-giao-nhan-san-pham-so'),
-    this.requiredSection('Đổi trả và hoàn tiền', 'Hoàn về nguồn thanh toán ban đầu', 'chinh-sach-hoan-tien'),
+    this.requiredSection('Đổi trả và hoàn tiền', 'Yêu cầu hoàn được xét duyệt; khoản duyệt hiện ghi có vào tín dụng dịch vụ', 'chinh-sach-hoan-tien'),
     this.requiredSection('Cung cấp dịch vụ', 'Kích hoạt và phương thức thực hiện', 'phuong-thuc-cung-cap-va-cham-dut-dich-vu'),
     this.requiredSection('Chấm dứt dịch vụ', 'Tạm ngừng, chấm dứt và khoản còn lại', 'phuong-thuc-cung-cap-va-cham-dut-dich-vu'),
   ];

@@ -60,7 +60,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Người bán:** tổ chức, hộ kinh doanh, cá nhân đã đăng ký và được xác minh, đăng bán sản phẩm, dịch vụ trên nền tảng. Khi đăng ký, người bán bắt buộc chọn một trong ba loại: cá nhân kinh doanh, hộ kinh doanh, doanh nghiệp/tổ chức, và cung cấp mã số thuế (hộ kinh doanh, doanh nghiệp/tổ chức kèm giấy chứng nhận đăng ký kinh doanh); loại người bán là căn cứ xác định mức khấu trừ thuế.
 
-- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán duy nhất bằng tín dụng dịch vụ AI Markets. Tín dụng của Người mua không hỗ trợ rút tiền mặt, chuyển nhượng hoặc chuyển khoản nội bộ; khoản hoàn đủ điều kiện được trả về đúng phương thức thanh toán ban đầu.
+- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán duy nhất bằng tín dụng dịch vụ AI Markets. Tín dụng của Người mua không hỗ trợ rút tiền mặt, chuyển nhượng hoặc chuyển khoản nội bộ. Người mua vẫn có quyền gửi yêu cầu hoàn để được xem xét; khoản được duyệt hiện ghi có vào tín dụng dịch vụ. Việc trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng.
 
 - **Người giới thiệu (affiliate, người tiếp thị liên kết):** người dùng tham gia Chương trình Affiliate, chia sẻ liên kết sản phẩm, gian hàng và nhận hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá do người bán chi trả. Không có mức chi trả tối thiểu: mọi hoa hồng khả dụng lớn hơn 0 có thể được yêu cầu. Thuế được xác định lúc chi trả, không áp dụng máy móc một tỷ lệ cố định hoặc miễn thuế chỉ vì một mẫu cam kết được duyệt. Kiểm tra hồ sơ không phải xác thực điện tử đã hoàn tất. Người giới thiệu là một tư cách của tài khoản, không phải loại tài khoản riêng.
 
@@ -521,7 +521,7 @@ a) Trên website, người mua mua tín dụng dịch vụ bằng chuyển kho�
 
 b) Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
-c) Người mua không được rút, chuyển nhượng hoặc đổi tín dụng dịch vụ thành tiền. Tiền hoàn được ưu tiên trả về phương thức thanh toán ban đầu; tín dụng dịch vụ chỉ được ghi có khi kênh ban đầu không hỗ trợ và pháp luật cho phép.
+c) Người mua không được rút, chuyển nhượng hoặc đổi tín dụng dịch vụ thành tiền. Người mua vẫn có quyền gửi yêu cầu hoàn để được xem xét. Khoản được duyệt hiện ghi có vào tín dụng dịch vụ. Việc trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng.
 
 d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát; không phải tài khoản tiền gửi hay tài khoản thanh toán, không được trả lãi.
 
@@ -714,11 +714,11 @@ b) Nền tảng xác nhận tiếp nhận trong **24 giờ**, xác minh đơn h�
 
 c) Nền tảng ra quyết định trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ, theo Mục XVII của Quy chế này.
 
-d) Khi được chấp thuận, tiền được hoàn ngay vào ví; trường hợp hoàn về phương thức thanh toán ban đầu, thời gian nhận tiền phụ thuộc ngân hàng hoặc kho ứng dụng.
+d) Khi được chấp thuận, khoản hoàn hiện được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Việc trả về ngân hàng, VietQR, GPay hoặc kênh gốc khác chưa có quy trình đã kiểm chứng. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
 
 ### 6. Nơi nhận tiền hoàn
 
-Tiền hoàn được ưu tiên trả về phương thức thanh toán ban đầu. Khi kênh ban đầu không hỗ trợ và pháp luật cho phép, khoản hoàn có thể ghi có thành tín dụng dịch vụ nội bộ không rút/chuyển nhượng.
+Người mua giữ quyền gửi yêu cầu hoàn và quyền được xem xét. Kết quả chấp thuận hiện ghi có vào tín dụng dịch vụ dùng được trên sàn và không rút, không chuyển nhượng. Trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng; khoản ghi có này không được mô tả như khoản đã hoàn về ngân hàng.
 
 ### 7. Chấm dứt dịch vụ
 
@@ -964,7 +964,7 @@ Người bán không phản hồi trong thời hạn ở bước 3 thì nền t�
 
 a) Doanh thu của người bán được tạm giữ 48 giờ kể từ khi ghi nhận. Khiếu nại về đơn hàng gửi trong thời gian này giữ nguyên khoản tạm giữ cho đến khi có quyết định.
 
-b) Quyết định hoàn tiền được thực hiện vào ví hoặc phương thức thanh toán ban đầu; khoản tương ứng của người bán bị khấu trừ.
+b) Quyết định hoàn tiền, nếu có, hiện ghi có vào tín dụng dịch vụ của người mua. Trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng. Khoản tương ứng của người bán bị khấu trừ.
 
 ### 6. Vai trò của nền tảng
 

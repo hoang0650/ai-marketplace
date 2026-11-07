@@ -40,9 +40,12 @@ export class SettingsShellComponent {
 
   readonly links = computed(() => {
     this.i18n.lang();
+    this.auth.user();
     return [
       { path: '/settings/profile', title: this.i18n.t('settings.profile'), desc: this.i18n.t('settings.profileDesc'), icon: '👤' },
-      { path: '/settings/kyc', title: this.i18n.t('settings.kyc'), desc: this.i18n.t('settings.kycDesc'), icon: '🆔' },
+      ...(this.auth.needsPayoutIdentity()
+        ? [{ path: '/settings/kyc', title: this.i18n.t('settings.kyc'), desc: this.i18n.t('settings.kycDesc'), icon: '🆔' }]
+        : []),
       { path: '/settings/activity', title: this.i18n.t('settings.activity'), desc: this.i18n.t('settings.activityDesc'), icon: '🕒' },
       { path: '/settings/security', title: this.i18n.t('settings.security'), desc: this.i18n.t('settings.securityDesc'), icon: '🔒' },
       { path: '/account/devices', title: this.i18n.t('devices.title'), desc: this.i18n.t('devices.sub'), icon: '📱' },

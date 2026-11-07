@@ -12,7 +12,7 @@ Dịch vụ có thể bị tạm ngừng khi hết thời hạn, không đủ t�
 
 ## Chấm dứt theo yêu cầu người dùng
 
-Người dùng dừng phiên GPU, tắt gia hạn hoặc gửi yêu cầu chấm dứt tại trang đơn, mục hỗ trợ hoặc support@aimarkets.vn. Yêu cầu được tiếp nhận trong 24 giờ. Với yêu cầu chấm dứt ngay, thời điểm thông báo hợp lệ là thời điểm chấm dứt, trừ khi một mốc khác đã được công bố và chấp thuận. Tắt gia hạn làm dừng kỳ kế tiếp, không xóa quyền của kỳ đã trả. Chỉ tính phí hợp lệ đến mốc chấm dứt. Giai đoạn chưa nghiệm thu không bị thu. Phần trả trước chưa dùng và đủ điều kiện hoàn được đối soát, không mặc định mất. Hoàn tiền ưu tiên đúng nguồn thanh toán ban đầu.
+Người dùng dừng phiên GPU, tắt gia hạn hoặc gửi yêu cầu chấm dứt tại trang đơn, mục hỗ trợ hoặc support@aimarkets.vn. Yêu cầu được tiếp nhận trong 24 giờ. Với yêu cầu chấm dứt ngay, thời điểm thông báo hợp lệ là thời điểm chấm dứt, trừ khi một mốc khác đã được công bố và chấp thuận. Tắt gia hạn làm dừng kỳ kế tiếp, không xóa quyền của kỳ đã trả. Chỉ tính phí hợp lệ đến mốc chấm dứt. Giai đoạn chưa nghiệm thu không bị thu. Phần trả trước chưa dùng và đủ điều kiện hoàn được đối soát theo yêu cầu, không mặc định mất. Khoản được duyệt hiện ghi có vào tín dụng dịch vụ; trả về kênh gốc chưa có quy trình đã kiểm chứng.
 
 ## Chấm dứt do vi phạm
 

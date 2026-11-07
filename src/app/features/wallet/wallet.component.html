@@ -87,17 +87,19 @@
         } @else {
           @if (gpayVisible) {
             <div class="topup-switch" role="tablist">
-              <button type="button" role="tab" [class.on]="topupMethod() === 'vietqr'" [attr.aria-selected]="topupMethod() === 'vietqr'" (click)="setTopupMethod('vietqr')">
+              <button type="button" role="tab" [class.on]="topupMethod() === 'vietqr'" [attr.aria-selected]="topupMethod() === 'vietqr'" (click)="setTopupMethod('vietqr'); $event.stopPropagation()">
                 <span class="topup-switch__icon topup-switch__icon--qr" aria-hidden="true">QR</span>
                 <span class="topup-switch__txt"><strong>{{ topupLabels().vietqr }}</strong><small>{{ topupLabels().vietqrDesc }}</small></span>
               </button>
-              <button type="button" role="tab" [class.on]="topupMethod() === 'gpay'" [attr.aria-selected]="topupMethod() === 'gpay'" (click)="setTopupMethod('gpay')">
+              <button type="button" role="tab" [class.on]="topupMethod() === 'gpay'" [attr.aria-selected]="topupMethod() === 'gpay'" (click)="setTopupMethod('gpay'); $event.stopPropagation()">
                 <span class="topup-switch__icon topup-switch__icon--gpay" aria-hidden="true">G</span>
                 <span class="topup-switch__txt"><strong>{{ topupLabels().gpay }}</strong><small>{{ topupLabels().gpayDesc }}</small></span>
               </button>
             </div>
           }
-          @if (gpayVisible && topupMethod() === 'gpay') {
+          @switch (topupMethod()) {
+            @case ('gpay') {
+              @if (gpayVisible) {
             <app-gpay-topup
               [enabled]="gpayEnabled()"
               [portalEnabled]="gpayPortalEnabled()"
@@ -115,8 +117,13 @@
               (createQr)="gpayCreateQr()"
               (closeQr)="closeGpayQr()"
             />
-          } @else {
+              } @else {
             <app-bank-topup [initialVnd]="topupVnd" (vndChange)="onTopupVnd($event)" />
+              }
+            }
+            @default {
+            <app-bank-topup [initialVnd]="topupVnd" (vndChange)="onTopupVnd($event)" />
+            }
           }
         }
 

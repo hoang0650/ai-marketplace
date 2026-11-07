@@ -174,9 +174,11 @@
         }
       } @else if (k.status === 'pending') {
         <p class="kyc-hint">{{ 'kyc.waitReview' | t }}</p>
-      } @else if (k.status === 'verified') {
+      } @else if (k.status === 'verified' && auth.needsPayoutIdentity()) {
         <p class="kyc-banner ok">{{ 'kyc.verifiedHint' | t }}</p>
-        <a routerLink="/wallet" [queryParams]="{ tab: 'withdraw' }" class="btn btn-outline">{{ 'kyc.goWithdraw' | t }}</a>
+        <a routerLink="/sell/withdraw" class="btn btn-outline">{{ 'kyc.goWithdraw' | t }}</a>
+      } @else if (k.status === 'verified') {
+        <p class="kyc-banner ok">{{ 'kyc.lede' | t }}</p>
       }
     </div>
   }

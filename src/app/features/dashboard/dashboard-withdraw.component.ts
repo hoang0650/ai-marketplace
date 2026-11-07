@@ -2,7 +2,10 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { buyerCashoutClosed, cashoutErrorKind, earnedPayoutCap } from '../wallet/buyer-credit';
 import { DashboardService } from '../../services/api.services';
+import { I18nService } from '../../i18n/i18n.service';
+import { AuthService } from '../../services/auth.service';
 import { PayoutAccountResponse, WalletSummary, WalletTx } from '../../models/marketplace.models';
 import { TPipe } from '../../i18n/t.pipe';
 
@@ -37,8 +40,23 @@ const PAGE = 12;
       }
 
       <div class="wd__grid">
+        @if (buyerCashoutBlocked()) {
+          <section class="wd__panel">
+            <h2>{{ 'payout.buyerBlocked' | t }}</h2>
+            <p class="wd__muted">{{ 'payout.buyerBlockedHint' | t }}</p>
+            <p class="wd__muted">{{ 'wallet.wd.buyerHere' | t }}</p>
+            <a routerLink="/complaints/new" class="wd__link">{{ 'complaint.cta.file' | t }}</a>
+            @if (hasPayablePersona()) {
+              <a routerLink="/sell/withdraw" class="wd__link">{{ 'wallet.withdraw.sellerPayout' | t }}</a>
+            }
+            <a routerLink="/affiliate" class="wd__link">{{ 'aff.nav' | t }}</a>
+          </section>
+        } @else {
         <form class="wd__panel" (ngSubmit)="withdraw()">
           <h2>{{ 'wd.request' | t }}</h2>
+          @if (prepaidCapNote()) {
+            <p class="wd__muted">{{ prepaidCapNote() }}</p>
+          }
           <label class="wd__label" for="wd-amount">{{ 'wd.amount' | t }}</label>
           <div class="wd__amount">
             <span>{{ summary()?.currency || 'USD' }}</span>
@@ -82,7 +100,7 @@ const PAGE = 12;
             </div>
           }
         </form>
-
+        }
         <section class="wd__panel">
           <div class="wd__ledger-head">
             <h2>{{ 'wd.history' | t }}</h2>
@@ -181,6 +199,8 @@ const PAGE = 12;
 })
 export class DashboardWithdrawComponent implements OnInit {
   private readonly api = inject(DashboardService);
+  private readonly i18n = inject(I18nService);
+  private readonly auth = inject(AuthService);
   readonly txs = signal<WalletTx[]>([]);
   readonly summary = signal<WalletSummary | null>(null);
   readonly account = signal<PayoutAccountResponse | null>(null);
@@ -210,12 +230,46 @@ export class DashboardWithdrawComponent implements OnInit {
   }
 
   maxAmount(): number {
-    return Math.floor((this.summary()?.available || 0) * 100) / 100;
+    const s = this.summary();
+    if (!s) return 0;
+    return Math.floor(earnedPayoutCap(s) * 100) / 100;
+  }
+
+  prepaidCapNote(): string {
+    const s = this.summary();
+    if (!s || s.prepaidWithdrawable !== false || this.buyerCashoutBlocked()) return '';
+    return this.i18n.t('payout.prepaidCap', { amount: this.maxAmount().toFixed(2) });
   }
 
   canSubmit(): boolean {
+    if (this.buyerCashoutBlocked()) return false;
     const a = Number(this.amount);
     return a > 0 && a <= this.maxAmount() && this.summary()?.policy?.canWithdraw !== false;
+  }
+
+  buyerCashoutBlocked(): boolean {
+    const s = this.summary();
+    return buyerCashoutClosed({
+      persona: s?.persona,
+      policyPersona: s?.policy?.persona,
+      role: this.auth.user()?.role,
+      buyerCashoutAllowed: s?.buyerCashoutAllowed,
+      payableAmount: s?.payableAmount,
+      personas: s?.personas,
+    });
+  }
+
+  hasPayablePersona(): boolean {
+    return (this.summary()?.personas || []).some((p) => p === 'seller' || p === 'talent' || p === 'freelancer' || p === 'employer');
+  }
+
+  private cashoutMessage(code: string | undefined, fallback?: string): string {
+    const kind = cashoutErrorKind(code);
+    if (kind === 'buyer') return this.i18n.t('payout.buyerBlocked');
+    if (kind === 'prepaid_cap') return this.i18n.t('payout.prepaidCap', { amount: this.maxAmount().toFixed(2) });
+    if (kind === 'kyc') return this.i18n.t('sell.wd.kycFirst');
+    if (kind === 'affiliate_short') return this.i18n.t('aff.wd.exceeds_available');
+    return fallback || 'Withdraw failed';
   }
 
   setFilter(f: TxFilter): void {
@@ -230,6 +284,11 @@ export class DashboardWithdrawComponent implements OnInit {
   }
 
   withdraw(): void {
+    if (this.buyerCashoutBlocked()) {
+      this.msgErr.set(true);
+      this.msg.set(this.i18n.t('payout.buyerBlocked'));
+      return;
+    }
     if (!this.canSubmit()) return;
     this.busy.set(true);
     this.api.withdraw(Number(this.amount)).subscribe({
@@ -243,7 +302,7 @@ export class DashboardWithdrawComponent implements OnInit {
       error: (err) => {
         this.busy.set(false);
         this.msgErr.set(true);
-        this.msg.set(err?.error?.message || 'Withdraw failed');
+        this.msg.set(this.cashoutMessage(err?.error?.code, err?.error?.message));
       },
     });
   }

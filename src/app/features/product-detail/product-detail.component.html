@@ -315,7 +315,7 @@
         </div>
 
         @if (checkoutMsg()) {
-          <p class="checkout-msg">{{ checkoutMsg() }}</p>
+          <p class="checkout-msg" role="alert">{{ checkoutMsg() }}</p>
           @if (lastOrderId()) {
             <app-invoice-choice [orderId]="lastOrderId()" [compact]="true" />
           }
