@@ -208,7 +208,7 @@ Người mua có thể xem trang cửa hàng của người bán: nhãn “Verif
 
 ![Hình 18: Huấn luyện mô hình với dataset/giọng đọc đã được cấp phép](assets/legal/img/qc-18.jpg)
 
-**Bước 8:** Quản lý tài khoản. Trang cài đặt gồm: hồ sơ (Profile), xác minh danh tính (eKYC – giao diện ghi chú “bắt buộc trước khi rút tiền”), lịch sử hoạt động, bảo mật (mật khẩu, phiên đăng nhập), thông báo (ngôn ngữ thông báo), tài khoản liên kết (theo khoản 2 Mục IV).
+**Bước 8:** Quản lý tài khoản. Trang cài đặt gồm: hồ sơ (Profile), lịch sử hoạt động, bảo mật (mật khẩu, phiên đăng nhập), thông báo (ngôn ngữ thông báo), tài khoản liên kết (theo khoản 2 Mục IV). Mục xác minh danh tính (eKYC) trong menu Cài đặt chỉ hiện với người bán, talent, freelancer, nhà tuyển dụng hoặc quản trị, và với người giới thiệu affiliate khi cần mã. Người mua thông thường không cần eKYC để mua, nạp, dùng dịch vụ, khiếu nại hoặc yêu cầu hoàn. Biểu mẫu là https://aimarkets.vn/settings/kyc.
 
 ![Hình 19: Trang cài đặt tài khoản](assets/legal/img/qc-19.jpg)
 
@@ -379,7 +379,7 @@ Nền tảng có thể yêu cầu xác minh lại khi: thay đổi thông tin ph
 
 ### 7. Xác minh danh tính (eKYC) và định danh điện tử
 
-Người bán phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán **trước khi hồ sơ được phê duyệt và trước khi rút tiền**; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.
+Người bán và người giới thiệu affiliate hoàn tất biểu mẫu eKYC tại https://aimarkets.vn/settings/kyc hoặc https://aimarkets.vn/sell/kyc trước khi hồ sơ người bán được phê duyệt, trước khi chi trả doanh thu người bán, và trước khi nhận mã affiliate. Người mua thông thường không nộp biểu mẫu này để mua, nạp, dùng dịch vụ, khiếu nại hoặc yêu cầu hoàn. Khi chưa có hồ sơ chi trả được duyệt, chức năng chi trả doanh thu bị khóa. Tín dụng nạp của người mua không được rút hoặc chuyển. Biểu mẫu có loại hồ sơ Cá nhân và Tổ chức. Cá nhân nhập họ tên trên giấy tờ, loại giấy tờ (CCCD, CMND, hộ chiếu hoặc khác), số giấy tờ, mã số thuế cá nhân, rồi tải ảnh mặt trước và mặt sau. Tổ chức chọn Hộ kinh doanh hoặc Công ty / doanh nghiệp, nhập tên theo giấy chứng nhận, mã số thuế, địa chỉ, giấy tờ người đại diện, và tải giấy chứng nhận đăng ký bằng PDF tối đa 10 MB. Ảnh hoặc PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán và không phải tích hợp VNeID. Dòng ghi chú trên biểu mẫu về mốc 01/01/2027 là mốc rà soát định danh điện tử, không phải xác nhận tích hợp đã hoàn tất.
 
 ## IX. KIỂM DUYỆT SẢN PHẨM AI
 

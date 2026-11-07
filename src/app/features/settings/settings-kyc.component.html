@@ -169,8 +169,8 @@
         <button type="button" class="btn btn-fill" (click)="submit()" [disabled]="busy() || !k.canSubmit">
           {{ busy() ? ('kyc.sending' | t) : ('kyc.submit' | t) }}
         </button>
-        @if (!k.canSubmit) {
-          <p class="kyc-hint">{{ 'kyc.needAllDocs' | t }}</p>
+            @if (!k.canSubmit) {
+          <p class="kyc-hint">{{ (isOrg ? 'kyc.needAllDocsOrg' : 'kyc.needAllDocs') | t }}</p>
         }
       } @else if (k.status === 'pending') {
         <p class="kyc-hint">{{ 'kyc.waitReview' | t }}</p>
