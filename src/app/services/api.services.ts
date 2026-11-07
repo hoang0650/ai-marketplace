@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpEvent, HttpParams, HttpRequest } from '@an
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { gpayCheckoutBody } from '../features/wallet/gpay-ui';
 import { isHiddenCategory, withoutHiddenProducts } from '../models/categories';
 import { AuthService } from './auth.service';
 import { AffiliateService } from './affiliate.service';
@@ -624,9 +625,12 @@ export class DashboardService {
     return this.http.get<GpayConfig>(`${this.base}/gpay/config`);
   }
 
-  /** GPay payment gateway: returns `billUrl` to redirect the payer to. */
+  /**
+   * GPay payment gateway: returns `billUrl` to redirect the payer to.
+   * Always the website channel. iOS/Android top up with IAP in the native apps.
+   */
   gpayCheckout(amountVnd: number): Observable<GpayCheckoutResponse> {
-    return this.http.post<GpayCheckoutResponse>(`${this.base}/gpay/checkout`, { amountVnd, platform: 'web' });
+    return this.http.post<GpayCheckoutResponse>(`${this.base}/gpay/checkout`, gpayCheckoutBody(amountVnd));
   }
 
   /** GPay QR Payment: dynamic VietQR for one top-up. */

@@ -8,7 +8,7 @@
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày hiệu lực:** 04/10/2026  
-**Phiên bản:** 2.1 (25/10/2026: xử lý dữ liệu khi chạy skill phía máy chủ)
+**Phiên bản:** 2.1 (07/11/2026: bổ sung GPay vào danh sách đối tác thanh toán khi người dùng chọn kênh này)
 
 ---
 
@@ -51,7 +51,7 @@ Cung cấp và vận hành dịch vụ; xác thực, bảo mật tài khoản; x
 
 Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
 - **Người bán:** thông tin cần để thực hiện đơn hàng với người mua;
-- **Đối tác thanh toán:** ngân hàng nơi Công ty mở Tài khoản thanh toán, Apple, Google;
+- **Đối tác thanh toán:** ngân hàng nơi Công ty mở tài khoản nhận chuyển khoản VietQR; Công ty Cổ phần Thanh toán G (GPay) khi người dùng chọn nạp qua GPay; Apple; Google;
 - **Nhà cung cấp hạ tầng:** máy chủ, lưu trữ, GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
 - **Cơ quan nhà nước có thẩm quyền:** khi có yêu cầu theo quy định pháp luật.
 
