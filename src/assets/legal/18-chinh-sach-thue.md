@@ -26,8 +26,6 @@ Nền tảng khấu trừ, khai, nộp thay khi thuộc đối tượng có ngh�
 
 Bản công khai này không đưa một tỷ lệ khấu trừ cố định theo nhãn cá nhân, hộ kinh doanh hoặc doanh nghiệp, không đưa một ngưỡng doanh thu năm, và không đưa một tỷ lệ thuế thu nhập cố định cho hoa hồng affiliate. Những con số đó chưa có bảng do kế toán đối chiếu với văn bản năm 2026. Một mẫu cam kết được duyệt không tự miễn thuế.
 
-Ngưỡng chi trả thường kỳ của chương trình affiliate, nếu được công bố ở chính sách chương trình, là điều kiện chi trả của chương trình, không phải mức miễn thuế.
-
 ## Điều 4. Nghĩa vụ còn lại của người bán và người giới thiệu
 
 Việc nền tảng khấu trừ hoặc không khấu trừ không thay thế nghĩa vụ kê khai, quyết toán, nộp thuế khác và xuất hóa đơn của người bán hoặc người giới thiệu. Khi một khoản thực sự bị khấu trừ, chứng từ và số liệu đối soát của khoản đó là căn cứ, không phải một ví dụ trong chính sách cũ.

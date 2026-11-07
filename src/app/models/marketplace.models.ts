@@ -1209,8 +1209,12 @@ export interface AffiliateConfig {
   pit: {
     enabled: boolean;
     rate: number;
+    /** Legacy alias of the old affiliate commercial minimum. The website does not enforce it. */
     thresholdVnd: number;
-    /** Minimum affiliate balance and single withdrawal (VND). */
+    /**
+     * Legacy server field. The website does not enforce it.
+     * Affiliate requests use any positive available balance.
+     */
     minWithdrawVnd?: number;
     legalReview: boolean;
     rule?: string;
@@ -1258,7 +1262,7 @@ export interface AffiliateStats {
   withdrawal?: AffiliateWithdrawal;
 }
 
-/** Affiliate wallet slice: withdraw only when availableVnd >= minWithdrawVnd; PIT per withdrawal. */
+/** Affiliate wallet slice. minWithdrawVnd is ignored by the website. */
 export interface AffiliateWithdrawal {
   earned: number;
   held: number;

@@ -45,7 +45,7 @@
 ## Điều 5. Ghi có, tạm giữ và rút tiền
 
 1. Hoa hồng được ghi có vào ví của người giới thiệu ngay khi đơn hàng hoàn tất và được **tạm giữ 48 giờ** như doanh thu của người bán; nếu đơn hàng phát sinh khiếu nại, khoản hoa hồng tiếp tục bị giữ đến khi khiếu nại được giải quyết.
-2. Sau thời gian tạm giữ, hoa hồng khả dụng được chi bằng VND về tài khoản đứng tên đúng người giới thiệu. Ngưỡng **2.000.000 đồng** là điều kiện chi trả thường kỳ của chương trình, không phải mức miễn thuế. Khi chương trình hoặc tài khoản chấm dứt, số dư hoa hồng hợp lệ còn lại vẫn được chi, kể cả khi thấp hơn ngưỡng. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa.
+2. Sau thời gian tạm giữ, hoa hồng khả dụng được chi bằng VND về tài khoản đứng tên đúng người giới thiệu. Không có mức chi trả tối thiểu. Mọi số dư khả dụng lớn hơn 0 đều có thể được yêu cầu, trong đơn vị tiền của ví. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa.
 3. Trang Affiliate hiển thị: liên kết, số lượt nhấp, số đơn, hoa hồng đang tạm giữ, hoa hồng khả dụng và hoa hồng bị thu hồi.
 
 ## Điều 6. Thuế thu nhập cá nhân
@@ -53,7 +53,7 @@
 1. Thuế trên hoa hồng được xác định theo tư cách, cư trú, bản chất thu nhập và văn bản có hiệu lực tại lúc chi trả. Trang này không áp dụng máy móc một tỷ lệ cố định, và không coi một mẫu cam kết đã duyệt là căn cứ miễn thuế.
 2. Cam kết Mẫu 08/CK-TNCN được nộp và duyệt tương tự quy trình eKYC: người giới thiệu tải lên bản đã ký (PDF/ảnh), chọn năm cam kết và mã số thuế cá nhân; quản trị viên duyệt hoặc từ chối (nêu lý do). Người cam kết chịu trách nhiệm về tính trung thực của cam kết theo pháp luật.
 3. Khoản đã khấu trừ được ghi trên lịch sử ví; nền tảng báo cáo số thuế TNCN đã khấu trừ cho cơ quan thuế theo quý và cuối năm cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu.
-4. Mức khấu trừ, mức rút tối thiểu có thể được điều chỉnh để phù hợp quy định pháp luật về thuế; người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
+4. Khoản thuế, nếu phát sinh, theo văn bản có hiệu lực tại thời điểm chi trả. Người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
 
 ## Điều 7. Hành vi bị cấm
 
