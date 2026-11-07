@@ -58,4 +58,26 @@ Nền tảng có thể yêu cầu xác minh lại khi: thay đổi thông tin ph
 
 ## Điều 7. Xác minh danh tính (eKYC) và định danh điện tử
 
-Người bán phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán trước khi hồ sơ được phê duyệt và trước khi rút tiền; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.
+Người bán và người giới thiệu affiliate phải hoàn tất biểu mẫu eKYC trước khi hồ sơ người bán được phê duyệt, trước khi chi trả doanh thu người bán, và trước khi nhận mã hoặc liên kết affiliate. Người mua thông thường không phải nộp biểu mẫu này để đặt hàng, nạp tín dụng, dùng dịch vụ, gửi khiếu nại hoặc yêu cầu hoàn. Khi chưa có hồ sơ chi trả được duyệt, chức năng chi trả doanh thu bị khóa. Tín dụng nạp của người mua không vì hồ sơ này mà được rút hoặc chuyển.
+
+Biểu mẫu đang chạy tại https://aimarkets.vn/settings/kyc và https://aimarkets.vn/sell/kyc. Hai địa chỉ mở cùng một trang. Mục eKYC trong menu Cài đặt chỉ hiện với tài khoản người bán, talent, freelancer, nhà tuyển dụng hoặc quản trị. Trang không xóa hồ sơ đã lưu.
+
+Từ ngày 01/01/2027, việc định danh và xác thực điện tử của người bán được rà soát theo quy định, gồm VNeID hoặc dịch vụ xác thực được cấp phép. Dòng ghi chú trên biểu mẫu chỉ nêu mốc đó. Trang này không khẳng định VNeID đã được tích hợp hoặc đã hoàn tất.
+
+## Điều 8. Cách điền biểu mẫu cá nhân và tổ chức
+
+Biểu mẫu có hai lựa chọn ở mục “Loại hồ sơ”.
+
+**Cá nhân.** Các ô là: họ tên trên giấy tờ; loại giấy tờ (CCCD, CMND, hộ chiếu hoặc khác); số giấy tờ; mã số thuế cá nhân gồm 10 chữ số hoặc 12 chữ số. Khi loại giấy tờ là CCCD và đã nhập số, nút “Dùng số CCCD” chép số đó sang mã số thuế. Phần “Giấy tờ tùy thân” nhận ảnh mặt trước và mặt sau, định dạng JPEG, PNG hoặc WebP.
+
+**Tổ chức.** Chọn “Hộ kinh doanh” hoặc “Công ty / doanh nghiệp”. Các ô tổ chức là: tên đúng như giấy chứng nhận đăng ký hộ kinh doanh hoặc đăng ký doanh nghiệp; mã số thuế; địa chỉ trụ sở hoặc địa điểm kinh doanh. Mã số thuế hộ kinh doanh là 10 chữ số, dạng 10 số-3 số, hoặc số định danh 12 số của chủ hộ. Mã số thuế công ty là 10 chữ số; chi nhánh dùng 10 số-3 số. Phần người đại diện gồm họ tên trên giấy tờ, loại giấy tờ và số giấy tờ, cùng ảnh hai mặt. Giấy chứng nhận đăng ký là tệp PDF, tối đa 10 MB. Ô này không nhận ảnh.
+
+Nút gửi là “Gửi xác minh”. Sau khi gửi, nếu hồ sơ chưa được duyệt, trang ghi “Hồ sơ đang chờ sàn duyệt”. Ảnh và tệp PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán, không phải nhãn xác thực điện tử, và không phải bằng chứng đã chi trả về ngân hàng. Tài khoản nhận tiền là bước riêng, chỉ dùng cho doanh thu người bán hoặc hoa hồng affiliate đã đủ điều kiện.
+
+Ba ảnh ngày 07/11/2026 dưới đây là đúng biểu mẫu đó. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ, tên và các trường còn lại giữ như ảnh đã duyệt. Ô tệp không phải giấy chứng nhận đã được kiểm chứng.
+
+![Hình K01. Biểu mẫu hồ sơ cá nhân với tài liệu đã lưu. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ và các trường còn lại giữ như ảnh đã duyệt. Không phải kết quả đã duyệt.](assets/legal/img/v7-k01-ho-so-ca-nhan.png)
+
+![Hình K02. Biểu mẫu hồ sơ tổ chức trên cùng trang. Số giấy tờ đã được che. Tên tổ chức và các ô còn lại giữ như ảnh đã duyệt. Không phải kết quả đã duyệt.](assets/legal/img/v7-k02-ho-so-to-chuc.png)
+
+![Hình K03. Giấy tờ của người đại diện và ô tệp đăng ký. Số trên giấy tờ đã được che. Ảnh giấy tờ và tên tệp giữ như ảnh đã duyệt. Ô tệp không chứng minh giấy chứng nhận đã được đối chiếu.](assets/legal/img/v7-k03-giay-to-dai-dien.png)
