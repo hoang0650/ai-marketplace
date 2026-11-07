@@ -2,8 +2,11 @@
 
 | Bề mặt | Cổng |
 |---|---|
-| Web `aimarkets.vn/wallet` | **PayPal only** (Orders v2) |
-| App iOS / Android | **IAP only** (`expo-iap`, consumable `aimarkets.wallet.5` … `100`) |
+| Web `aimarkets.vn/wallet` | **VietQR** (chuyển khoản, admin đối soát) và **GPay** (Công ty Cổ phần Thanh toán G) khi API báo kênh đã cấu hình. Hai cách song song. PayPal không hiện trên web. |
+| App iOS | **Apple IAP only**. Website không gửi `platform=app` và không dẫn app iOS sang cổng web. |
+| App Android | **Google Play Billing** (`expo-iap`, consumable `aimarkets.wallet.5` … `100`) |
+
+GPay trên web không phải Google Pay. Biến và bước bật kênh nằm ở `docs/gpay-web-rollout.md`. Phần dưới chỉ là khóa IAP.
 
 ## Lấy biến môi trường IAP
 

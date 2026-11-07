@@ -54,7 +54,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Thanh toán bằng VND; tín dụng dịch vụ không phải ví điện tử, không rút/chuyển nhượng; đối soát và cấm giao dịch ngoài sàn.',
+    summary: 'Đơn hàng thanh toán bằng số dư nội bộ. Website nạp bằng VietQR và, khi kênh được bật, bằng GPay; ứng dụng dùng IAP.',
     group: 'commerce',
   },
   {

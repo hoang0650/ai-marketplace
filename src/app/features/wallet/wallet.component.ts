@@ -18,6 +18,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../i18n/currency.service';
 import { BankTopupComponent } from './bank-topup.component';
 import { GpayTopupComponent } from './gpay-topup.component';
+import { gpayUiState, isIosAppShell } from './gpay-ui';
 
 declare const paypal: {
   FUNDING?: { PAYPAL?: string };
@@ -27,9 +28,9 @@ declare const paypal: {
 type WalletTab = 'deposit' | 'history';
 type DepositMethod = 'paypal' | 'gpay';
 
-/** PayPal is hidden on the web (GPay only); the /v1/paypal API stays so it can be re-enabled. */
+/** PayPal stays hidden. VietQR and, when configured, GPay are the website top-up channels. */
 const PAYPAL_UI_ENABLED = false;
-/** GPay is temporarily hidden (environment.gpayEnabled, default false); its code and API stay in place. */
+/** Website switcher only. Live GPay still requires /v1/gpay/config.enabled (API GPAY_ENABLED + credentials). */
 const GPAY_UI_ENABLED = (environment as { gpayEnabled?: boolean }).gpayEnabled === true;
 const PAYPAL_QUICK = [5, 10, 20, 50, 100];
 const GPAY_QUICK_VND = [50_000, 100_000, 200_000, 500_000, 1_000_000];
@@ -53,6 +54,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly i18n = inject(I18nService);
   private readonly route = inject(ActivatedRoute);
   readonly auth = inject(AuthService);
+  /** Native iOS shell keeps IAP. iPhone Safari is the website and may show GPay. */
+  private readonly iosAppShell = isIosAppShell({
+    userAgent: typeof navigator === 'undefined' ? '' : navigator.userAgent,
+    query: this.route.snapshot.queryParamMap,
+  });
 
   readonly brand = environment.brandName;
   readonly txs = signal<WalletTx[]>([]);
@@ -66,7 +72,8 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly msgIsError = signal(false);
 
   readonly paypalVisible = PAYPAL_UI_ENABLED;
-  readonly gpayVisible = GPAY_UI_ENABLED;
+  /** GPay tab beside VietQR. Hidden in the iOS app shell so the site does not steer that app off IAP. */
+  readonly gpayVisible = GPAY_UI_ENABLED && !this.iosAppShell;
   readonly depositMethod = signal<DepositMethod>(PAYPAL_UI_ENABLED ? 'paypal' : 'gpay');
   readonly gpayAvailable = signal(false);
   readonly gpayEnabled = signal(false);
@@ -84,11 +91,16 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly topupMethod = signal<'vietqr' | 'gpay'>('vietqr');
   /** VND amount shared between the VietQR and GPay forms. */
   topupVnd = 0;
-  readonly topupLabels = computed(() =>
-    this.i18n.lang() === 'vi'
-      ? { vietqr: 'Chuyển khoản VietQR', vietqrDesc: 'Quét mã, admin xác nhận', gpay: 'GPay', gpayDesc: 'Cổng thanh toán, cộng ví tự động' }
-      : { vietqr: 'VietQR bank transfer', vietqrDesc: 'Scan & transfer, confirmed by us', gpay: 'GPay', gpayDesc: 'Payment gateway, auto credit' },
-  );
+  readonly topupLabels = computed(() => {
+    const lang = this.i18n.lang();
+    if (lang === 'vi') {
+      return { vietqr: 'Chuyển khoản VietQR', vietqrDesc: 'Quét mã, admin xác nhận', gpay: 'GPay', gpayDesc: 'Cổng thanh toán, cộng ví khi GPay xác nhận' };
+    }
+    if (lang === 'zh') {
+      return { vietqr: 'VietQR 银行转账', vietqrDesc: '扫码转账，由我们确认', gpay: 'GPay', gpayDesc: '支付网关，GPay 确认后入账' };
+    }
+    return { vietqr: 'VietQR bank transfer', vietqrDesc: 'Scan & transfer, confirmed by us', gpay: 'GPay', gpayDesc: 'Payment gateway, credited when GPay confirms' };
+  });
 
   setTopupMethod(m: 'vietqr' | 'gpay'): void {
     if (m === 'gpay' && !GPAY_UI_ENABLED) return;
@@ -173,26 +185,29 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    this.api.gpayConfig().subscribe({
-      next: (cfg) => {
-        this.gpayAvailable.set(GPAY_UI_ENABLED && (cfg.available ?? !!cfg.enabled));
-        this.gpayEnabled.set(GPAY_UI_ENABLED && !!cfg.enabled);
-        this.gpayPortalEnabled.set(GPAY_UI_ENABLED && !!cfg.portalEnabled);
-        this.gpayQrEnabled.set(GPAY_UI_ENABLED && !!cfg.qrEnabled);
-        this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);
-      },
-      error: () => {
-        this.gpayAvailable.set(false);
-        this.gpayEnabled.set(false);
-      },
-    });
+    if (this.gpayVisible) {
+      this.api.gpayConfig().subscribe({
+        next: (cfg) => {
+          const state = gpayUiState({ uiEnabled: GPAY_UI_ENABLED, iosAppShell: this.iosAppShell, config: cfg });
+          this.gpayAvailable.set(state.available);
+          this.gpayEnabled.set(state.enabled);
+          this.gpayPortalEnabled.set(state.portalEnabled);
+          this.gpayQrEnabled.set(state.qrEnabled);
+          this.gpayMinTopupVnd.set(Number(cfg.minTopupVnd) || 0);
+        },
+        error: () => this.applyGpayUi(null),
+      });
+    }
 
     // Back from GPay's gateway: /wallet?gpay=return&order=AIM…
-    if (GPAY_UI_ENABLED && this.route.snapshot.queryParamMap.get('method') === 'gpay') this.topupMethod.set('gpay');
+    // The iOS app shell does not open the GPay form; an in-flight order can still be polled.
+    if (this.gpayVisible && this.route.snapshot.queryParamMap.get('method') === 'gpay') this.topupMethod.set('gpay');
     const gpayOrder = this.route.snapshot.queryParamMap.get('order');
     if (this.route.snapshot.queryParamMap.get('gpay') === 'return' && gpayOrder) {
-      this.depositMethod.set('gpay');
-      this.topupMethod.set('gpay');
+      if (this.gpayVisible) {
+        this.depositMethod.set('gpay');
+        this.topupMethod.set('gpay');
+      }
       this.setMsg(this.i18n.t('wallet.gpay.checking'), false);
       this.pollGpayOrder(gpayOrder);
     }
@@ -253,8 +268,20 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setMsg(message || this.i18n.t('wallet.gpay.createFail'), true);
   }
 
-  /** Redirect to GPay's payment page (ATM / card / transfer). */
+  private applyGpayUi(cfg: Parameters<typeof gpayUiState>[0]['config']): void {
+    const state = gpayUiState({ uiEnabled: GPAY_UI_ENABLED, iosAppShell: this.iosAppShell, config: cfg });
+    this.gpayAvailable.set(state.available);
+    this.gpayEnabled.set(state.enabled);
+    this.gpayPortalEnabled.set(state.portalEnabled);
+    this.gpayQrEnabled.set(state.qrEnabled);
+  }
+
+  /** Redirect to GPay's payment page (ATM / card / transfer). Website channel only. */
   gpayCheckout(): void {
+    if (this.iosAppShell || !this.gpayEnabled() || !this.gpayPortalEnabled()) {
+      this.setMsg(this.i18n.t('wallet.gpay.offline'), true);
+      return;
+    }
     if (!this.gpayAmountOk()) return;
     this.gpayBusy.set(true);
     this.api.gpayCheckout(Math.round(this.depositVnd)).subscribe({
@@ -267,8 +294,12 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  /** Show a dynamic VietQR and wait for GPay's confirmation. */
+  /** Show a dynamic GPay QR and wait for GPay's signed confirmation. Does not replace the VietQR tab. */
   gpayCreateQr(): void {
+    if (this.iosAppShell || !this.gpayEnabled() || !this.gpayQrEnabled()) {
+      this.setMsg(this.i18n.t('wallet.gpay.offline'), true);
+      return;
+    }
     if (!this.gpayAmountOk()) return;
     this.gpayBusy.set(true);
     this.api.gpayQr(Math.round(this.depositVnd)).subscribe({
