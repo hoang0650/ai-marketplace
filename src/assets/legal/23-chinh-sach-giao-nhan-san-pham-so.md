@@ -6,7 +6,7 @@
 
 ## 1. Sản phẩm số và dịch vụ tự động
 
-Quyền tải xuống, khóa truy cập, hạn mức API, GPU, agent hoặc dịch vụ số được cấp trong tài khoản sau khi thanh toán được xác nhận. Thời điểm, thời hạn, giới hạn và yêu cầu kỹ thuật hiển thị tại trang sản phẩm và đơn hàng.
+Không kinh doanh hàng hữu hình và không thuê đơn vị vận chuyển trong phạm vi hồ sơ này. Bàn giao số qua quyền truy cập, khóa API, tệp tải, giấy phép, phiên GPU hoặc không gian agent của đúng tài khoản, sau khi thanh toán được xác nhận và điều kiện trên trang sản phẩm được đáp ứng. Thời gian khởi tạo phải được ghi trước khi đặt hàng. Trang này không cam kết bàn giao tức thì khi việc cấp phát phụ thuộc tài nguyên bên ngoài.
 
 ## 2. Dịch vụ chuyên môn
 

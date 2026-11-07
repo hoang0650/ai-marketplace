@@ -93,7 +93,10 @@ export class AffiliateService {
     return this.http.put<{ defaultRate: number }>(`${this.base}/seller/default-rate`, { rate });
   }
 
-  /** Affiliate withdrawal (wallet currency, USD): min 2,000,000 VND, 10% PIT unless Mẫu 08 approved. */
+  /**
+   * Affiliate withdrawal in wallet currency (USD, 2 decimals). No commercial minimum.
+   * The API still applies the 48h hold, available-balance check, and any tax it has configured.
+   */
   withdraw(amount: number): Observable<{ quote?: { gross: number; tax: number; net: number } }> {
     return this.http.post<{ quote?: { gross: number; tax: number; net: number } }>(`${environment.apiUrl.replace(/\/$/, '')}/wallet/withdraw`, {
       amount,

@@ -473,6 +473,22 @@
   contain-intrinsic-size: auto 480px;
 }
 
+.legal-home__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.55rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legal-home__list a {
+  color: inherit;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
 .lux-section__head {
   display: flex;
   align-items: flex-end;

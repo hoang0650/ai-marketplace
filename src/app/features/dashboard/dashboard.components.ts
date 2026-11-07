@@ -439,7 +439,7 @@ export class DashboardAnalyticsComponent implements OnInit {
           <div class="md:col-span-2">
             <p class="mt-1 text-xs text-muted">
               Dịch vụ chuyên môn được bán theo gói giá cố định: mô tả rõ phạm vi, sản phẩm bàn giao và thời gian thực hiện.
-              Không báo giá, không tính theo giờ/tháng. Khách thanh toán bằng số dư ví khi mua; phí sàn 20% (trên giá sau giảm giá) và thuế theo loại người bán (cá nhân kinh doanh 7%; hộ kinh doanh, doanh nghiệp 0%) được khấu trừ khi đơn hoàn tất, tiền được tạm giữ 48 giờ trước khi rút.
+              Không báo giá, không tính theo giờ/tháng. Khách thanh toán bằng số dư dịch vụ khi mua. Phí sàn là điều kiện thương mại. Thuế, nếu có, ghi trên từng đơn. Khoản phải trả được tạm giữ đối soát 48 giờ. Đây không phải tài khoản escrow.
             </p>
           </div>
         } @else {

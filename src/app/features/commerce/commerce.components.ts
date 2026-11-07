@@ -49,7 +49,7 @@ export class BillingComponent {
     <section class="page route-enter">
       <h1 class="section-title">Admin dashboard</h1>
       <p class="mt-2 max-w-2xl text-muted">
-        GMV, phí sàn 20%, thuế theo loại người bán (cá nhân kinh doanh 7% / 1,5% do sàn khấu trừ; hộ kinh doanh, doanh nghiệp 0%) và seller payable theo snapshot đơn. Không có phí CHPlay/App Store trên đơn hàng (IAP chỉ dùng để nạp ví).
+        GMV, phí sàn và khoản thuế ghi trên snapshot từng đơn, cùng số phải trả người bán. Trang này không công bố một tỷ lệ thuế cố định. IAP chỉ dùng để nạp ví trên ứng dụng.
       </p>
 
       <nav class="admin-links mt-5 flex flex-wrap gap-2" aria-label="Trang quản trị">
@@ -80,7 +80,7 @@ export class BillingComponent {
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Phí sàn (commission)</p>
             <p class="mt-2 font-display text-3xl">{{ d.platformFee | currency: d.currency }}</p>
-            <p class="mt-1 text-xs text-muted">Mặc định {{ d.platformFeeRate | percent }} — thuế tính riêng theo loại người bán (cá nhân 7%, HKD/doanh nghiệp 0%)</p>
+            <p class="mt-1 text-xs text-muted">Phí sàn mặc định {{ d.platformFeeRate | percent }}. Thuế, nếu có, lấy theo snapshot của từng đơn.</p>
           </div>
           <div class="panel">
             <p class="text-xs uppercase tracking-wider text-muted">Seller payable (net)</p>

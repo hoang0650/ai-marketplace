@@ -23,21 +23,15 @@
 
 ## Điều 2. Tham gia chương trình
 
-1. Từ ngày 01/07/2026, người dùng đã đăng nhập **và hoàn tất định danh điện tử qua VNeID hoặc tổ chức cung cấp dịch vụ xác thực điện tử được cấp phép** mới được nhận mã giới thiệu và lấy liên kết, mã giới thiệu cho từng sản phẩm hoặc gian hàng tại trang **Affiliate**. Liên kết có dạng `https://aimarkets.vn/product/<sản-phẩm>?ref=<mã>` hoặc `https://aimarkets.vn/store/<gian-hàng>?ref=<mã>`.
-2. Tài khoản chưa xác minh eKYC không được cấp mã, không tạo được liên kết và lượt nhấp, đơn hàng qua mã của tài khoản chưa xác minh không được ghi nhận hoa hồng. Hoa hồng được rút về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh.
+1. Phản hồi của Bộ Công Thương yêu cầu người tiếp thị liên kết được xác thực điện tử từ 01/07/2026 và trước khi cấp mã hoặc ghi nhận hoa hồng. Ảnh CCCD, hộ chiếu và việc duyệt hồ sơ nội bộ không phải xác thực điện tử qua VNeID hoặc nhà cung cấp xác thực. Khi chưa có tích hợp được chứng minh, nền tảng không gắn nhãn đã hoàn tất xác thực điện tử. Liên kết, khi được cấp, có dạng `https://aimarkets.vn/product/<sản-phẩm>?ref=<mã>` hoặc `https://aimarkets.vn/store/<gian-hàng>?ref=<mã>`.
+2. Tài khoản chưa qua bước kiểm tra hồ sơ mà chương trình đang yêu cầu thì không được cấp mã và không được ghi nhận hoa hồng. Kiểm tra hồ sơ đó vẫn không được mô tả là xác thực điện tử đã hoàn tất.
 3. Việc tham gia của người bán là tự nguyện. Mặc định tỷ lệ hoa hồng là 0%, nghĩa là sản phẩm không tham gia chương trình.
 
 ## Điều 3. Tỷ lệ hoa hồng và người chịu chi phí
 
 1. Người bán tự đặt tỷ lệ hoa hồng từ **0% đến 25% giá trị đơn hàng** (giá sau giảm giá), cho từng sản phẩm hoặc làm mức mặc định của gian hàng. Tỷ lệ của sản phẩm (nếu có) được ưu tiên hơn mức mặc định của gian hàng. Hệ thống từ chối mọi tỷ lệ lớn hơn 25%.
 2. Hoa hồng affiliate do **người bán chi trả từ phần doanh thu của người bán**; không trừ vào phí dịch vụ sàn và không làm thay đổi phần thuế khấu trừ.
-3. Công thức đối soát mỗi đơn hàng giới thiệu (giá trị đơn hàng = G, tỷ lệ affiliate = r):
-   - Phí dịch vụ sàn = 20% × G;
-   - Thuế khấu trừ của người bán = t × G, với t theo loại người bán: cá nhân kinh doanh 7% (dịch vụ, sản phẩm số) hoặc 1,5% (hàng hóa); hộ kinh doanh, doanh nghiệp/tổ chức 0%;
-   - Hoa hồng affiliate = r × G;
-   - Người bán thực nhận = G − 20% × G − t × G − r × G.
-   
-   Ví dụ: đơn 1.000.000 đ, tỷ lệ 25%: người bán cá nhân kinh doanh — phí sàn 200.000 đ; thuế 70.000 đ; hoa hồng affiliate 250.000 đ; người bán thực nhận 480.000 đ. Người bán là hộ kinh doanh hoặc doanh nghiệp/tổ chức — phí sàn 200.000 đ; thuế 0 đ; hoa hồng affiliate 250.000 đ; người bán thực nhận 550.000 đ. Với tổng khấu trừ tối đa 52% (cá nhân kinh doanh) hoặc 45% (hộ kinh doanh, doanh nghiệp), phần người bán thực nhận luôn dương.
+3. Hoa hồng của một đơn được ghi nhận riêng với phí sàn và với khoản thuế. Thuế không tính bằng một tỷ lệ cố định theo nhãn người bán trên trang này. Mức thuế, nếu phát sinh, theo tư cách, cư trú, bản chất thu nhập và văn bản có hiệu lực lúc chi trả.
 4. Tỷ lệ được **chốt tại thời điểm đặt hàng**. Thay đổi tỷ lệ chỉ áp dụng cho đơn hàng phát sinh sau thời điểm thay đổi.
 5. Chương trình chỉ áp dụng cho sản phẩm của người bán bên thứ ba; sản phẩm “Bán bởi sàn” không tham gia trừ khi nền tảng công bố khác.
 
@@ -51,15 +45,15 @@
 ## Điều 5. Ghi có, tạm giữ và rút tiền
 
 1. Hoa hồng được ghi có vào ví của người giới thiệu ngay khi đơn hàng hoàn tất và được **tạm giữ 48 giờ** như doanh thu của người bán; nếu đơn hàng phát sinh khiếu nại, khoản hoa hồng tiếp tục bị giữ đến khi khiếu nại được giải quyết.
-2. Sau thời gian tạm giữ, hoa hồng trở thành số dư khả dụng và được rút về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh eKYC, theo Chính sách thanh toán và đối soát. Người giới thiệu chỉ được rút khi **số dư hoa hồng khả dụng từ 2.000.000 đồng** trở lên; **mỗi lần rút tối thiểu 2.000.000 đồng**.
+2. Sau thời gian tạm giữ, hoa hồng khả dụng được chi bằng VND về tài khoản đứng tên đúng người giới thiệu. Không có mức chi trả tối thiểu. Mọi số dư khả dụng lớn hơn 0 đều có thể được yêu cầu, trong đơn vị tiền của ví. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa.
 3. Trang Affiliate hiển thị: liên kết, số lượt nhấp, số đơn, hoa hồng đang tạm giữ, hoa hồng khả dụng và hoa hồng bị thu hồi.
 
 ## Điều 6. Thuế thu nhập cá nhân
 
-1. Đối với người giới thiệu là cá nhân, nghĩa vụ thuế phát sinh khi hoa hồng được chi trả, được dùng để thanh toán đơn hàng hoặc được bù trừ theo quy định thuế hiện hành. Nền tảng thực hiện khấu trừ, khai và nộp thay theo hồ sơ thuế áp dụng tại thời điểm phát sinh; trường hợp chi trả bằng tiền thuộc diện khấu trừ 10%, số thuế được khấu trừ trước khi chuyển khoản. Việc áp dụng Cam kết Mẫu 08/CK-TNCN chỉ thực hiện khi đủ điều kiện pháp luật tại thời điểm chi trả.
+1. Thuế trên hoa hồng được xác định theo tư cách, cư trú, bản chất thu nhập và văn bản có hiệu lực tại lúc chi trả. Trang này không áp dụng máy móc một tỷ lệ cố định, và không coi một mẫu cam kết đã duyệt là căn cứ miễn thuế.
 2. Cam kết Mẫu 08/CK-TNCN được nộp và duyệt tương tự quy trình eKYC: người giới thiệu tải lên bản đã ký (PDF/ảnh), chọn năm cam kết và mã số thuế cá nhân; quản trị viên duyệt hoặc từ chối (nêu lý do). Người cam kết chịu trách nhiệm về tính trung thực của cam kết theo pháp luật.
 3. Khoản đã khấu trừ được ghi trên lịch sử ví; nền tảng báo cáo số thuế TNCN đã khấu trừ cho cơ quan thuế theo quý và cuối năm cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu.
-4. Mức khấu trừ, mức rút tối thiểu có thể được điều chỉnh để phù hợp quy định pháp luật về thuế; người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
+4. Khoản thuế, nếu phát sinh, theo văn bản có hiệu lực tại thời điểm chi trả. Người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
 
 ## Điều 7. Hành vi bị cấm
 

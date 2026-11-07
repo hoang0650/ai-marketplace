@@ -145,7 +145,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-thue',
     file: '18-chinh-sach-thue.md',
     title: 'Chính sách thuế',
-    summary: 'Cá nhân kinh doanh: sàn khấu trừ, nộp thay 7% (dịch vụ, sản phẩm số) hoặc 1,5% (hàng hóa); hộ kinh doanh, doanh nghiệp 0%; affiliate rút tối thiểu 2 triệu đồng, khấu trừ 10% TNCN mỗi lần rút; báo cáo quý và chứng từ khấu trừ cuối năm.',
+    summary: 'Phí sàn không phải thuế. Chưa công bố bảng khấu trừ đã được kế toán đối chiếu với văn bản năm 2026.',
     group: 'commerce',
   },
   {
@@ -194,7 +194,14 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-gia-ca',
     file: '26-chinh-sach-gia-ca.md',
     title: 'Chính sách giá cả',
-    summary: 'Nguyên tắc niêm yết giá bằng VND, giá tham khảo ngoại tệ, phí, thuế và khuyến mại.',
+    summary: 'Giá, hạch toán và thanh toán trong nước bằng VND. Không công bố bảng thuế suất đã đối chiếu.',
+    group: 'commerce',
+  },
+  {
+    slug: 'dieu-kien-va-han-che-cung-cap',
+    file: '28-dieu-kien-va-han-che-cung-cap.md',
+    title: 'Điều kiện và hạn chế cung cấp dịch vụ',
+    summary: 'Thị trường Việt Nam, năng lực giao kết, không cam kết 24/7, không giao hàng vật lý.',
     group: 'commerce',
   },
   {
@@ -230,6 +237,7 @@ const ALIASES: Record<string, string> = {
   ranking: 'chinh-sach-xep-hang-uu-tien-hien-thi',
   livestream: 'quy-che-livestream-ban-hang',
   delivery: 'chinh-sach-giao-nhan-san-pham-so',
+  conditions: 'dieu-kien-va-han-che-cung-cap',
 };
 
 export function resolveLegalPolicy(slugOrAlias: string | null | undefined): LegalPolicyMeta | undefined {

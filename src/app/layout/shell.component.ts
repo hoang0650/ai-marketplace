@@ -56,6 +56,8 @@ export class ShellComponent {
     { path: '/sell', key: 'footer.nav.sell' },
   ];
   readonly footerLegal = [
+    { path: '/legal', key: 'footer.publicPolicies' },
+    { path: '/legal/chinh-sach-thanh-toan-doi-soat', key: 'footer.paymentPolicy' },
     { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.privacy' },
     { path: '/legal/quy-che-hoat-dong-san-tmdt', key: 'footer.marketplaceRules' },
     { path: '/legal/chinh-sach-khieu-nai-tranh-chap', key: 'footer.disputePolicy' },

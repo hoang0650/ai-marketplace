@@ -62,7 +62,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán duy nhất bằng tín dụng dịch vụ AI Markets. Tín dụng của Người mua không hỗ trợ rút tiền mặt, chuyển nhượng hoặc chuyển khoản nội bộ; khoản hoàn đủ điều kiện được trả về đúng phương thức thanh toán ban đầu.
 
-- **Người giới thiệu (affiliate, người tiếp thị liên kết):** người dùng đã hoàn tất xác minh danh tính (eKYC) tham gia Chương trình Affiliate, chia sẻ liên kết sản phẩm, gian hàng và nhận hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá do người bán chi trả; chỉ rút hoa hồng khi số dư hoa hồng khả dụng từ 2.000.000 đ (mỗi lần rút tối thiểu 2.000.000 đ), khấu trừ 10% thuế TNCN mỗi lần rút hoặc 0% khi có Bản cam kết Mẫu 08/CK-TNCN được duyệt. Người giới thiệu là một tư cách của tài khoản, không phải loại tài khoản riêng; một tài khoản có thể đồng thời là người mua, người bán và người giới thiệu.
+- **Người giới thiệu (affiliate, người tiếp thị liên kết):** người dùng tham gia Chương trình Affiliate, chia sẻ liên kết sản phẩm, gian hàng và nhận hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá do người bán chi trả. Không có mức chi trả tối thiểu: mọi hoa hồng khả dụng lớn hơn 0 có thể được yêu cầu. Thuế được xác định lúc chi trả, không áp dụng máy móc một tỷ lệ cố định hoặc miễn thuế chỉ vì một mẫu cam kết được duyệt. Kiểm tra hồ sơ không phải xác thực điện tử đã hoàn tất. Người giới thiệu là một tư cách của tài khoản, không phải loại tài khoản riêng.
 
 - **Ban quản trị (quản trị viên):** nhân sự của Chủ quản nền tảng được phân quyền vận hành: quản lý người dùng, xác minh người bán và eKYC, kiểm duyệt sản phẩm, giải quyết khiếu nại, tài chính, đối soát. Việc xuất báo cáo thuế theo quý, dữ liệu chứng từ khấu trừ thuế TNCN và duyệt Bản cam kết Mẫu 08/CK-TNCN chỉ do quản trị viên hoặc nhân sự kế toán thuế được cấp quyền riêng thực hiện.
 
@@ -264,9 +264,9 @@ Người mua thanh toán đơn hàng thông qua ví AI Markets; nền tảng thu
 
 ### 2. Thanh toán giữa Người bán - Ban Quản lý website
 
-Nền tảng (Ban quản lý website) thu tiền của người mua, khấu trừ phí sàn 20%, thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% (5% thuế GTGT + 2% thuế TNCN) đối với sản phẩm số, dịch vụ (mức mặc định) hoặc 1,5% (1% thuế GTGT + 0,5% thuế TNCN) đối với hàng hóa vật lý; hộ kinh doanh, doanh nghiệp/tổ chức 0%) và chi trả phần còn lại cho người bán theo Mục XI và Mục XII.
+Nền tảng (Ban quản lý website) thu tiền của người mua, khấu trừ phí sàn 20%, thuế khấu trừ theo loại người bán (khoản thuế theo pháp luật có hiệu lực tại thời điểm phát sinh; Quy chế không công bố bảng tỷ lệ đã đối chiếu) và chi trả phần còn lại cho người bán theo Mục XI và Mục XII.
 
-**Bước 1:** Theo dõi doanh thu và các khoản khấu trừ. Tại “Creator dashboard” → “Overview”, người bán xem doanh thu, số đơn hàng, số sản phẩm, lượng token sử dụng và các khoản: phí sàn (Commission) – giao diện ghi “Mặc định 20% giá sau giảm giá — thuế tính riêng theo loại người bán”; Apple In-App Purchase/Google Play Billing chỉ dùng để nạp ví, không phát sinh phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán; thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%), tách thuế GTGT và thuế TNCN; hoàn tiền; số thực nhận (Net payable).
+**Bước 1:** Theo dõi doanh thu và các khoản khấu trừ. Tại “Creator dashboard” → “Overview”, người bán xem doanh thu, số đơn hàng, số sản phẩm, lượng token sử dụng và các khoản: phí sàn (Commission) – giao diện ghi “Mặc định 20% giá sau giảm giá — thuế tính riêng theo loại người bán”; Apple In-App Purchase/Google Play Billing chỉ dùng để nạp ví, không phát sinh phí kho ứng dụng trên đơn hàng hay trên doanh thu người bán; thuế khấu trừ theo loại người bán (khoản thuế theo pháp luật tại thời điểm phát sinh; chưa công bố bảng tỷ lệ đã đối chiếu), tách thuế GTGT và thuế TNCN; hoàn tiền; số thực nhận (Net payable).
 
 ![Hình 31: Bảng điều khiển doanh thu, phí sàn, thuế khấu trừ và thực nhận](assets/legal/img/qc-31.jpg)
 
@@ -274,7 +274,7 @@ Nền tảng (Ban quản lý website) thu tiền của người mua, khấu tr�
 
 ![Hình 32: Yêu cầu tạo hồ sơ người bán trước khi sử dụng chức năng thanh toán](assets/legal/img/qc-32.jpg)
 
-**Bước 3:** Rút tiền. Tại “Finance” → “Withdraw”, giao diện hiển thị quy tắc áp dụng: phí sàn (Platform fee) 20%, thuế (Tax) theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%); phí sàn và thuế đã được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị là số dư ròng; thời gian tạm giữ (Hold period) 48 giờ; số dư khả dụng và số đang tạm giữ theo đơn; lịch sử ví (ghi nợ, ghi có kèm bản chụp hoa hồng, thuế). Khi người bán chưa xác minh danh tính, chức năng rút tiền bị khóa (“Identity not verified — withdrawals are locked”). Người bán nhập số tiền và chọn “Request withdrawal”; tiền được chuyển về tài khoản ngân hàng đứng tên người bán theo khoản 8 Mục XI.
+**Bước 3:** Rút tiền. Tại “Finance” → “Withdraw”, giao diện hiển thị quy tắc áp dụng: phí sàn (Platform fee) 20%, thuế (Tax) theo loại người bán (khoản thuế theo pháp luật tại thời điểm phát sinh; chưa công bố bảng tỷ lệ đã đối chiếu); phí sàn và thuế đã được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị là số dư ròng; thời gian tạm giữ (Hold period) 48 giờ; số dư khả dụng và số đang tạm giữ theo đơn; lịch sử ví (ghi nợ, ghi có kèm bản chụp hoa hồng, thuế). Khi người bán chưa xác minh danh tính, chức năng rút tiền bị khóa (“Identity not verified — withdrawals are locked”). Người bán nhập số tiền và chọn “Request withdrawal”; tiền được chuyển về tài khoản ngân hàng đứng tên người bán theo khoản 8 Mục XI.
 
 ![Hình 33: Trang rút tiền: phí sàn, thuế, thời gian tạm giữ và lịch sử ví](assets/legal/img/qc-33.jpg)
 
@@ -495,12 +495,12 @@ Nền tảng áp dụng hạn mức (quota), giới hạn tần suất (rate lim
 
 ### 1. Đối tác và phương thức thanh toán
 
-Sàn TMĐT aimarkets.vn không trực tiếp cung cấp dịch vụ trung gian thanh toán. Trên website, người mua nạp tín dụng dịch vụ bằng một trong hai cách song song: chuyển khoản VietQR vào tài khoản thanh toán được hiển thị tại bước nạp, hoặc GPay (Công ty Cổ phần Thanh toán G) khi kênh này được bật. Giao dịch GPay chỉ được ghi có sau khi máy chủ xác thực chữ ký thông báo kết quả. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, nạp qua Google Play Billing. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Mọi đơn hàng trên website và ứng dụng được thanh toán bằng số dư nội bộ.
+Sàn TMĐT aimarkets.vn không trực tiếp cung cấp dịch vụ trung gian thanh toán. AI Markets dự kiến hỗ trợ đồng thời chuyển khoản ngân hàng bằng VietQR thuần và thanh toán qua GPay (Công ty Cổ phần Thanh toán G). VietQR thuần là lệnh chuyển khoản vào tài khoản doanh nghiệp đã được xác minh, không đồng nghĩa giao dịch được GPay xử lý. GPay chỉ xử lý giao dịch thuộc phạm vi hợp đồng và dịch vụ được phép cung ứng; không mặc nhiên cung cấp giữ tiền, ký quỹ hoặc chi hộ cho AI Markets. Chỉ kích hoạt tiếp nhận tiền thật qua GPay sau khi kiểm tra hợp đồng có hiệu lực, phạm vi giấy phép hiện hành, cấu hình, tài khoản thụ hưởng hoặc đối soát và kiểm thử hoàn tiền. Không thu thêm phí GPay nếu chưa công khai và được chấp thuận trước giao dịch. Quy chế này không công bố số hợp đồng, giấy phép merchant, chứng nhận bảo mật thẻ hoặc trạng thái đã nhận tiền thật. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, nạp qua Google Play Billing. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Mọi đơn hàng được thanh toán bằng số dư dịch vụ nội bộ. Số dư đó là bản ghi kế toán, không phải ví điện tử.
 
 | Kênh | Bên xử lý khoản tiền | Phương thức | Mục đích |
 |---|---|---|---|
 | Website | Tài khoản thanh toán hiển thị tại bước nạp | VietQR / chuyển khoản, đối soát theo nội dung | Mua tín dụng dịch vụ nội bộ |
-| Website | Công ty Cổ phần Thanh toán G (GPay), khi kênh được bật | Cổng thanh toán hoặc mã QR động; ghi có sau khi máy chủ xác thực chữ ký | Mua tín dụng dịch vụ nội bộ |
+| Website | Công ty Cổ phần Thanh toán G (GPay), chỉ sau khi kênh được kích hoạt | Cổng hoặc mã QR của GPay; ghi có sau khi máy chủ xác thực chữ ký | Mua tín dụng dịch vụ trong phạm vi được phép. Không phải giữ tiền hay chi hộ |
 | Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple của người mua | Mua tín dụng dịch vụ nội bộ |
 | Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play của người mua | Mua tín dụng dịch vụ nội bộ |
 | Website và ứng dụng | Ví AI Markets | Số dư đã nạp qua các kênh trên | Thanh toán đơn hàng |
@@ -527,7 +527,7 @@ d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và
 
 ### 4. Thanh toán trong ứng dụng
 
-Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website (xem khoản 9, khoản 10 Mục XII). Apple In-App Purchase / Google Play Billing chỉ dùng để nạp tiền vào ví AI Markets; không có phí kho ứng dụng nào được khấu trừ trên đơn hàng hoặc từ doanh thu của người bán. Đơn hàng trên ứng dụng chịu các khoản khấu trừ như trên website: phí sàn 20% và thuế theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%).
+Trên ứng dụng, người mua nạp tiền vào ví qua Apple In-App Purchase hoặc Google Play Billing theo chính sách của Apple/Google; đơn hàng được thanh toán bằng số dư ví như trên website. Đơn hàng, hóa đơn và quyền khiếu nại của người mua giống như trên website (xem khoản 9, khoản 10 Mục XII). Apple In-App Purchase / Google Play Billing chỉ dùng để nạp tiền vào ví AI Markets; không có phí kho ứng dụng nào được khấu trừ trên đơn hàng hoặc từ doanh thu của người bán. Đơn hàng trên ứng dụng chịu các khoản khấu trừ như trên website: phí sàn 20% và thuế theo loại người bán (khoản thuế theo pháp luật tại thời điểm phát sinh; chưa công bố bảng tỷ lệ đã đối chiếu).
 
 ### 5. Đơn hàng
 
@@ -547,7 +547,7 @@ c) Khoản chuyển khoản VietQR được đối chiếu với giao dịch ghi
 | Dịch vụ AI agent (Bán bởi sàn) | 199.000 VNĐ/agent/30 ngày (hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị); phí token khi dùng mô hình của nền tảng = giá gốc nhà cung cấp mô hình + 25%; dùng khóa API riêng (BYOK) không thu phí token |
 | Dịch vụ Bán bởi sàn khác (API, GPU, máy chủ trò chơi) | Giá niêm yết trên trang sản phẩm theo đơn vị sử dụng (token, ký tự, phút, giờ) |
 | Phí kho ứng dụng | Không áp dụng đối với đơn hàng. Apple In-App Purchase / Google Play Billing chỉ dùng để nạp tiền vào ví AI Markets; đơn hàng chỉ thanh toán bằng số dư ví; không khấu trừ phí kho ứng dụng trên đơn hàng hay từ doanh thu người bán |
-| Thuế khấu trừ | Theo loại người bán, tính trên giá sau giảm giá, khấu trừ khi đơn hàng hoàn tất (chi tiết tại khoản 3 Mục XII): cá nhân kinh doanh 7% (5% GTGT + 2% TNCN) với sản phẩm số, dịch vụ hoặc 1,5% (1% GTGT + 0,5% TNCN) với hàng hóa vật lý; hộ kinh doanh, doanh nghiệp/tổ chức 0%. Tổng khấu trừ = phí sàn 20% + thuế theo loại người bán, cộng hoa hồng affiliate 0–25% nếu người bán tham gia; người bán tự chịu trách nhiệm về nghĩa vụ thuế khác theo pháp luật |
+| Thuế khấu trừ | Theo loại người bán, tính trên giá sau giảm giá, khấu trừ khi đơn hàng hoàn tất (chi tiết tại khoản 3 Mục XII): khoản thuế theo pháp luật có hiệu lực tại thời điểm phát sinh; Quy chế không công bố bảng tỷ lệ đã đối chiếu. Tổng khấu trừ = phí sàn 20% + thuế theo loại người bán, cộng hoa hồng affiliate 0–25% nếu người bán tham gia; người bán tự chịu trách nhiệm về nghĩa vụ thuế khác theo pháp luật |
 
 Thay đổi mức phí được thông báo **ít nhất 30 ngày** trước khi áp dụng và chỉ áp dụng cho đơn hàng giao kết sau ngày hiệu lực.
 
@@ -557,9 +557,9 @@ Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; 
 
 ### 8. Doanh thu và chi trả cho người bán
 
-a) **Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20% giá sau giảm giá) − thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% (5% thuế GTGT + 2% thuế TNCN) đối với sản phẩm số, dịch vụ (mức mặc định) hoặc 1,5% (1% thuế GTGT + 0,5% thuế TNCN) đối với hàng hóa vật lý; hộ kinh doanh, doanh nghiệp/tổ chức 0%; tính trên giá sau giảm giá) − hoa hồng affiliate (nếu có, 0–25% giá sau giảm giá) − hoàn tiền/điều chỉnh; không khấu trừ phí kho ứng dụng. Ví dụ đơn hàng 1.000.000 đ, hoa hồng affiliate 25%: người bán cá nhân – phí sàn 200.000 đ, thuế 70.000 đ, hoa hồng 250.000 đ, nhận 480.000 đ; người bán là hộ kinh doanh, doanh nghiệp/tổ chức – thuế 0 đ, nhận 550.000 đ.** Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là **số dư ròng**. Doanh thu được ghi nhận vào số dư người bán; mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
+a) **Doanh thu người bán = giá trị đơn sau giảm giá − phí sàn (20% giá sau giảm giá) − thuế khấu trừ theo loại người bán (khoản thuế theo pháp luật có hiệu lực tại thời điểm phát sinh; Quy chế không công bố bảng tỷ lệ đã đối chiếu; tính trên giá sau giảm giá) − hoa hồng affiliate (nếu có, 0–25% giá sau giảm giá) − hoàn tiền/điều chỉnh; không khấu trừ phí kho ứng dụng. Quy chế không dùng ví dụ số về thuế khi chưa có bảng tỷ lệ đã đối chiếu.** Phí sàn và thuế được khấu trừ khi đơn hàng hoàn tất nên số dư hiển thị của người bán là **số dư ròng**. Doanh thu được ghi nhận vào số dư người bán; mỗi đơn lưu bản chụp các khoản tại thời điểm giao kết.
 
-b) Doanh thu được **tạm giữ 48 giờ** kể từ khi ghi nhận để giải quyết hoàn tiền, khiếu nại; khoản liên quan đến khiếu nại, tranh chấp đang giải quyết tiếp tục được tạm giữ đến khi có kết quả.
+b) Thời gian tạm giữ đối soát là **48 giờ** từ khi giao dịch hoàn tất. Chỉ giữ tiếp khoản liên quan tranh chấp, và phải thông báo lý do cùng thời hạn rà soát. Việc tạm giữ không phải tài khoản escrow hoặc bảo lãnh ngân hàng. Chi trả bằng VND vào tài khoản đứng tên đúng người bán trong **03 ngày làm việc**, tính từ thời điểm muộn hơn giữa lúc hết thời gian tạm giữ và lúc nhận yêu cầu hợp lệ.
 
 c) Người bán theo dõi doanh thu, số tạm giữ, số khả dụng, thuế đã khấu trừ và lịch sử đối soát tại Kênh người bán.
 
@@ -585,11 +585,11 @@ a) Tham gia: người dùng đã đăng nhập và đã hoàn tất xác minh da
 
 b) Tỷ lệ và người chịu chi phí: người bán đặt hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá, cho từng sản phẩm hoặc làm mức mặc định của gian hàng; hệ thống từ chối mọi tỷ lệ trên 25%. Hoa hồng do người bán chi trả từ doanh thu của mình, không trừ vào phí sàn và không thay đổi thuế khấu trừ. Tỷ lệ được chốt tại thời điểm đặt hàng; thay đổi chỉ áp dụng cho đơn hàng mới.
 
-c) Công thức: doanh thu người bán = giá trị đơn sau giảm giá − phí sàn 20% − thuế khấu trừ theo loại người bán (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%) − hoa hồng affiliate. Ví dụ đơn hàng 1.000.000 đ, hoa hồng affiliate 25%: người bán cá nhân – phí sàn 200.000 đ, thuế 70.000 đ, hoa hồng 250.000 đ, nhận 480.000 đ; người bán là hộ kinh doanh, doanh nghiệp/tổ chức – thuế 0 đ, nhận 550.000 đ.
+c) Công thức: doanh thu người bán = giá trị đơn sau giảm giá − phí sàn 20% − thuế khấu trừ theo loại người bán (khoản thuế theo pháp luật tại thời điểm phát sinh; chưa công bố bảng tỷ lệ đã đối chiếu) − hoa hồng affiliate. Quy chế không dùng ví dụ số về thuế khi chưa có bảng tỷ lệ đã đối chiếu.
 
 d) Ghi nhận: theo nguyên tắc nhấp chuột cuối cùng (last-click) trong thời hạn 30 ngày kể từ lượt nhấp (nền tảng có thể công bố thời hạn khác); liên kết sản phẩm chỉ ghi nhận đơn của sản phẩm đó, liên kết gian hàng ghi nhận đơn của các sản phẩm tham gia thuộc gian hàng. Không ghi nhận khi người mua là người giới thiệu, hoặc người giới thiệu là người bán của sản phẩm.
 
-đ) Ghi có và rút tiền: hoa hồng được ghi có vào ví của người giới thiệu khi đơn hàng hoàn tất, tạm giữ 48 giờ như doanh thu người bán (kéo dài khi có khiếu nại), sau đó rút được về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh. Hoa hồng được ghi có đủ (chưa khấu trừ thuế). Người giới thiệu chỉ được rút khi số dư hoa hồng khả dụng từ 2.000.000 đ trở lên và mỗi lần rút tối thiểu 2.000.000 đ. Theo Luật Thuế thu nhập cá nhân, nền tảng khấu trừ thuế TNCN 10% trên mỗi lần rút hoa hồng. Người giới thiệu là cá nhân cư trú, có mã số thuế, dự kiến tổng thu nhập trong năm chưa đến mức phải nộp thuế được nộp Bản cam kết Mẫu 08/CK-TNCN tại trang Affiliate; sau khi nền tảng duyệt, nền tảng không khấu trừ đối với các lần rút trong năm tính thuế tương ứng và người giới thiệu chịu trách nhiệm về tính trung thực của cam kết. Ví dụ rút 2.500.000 đ thì khấu trừ thuế TNCN 250.000 đ, người giới thiệu thực nhận 2.250.000 đ; số dư hoa hồng 1.500.000 đ chưa được rút. Kết thúc năm, nền tảng cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu đã bị khấu trừ.
+đ) Ghi có và rút tiền: hoa hồng được ghi có vào ví của người giới thiệu khi đơn hàng hoàn tất, tạm giữ 48 giờ như doanh thu người bán (kéo dài khi có khiếu nại), sau đó rút được về tài khoản ngân hàng đứng tên người giới thiệu đã xác minh. Hoa hồng được ghi có đủ (chưa khấu trừ thuế). Không có mức chi trả tối thiểu: mọi số dư khả dụng lớn hơn 0 đều có thể được yêu cầu. Thuế trên hoa hồng được xác định lúc chi trả theo tư cách, cư trú và văn bản đang có hiệu lực. Quy chế không áp một tỷ lệ cố định và không coi mẫu cam kết đã duyệt là căn cứ miễn thuế. Kết thúc năm, nền tảng cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu đã bị khấu trừ.
 
 e) Hoàn tiền và thu hồi: đơn hàng bị hoàn tiền hoặc hủy (toàn bộ hay một phần) thì hoa hồng tương ứng bị đảo ngược theo tỷ lệ. Nghiêm cấm thư rác, quảng cáo sai sự thật hoặc gây nhầm lẫn, đặt giá thầu từ khóa thương hiệu khi chưa được chấp thuận, đơn hàng ảo, nhồi cookie (cookie stuffing) và tự giới thiệu; khi phát hiện vi phạm, nền tảng thu hồi toàn bộ hoa hồng liên quan (kể cả khoản đã khả dụng), tạm khóa tính năng affiliate hoặc tài khoản và xử lý theo Mục XV của Quy chế này.
 
@@ -607,16 +607,11 @@ Phí sàn (mặc định 20% giá trị đơn hàng đối với người bán b
 
 ### 3. Khấu trừ thuế
 
-a) Nền tảng khấu trừ, khai, nộp thay thuế theo loại người bán đã khai báo, tính trên giá trị từng đơn hàng sau giảm giá tại thời điểm đơn hàng hoàn tất, theo Nghị định số 252/2026/NĐ-CP và Thông tư số 18/2026/TT-BTC:
+a) Nền tảng khấu trừ, khai, nộp thay khi pháp luật có hiệu lực tại thời điểm phát sinh đặt nghĩa vụ đó. Mức không được suy ra từ nhãn cá nhân, hộ kinh doanh hoặc doanh nghiệp. Quy chế này không công bố bảng tỷ lệ, ngưỡng doanh thu năm hoặc thuế suất hoa hồng đã được kế toán đối chiếu.
 
-- Cá nhân kinh doanh: 7% (5% thuế GTGT + 2% thuế TNCN) đối với sản phẩm số, dịch vụ – mức mặc định; 1,5% (1% thuế GTGT + 0,5% thuế TNCN) đối với hàng hóa vật lý.
-- Hộ kinh doanh: 0% – nền tảng không khấu trừ; hộ kinh doanh tự kê khai, nộp thuế theo quy định.
-- Doanh nghiệp/Tổ chức: 0% – nền tảng không khấu trừ; nền tảng lập hóa đơn GTGT thuế suất 10% đối với phí sàn 20%.
-- Ngưỡng doanh thu: đơn hàng của cá nhân kinh doanh không bị khấu trừ khi tổng doanh thu trên nền tảng trong năm dương lịch (kể cả đơn hàng đó) không vượt ngưỡng doanh thu không chịu thuế (mặc định 100.000.000 đ/năm, điều chỉnh theo quy định hiện hành); khi chưa xác định được doanh thu lũy kế, nền tảng khấu trừ.
+b) Phí sàn, khoản thuế nếu có, và hoa hồng affiliate được ghi riêng trên từng đơn. Hoa hồng không làm giảm phí sàn. Số dư hiển thị của người bán là số sau các khoản đã ghi trên đơn.
 
-b) Tổng khoản khấu trừ trên mỗi đơn hàng = phí sàn 20% + thuế theo loại người bán, tính trên giá sau giảm giá; không khấu trừ phí kho ứng dụng. Với đơn hàng được ghi nhận cho người giới thiệu, người bán chịu thêm hoa hồng affiliate theo tỷ lệ mình đã đặt (0–25%); hoa hồng không làm giảm phí sàn và thuế khấu trừ. Ví dụ đơn hàng 1.000.000 đ, hoa hồng affiliate 25%: người bán cá nhân – phí sàn 200.000 đ, thuế 70.000 đ, hoa hồng 250.000 đ, nhận 480.000 đ; người bán là hộ kinh doanh, doanh nghiệp/tổ chức – thuế 0 đ, nhận 550.000 đ. Số dư hiển thị của người bán là số dư ròng sau khấu trừ.
-
-c) Số thuế đã khấu trừ (tách thuế GTGT, thuế TNCN) được hiển thị trên đối soát từng đơn hàng tại Kênh người bán. Nền tảng khai, nộp số thuế đã khấu trừ theo quý (nộp hồ sơ trong tháng 1, 4, 7 và 10) kèm bảng kê doanh thu của người bán cá nhân, hộ kinh doanh và số thuế TNCN đã khấu trừ của người giới thiệu; kết thúc năm, nền tảng cấp chứng từ khấu trừ thuế TNCN cho người bán cá nhân và người giới thiệu đã bị khấu trừ.
+c) Khi một khoản thực sự bị khấu trừ, số liệu trên đối soát của đơn đó là căn cứ. Quy chế này không mô tả lịch nộp quý hoặc mẫu chứng từ như một thủ tục đã được cơ quan thuế xác nhận.
 
 ### 4. Nghĩa vụ thuế khác của người bán
 
@@ -640,7 +635,7 @@ Khi pháp luật về thuế thay đổi, mức khấu trừ mới áp dụng ch
 
 Mỗi đơn hàng được lập hóa đơn điện tử bởi bên bán của đơn hàng đó (Điều 26 Luật Quản lý thuế số 108/2025/QH15; Nghị định số 254/2026/NĐ-CP). Đối với sản phẩm “Bán bởi Seller”, nền tảng là bên trung gian và không lập hóa đơn bán sản phẩm của người bán, trừ trường hợp được người bán ủy nhiệm theo điểm d khoản này:
 
-a) **Hóa đơn của nền tảng:** Công ty lập hóa đơn điện tử đối với sản phẩm, dịch vụ do Công ty trực tiếp cung cấp, gồm: (i) sản phẩm, dịch vụ “Bán bởi sàn” (API, GPU, máy chủ trò chơi, phí sử dụng trừ dần và thuê bao AI agent 199.000 VNĐ/agent/30 ngày) cho người mua, theo lựa chọn của người mua tại khoản 9 Mục này; (ii) phí dịch vụ sàn (20%) và các phí dịch vụ khác cho người bán, lập theo kỳ đối soát, chậm nhất ngày 07 của tháng sau tháng phát sinh (điểm a khoản 4 Điều 9 Nghị định số 254/2026/NĐ-CP); người bán là doanh nghiệp/tổ chức nhận hóa đơn GTGT thuế suất 10%; (iii) khoản nạp ví: tiền nạp bằng chuyển khoản ngân hàng là khoản người mua trả trước, ghi nhận vào số dư ví; Công ty lập hóa đơn cho phần số dư được dùng để thanh toán sản phẩm, dịch vụ “Bán bởi sàn” tại thời điểm quy định tại Điều 9 Nghị định số 254/2026/NĐ-CP; phần số dư dùng thanh toán đơn hàng “Bán bởi Seller” là khoản Công ty thu hộ và do người bán lập hóa đơn; khoản nạp qua Apple In-App Purchase / Google Play Billing có biên nhận do Apple/Google phát hành.
+a) **Hóa đơn của nền tảng:** Công ty lập hóa đơn điện tử đối với sản phẩm, dịch vụ do Công ty trực tiếp cung cấp, gồm: (i) sản phẩm, dịch vụ “Bán bởi sàn” (API, GPU, máy chủ trò chơi, phí sử dụng trừ dần và thuê bao AI agent 199.000 VNĐ/agent/30 ngày) cho người mua, theo lựa chọn của người mua tại khoản 9 Mục này; (ii) phí dịch vụ sàn (20%) và các phí dịch vụ khác cho người bán, lập theo kỳ đối soát, chậm nhất ngày 07 của tháng sau tháng phát sinh (điểm a khoản 4 Điều 9 Nghị định số 254/2026/NĐ-CP); người bán là doanh nghiệp/tổ chức nhận hóa đơn GTGT thuế suất 10%; (iii) khoản nạp ví: tiền nạp bằng chuyển khoản ngân hàng là khoản người mua trả trước, ghi nhận vào số dư ví; Công ty lập hóa đơn cho phần số dư được dùng để thanh toán sản phẩm, dịch vụ “Bán bởi sàn” tại thời điểm quy định tại Điều 9 Nghị định số 254/2026/NĐ-CP; phần số dư dùng thanh toán đơn hàng “Bán bởi Seller” do người bán lập hóa đơn; Quy chế không gọi khoản này là thu hộ khi chưa xác định cấu trúc thanh toán; khoản nạp qua Apple In-App Purchase / Google Play Billing có biên nhận do Apple/Google phát hành.
 
 b) **Hóa đơn của người bán là doanh nghiệp/tổ chức, hộ kinh doanh:** đối với sản phẩm “Bán bởi Seller”, người bán tự lập hóa đơn điện tử (hóa đơn GTGT hoặc hóa đơn bán hàng theo phương pháp tính thuế của mình) cho từng đơn hàng và gửi cho người mua. Người bán phải đăng ký sử dụng hóa đơn điện tử với cơ quan thuế trước khi bán trên nền tảng, lập hóa đơn đúng thời điểm quy định tại Điều 9 Nghị định số 254/2026/NĐ-CP, đúng thông tin người mua đã khai theo khoản 9 Mục này, và cập nhật số, ký hiệu hóa đơn, đường dẫn tra cứu tại Kênh người bán để người mua tải về.
 
@@ -1192,7 +1187,7 @@ Theo Chính sách người bán và Thỏa thuận người bán, người bán 
 
 - Nếu dùng tài khoản nhà cung cấp hạ tầng của riêng mình, bảo đảm có quyền khai thác thương mại theo điều khoản của nhà cung cấp đó;
 
-- Thực hiện nghĩa vụ thuế, khai báo và cập nhật hồ sơ thuế theo Mục XII; chấp nhận khoản thuế khấu trừ theo loại người bán đã khai báo (cá nhân kinh doanh 7% hoặc 1,5%; hộ kinh doanh, doanh nghiệp/tổ chức 0%); tự chịu trách nhiệm về các nghĩa vụ thuế khác theo pháp luật và lập hóa đơn điện tử cho người mua theo khoản 8, khoản 9 Mục XII;
+- Thực hiện nghĩa vụ thuế, khai báo và cập nhật hồ sơ thuế theo Mục XII; chấp nhận khoản thuế khấu trừ theo loại người bán đã khai báo (khoản thuế theo pháp luật tại thời điểm phát sinh; chưa công bố bảng tỷ lệ đã đối chiếu); tự chịu trách nhiệm về các nghĩa vụ thuế khác theo pháp luật và lập hóa đơn điện tử cho người mua theo khoản 8, khoản 9 Mục XII;
 
 - Bảo vệ thông tin bí mật, dữ liệu cá nhân của người mua và khóa bí mật; chỉ sử dụng dữ liệu người mua nhận được qua nền tảng để thực hiện đơn hàng;
 
