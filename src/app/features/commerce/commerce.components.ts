@@ -28,7 +28,7 @@ type AdminTab = 'overview' | 'shops' | 'people' | 'ops' | 'disputes';
         Mọi đơn hàng trên AI Markets được thanh toán bằng ví aimarkets.vn. Nạp tiền vào ví rồi mua trên trang sản phẩm hoặc giỏ hàng.
       </p>
       <div class="panel mt-8 grid gap-3">
-        <p class="text-sm">Phương thức: ví aimarkets.vn. Trên website, nạp bằng chuyển khoản VietQR vào tài khoản được hiển thị khi nạp, hoặc bằng GPay khi kênh đó được bật. Ứng dụng iOS dùng Apple IAP, ứng dụng Android dùng Google Play Billing. Ứng dụng iOS không chuyển sang thanh toán trên website.</p>
+        <p class="text-sm">Phương thức đang mở: ví aimarkets.vn, nạp website bằng VietQR vào tài khoản được hiển thị khi nạp. AI Markets đang làm việc trực tiếp với GPay để hoàn tất hợp đồng cho dự án; cổng GPay chưa mở. Ứng dụng iOS dùng Apple IAP, ứng dụng Android dùng Google Play Billing.</p>
         <a class="btn btn-fill w-fit" routerLink="/wallet">Mở ví & nạp tiền</a>
       </div>
     </section>

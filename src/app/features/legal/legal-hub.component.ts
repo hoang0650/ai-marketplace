@@ -24,7 +24,7 @@ export class LegalHubComponent {
     this.requiredSection('Khiếu nại', 'Tiếp nhận và giải quyết tranh chấp', 'chinh-sach-khieu-nai-tranh-chap'),
     this.requiredSection('Giá cả', 'Niêm yết, phí và thuế', 'chinh-sach-gia-ca'),
     this.requiredSection('Điều kiện và hạn chế', 'Phạm vi cung cấp và giới hạn trước thanh toán', 'dieu-kien-va-han-che-cung-cap'),
-    this.requiredSection('Thanh toán', 'VietQR vào tài khoản Công ty, số dư ví và rút sau eKYC', 'chinh-sach-thanh-toan-doi-soat'),
+    this.requiredSection('Thanh toán', 'VietQR đang mở; hợp đồng GPay cho AI Markets chưa hoàn tất', 'chinh-sach-thanh-toan-doi-soat'),
     this.requiredSection('Ưu tiên hiển thị', 'Nổi bật, giảm giá và nhãn quảng cáo', 'chinh-sach-xep-hang-uu-tien-hien-thi'),
     this.requiredSection('Livestream', 'Tính năng chưa cung cấp', 'quy-che-livestream-ban-hang'),
     this.requiredSection('Giao nhận', 'Bàn giao sản phẩm số', 'chinh-sach-giao-nhan-san-pham-so'),

@@ -15,9 +15,9 @@
 
 ## Điều 1. Đối tác và phương thức thanh toán
 
-AI Markets không trực tiếp cung cấp ví điện tử, tài khoản thanh toán hoặc dịch vụ trung gian thanh toán.
+Hiện tại, website nạp ví bằng chuyển khoản VietQR vào tài khoản ngân hàng của Công ty được hiển thị tại bước nạp. Ví được ghi có sau khi nội dung chuyển khoản được đối soát với giao dịch ghi có. Tài khoản đó không phải tổ chức được cấp phép nhận, giữ và chi. Lệnh rút số dư nạp đang tắt. Số dư đã ghi có không bị xóa.
 
-Website nạp ví bằng chuyển khoản VietQR vào tài khoản của Công ty được hiển thị tại bước nạp. Ví được ghi có sau khi nội dung chuyển khoản được đối soát với giao dịch ghi có. Không dùng thêm cổng trung gian. Trang này không khẳng định mô hình nhận tiền, giữ số dư và chi trả đã được cấp phép trung gian thanh toán, và không công bố hợp đồng merchant, giấy phép hay chứng nhận bảo mật thẻ.
+AI Markets đang làm việc trực tiếp với GPay (Công ty Cổ phần Thanh toán G) để hoàn tất hợp đồng cung ứng dịch vụ cho dự án. Hợp đồng cho AI Markets chưa hoàn tất. Quan hệ sẵn có không chứng minh hợp đồng này đã ký hoặc phạm vi phép đã bao trùm mô hình. Trang không mở cổng GPay và không ghi số giấy phép. Nếu hợp đồng cuối và phép bao trùm việc nhận, giữ và chi, GPay thực hiện các chức năng đó; hiện chưa tới bước đó. Điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP không miễn Nghị định 52/2024/NĐ-CP.
 
 Trên ứng dụng iOS, nạp qua Apple In-App Purchase. Trên ứng dụng Android, nạp qua Google Play Billing. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Các cách nạp chỉ để mua tín dụng dịch vụ. Mọi đơn hàng được thanh toán bằng số dư nội bộ.
 
@@ -32,15 +32,15 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ## Điều 2. Giá và mã giảm giá
 
-1. Giá bán, số tiền thanh toán, hóa đơn và đối soát tại Việt Nam được xác định bằng **đồng Việt Nam (VND)**. USD/CNY, nếu hiển thị, chỉ là giá tham khảo có nhãn “ước tính”, quy đổi theo tỷ giá tham chiếu công khai tại thời điểm hiển thị; số tiền VND tại bước xác nhận thanh toán là số tiền có hiệu lực.
+1. Giá bán, số tiền thanh toán, hóa đơn và đối soát tại Việt Nam được ghi bằng **đồng Việt Nam (VND)**. Giao diện hiện vẫn quy đổi USD hoặc CNY. Điều 3 Thông tư 32/2013/TT-NHNN, bản hợp nhất đã gồm cả quy đổi hoặc điều chỉnh giá, không cho thực hiện bằng ngoại hối trên lãnh thổ Việt Nam trừ Điều 4. Nhãn tham khảo không được trang này ghi là ngoại lệ. Việc chỉ còn hiển thị VND chưa được làm trong lần sửa này. Số tiền VND tại bước xác nhận là số tiền giao dịch đang dùng.
 2. Giá hiển thị phải nêu rõ: loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Người mua thanh toán giá sau giảm (nếu có); phí sàn do người bán chịu và không cộng thêm vào giá của người mua.
 3. Mã giảm giá: khoản giảm giá được áp dụng vào giá trị đơn hàng trước khi tính phí sàn; khoản giảm giá do người bán phát hành do người bán chịu. Giỏ hàng có thể hiển thị khoản giảm giá của người bán và khoản giảm giá của nền tảng (“Platform discount”).
 
 ## Điều 3. Tín dụng dịch vụ của người mua
 
 1. Người mua nạp tín dụng dịch vụ trên website bằng VietQR và trên ứng dụng bằng hệ thống thanh toán trong ứng dụng. Số tiền có hiệu lực là số VND của giao dịch được xác nhận.
-2. Số dư dịch vụ là bản ghi kế toán về khoản trả trước hoặc quyền sử dụng dịch vụ, không phải ví điện tử do AI Markets cung ứng. Số dư này là phương thức thanh toán đơn hàng trên nền tảng, gồm cả trừ dần phí sử dụng và phí thuê bao agent tự gia hạn khi người dùng đã chấp thuận gia hạn. Việc gọi số dư là “ví” trên giao diện không tự quyết định phân loại pháp lý.
-3. Người mua không chuyển số dư cho người dùng khác, không đổi số dư sang ngoại tệ và không được trả lãi. Số dư đã nạp bằng VietQR được rút về tài khoản ngân hàng đứng tên người mua sau khi eKYC được máy chủ duyệt. Khoản nạp qua Apple hoặc Google không thuộc lệnh rút này. Yêu cầu hoàn là thủ tục khác: khoản được duyệt hiện ghi có vào tín dụng dịch vụ dùng được trên sàn. Việc trả về đúng nguồn thanh toán ban đầu chưa có quy trình đã kiểm chứng. Chi tiết tại [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
+2. Số dư dịch vụ là khoản ghi trên sổ để thanh toán đơn hàng trên nền tảng, gồm cả trừ dần phí sử dụng và phí thuê bao agent khi người dùng đã chấp thuận gia hạn. Việc gọi số dư là “ví” trên giao diện không quyết định số dư đó nằm trong hay ngoài Nghị định 52/2024/NĐ-CP.
+3. Người mua không chuyển số dư cho người dùng khác, không đổi số dư sang ngoại tệ và không được trả lãi. Lệnh rút số dư đã nạp đang tắt cho đến khi hợp đồng, phạm vi phép và tích hợp được kiểm tra. Số dư đã có được giữ. Khoản nạp qua Apple hoặc Google không thuộc lệnh rút dự kiến. Yêu cầu hoàn là thủ tục khác: khoản được duyệt hiện ghi có vào tín dụng dịch vụ dùng được trên sàn. Việc trả về đúng nguồn thanh toán ban đầu chưa có quy trình đã kiểm chứng. Chi tiết tại [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
 4. Khoản phải trả người bán và hoa hồng affiliate được hạch toán riêng với số dư của người mua. Số dư và sổ cái nội bộ không phải tiền gửi, tài khoản thanh toán hay phương tiện thanh toán.
 
 ## Điều 4. Thanh toán trong ứng dụng
@@ -65,7 +65,7 @@ Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; 
 
 ## Điều 7A. Phạm vi pháp lý của cơ chế thanh toán
 
-AI Markets không nhận tiền gửi và không cho người dùng chuyển tiền cho nhau. Lệnh rút số dư nạp VietQR sau eKYC khác với khoản phải trả người bán. Khoản phải trả người bán là nghĩa vụ đối soát, chi bằng VND về tài khoản đúng chủ thể theo Điều 7, không phải số dư của người mua và không phải tiền escrow.
+Người dùng không chuyển số dư cho nhau. Lệnh rút số dư nạp đang tắt và khác khoản phải trả người bán. Khoản phải trả người bán là nghĩa vụ đối soát, chi bằng VND về tài khoản đúng chủ thể theo Điều 7. Điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP yêu cầu cơ chế giữ và chi tiền người bán; điều đó không biến khoản này thành tài khoản ký quỹ và không miễn Nghị định 52/2024/NĐ-CP.
 
 Chính sách này không phải hợp đồng với nhà cung cấp thanh toán. Việc một tên tổ chức có trong danh sách lịch sử của cơ quan nhà nước không được ghi trên trang này như bằng chứng hợp đồng merchant, phạm vi còn hiệu lực, hoặc việc AI Markets đã được phép nhận tiền thật qua tổ chức đó.
 

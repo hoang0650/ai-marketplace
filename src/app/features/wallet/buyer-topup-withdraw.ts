@@ -1,9 +1,10 @@
 /**
- * Buyer withdrawal of VietQR company-bank deposits.
- * The server must report a separated VND amount and an electronic-identity status.
- * App Store, Google Play, removed GPay and unknown deposits are not cashed out here.
+ * Buyer withdrawal stays off until an AI Markets contract, permit scope and
+ * integration are actually in place. A server flag alone does not open it.
+ * App Store and Google Play top-ups are outside this request.
  * A manual supplier-tax review is not an identity status.
  */
+export const BUYER_TOPUP_WITHDRAW_ACTIVATED = false;
 export interface BuyerDepositWithdrawSnapshot {
   enabled?: boolean | null;
   fundingSeparated?: boolean | null;
@@ -15,6 +16,7 @@ export interface BuyerDepositWithdrawSnapshot {
 }
 
 export type BuyerTopupBlocker =
+  | 'NOT_ACTIVATED'
   | 'SERVER_GATE_CLOSED'
   | 'IDENTITY_REQUIRED'
   | 'APPSTORE_UNRESOLVED'
@@ -27,6 +29,7 @@ export function buyerTopupWithdrawDecision(input: {
   snapshot?: BuyerDepositWithdrawSnapshot | null;
   amountVnd?: number | null;
 }): { ok: true; amountVnd: number } | { ok: false; blocker: BuyerTopupBlocker } {
+  if (!BUYER_TOPUP_WITHDRAW_ACTIVATED) return { ok: false, blocker: 'NOT_ACTIVATED' };
   const snap = input.snapshot;
   if (!snap || snap.enabled !== true || snap.fundingSeparated !== true || snap.settlement !== 'VND') {
     return { ok: false, blocker: 'SERVER_GATE_CLOSED' };
