@@ -2,7 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { SellerService, LegalService } from '../../services/api.services';
+import { SellerService, LegalService, KycService } from '../../services/api.services';
+import { supplierReviewView } from './supplier-review';
 import { SellerProfile, LegalDocumentMeta } from '../../models/marketplace.models';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
@@ -23,11 +24,17 @@ import { TPipe } from '../../i18n/t.pipe';
 
       <div class="verify__status" *ngIf="profile">
         <p>
-          {{ 'sell.verify.status' | t }}:
-          <strong>{{ statusText(profile.verificationStatus) }}</strong>
-          · {{ 'sell.verify.canPublish' | t }}: {{ (profile.canPublish ? 'sell.verify.yes' : 'sell.verify.notYet') | t }}
+          {{ 'sell.review.manualTitle' | t }}:
+          <strong>{{ ('sell.review.manual.' + review().manualStatus) | t }}</strong>
         </p>
-        <p *ngIf="profile.statusReason">{{ 'sell.verify.note' | t }}: {{ profile.statusReason }}</p>
+        <p>{{ 'sell.review.notEkyc' | t }}</p>
+        <p>
+          {{ 'sell.review.ekycLabel' | t }}:
+          <strong>{{ ('sell.review.ekyc.' + review().electronicIdentityStatus) | t }}</strong>
+        </p>
+        <p>{{ review().contractAccepted ? ('sell.review.contractOn' | t) : ('sell.review.contractOff' | t) }}</p>
+        <p>{{ review().serverCanPublish ? ('sell.review.publishOn' | t) : ('sell.review.publishOff' | t) }}</p>
+        <p *ngIf="review().reason">{{ 'sell.verify.note' | t }}: {{ review().reason }}</p>
       </div>
 
       <form class="verify__form" (ngSubmit)="submit()">
@@ -168,6 +175,8 @@ import { TPipe } from '../../i18n/t.pipe';
 export class SellVerificationComponent implements OnInit {
   private readonly sellers = inject(SellerService);
   private readonly legal = inject(LegalService);
+  private readonly kycApi = inject(KycService);
+  electronicIdentityStatus = 'none';
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
 
@@ -209,6 +218,17 @@ export class SellVerificationComponent implements OnInit {
     return this.form.sellerType !== 'enterprise' && /^\d{12}$/.test(v);
   }
 
+  review() {
+    return supplierReviewView({
+      verificationStatus: this.profile?.verificationStatus,
+      manualStatus: this.profile?.manualTaxReview?.status,
+      statusReason: this.profile?.manualTaxReview?.reason || this.profile?.statusReason,
+      sellerAgreementAcceptedAt: this.profile?.sellerAgreementAcceptedAt,
+      canPublish: this.profile?.canPublish,
+      electronicIdentityStatus: this.electronicIdentityStatus,
+    });
+  }
+
   statusText(status: string): string {
     const key = `sell.verify.st.${status}`;
     const text = this.i18n.t(key);
@@ -234,6 +254,10 @@ export class SellVerificationComponent implements OnInit {
           contactPhone: p.contactPhone || '',
         };
       }
+    });
+    this.kycApi.me().subscribe({
+      next: (kyc) => (this.electronicIdentityStatus = kyc?.status || 'none'),
+      error: () => (this.electronicIdentityStatus = 'none'),
     });
     this.legal.get('seller-agreement').subscribe({
       next: (d) => (this.agreement = d),

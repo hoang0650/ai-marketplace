@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders, HttpEvent, HttpParams, HttpRequest } from '@an
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { gpayCheckoutBody } from '../features/wallet/gpay-ui';
 import { isHiddenCategory, withoutHiddenProducts } from '../models/categories';
 import { AuthService } from './auth.service';
 import { AffiliateService } from './affiliate.service';
@@ -460,6 +459,15 @@ export class DashboardService {
     });
   }
 
+  /** Whole VND only. Does not send a USD amount the server could apply to the pooled balance. */
+  withdrawVietqrDeposit(amountVnd: number): Observable<WalletTx> {
+    return this.http.post<WalletTx>(`${this.base}/wallet/withdraw`, {
+      source: 'vietqr_company_bank',
+      amountVnd,
+      settlement: 'VND',
+    });
+  }
+
   payoutAccount(): Observable<PayoutAccountResponse> {
     return this.http.get<PayoutAccountResponse>(`${this.base}/wallet/payout-account`);
   }
@@ -629,13 +637,13 @@ export class DashboardService {
    * GPay payment gateway: returns `billUrl` to redirect the payer to.
    * Always the website channel. iOS/Android top up with IAP in the native apps.
    */
-  gpayCheckout(amountVnd: number): Observable<GpayCheckoutResponse> {
-    return this.http.post<GpayCheckoutResponse>(`${this.base}/gpay/checkout`, gpayCheckoutBody(amountVnd));
+  gpayCheckout(_amountVnd: number): Observable<GpayCheckoutResponse> {
+    return throwError(() => ({ status: 410, error: { message: 'GPay is not offered.', code: 'GPAY_REMOVED' } }));
   }
 
-  /** GPay QR Payment: dynamic VietQR for one top-up. */
-  gpayQr(amountVnd: number): Observable<GpayQrResponse> {
-    return this.http.post<GpayQrResponse>(`${this.base}/gpay/qr`, { amountVnd });
+  /** GPay is not offered. Historical rows stay on the ledger. */
+  gpayQr(_amountVnd: number): Observable<GpayQrResponse> {
+    return throwError(() => ({ status: 410, error: { message: 'GPay is not offered.', code: 'GPAY_REMOVED' } }));
   }
 
   gpayOrder(requestId: string): Observable<{ success: boolean; order: GpayOrder }> {
@@ -1803,6 +1811,15 @@ export class SellerService {
 
   acceptAgreement(): Observable<SellerProfile> {
     return this.http.post<SellerProfile>(`${this.base}/sellers/accept-agreement`, {});
+  }
+
+  adminList(status?: string): Observable<SellerProfile[]> {
+    const params = status ? `?status=${encodeURIComponent(status)}` : '';
+    return this.http.get<SellerProfile[]>(`${this.base}/sellers${params}`);
+  }
+
+  manualReview(id: string, body: { status: 'approved' | 'rejected'; reason: string; lookupAttested?: boolean }): Observable<SellerProfile> {
+    return this.http.patch<SellerProfile>(`${this.base}/sellers/${id}/manual-review`, body);
   }
 }
 

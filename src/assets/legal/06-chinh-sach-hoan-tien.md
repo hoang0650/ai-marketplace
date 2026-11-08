@@ -47,7 +47,7 @@ Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử d�
 1. Người mua gửi yêu cầu hoàn tiền hoặc khiếu nại tại trang đơn hàng hoặc https://aimarkets.vn/complaints/new.
 2. Nền tảng xác nhận tiếp nhận trong **24 giờ**, xác minh đơn hàng, thanh toán, mức sử dụng; lấy ý kiến người bán nếu cần.
 3. Nền tảng ra quyết định trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ, theo [Chính sách khiếu nại và tranh chấp](07-chinh-sach-khieu-nai-tranh-chap.md).
-4. Khi được chấp thuận, khoản hoàn hiện được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Việc trả về ngân hàng, VietQR, GPay hoặc kênh gốc khác, kèm mã theo dõi của đơn vị thanh toán, chưa có quy trình đã kiểm chứng. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
+4. Khi được chấp thuận, khoản hoàn hiện được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Đây là thủ tục hoàn tiền, khác với lệnh rút số dư nạp VietQR. Việc trả về ngân hàng hoặc kênh gốc khác, kèm mã theo dõi của đơn vị thanh toán, chưa có quy trình đã kiểm chứng. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
 
 ## Điều 6. Nơi nhận tiền hoàn
 

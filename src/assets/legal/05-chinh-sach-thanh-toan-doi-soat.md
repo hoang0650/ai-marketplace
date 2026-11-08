@@ -7,9 +7,9 @@
 **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
-**Ngày công bố:** 07/11/2026
+**Ngày công bố:** 08/11/2026
 **Ngày hiệu lực:** 05/12/2026
-**Phiên bản:** 2.4
+**Phiên bản:** 2.5
 
 ---
 
@@ -17,16 +17,13 @@
 
 AI Markets không trực tiếp cung cấp ví điện tử, tài khoản thanh toán hoặc dịch vụ trung gian thanh toán.
 
-AI Markets dự kiến hỗ trợ đồng thời chuyển khoản ngân hàng bằng VietQR thuần và thanh toán qua GPay (Công ty Cổ phần Thanh toán G). VietQR thuần là lệnh chuyển khoản vào tài khoản doanh nghiệp đã được xác minh, không đồng nghĩa giao dịch được GPay xử lý. GPay chỉ xử lý giao dịch thuộc phạm vi hợp đồng và dịch vụ được phép cung ứng; không mặc nhiên cung cấp giữ tiền, ký quỹ hoặc chi hộ cho AI Markets. Chỉ kích hoạt tiếp nhận tiền thật qua GPay sau khi kiểm tra hợp đồng có hiệu lực, phạm vi giấy phép hiện hành, cấu hình, tài khoản thụ hưởng/đối soát và kiểm thử hoàn tiền. Không thu thêm phí GPay nếu chưa công khai và được chấp thuận trước giao dịch.
-
-Khi kênh GPay chưa được kích hoạt, trang nạp vẫn giữ VietQR và báo GPay chưa nhận tiền. Nếu kênh được kích hoạt, ví chỉ được ghi có sau khi máy chủ xác thực chữ ký thông báo kết quả và ghi nhận giao dịch một lần. Trang này không công bố số hợp đồng, ngày ký, giấy phép áp dụng cho quan hệ merchant, tài khoản chuyên dùng, chứng nhận bảo mật thẻ hoặc trạng thái production của GPay.
+Website nạp ví bằng chuyển khoản VietQR vào tài khoản của Công ty được hiển thị tại bước nạp. Ví được ghi có sau khi nội dung chuyển khoản được đối soát với giao dịch ghi có. Không dùng thêm cổng trung gian. Trang này không khẳng định mô hình nhận tiền, giữ số dư và chi trả đã được cấp phép trung gian thanh toán, và không công bố hợp đồng merchant, giấy phép hay chứng nhận bảo mật thẻ.
 
 Trên ứng dụng iOS, nạp qua Apple In-App Purchase. Trên ứng dụng Android, nạp qua Google Play Billing. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Các cách nạp chỉ để mua tín dụng dịch vụ. Mọi đơn hàng được thanh toán bằng số dư nội bộ.
 
 | Kênh | Bên xử lý khoản tiền | Phương thức | Mục đích |
 |---|---|---|---|
-| Website | Tài khoản doanh nghiệp hiển thị tại bước nạp | VietQR thuần, đối soát theo nội dung chuyển khoản | Mua tín dụng dịch vụ. Không phải giao dịch GPay |
-| Website | Công ty Cổ phần Thanh toán G (GPay), chỉ sau khi kênh được kích hoạt | Cổng hoặc mã QR của GPay; ghi có sau khi máy chủ xác thực chữ ký | Mua tín dụng dịch vụ trong phạm vi dịch vụ được phép |
+| Website | Tài khoản doanh nghiệp hiển thị tại bước nạp | VietQR, đối soát theo nội dung chuyển khoản | Nạp tín dụng dịch vụ. Không qua cổng trung gian |
 | Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple | Mua nội dung/tín dụng số đủ điều kiện; không quy đổi thành tiền mặt |
 | Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play | Mua nội dung/tín dụng số đủ điều kiện; không quy đổi thành tiền mặt |
 | Website và ứng dụng | Số dư dịch vụ AI Markets | Bản ghi kế toán nội bộ | Thanh toán hàng hóa, dịch vụ đủ điều kiện trên nền tảng |
@@ -41,9 +38,9 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ## Điều 3. Tín dụng dịch vụ của người mua
 
-1. Người mua mua tín dụng dịch vụ trên website bằng VietQR thuần, hoặc bằng GPay chỉ khi kênh đó đã được kích hoạt theo Điều 1, và trên ứng dụng bằng hệ thống thanh toán trong ứng dụng. Số tiền có hiệu lực là số VND của giao dịch được xác nhận. Với GPay, xác nhận là thông báo kết quả đã được máy chủ kiểm tra chữ ký.
+1. Người mua nạp tín dụng dịch vụ trên website bằng VietQR và trên ứng dụng bằng hệ thống thanh toán trong ứng dụng. Số tiền có hiệu lực là số VND của giao dịch được xác nhận.
 2. Số dư dịch vụ là bản ghi kế toán về khoản trả trước hoặc quyền sử dụng dịch vụ, không phải ví điện tử do AI Markets cung ứng. Số dư này là phương thức thanh toán đơn hàng trên nền tảng, gồm cả trừ dần phí sử dụng và phí thuê bao agent tự gia hạn khi người dùng đã chấp thuận gia hạn. Việc gọi số dư là “ví” trên giao diện không tự quyết định phân loại pháp lý.
-3. Người mua không chuyển số dư cho người dùng khác, không đổi số dư sang ngoại tệ, không được trả lãi và không rút khoản đã mua hàng thành tiền mặt. Người mua vẫn có quyền gửi yêu cầu hoàn để được xem xét. Khoản được duyệt hiện ghi có vào tín dụng dịch vụ dùng được trên sàn. Việc trả về đúng nguồn thanh toán ban đầu chưa có quy trình đã kiểm chứng. Chi tiết tại [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
+3. Người mua không chuyển số dư cho người dùng khác, không đổi số dư sang ngoại tệ và không được trả lãi. Số dư đã nạp bằng VietQR được rút về tài khoản ngân hàng đứng tên người mua sau khi eKYC được máy chủ duyệt. Khoản nạp qua Apple hoặc Google không thuộc lệnh rút này. Yêu cầu hoàn là thủ tục khác: khoản được duyệt hiện ghi có vào tín dụng dịch vụ dùng được trên sàn. Việc trả về đúng nguồn thanh toán ban đầu chưa có quy trình đã kiểm chứng. Chi tiết tại [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
 4. Khoản phải trả người bán và hoa hồng affiliate được hạch toán riêng với số dư của người mua. Số dư và sổ cái nội bộ không phải tiền gửi, tài khoản thanh toán hay phương tiện thanh toán.
 
 ## Điều 4. Thanh toán trong ứng dụng
@@ -68,7 +65,7 @@ Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; 
 
 ## Điều 7A. Phạm vi pháp lý của cơ chế thanh toán
 
-AI Markets không nhận tiền gửi, không cho người dùng chuyển tiền cho nhau và không cho rút khoản mua hàng thành tiền mặt. GPay không mặc nhiên giữ tiền, ký quỹ hoặc chi hộ cho AI Markets. Khoản phải trả người bán là nghĩa vụ đối soát, chi bằng VND về tài khoản đúng chủ thể theo Điều 7, không phải số dư của người mua và không phải tiền escrow.
+AI Markets không nhận tiền gửi và không cho người dùng chuyển tiền cho nhau. Lệnh rút số dư nạp VietQR sau eKYC khác với khoản phải trả người bán. Khoản phải trả người bán là nghĩa vụ đối soát, chi bằng VND về tài khoản đúng chủ thể theo Điều 7, không phải số dư của người mua và không phải tiền escrow.
 
 Chính sách này không phải hợp đồng với nhà cung cấp thanh toán. Việc một tên tổ chức có trong danh sách lịch sử của cơ quan nhà nước không được ghi trên trang này như bằng chứng hợp đồng merchant, phạm vi còn hiệu lực, hoặc việc AI Markets đã được phép nhận tiền thật qua tổ chức đó.
 

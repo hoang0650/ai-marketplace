@@ -1,0 +1,75 @@
+diff --git a/app/wallet/index.tsx b/app/wallet/index.tsx
+index fcaa2cf..bb4db09 100644
+--- a/app/wallet/index.tsx
++++ b/app/wallet/index.tsx
+@@ -20,8 +20,6 @@ import { formatMoney, formatDate } from '@/utils/format';
+ import { getErrorMessage } from '@/lib/errors';
+ import { isAffiliatePayoutPersona } from '@/lib/affiliateWithdraw';
+ import { payoutPersonaNeedsEkyc, resolvePayoutWithdraw } from '@/lib/buyerIdentity';
+-import { GPAY_ENABLED } from '@/lib/features';
+-
+ export default function WalletScreen() {
+   const qc = useQueryClient();
+   const router = useRouter();
+@@ -207,7 +205,7 @@ export default function WalletScreen() {
+                   ? t('wallet.method.iapIos')
+                   : t('wallet.method.iapAndroid')
+                 : item.paymentMethod === 'gpay'
+-                  ? t(GPAY_ENABLED ? 'wallet.method.gpayVn' : 'wallet.method.bankTransfer')
++                  ? t('wallet.method.gpayVn')
+                   : debit
+                     ? t('wallet.type.debit')
+                     : t('wallet.type.deposit');
+diff --git a/i18n/messages.ts b/i18n/messages.ts
+index 3896288..2e4de5c 100644
+--- a/i18n/messages.ts
++++ b/i18n/messages.ts
+@@ -762,7 +762,7 @@ const vi: Dict = {
+   'payout.persona.freelancer': 'Freelancer',
+   'payout.persona.employer': 'NTD / HR',
+   'payout.persona.admin': 'Admin',
+-  'payout.buyerBlocked': 'Tín dụng của Người mua không hỗ trợ rút tiền hoặc chuyển nhượng. Khoản hoàn đủ điều kiện được trả về phương thức thanh toán ban đầu.',
++  'payout.buyerBlocked': 'Màn hình này không rút số dư gộp. Số dư VietQR chỉ được xét sau eKYC khi máy chủ trả về số đã tách. Nạp Apple/Google không rút ở đây. Hoàn tiền đơn hàng là yêu cầu riêng.',
+   'product.overview': 'Tổng quan',
+   'product.features': 'Tính năng',
+   'product.specs': 'Thông số',
+@@ -2684,7 +2684,7 @@ const en: Dict = {
+   'payout.persona.freelancer': 'Freelancer',
+   'payout.persona.employer': 'Employer / HR',
+   'payout.persona.admin': 'Admin',
+-  'payout.buyerBlocked': 'Buyer marketplace credit cannot be withdrawn or transferred. Eligible refunds return to the original payment method.',
++  'payout.buyerBlocked': 'This screen does not cash out the pooled balance. A VietQR top-up is reviewed after eKYC only when the server returns a separated amount. Apple and Google top-ups are excluded. An order refund is a separate request.',
+   'product.overview': 'Overview',
+   'product.features': 'Features',
+   'product.specs': 'Specifications',
+diff --git a/i18n/messages.zh.ts b/i18n/messages.zh.ts
+index ead4f59..7338062 100644
+--- a/i18n/messages.zh.ts
++++ b/i18n/messages.zh.ts
+@@ -734,7 +734,7 @@ export const zh: Record<string, string> = {
+   'payout.persona.freelancer': '自由职业者',
+   'payout.persona.employer': '雇主 / HR',
+   'payout.persona.admin': '管理员',
+-  'payout.buyerBlocked': '买家服务额度不可提现或转让；符合条件的退款退回原支付方式。',
++  'payout.buyerBlocked': '此页不提取合并余额。VietQR 充值仅在服务器返回已分开金额且 eKYC 通过后审核。Apple/Google 充值不在此提取。订单退款是另一项申请。',
+   'product.overview': '总览',
+   'product.features': '功能',
+   'product.specs': '规格',
+diff --git a/lib/features.ts b/lib/features.ts
+index 17b9399..f48b2ed 100644
+--- a/lib/features.ts
++++ b/lib/features.ts
+@@ -1,10 +1,5 @@
+ /**
+- * Temporary feature flags.
+- *
+- * GPay (web top-up gateway) is hidden by default. Set EXPO_PUBLIC_GPAY_ENABLED=true
+- * at build time (EAS env / .env) to show GPay copy again. Only the copy is gated;
+- * no GPay code is removed.
++ * GPay is not a top-up channel. An environment flag cannot show it again.
++ * In-app top-up stays on Apple / Google billing. VietQR stays on the website.
+  */
+-const truthy = (v: unknown) => ['1', 'true', 'yes', 'on'].includes(String(v ?? '').trim().toLowerCase());
+-
+-export const GPAY_ENABLED: boolean = truthy(process.env.EXPO_PUBLIC_GPAY_ENABLED);
++export const GPAY_ENABLED = false;

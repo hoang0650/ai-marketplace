@@ -74,7 +74,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Chính sách sử dụng chấp nhận được (AUP):** các quy định về hàng hóa, dịch vụ cấm kinh doanh và hành vi bị cấm tại Mục XV của Quy chế này.
 
-- **Tín dụng dịch vụ AI Markets:** quyền sử dụng dịch vụ nội bộ, không phải ví điện tử, tiền gửi hay phương tiện thanh toán; không sinh lãi, không chuyển nhượng và không được rút thành tiền.
+- **Tín dụng dịch vụ AI Markets:** quyền sử dụng dịch vụ nội bộ, không phải ví điện tử, tiền gửi hay phương tiện thanh toán; không sinh lãi và không chuyển nhượng. Số dư nạp bằng VietQR vào tài khoản của Công ty được rút về tài khoản ngân hàng đứng tên người mua sau khi máy chủ ghi nhận xác minh danh tính (eKYC) là đã duyệt. Khoản nạp qua Apple hoặc Google không thuộc lệnh rút này. Yêu cầu hoàn tiền đơn hàng là thủ tục riêng. Quy chế không khẳng định Công ty đã được cấp phép trung gian thanh toán.
 
 - **Mã giảm giá (voucher, coupon):** khoản giảm trừ do người bán hoặc nền tảng áp dụng vào giá trị đơn hàng theo khoản 2 Mục XI.
 
@@ -114,7 +114,7 @@ Người bán chịu trách nhiệm về quyền cung cấp, giấy phép, chấ
 
 ### 3. Dịch vụ và hạ tầng của bên thứ ba
 
-Một số sản phẩm sử dụng hạ tầng hoặc API của nhà cung cấp bên thứ ba (máy chủ, GPU, mô hình AI, thanh toán). Người dùng phải tuân thủ điều khoản của sản phẩm và của nhà cung cấp liên quan. Nhà cung cấp hạ tầng **không** mặc nhiên là bên bán trên nền tảng.
+Một số sản phẩm sử dụng hạ tầng hoặc API của nhà cung cấp bên thứ ba (máy chủ, GPU, mô hình AI, thanh toán). Người dùng phải tuân thủ điều khoản của sản phẩm và của nhà cung cấp liên quan. Nhà cung cấp hạ tầng **không** mặc nhiên là bên bán trên nền tảng. Theo hồ sơ vận hành hiện có, nhà cung cấp hạ tầng và API gồm Hostinger, RunPod, OpenRouter, OpenAI, Anthropic và Featherless; cơ sở dữ liệu người dùng đặt tại 123HOST ở Việt Nam. Trang này không khẳng định đã có hợp đồng cho phép cung cấp lại dịch vụ của từng nhà cung cấp.
 
 Khi người dùng kết nối agent với kênh nhắn tin (Telegram, WhatsApp, Discord, Slack…) hoặc dùng khóa API riêng (BYOK), người dùng chịu trách nhiệm với tài khoản, chi phí và nội dung phát sinh trên các dịch vụ đó.
 
@@ -198,7 +198,7 @@ Chưa có ảnh mới của riêng tab hoàn tiền. Nhãn hoàn trên danh sác
 
 ![Hình T01. Phiên khác của kênh bán hàng: hồ sơ nháp và xác minh bị từ chối, ngày 07/11/2026. Phần đầu ảnh giữ nguyên vùng che có sẵn từ ảnh nguồn. Không phải người bán đã được duyệt. Nguồn aimarkets.vn/sell.](assets/legal/img/v7-t01-kenh-ban-hang-tu-choi.png)
 
-**Bước 2:** Xác minh người bán. Tại “Seller verification”, người bán chọn loại người bán (bắt buộc: Cá nhân, Hộ kinh doanh hoặc Doanh nghiệp/Tổ chức – căn cứ xác định mức khấu trừ thuế theo khoản 3 Mục XII), nhập tên pháp lý, tên hiển thị, mã số thuế (bắt buộc; cá nhân có thể dùng số CCCD 12 số), số đăng ký kinh doanh (bắt buộc đối với hộ kinh doanh, doanh nghiệp/tổ chức), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII.
+**Bước 2:** Xác minh người bán. Tại “Seller verification”, người bán chọn loại người bán (bắt buộc: Cá nhân, Hộ kinh doanh hoặc Doanh nghiệp/Tổ chức – căn cứ xác định mức khấu trừ thuế theo khoản 3 Mục XII), nhập tên pháp lý, tên hiển thị, mã số thuế (bắt buộc; cá nhân có thể dùng số CCCD 12 số), số đăng ký kinh doanh (bắt buộc đối với hộ kinh doanh, doanh nghiệp/tổ chức), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII. Quản trị viên rà soát mã số thuế đã khai với trang tra cứu công khai của cơ quan thuế; bước rà soát này không phải định danh điện tử và không thay eKYC.
 
 ![Hình S03. Biểu mẫu xác minh người bán trước khi gửi, các ô còn trống, ngày 07/11/2026. Nguồn aimarkets.vn/sell/verification.](assets/legal/img/v7-s03-xac-minh-nguoi-ban.png)
 
@@ -224,11 +224,11 @@ Chưa có ảnh mới của riêng tab hoàn tiền. Nhãn hoàn trên danh sác
 
 Người mua thanh toán đơn hàng thông qua ví AI Markets; nền tảng thu tiền và đối soát, chi trả cho người bán theo Mục XI. Người mua và người bán không thanh toán trực tiếp cho nhau ngoài nền tảng (khoản 10 Mục XI).
 
-**Bước 1:** Mua tín dụng dịch vụ. Tại ví → nạp tiền, người mua nhập số tiền bằng VND hoặc chọn mức nhanh. Website có hai cách nạp song song: (i) quét mã VietQR và chuyển khoản vào tài khoản thanh toán được hiển thị tại bước nạp, ghi đúng nội dung chuyển khoản; ví được ghi có sau khi nền tảng đối soát nội dung đó với giao dịch ghi có; (ii) khi kênh GPay (Công ty Cổ phần Thanh toán G) được bật, thanh toán qua cổng của GPay hoặc mã QR động của GPay; ví chỉ được ghi có sau khi máy chủ xác thực chữ ký thông báo kết quả và ghi nhận giao dịch một lần. Nếu kênh GPay chưa được cấu hình, trang vẫn giữ cách (i). Số tiền VND là giá trị có hiệu lực; USD/CNY nếu hiển thị chỉ là tham khảo theo tỷ giá thời gian thực. Trang ví đồng thời hiển thị số dư khả dụng, lịch sử giao dịch và tổng quan theo tháng. Trên ứng dụng iOS, việc mua tín dụng dịch vụ thực hiện qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing, theo khoản 4 Mục XI. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Các phương thức này chỉ dùng để mua tín dụng dịch vụ; đơn hàng được thanh toán bằng số dư nội bộ (Bước 2). Chưa có ảnh mới của trang nạp VietQR hoặc GPay.
+**Bước 1:** Mua tín dụng dịch vụ. Tại ví → nạp tiền, người mua nhập số tiền bằng VND hoặc chọn mức nhanh. Website nạp bằng một cách: quét mã VietQR và chuyển khoản vào tài khoản thanh toán của Công ty được hiển thị tại bước nạp, ghi đúng nội dung chuyển khoản; ví được ghi có sau khi nền tảng đối soát nội dung đó với giao dịch ghi có. Không dùng cổng trung gian thay thế. Số tiền VND là giá trị có hiệu lực; USD/CNY nếu hiển thị chỉ là tham khảo theo tỷ giá thời gian thực. Trang ví đồng thời hiển thị số dư khả dụng, lịch sử giao dịch và tổng quan theo tháng. Trên ứng dụng iOS, việc mua tín dụng dịch vụ thực hiện qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing, theo khoản 4 Mục XI. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Các phương thức này chỉ dùng để mua tín dụng dịch vụ; đơn hàng được thanh toán bằng số dư nội bộ (Bước 2). Chưa có ảnh mới của trang nạp VietQR.
 
 **Bước 2:** Kiểm tra giỏ hàng và thanh toán. Quy trình gồm 3 bước: 1 Giỏ hàng (Cart) → 2 Thanh toán (Checkout) → 3 Hoàn tất (Done). Mỗi sản phẩm được thanh toán riêng; phim, truyện và gói kỹ năng được cấp một giấy phép cho mỗi listing, kể cả cùng cửa hàng. Khung thanh toán hiển thị tạm tính, giảm giá của người bán, giảm giá của nền tảng, ô nhập mã giảm giá và tổng đơn hàng. Phương thức thanh toán trên giao diện là ví AI Markets (“Pay with AI Markets wallet only”); người mua chọn “Pay with AI Markets wallet”. Nếu số dư không đủ, người mua nạp thêm theo Bước 1.
 
-Ảnh đã chụp là giỏ đang trống. Bộ ảnh không có giỏ đã có hàng, màn hình xem lại trước khi đặt, mã VietQR hoặc cổng GPay đang hoạt động.
+Ảnh đã chụp là giỏ đang trống. Bộ ảnh không có giỏ đã có hàng, màn hình xem lại trước khi đặt, hoặc mã VietQR đang hoạt động.
 
 ![Hình B07. Giỏ hàng đang trống, dừng ở bước đầu. Không phải thanh toán đã hoàn tất. Nguồn aimarkets.vn/cart, ngày 07/11/2026.](assets/legal/img/v7-b07-gio-trong.png)
 
@@ -349,7 +349,7 @@ Nền tảng có thể yêu cầu xác minh lại khi: thay đổi thông tin ph
 
 ### 7. Xác minh danh tính (eKYC) và định danh điện tử
 
-Người bán và người giới thiệu affiliate hoàn tất biểu mẫu eKYC tại https://aimarkets.vn/settings/kyc hoặc https://aimarkets.vn/sell/kyc trước khi hồ sơ người bán được phê duyệt, trước khi chi trả doanh thu người bán, và trước khi nhận mã affiliate. Người mua thông thường không nộp biểu mẫu này để mua, nạp, dùng dịch vụ, khiếu nại hoặc yêu cầu hoàn. Khi chưa có hồ sơ chi trả được duyệt, chức năng chi trả doanh thu bị khóa. Tín dụng nạp của người mua không được rút hoặc chuyển. Biểu mẫu có loại hồ sơ Cá nhân và Tổ chức. Cá nhân nhập họ tên trên giấy tờ, loại giấy tờ (CCCD, CMND, hộ chiếu hoặc khác), số giấy tờ, mã số thuế cá nhân, rồi tải ảnh mặt trước và mặt sau. Tổ chức chọn Hộ kinh doanh hoặc Công ty / doanh nghiệp, nhập tên theo giấy chứng nhận, mã số thuế, địa chỉ, giấy tờ người đại diện, và tải giấy chứng nhận đăng ký bằng PDF tối đa 10 MB. Ảnh hoặc PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán và không phải tích hợp VNeID. Dòng ghi chú trên biểu mẫu về mốc 01/01/2027 là mốc rà soát định danh điện tử, không phải xác nhận tích hợp đã hoàn tất.
+Người bán và người giới thiệu affiliate hoàn tất biểu mẫu eKYC tại https://aimarkets.vn/settings/kyc hoặc https://aimarkets.vn/sell/kyc trước khi hồ sơ người bán được phê duyệt, trước khi chi trả doanh thu người bán, và trước khi nhận mã affiliate. Người mua thông thường không nộp biểu mẫu này để mua, nạp, dùng dịch vụ, khiếu nại hoặc yêu cầu hoàn. Khi chưa có hồ sơ chi trả được duyệt, chức năng chi trả doanh thu bị khóa. Rút số dư nạp VietQR chỉ mở sau khi eKYC được máy chủ duyệt; số dư không được chuyển nhượng. Rà soát mã số thuế thủ công không thay eKYC. Biểu mẫu có loại hồ sơ Cá nhân và Tổ chức. Cá nhân nhập họ tên trên giấy tờ, loại giấy tờ (CCCD, CMND, hộ chiếu hoặc khác), số giấy tờ, mã số thuế cá nhân, rồi tải ảnh mặt trước và mặt sau. Tổ chức chọn Hộ kinh doanh hoặc Công ty / doanh nghiệp, nhập tên theo giấy chứng nhận, mã số thuế, địa chỉ, giấy tờ người đại diện, và tải giấy chứng nhận đăng ký bằng PDF tối đa 10 MB. Ảnh hoặc PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán và không phải tích hợp VNeID. Dòng ghi chú trên biểu mẫu về mốc 01/01/2027 là mốc rà soát định danh điện tử, không phải xác nhận tích hợp đã hoàn tất.
 
 Ba ảnh dưới đây là biểu mẫu đã lưu tài liệu tại https://aimarkets.vn/settings/kyc, ngày 07/11/2026. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ, tên và các trường còn lại giữ như ảnh đã duyệt. Ảnh không phải quyết định đã duyệt người bán, không phải tích hợp định danh điện tử, và ô tệp không phải giấy chứng nhận đăng ký đã được kiểm chứng.
 
@@ -473,12 +473,11 @@ Nền tảng áp dụng hạn mức (quota), giới hạn tần suất (rate lim
 
 ### 1. Đối tác và phương thức thanh toán
 
-Sàn TMĐT aimarkets.vn không trực tiếp cung cấp dịch vụ trung gian thanh toán. AI Markets dự kiến hỗ trợ đồng thời chuyển khoản ngân hàng bằng VietQR thuần và thanh toán qua GPay (Công ty Cổ phần Thanh toán G). VietQR thuần là lệnh chuyển khoản vào tài khoản doanh nghiệp đã được xác minh, không đồng nghĩa giao dịch được GPay xử lý. GPay chỉ xử lý giao dịch thuộc phạm vi hợp đồng và dịch vụ được phép cung ứng; không mặc nhiên cung cấp giữ tiền, ký quỹ hoặc chi hộ cho AI Markets. Chỉ kích hoạt tiếp nhận tiền thật qua GPay sau khi kiểm tra hợp đồng có hiệu lực, phạm vi giấy phép hiện hành, cấu hình, tài khoản thụ hưởng hoặc đối soát và kiểm thử hoàn tiền. Không thu thêm phí GPay nếu chưa công khai và được chấp thuận trước giao dịch. Quy chế này không công bố số hợp đồng, giấy phép merchant, chứng nhận bảo mật thẻ hoặc trạng thái đã nhận tiền thật. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, nạp qua Google Play Billing. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Mọi đơn hàng được thanh toán bằng số dư dịch vụ nội bộ. Số dư đó là bản ghi kế toán, không phải ví điện tử.
+Sàn TMĐT aimarkets.vn không trực tiếp cung cấp dịch vụ trung gian thanh toán. Website nạp ví bằng chuyển khoản VietQR vào tài khoản của Công ty được hiển thị tại bước nạp. Không dùng thêm cổng trung gian. Quy chế không khẳng định mô hình nhận tiền, giữ số dư và chi trả đã được cấp phép trung gian thanh toán. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, nạp qua Google Play Billing. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Mọi đơn hàng được thanh toán bằng số dư dịch vụ nội bộ. Số dư đó là bản ghi kế toán, không phải ví điện tử.
 
 | Kênh | Bên xử lý khoản tiền | Phương thức | Mục đích |
 |---|---|---|---|
 | Website | Tài khoản thanh toán hiển thị tại bước nạp | VietQR / chuyển khoản, đối soát theo nội dung | Mua tín dụng dịch vụ nội bộ |
-| Website | Công ty Cổ phần Thanh toán G (GPay), chỉ sau khi kênh được kích hoạt | Cổng hoặc mã QR của GPay; ghi có sau khi máy chủ xác thực chữ ký | Mua tín dụng dịch vụ trong phạm vi được phép. Không phải giữ tiền hay chi hộ |
 | Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple của người mua | Mua tín dụng dịch vụ nội bộ |
 | Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play của người mua | Mua tín dụng dịch vụ nội bộ |
 | Website và ứng dụng | Ví AI Markets | Số dư đã nạp qua các kênh trên | Thanh toán đơn hàng |
@@ -495,11 +494,11 @@ c) **Mã giảm giá (voucher):** người bán có thể tạo mã giảm giá 
 
 ### 3. Ví người mua
 
-a) Trên website, người mua mua tín dụng dịch vụ bằng chuyển khoản VietQR hoặc bằng GPay khi kênh đó được bật. Trên ứng dụng, người mua dùng hệ thống thanh toán trong ứng dụng theo khoản 4 Mục này. Giao dịch được ghi nhận bằng VND sau khi kênh thanh toán xác nhận thành công; với GPay, xác nhận là chữ ký thông báo kết quả đã được máy chủ kiểm tra. USD/CNY nếu hiển thị chỉ là tham khảo theo tỷ giá thời gian thực.
+a) Trên website, người mua nạp ví bằng chuyển khoản VietQR. Trên ứng dụng, người mua dùng hệ thống thanh toán trong ứng dụng theo khoản 4 Mục này. Giao dịch được ghi nhận bằng VND sau khi kênh thanh toán xác nhận thành công. USD/CNY nếu hiển thị chỉ là tham khảo theo tỷ giá thời gian thực.
 
 b) Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
-c) Người mua không được rút, chuyển nhượng hoặc đổi tín dụng dịch vụ thành tiền. Người mua vẫn có quyền gửi yêu cầu hoàn để được xem xét. Khoản được duyệt hiện ghi có vào tín dụng dịch vụ. Việc trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng.
+c) Người mua được rút số dư đã nạp bằng VietQR về tài khoản ngân hàng đứng tên mình sau khi eKYC được máy chủ duyệt. Số dư không được chuyển nhượng và không sinh lãi. Khoản nạp qua Apple hoặc Google không thuộc lệnh rút này. Yêu cầu hoàn tiền đơn hàng là thủ tục khác: khoản được duyệt hiện ghi có vào tín dụng dịch vụ; việc trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng.
 
 d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát; không phải tài khoản tiền gửi hay tài khoản thanh toán, không được trả lãi.
 
@@ -513,7 +512,7 @@ a) Mỗi giao dịch có mã đơn hàng duy nhất và lưu bản chụp giá, 
 
 b) Đơn hàng có các trạng thái: chờ thanh toán, đã thanh toán, đang cung cấp, hoàn tất, hoàn tiền, tranh chấp; mọi thay đổi được ghi nhật ký.
 
-c) Khoản chuyển khoản VietQR được đối chiếu với giao dịch ghi có theo nội dung chuyển khoản (mã nạp tiền). Khoản GPay được ghi có chỉ sau khi máy chủ xác thực chữ ký thông báo kết quả. Khoản nạp trong ứng dụng được xác thực qua biên nhận của Apple/Google. Mỗi giao dịch, thông báo và bút toán có khóa chống trùng để chỉ được ghi nhận một lần.
+c) Khoản chuyển khoản VietQR được đối chiếu với giao dịch ghi có theo nội dung chuyển khoản (mã nạp tiền). Khoản nạp trong ứng dụng được xác thực qua biên nhận của Apple/Google. Mỗi giao dịch, thông báo và bút toán có khóa chống trùng để chỉ được ghi nhận một lần.
 
 ### 6. Phí và cơ chế tính giá
 
@@ -694,7 +693,7 @@ b) Nền tảng xác nhận tiếp nhận trong **24 giờ**, xác minh đơn h�
 
 c) Nền tảng ra quyết định trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ, theo Mục XVII của Quy chế này.
 
-d) Khi được chấp thuận, khoản hoàn hiện được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Việc trả về ngân hàng, VietQR, GPay hoặc kênh gốc khác chưa có quy trình đã kiểm chứng. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
+d) Khi được chấp thuận, khoản hoàn hiện được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Việc này khác với lệnh rút số dư nạp VietQR. Việc trả về ngân hàng hoặc kênh gốc khác chưa có quy trình đã kiểm chứng. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
 
 ### 6. Nơi nhận tiền hoàn
 
@@ -1015,7 +1014,7 @@ Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
 
 - **Người bán:** thông tin cần để thực hiện đơn hàng với người mua;
 
-- **Đối tác thanh toán: ngân hàng nơi hiển thị tài khoản nhận chuyển khoản VietQR; Công ty Cổ phần Thanh toán G (GPay) đối với giao dịch nạp mà người dùng bắt đầu trên kênh GPay; Apple và Google;**
+- **Đối tác thanh toán: ngân hàng nơi hiển thị tài khoản nhận chuyển khoản VietQR; Apple và Google đối với nạp trong ứng dụng;**
 
 - **Nhà cung cấp hạ tầng:** máy chủ ứng dụng, máy chủ cơ sở dữ liệu và lưu trữ (cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232)), GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
 
@@ -1253,7 +1252,7 @@ Người bán xác nhận đã đọc và đồng ý: Quy chế hoạt động; 
 
 ## XXIV. BÊN CUNG CẤP DỊCH VỤ HỖ TRỢ
 
-Ngân hàng nơi hiển thị tài khoản nhận chuyển khoản VietQR, Công ty Cổ phần Thanh toán G (GPay) đối với giao dịch nạp trên kênh GPay, Apple, Google, nhà cung cấp máy chủ (bao gồm Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) – lưu trữ cơ sở dữ liệu và dữ liệu người dùng tại Việt Nam), tên miền, hạ tầng GPU/API AI và dịch vụ thư điện tử phối hợp theo vai trò của từng bên để bảo đảm an toàn giao dịch, bảo mật dữ liệu và cung cấp thông tin khi cơ quan có thẩm quyền yêu cầu.
+Ngân hàng nơi hiển thị tài khoản nhận chuyển khoản VietQR, Apple, Google, nhà cung cấp máy chủ (bao gồm Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) – lưu trữ cơ sở dữ liệu và dữ liệu người dùng tại Việt Nam), tên miền, hạ tầng GPU/API AI và dịch vụ thư điện tử phối hợp theo vai trò của từng bên để bảo đảm an toàn giao dịch, bảo mật dữ liệu và cung cấp thông tin khi cơ quan có thẩm quyền yêu cầu.
 
 ## XXV. ĐIỀU KHOẢN ÁP DỤNG
 

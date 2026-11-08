@@ -1,0 +1,698 @@
+diff --git a/src/finance/buyer-deposit-withdraw.js b/src/finance/buyer-deposit-withdraw.js
+new file mode 100644
+index 0000000..4f87260
+--- /dev/null
++++ b/src/finance/buyer-deposit-withdraw.js
+@@ -0,0 +1,93 @@
++const { roundMoney } = require('../utils/payout-hold');
++
++const APPSTORE = new Set(['iap', 'apple_pay', 'google_pay']);
++
++/** Classify a completed deposit. Unknown and removed channels are excluded from the payable amount. */
++function classifyDeposit(tx) {
++  const method = String(tx?.paymentMethod || '');
++  const kind = String(tx?.meta?.kind || '');
++  if (method === 'bank_transfer' || kind === 'bank_transfer_vietqr') return 'vietqr';
++  if (APPSTORE.has(method)) return 'appstore';
++  if (method === 'gpay' || kind.startsWith('gpay')) return 'gpay';
++  if (method) return 'other';
++  return 'unknown';
++}
++
++function isBuyerDepositWithdrawal(tx) {
++  return tx?.meta?.source === 'vietqr_company_bank' || tx?.meta?.persona === 'buyer';
++}
++
++/**
++ * VietQR company-bank deposits that can be paid back after electronic identity verification.
++ * Spends reduce that slice first, so App Store, Google Play, GPay and unclassified deposits
++ * are not cashed out. Refund credits are not deposits and are not added.
++ * `poolAvailable` is an upper cap (affiliate slice already removed by the caller).
++ */
++function buyerVietqrSnapshot(txs = [], poolAvailable = 0) {
++  let vietqr = 0;
++  let appstore = 0;
++  let gpay = 0;
++  let other = 0;
++  let spent = 0;
++  let withdrawn = 0;
++  for (const tx of txs) {
++    const status = tx.status || 'completed';
++    if (status === 'failed' || status === 'cancelled') continue;
++    const amount = Number(tx.amount) || 0;
++    if (!(amount > 0)) continue;
++    if (tx.type === 'deposit' && status === 'completed') {
++      const kind = classifyDeposit(tx);
++      if (kind === 'vietqr') vietqr += amount;
++      else if (kind === 'appstore') appstore += amount;
++      else if (kind === 'gpay') gpay += amount;
++      else other += amount;
++    } else if (tx.type === 'debit' && status === 'completed') {
++      spent += amount;
++    } else if (tx.type === 'withdraw' && (status === 'completed' || status === 'pending') && isBuyerDepositWithdrawal(tx)) {
++      withdrawn += amount;
++    }
++  }
++  const afterUse = Math.max(0, vietqr - spent - withdrawn);
++  const pool = Math.max(0, Number(poolAvailable) || 0);
++  const blockedSources = [];
++  if (appstore > 0) blockedSources.push('appstore');
++  if (gpay > 0) blockedSources.push('gpay');
++  if (other > 0) blockedSources.push('unknown');
++  return {
++    fundingSeparated: true,
++    settlement: 'VND',
++    refundsIncluded: false,
++    vietqrDepositedUsd: roundMoney(vietqr),
++    payableUsd: roundMoney(Math.min(afterUse, pool)),
++    appstoreUsd: roundMoney(appstore),
++    gpayUsd: roundMoney(gpay),
++    unknownUsd: roundMoney(other),
++    blockedSources,
++  };
++}
++
++function quoteBuyerVietqrWithdrawal({ amountUsd, snapshot, electronicIdentityVerified }) {
++  const payableUsd = roundMoney(snapshot?.payableUsd || 0);
++  if (!electronicIdentityVerified) {
++    return { ok: false, code: 'KYC_REQUIRED', payableUsd: 0 };
++  }
++  const amt = roundMoney(amountUsd);
++  if (!(amt > 0)) return { ok: false, code: 'INVALID_AMOUNT', payableUsd };
++  if (amt > payableUsd + 1e-9) {
++    if (payableUsd <= 0 && (snapshot?.appstoreUsd || 0) > 0 && (snapshot?.vietqrDepositedUsd || 0) <= 0) {
++      return { ok: false, code: 'APPSTORE_UNRESOLVED', payableUsd };
++    }
++    if (payableUsd <= 0 && (snapshot?.gpayUsd || 0) > 0 && (snapshot?.vietqrDepositedUsd || 0) <= 0) {
++      return { ok: false, code: 'GPAY_REMOVED', payableUsd };
++    }
++    return { ok: false, code: 'DEPOSIT_CAP', payableUsd };
++  }
++  return { ok: true, code: null, amountUsd: amt, payableUsd };
++}
++
++module.exports = {
++  classifyDeposit,
++  isBuyerDepositWithdrawal,
++  buyerVietqrSnapshot,
++  quoteBuyerVietqrWithdrawal,
++};
+diff --git a/src/finance/withdrawable-balance.js b/src/finance/withdrawable-balance.js
+index c08ef5a..1dc9399 100644
+--- a/src/finance/withdrawable-balance.js
++++ b/src/finance/withdrawable-balance.js
+@@ -42,7 +42,13 @@ function sellerEarnedAvailable({ orders = [], usage = [], walletTxs = [], now =
+     if (status === 'failed' || status === 'cancelled') continue;
+     const amount = Number(tx.amount) || 0;
+     if (tx.type === 'debit' && CLAWBACK.test(tx.note || '')) clawback += amount;
+-    else if (tx.type === 'withdraw' && tx.meta?.persona !== 'affiliate' && (status === 'completed' || status === 'pending')) {
++    else if (
++      tx.type === 'withdraw'
++      && tx.meta?.persona !== 'affiliate'
++      && tx.meta?.persona !== 'buyer'
++      && tx.meta?.source !== 'vietqr_company_bank'
++      && (status === 'completed' || status === 'pending')
++    ) {
+       withdrawn += amount;
+     } else if ((tx.type === 'credit' || tx.type === 'debit') && tx.reviewedBy && !SALE_CREDIT.test(tx.note || '')) {
+       adjustment += tx.type === 'credit' ? amount : -amount;
+diff --git a/src/models/SellerProfile.js b/src/models/SellerProfile.js
+index 545ce0b..9abbd54 100644
+--- a/src/models/SellerProfile.js
++++ b/src/models/SellerProfile.js
+@@ -46,6 +46,18 @@ const sellerProfileSchema = new mongoose.Schema(
+       enum: ['none', 'pending', 'verified', 'rejected'],
+       default: 'none',
+     },
++    /**
++     * Manual review of the tax code the supplier typed. Not user.kyc and not a
++     * licensed electronic-identity result. lookupAttested means an admin opened
++     * the public lookup; the server does not call that site.
++     */
++    manualTaxReview: {
++      status: { type: String, enum: ['none', 'pending', 'approved', 'rejected'], default: 'none' },
++      reason: { type: String, default: '', maxlength: 1000 },
++      reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
++      reviewedAt: { type: Date, default: null },
++      lookupAttested: { type: Boolean, default: false },
++    },
+     /** Bank metadata only — never store full account secrets plaintext for payouts. */
+     bankAccountMetadata: {
+       bankName: { type: String, default: '' },
+diff --git a/src/routes/gpay.js b/src/routes/gpay.js
+index c5eff4b..1ed255f 100644
+--- a/src/routes/gpay.js
++++ b/src/routes/gpay.js
+@@ -76,11 +76,10 @@ function canSimulate(user) {
+  * GPAY_ENABLED feature flag (default OFF): reject creating new GPay payments.
+  * Webhook / return / order-status routes are NOT gated so in-flight payments still settle.
+  */
+-function requireGpayEnabled(_req, res, next) {
+-  if (gpayFeatureEnabled()) return next();
+-  return res.status(503).json({
+-    message: 'GPay top-up is temporarily disabled',
+-    code: 'GPAY_DISABLED',
++function requireGpayEnabled(_req, res) {
++  return res.status(410).json({
++    message: 'GPay is not offered. Top up with VietQR to the company account. No replacement gateway is provided.',
++    code: 'GPAY_REMOVED',
+   });
+ }
+ 
+@@ -125,18 +124,16 @@ async function cancelDeposit(tx, reason) {
+  */
+ router.get('/config', optionalAuth, async (req, res, next) => {
+   try {
+-    const portalEnabled = gpayPortalEnabled();
+-    const qrEnabled = gpayEnabled() && gpayVaEnabled();
+-    const enabled = portalEnabled || qrEnabled;
+     const fx = await rateQuote();
+     res.json({
+-      available: gpayFeatureEnabled(),
+-      featureEnabled: gpayFeatureEnabled(),
+-      enabled,
+-      portalEnabled,
+-      qrEnabled,
+-      sandbox: gpaySandbox(),
+-      canSimulate: enabled && canSimulate(req.user),
++      removed: true,
++      available: false,
++      featureEnabled: false,
++      enabled: false,
++      portalEnabled: false,
++      qrEnabled: false,
++      sandbox: false,
++      canSimulate: false,
+       bankCode: config.gpayVaBankCode,
+       accountType: config.gpayAccountType,
+       minTopupVnd: Number(config.gpayMinTopupVnd) || 0,
+diff --git a/src/routes/sellers.js b/src/routes/sellers.js
+index a79c0d4..b62c5c2 100644
+--- a/src/routes/sellers.js
++++ b/src/routes/sellers.js
+@@ -4,7 +4,7 @@ const Order = require('../models/Order');
+ const LegalDocument = require('../models/LegalDocument');
+ const LegalAcceptance = require('../models/LegalAcceptance');
+ const { authenticate, requireRoles } = require('../middleware/auth');
+-const { getOrCreateSellerProfile, sellerApprovalGate, LICENSED_SELLER_TYPES, validateSellerTaxInfo } = require('../utils/seller-compliance');
++const { getOrCreateSellerProfile, sellerApprovalGate, LICENSED_SELLER_TYPES, validateSellerTaxInfo, decideManualTaxReview } = require('../utils/seller-compliance');
+ const { normalizeSellerType } = require('../finance/seller-types');
+ const { writeAuditLog } = require('../utils/audit');
+ const { PLATFORM_COMMISSION_RATE } = require('../finance/constants');
+@@ -67,6 +67,14 @@ function mapSellerProfile(doc) {
+     sellerAgreementAcceptedAt: o.sellerAgreementAcceptedAt
+       ? new Date(o.sellerAgreementAcceptedAt).toISOString()
+       : null,
++    manualTaxReview: {
++      status: o.manualTaxReview?.status || 'none',
++      reason: o.manualTaxReview?.reason || '',
++      reviewedAt: o.manualTaxReview?.reviewedAt ? new Date(o.manualTaxReview.reviewedAt).toISOString() : null,
++      lookupAttested: o.manualTaxReview?.lookupAttested === true,
++    },
++    /** Legacy profile flag. It is not user.kyc and must not be read as electronic identity. */
++    electronicIdentitySeparate: true,
+     verifiedAt: o.verifiedAt ? new Date(o.verifiedAt).toISOString() : null,
+     rejectedAt: o.rejectedAt ? new Date(o.rejectedAt).toISOString() : null,
+     suspendedAt: o.suspendedAt ? new Date(o.suspendedAt).toISOString() : null,
+@@ -135,7 +143,13 @@ router.post('/apply', authenticate, async (req, res, next) => {
+     if (profile.verificationStatus === 'PENDING') {
+       profile.verificationStatus = 'VERIFICATION_REQUIRED';
+     }
+-    profile.identityVerificationStatus = 'pending';
++    profile.manualTaxReview = {
++      status: 'pending',
++      reason: '',
++      reviewedBy: null,
++      reviewedAt: null,
++      lookupAttested: false,
++    };
+     profile.complianceStatus = 'under_review';
+     await profile.save();
+     await syncSellerTaxProfile(req.user._id, profile).catch((err) => console.error('[seller tax profile]', err.message));
+@@ -253,13 +267,11 @@ router.patch('/:id/status', authenticate, requireRoles('admin'), async (req, res
+     if (status === 'VERIFIED') {
+       profile.verifiedAt = new Date();
+       profile.complianceStatus = 'compliant';
+-      profile.identityVerificationStatus = 'verified';
+       profile.rejectedAt = null;
+       profile.suspendedAt = null;
+     } else if (status === 'REJECTED') {
+       profile.rejectedAt = new Date();
+       profile.complianceStatus = 'non_compliant';
+-      profile.identityVerificationStatus = 'rejected';
+     } else if (status === 'SUSPENDED' || status === 'TERMINATED') {
+       profile.suspendedAt = new Date();
+       profile.complianceStatus = 'non_compliant';
+@@ -285,6 +297,49 @@ router.patch('/:id/status', authenticate, requireRoles('admin'), async (req, res
+   }
+ });
+ 
++/**
++ * Manual review of the tax code the supplier declared.
++ * Does not read the public tax site, does not set user.kyc, and does not approve the seller record.
++ */
++router.patch('/:id/manual-review', authenticate, requireRoles('admin'), async (req, res, next) => {
++  try {
++    const decision = decideManualTaxReview({
++      actorRole: req.user.role,
++      status: req.body?.status,
++      reason: req.body?.reason,
++      lookupAttested: req.body?.lookupAttested === true,
++    });
++    if (!decision.ok) return res.status(decision.code === 'RBAC' ? 403 : 400).json({ message: decision.message, code: decision.code });
++
++    const profile = await SellerProfile.findById(req.params.id);
++    if (!profile) return res.status(404).json({ message: 'Seller profile not found' });
++    const previous = profile.manualTaxReview?.status || 'none';
++    profile.manualTaxReview = {
++      status: decision.status,
++      reason: decision.reason,
++      reviewedBy: req.user._id,
++      reviewedAt: new Date(),
++      lookupAttested: decision.lookupAttested,
++    };
++    await profile.save();
++    await writeAuditLog({
++      actorId: req.user._id,
++      actorRole: req.user.role,
++      action: 'SELLER_MANUAL_TAX_REVIEW',
++      resourceType: 'SellerProfile',
++      resourceId: profile._id,
++      oldValue: { manualTaxReviewStatus: previous },
++      newValue: { manualTaxReviewStatus: decision.status, lookupAttested: decision.lookupAttested },
++      reason: decision.reason,
++      ip: req.ip,
++      userAgent: req.get('user-agent') || '',
++    });
++    res.json(mapSellerProfile(profile));
++  } catch (err) {
++    next(err);
++  }
++});
++
+ router.get('/me/earnings', authenticate, async (req, res, next) => {
+   try {
+     const paid = await Order.find({ seller: req.user._id, status: { $in: ['paid', 'refunded'] } }).lean();
+diff --git a/src/routes/wallet.js b/src/routes/wallet.js
+index 4494304..df9ac5a 100644
+--- a/src/routes/wallet.js
++++ b/src/routes/wallet.js
+@@ -10,6 +10,7 @@ const {
+   quoteWithdrawal,
+   mapPolicy,
+   pickPrimary,
++  SELLER_LIKE,
+ } = require('../finance/payout-policy');
+ 
+ const router = express.Router();
+@@ -66,6 +67,21 @@ router.get('/summary', authenticate, async (req, res, next) => {
+       affiliateAvailable,
+       walletBalance: summary.balance,
+     });
++    const { kycStatus } = require('../utils/kyc');
++    const { buyerVietqrSnapshot } = require('../finance/buyer-deposit-withdraw');
++    const depositRows = await WalletTx.find({ user: req.user._id, type: { $in: ['deposit', 'debit', 'withdraw'] } })
++      .select('type amount status paymentMethod meta.kind meta.source meta.persona')
++      .lean();
++    const depositPool = Math.max(0, Math.round((summary.available - affiliateAvailable) * 100) / 100);
++    const depositSnap = buyerVietqrSnapshot(depositRows, depositPool);
++    let payableVnd = null;
++    try {
++      const fx = await require('../finance/exchange-rate').getExchangeRates();
++      const rate = Number(fx?.vndPerUsd);
++      if (rate > 0) payableVnd = Math.round(depositSnap.payableUsd * rate);
++    } catch {
++      payableVnd = null;
++    }
+     res.json({
+       affiliate,
+       currency: 'USD',
+@@ -79,6 +95,17 @@ router.get('/summary', authenticate, async (req, res, next) => {
+       buyerIdentityRequired: false,
+       buyerCashoutAllowed: false,
+       prepaidWithdrawable: false,
++      buyerDepositWithdraw: {
++        enabled: true,
++        fundingSeparated: depositSnap.fundingSeparated,
++        settlement: 'VND',
++        refundsSeparate: true,
++        electronicIdentityStatus: kycStatus(req.user),
++        payableUsd: depositSnap.payableUsd,
++        payableVnd,
++        blockedSources: depositSnap.blockedSources,
++        source: 'vietqr_company_bank',
++      },
+     });
+   } catch (err) {
+     next(err);
+@@ -107,12 +134,9 @@ router.get('/payout-policy', authenticate, async (req, res, next) => {
+  * orders are paid exclusively from the AI Markets wallet balance.
+  */
+ router.post('/deposit', authenticate, (_req, res) => {
+-  const { gpayFeatureEnabled } = require('../utils/gpay-client');
+   res.status(410).json({
+     code: 'SEPAY_DISABLED',
+-    message: gpayFeatureEnabled()
+-      ? 'Bank transfer top-up is no longer available. Top up with GPay (ATM / card / VietQR) on the website, or in-app purchase in the iOS/Android app.'
+-      : 'This top-up endpoint is no longer available. Top up from the wallet page, or with in-app purchase in the iOS/Android app.',
++    message: 'This top-up endpoint is no longer available. Top up with VietQR from the wallet page, or with in-app purchase in the iOS/Android app.',
+   });
+ });
+ 
+@@ -211,6 +235,80 @@ router.post('/withdraw', authenticate, async (req, res, next) => {
+       }
+     }
+ 
++    if (req.body?.source === 'vietqr_company_bank') {
++      const { assertCanWithdrawKyc } = require('../utils/kyc');
++      const User = require('../models/User');
++      const { buyerVietqrSnapshot, quoteBuyerVietqrWithdrawal } = require('../finance/buyer-deposit-withdraw');
++      const { convertAmount } = require('../finance/bank-topup-core');
++      const { getExchangeRates, fxAudit } = require('../finance/exchange-rate');
++      const fresh = await User.findById(req.user._id).select('role kyc');
++      const identity = fresh?.role === 'admin' ? { ok: true } : assertCanWithdrawKyc(fresh || req.user);
++      if (!identity.ok) {
++        return res.status(403).json({ message: identity.message, code: identity.code || 'KYC_REQUIRED', kycStatus: identity.kycStatus });
++      }
++      const amountVnd = Number(req.body?.amountVnd);
++      if (!Number.isInteger(amountVnd) || amountVnd <= 0) {
++        return res.status(400).json({ message: 'amountVnd must be a positive whole number of VND.', code: 'INVALID_AMOUNT' });
++      }
++      const fx = await getExchangeRates();
++      const conv = convertAmount({ amount: amountVnd, currency: 'VND' }, fx.vndPerUsd);
++      if (!conv) return res.status(400).json({ message: 'amountVnd must be a positive whole number of VND.', code: 'INVALID_AMOUNT' });
++      const resolved = await resolveWithdrawAccount(req.user._id, req.body?.bankAccount, { save: req.body?.saveAccount === true });
++      if (!resolved.ok) return res.status(400).json({ message: resolved.message, code: resolved.code });
++      const { withWalletLock } = require('../utils/wallet-lock');
++      const settled = await withWalletLock(req.user._id, async () => {
++        const summaryNow = await getAvailableBalance(req.user._id);
++        const slice = await affiliateSlice(req.user._id);
++        const pool = Math.max(0, Math.round((summaryNow.available - slice.available) * 100) / 100);
++        const rows = await WalletTx.find({ user: req.user._id, type: { $in: ['deposit', 'debit', 'withdraw'] } })
++          .select('type amount status paymentMethod meta.kind meta.source meta.persona')
++          .lean();
++        const snapshot = buyerVietqrSnapshot(rows, pool);
++        const quote = quoteBuyerVietqrWithdrawal({
++          amountUsd: conv.amountUsd,
++          snapshot,
++          electronicIdentityVerified: true,
++        });
++        if (!quote.ok) {
++          const status = quote.code === 'KYC_REQUIRED' ? 403 : 400;
++          return { status, body: { message: 'VietQR deposit withdrawal was refused.', code: quote.code, payableUsd: quote.payableUsd, blockedSources: snapshot.blockedSources } };
++        }
++        const { createPayout } = require('../finance/payout-engine');
++        const { payout } = await createPayout({
++          sellerId: req.user._id,
++          payableAmount: quote.amountUsd,
++          currency: 'USD',
++          actorId: req.user._id,
++          idempotencyKey: `wd_vietqr_${req.user._id}_${amountVnd}_${Date.now()}`,
++          requireSellerProfile: false,
++        });
++        const tx = await WalletTx.create({
++          user: req.user._id,
++          type: 'withdraw',
++          amount: quote.amountUsd,
++          currency: 'USD',
++          status: 'pending',
++          payoutId: payout.payoutId,
++          note: `VietQR deposit withdrawal ${payout.payoutId}`,
++          meta: {
++            ...fxAudit(fx),
++            channel: 'payout',
++            persona: 'buyer',
++            source: 'vietqr_company_bank',
++            settlement: 'VND',
++            amountVnd,
++            grossAmount: quote.amountUsd,
++            netAmount: quote.amountUsd,
++            payoutAccount: resolved.account,
++            refundsSeparate: true,
++          },
++        });
++        return { status: 201, tx, payout };
++      });
++      if (settled.status !== 201) return res.status(settled.status).json(settled.body);
++      return res.status(201).json({ ...mapWallet(settled.tx), payoutId: settled.payout.payoutId, payoutStatus: settled.payout.status });
++    }
++
+     if (!policy.canWithdraw) {
+       return res.status(403).json({
+         message:
+@@ -422,6 +520,14 @@ router.post('/withdraw', authenticate, async (req, res, next) => {
+           ...fxAudit(fx),
+           channel: 'payout',
+           persona,
++          ...(SELLER_LIKE.has(persona)
++            ? {
++                holdHours: 48,
++                payoutDueBusinessDays: 3,
++                payoutDueBasis: 'later_of_hold_end_and_valid_request',
++                payoutDueAt: require('../utils/business-days').addBusinessDays(new Date(), 3).toISOString(),
++              }
++            : {}),
+           grossAmount: quote.gross,
+           platformFeeRate: policy.platformFeeRate,
+           platformFee: quote.platformFee,
+diff --git a/src/utils/gpay-client.js b/src/utils/gpay-client.js
+index fe377d6..71ef9d5 100644
+--- a/src/utils/gpay-client.js
++++ b/src/utils/gpay-client.js
+@@ -28,9 +28,12 @@ function gpayEnabled() {
+   return Boolean(config.gpayMerchantCode && config.gpayPassword);
+ }
+ 
+-/** GPAY_ENABLED feature flag (default OFF). Gates creating new GPay payments only. */
++/**
++ * GPay is not a top-up channel. The environment flag cannot turn it back on.
++ * In-flight webhook reconciliation stays in the route; new checkouts do not.
++ */
+ function gpayFeatureEnabled() {
+-  return config.gpayVaEnabled === true;
++  return false;
+ }
+ 
+ /** Gateway credentials present, regardless of the feature flag (used to reconcile in-flight bills). */
+diff --git a/src/utils/seller-compliance.js b/src/utils/seller-compliance.js
+index f39ef96..5e5c540 100644
+--- a/src/utils/seller-compliance.js
++++ b/src/utils/seller-compliance.js
+@@ -151,9 +151,40 @@ function sellerApprovalGate(profile, kyc) {
+       };
+     }
+   }
++  if (String(profile?.manualTaxReview?.status || 'none') !== 'approved') {
++    return {
++      ok: false,
++      code: 'MANUAL_TAX_REVIEW_REQUIRED',
++      message: 'The supplier tax record must be manually reviewed before seller approval. That review does not verify electronic identity.',
++    };
++  }
+   return { ok: true };
+ }
+ 
++/**
++ * Admin decision for the manual tax-record review. It never changes user.kyc.
++ * Approval requires the admin to attest they opened the public tax lookup themselves.
++ */
++function decideManualTaxReview({ actorRole, status, reason, lookupAttested } = {}) {
++  if (actorRole !== 'admin') return { ok: false, code: 'RBAC', message: 'Only an admin can record this review.' };
++  const next = String(status || '');
++  if (next !== 'approved' && next !== 'rejected') {
++    return { ok: false, code: 'STATUS_INVALID', message: 'status must be approved or rejected.' };
++  }
++  const why = String(reason || '').trim();
++  if (why.length < 5 || why.length > 1000) {
++    return { ok: false, code: 'REASON_REQUIRED', message: 'A review reason is required.' };
++  }
++  if (next === 'approved' && lookupAttested !== true) {
++    return {
++      ok: false,
++      code: 'LOOKUP_ATTESTATION_REQUIRED',
++      message: 'Approve only after checking the declared tax code on the public tax lookup. The server does not query that site.',
++    };
++  }
++  return { ok: true, status: next, reason: why, lookupAttested: next === 'approved' };
++}
++
+ async function getOrCreateSellerProfile(user, defaults = {}) {
+   let profile = await SellerProfile.findOne({ user: user._id });
+   if (profile) return profile;
+@@ -180,4 +211,5 @@ module.exports = {
+   REGISTRATION_SELLER_TYPES,
+   isValidTaxCode,
+   validateSellerTaxInfo,
++  decideManualTaxReview,
+ };
+diff --git a/test/finance/buyer-deposit-withdraw.test.js b/test/finance/buyer-deposit-withdraw.test.js
+new file mode 100644
+index 0000000..ca2090e
+--- /dev/null
++++ b/test/finance/buyer-deposit-withdraw.test.js
+@@ -0,0 +1,86 @@
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const {
++  buyerVietqrSnapshot,
++  quoteBuyerVietqrWithdrawal,
++  isBuyerDepositWithdrawal,
++} = require('../../src/finance/buyer-deposit-withdraw');
++const { sellerEarnedAvailable } = require('../../src/finance/withdrawable-balance');
++
++const vietqr = (amount) => ({
++  type: 'deposit',
++  amount,
++  status: 'completed',
++  paymentMethod: 'bank_transfer',
++  meta: { kind: 'bank_transfer_vietqr' },
++});
++
++test('VietQR deposits are withdrawable only after spends and only up to the pool', () => {
++  const snap = buyerVietqrSnapshot([vietqr(40), { type: 'debit', amount: 15, status: 'completed' }], 30);
++  assert.equal(snap.payableUsd, 25);
++  assert.equal(snap.refundsIncluded, false);
++  const quote = quoteBuyerVietqrWithdrawal({ amountUsd: 25, snapshot: snap, electronicIdentityVerified: true });
++  assert.equal(quote.ok, true);
++  assert.equal(quoteBuyerVietqrWithdrawal({ amountUsd: 25.01, snapshot: snap, electronicIdentityVerified: true }).code, 'DEPOSIT_CAP');
++});
++
++test('electronic identity is required and a manual seller flag is not accepted by this function', () => {
++  const snap = buyerVietqrSnapshot([vietqr(10)], 10);
++  assert.equal(quoteBuyerVietqrWithdrawal({ amountUsd: 10, snapshot: snap, electronicIdentityVerified: false }).code, 'KYC_REQUIRED');
++});
++
++test('App Store, Google Play, GPay and unknown deposits are excluded', () => {
++  const iap = buyerVietqrSnapshot([
++    { type: 'deposit', amount: 80, status: 'completed', paymentMethod: 'iap' },
++  ], 80);
++  assert.equal(iap.payableUsd, 0);
++  assert.deepEqual(iap.blockedSources, ['appstore']);
++  assert.equal(quoteBuyerVietqrWithdrawal({ amountUsd: 10, snapshot: iap, electronicIdentityVerified: true }).code, 'APPSTORE_UNRESOLVED');
++
++  const gpay = buyerVietqrSnapshot([
++    { type: 'deposit', amount: 20, status: 'completed', paymentMethod: 'gpay' },
++  ], 20);
++  assert.equal(quoteBuyerVietqrWithdrawal({ amountUsd: 5, snapshot: gpay, electronicIdentityVerified: true }).code, 'GPAY_REMOVED');
++
++  const unknown = buyerVietqrSnapshot([
++    { type: 'deposit', amount: 12, status: 'completed', paymentMethod: '' },
++  ], 12);
++  assert.equal(unknown.payableUsd, 0);
++  assert.deepEqual(unknown.blockedSources, ['unknown']);
++});
++
++test('spending consumes VietQR before any excluded deposit can be cashed out', () => {
++  const snap = buyerVietqrSnapshot([
++    vietqr(30),
++    { type: 'deposit', amount: 50, status: 'completed', paymentMethod: 'iap' },
++    { type: 'debit', amount: 30, status: 'completed' },
++  ], 50);
++  assert.equal(snap.payableUsd, 0);
++  assert.equal(snap.appstoreUsd, 50);
++});
++
++test('refund credits are not treated as a withdrawable deposit', () => {
++  const snap = buyerVietqrSnapshot([
++    { type: 'credit', amount: 40, status: 'completed', note: 'Refund rf1' },
++  ], 40);
++  assert.equal(snap.payableUsd, 0);
++  assert.equal(snap.vietqrDepositedUsd, 0);
++});
++
++test('a pending VietQR withdrawal reserves the slice and does not reduce seller earnings', () => {
++  const withdrawal = {
++    type: 'withdraw',
++    amount: 10,
++    status: 'pending',
++    meta: { persona: 'buyer', source: 'vietqr_company_bank' },
++  };
++  assert.equal(isBuyerDepositWithdrawal(withdrawal), true);
++  const snap = buyerVietqrSnapshot([vietqr(25), withdrawal], 25);
++  assert.equal(snap.payableUsd, 15);
++  const earned = sellerEarnedAvailable({
++    orders: [{ status: 'paid', ownershipType: 'THIRD_PARTY_SELLER', sellerNetAmount: 40, payoutHoldUntil: new Date('2020-01-01') }],
++    walletTxs: [withdrawal],
++    now: new Date('2026-11-08'),
++  });
++  assert.equal(earned.available, 40);
++});
+diff --git a/test/gpay-feature-flag.test.js b/test/gpay-feature-flag.test.js
+index c605931..83c42e0 100644
+--- a/test/gpay-feature-flag.test.js
++++ b/test/gpay-feature-flag.test.js
+@@ -29,9 +29,9 @@ test('GPAY_ENABLED=false / 0 / empty → disabled', () => {
+   }
+ });
+ 
+-test('GPAY_ENABLED=true / 1 → enabled', () => {
++test('GPAY_ENABLED cannot turn the removed channel back on', () => {
+   for (const v of ['true', '1', 'TRUE', ' true ']) {
+-    assert.deepEqual(run(FLAG, { GPAY_ENABLED: v }), { flag: true, feature: true }, v);
++    assert.equal(run(FLAG, { GPAY_ENABLED: v }).feature, false, v);
+   }
+ });
+ 
+@@ -77,24 +77,18 @@ const srv = app.listen(0, async () => {
+ });
+ `;
+ 
+-test('disabled: create-payment routes return 503 GPAY_DISABLED; webhook/config/return stay up', () => {
+-  const out = run(HTTP, { GPAY_RELAY_SECRET: 'relay-secret' });
+-  for (const p of ['/checkout', '/qr', '/account', '/sandbox/credit']) {
+-    assert.deepEqual(out[p], { status: 503, code: 'GPAY_DISABLED' }, p);
+-  }
+-  // Webhook is not gated by the flag: it reaches its own auth check (bad relay secret → 401).
+-  assert.equal(out.webhook.status, 401);
+-  assert.equal(out.webhook.code, 'GPAY_BAD_RELAY');
+-  assert.deepEqual(out.config, { status: 200, available: false, enabled: false, featureEnabled: false });
+-  assert.equal(out.return, 302);
+-});
+-
+-test('enabled: create-payment routes pass the flag (then require auth)', () => {
+-  const out = run(HTTP, { GPAY_ENABLED: 'true', GPAY_RELAY_SECRET: 'relay-secret' });
+-  for (const p of ['/checkout', '/qr', '/account', '/sandbox/credit']) {
+-    assert.notEqual(out[p].code, 'GPAY_DISABLED', p);
+-    assert.equal(out[p].status, 401, p);
++test('create-payment routes stay removed; webhook/config/return stay up', () => {
++  for (const env of [{ GPAY_RELAY_SECRET: 'relay-secret' }, { GPAY_ENABLED: 'true', GPAY_RELAY_SECRET: 'relay-secret' }]) {
++    const out = run(HTTP, env);
++    for (const p of ['/checkout', '/qr', '/account', '/sandbox/credit']) {
++      assert.deepEqual(out[p], { status: 410, code: 'GPAY_REMOVED' }, p);
++    }
++    assert.equal(out.webhook.status, 401);
++    assert.equal(out.webhook.code, 'GPAY_BAD_RELAY');
++    assert.equal(out.config.status, 200);
++    assert.equal(out.config.available, false);
++    assert.equal(out.config.enabled, false);
++    assert.equal(out.config.featureEnabled, false);
++    assert.equal(out.return, 302);
+   }
+-  assert.equal(out.config.available, true);
+-  assert.equal(out.config.featureEnabled, true);
+ });
+diff --git a/test/policy/policy-2026-10.test.js b/test/policy/policy-2026-10.test.js
+index b062b19..75e5746 100644
+--- a/test/policy/policy-2026-10.test.js
++++ b/test/policy/policy-2026-10.test.js
+@@ -36,7 +36,9 @@ test('discontinued middleware answers 410', () => {
+ test('seller approval requires verified eKYC', () => {
+   assert.equal(sellerApprovalGate({ sellerType: 'INDIVIDUAL' }, { status: 'pending' }).code, 'SELLER_KYC_REQUIRED');
+   assert.equal(sellerApprovalGate({ sellerType: 'INDIVIDUAL' }, null).code, 'SELLER_KYC_REQUIRED');
+-  assert.equal(sellerApprovalGate({ sellerType: 'INDIVIDUAL', taxCode: '012345678901' }, { status: 'verified' }).ok, true);
++  assert.equal(sellerApprovalGate({ sellerType: 'INDIVIDUAL', taxCode: '012345678901' }, { status: 'verified' }).code, 'MANUAL_TAX_REVIEW_REQUIRED');
++  assert.equal(sellerApprovalGate({ sellerType: 'INDIVIDUAL', taxCode: '012345678901', manualTaxReview: { status: 'approved' } }, { status: 'verified' }).ok, true);
++  assert.equal(sellerApprovalGate({ sellerType: 'INDIVIDUAL', taxCode: '012345678901', manualTaxReview: { status: 'approved' } }, { status: 'pending' }).code, 'SELLER_KYC_REQUIRED');
+ });
+ 
+ test('household business / company approval requires the business licence', () => {
+@@ -44,7 +46,8 @@ test('household business / company approval requires the business licence', () =
+   assert.equal(sellerApprovalGate({ sellerType: 'HOUSEHOLD_BUSINESS', taxCode: '0312345678' }, noLicense).code, 'BUSINESS_LICENSE_REQUIRED');
+   assert.equal(sellerApprovalGate({ sellerType: 'enterprise', taxCode: '0312345678' }, noLicense).code, 'BUSINESS_LICENSE_REQUIRED');
+   const withLicense = { ...noLicense, licenseObjectName: 'kyc/u1/license.jpg' };
+-  assert.equal(sellerApprovalGate({ sellerType: 'COMPANY', taxCode: '0312345678-001' }, withLicense).ok, true);
++  assert.equal(sellerApprovalGate({ sellerType: 'COMPANY', taxCode: '0312345678-001' }, withLicense).code, 'MANUAL_TAX_REVIEW_REQUIRED');
++  assert.equal(sellerApprovalGate({ sellerType: 'COMPANY', taxCode: '0312345678-001', manualTaxReview: { status: 'approved' } }, withLicense).ok, true);
+ });
+ 
+ test('eKYC: organizations must upload the licence, individuals only front/back', () => {

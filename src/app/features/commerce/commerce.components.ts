@@ -269,6 +269,7 @@ export class AdminComponent implements OnInit {
     { path: '/admin/finance', icon: '💰', label: 'Tài chính & đối soát' },
     { path: '/admin/bank-deposits', icon: '🏦', label: 'Nạp / rút tiền' },
     { path: '/admin/kyc', icon: '🪪', label: 'Duyệt eKYC' },
+    { path: '/admin/suppliers', icon: '🧾', label: 'Rà soát MST nhà cung cấp' },
     { path: '/admin/invoices', icon: '🧾', label: 'Hóa đơn GTGT' },
     { path: '/admin/tax', icon: '📑', label: 'Thuế & báo cáo thuế' },
     { path: '/admin/complaints', icon: '⚖️', label: 'Khiếu nại' },
