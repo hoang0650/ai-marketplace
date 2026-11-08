@@ -1000,6 +1000,13 @@ export interface SellerProfile {
   contactEmail: string;
   contactPhone: string;
   identityVerificationStatus: string;
+  manualTaxReview?: {
+    status?: 'none' | 'pending' | 'approved' | 'rejected' | string;
+    reason?: string;
+    reviewedAt?: string | null;
+    lookupAttested?: boolean;
+  };
+  electronicIdentitySeparate?: boolean;
   verificationStatus: SellerVerificationStatus;
   complianceStatus: string;
   sellerAgreementVersion: string;
@@ -1036,6 +1043,17 @@ export interface WalletSummary {
   buyerIdentityRequired?: boolean;
   buyerCashoutAllowed?: boolean;
   prepaidWithdrawable?: boolean;
+  buyerDepositWithdraw?: {
+    enabled?: boolean;
+    fundingSeparated?: boolean;
+    settlement?: string;
+    refundsSeparate?: boolean;
+    electronicIdentityStatus?: string;
+    payableUsd?: number;
+    payableVnd?: number | null;
+    blockedSources?: string[];
+    source?: string;
+  };
   policy?: PayoutPolicy;
   holds: Array<{
     orderId: string;

@@ -10,13 +10,10 @@ export const environment = {
   aiV1Url: 'https://ai.aimarkets.vn/v1',
   useMockApi: false,
   /**
-   * Show GPay on the website wallet next to VietQR.
-   * VietQR stays the default. This flag does not make a payment succeed:
-   * POST /v1/gpay/checkout and /v1/gpay/qr still require the API's GPAY_ENABLED
-   * plus merchant credentials. Until /v1/gpay/config reports enabled, the GPay
-   * tab tells the user the channel is unavailable.
+   * GPay is not a top-up channel. This flag cannot turn a gateway back on.
+   * Website top-up is VietQR to the company account.
    */
-  gpayEnabled: true,
+  gpayEnabled: false,
   /**
    * Site-wide trial / licensing notice. Set to false in both environment files
    * once the Ministry of Industry and Trade approves the e-commerce registration.

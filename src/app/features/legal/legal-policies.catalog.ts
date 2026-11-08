@@ -47,14 +47,14 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-nguoi-mua',
     file: '04-chinh-sach-nguoi-mua.md',
     title: 'Chính sách người mua',
-    summary: 'Quyền, nghĩa vụ người mua; tín dụng dịch vụ không rút tiền; GPU, máy chủ trò chơi, agent và dịch vụ chuyên môn.',
+    summary: 'Quyền, nghĩa vụ người mua. Số dư nạp VietQR được rút sau eKYC; hoàn tiền là thủ tục riêng. Nạp Apple/Google không thuộc lệnh rút này.',
     group: 'commerce',
   },
   {
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Đơn hàng thanh toán bằng số dư nội bộ. Website nạp bằng VietQR và, khi kênh được bật, bằng GPay; ứng dụng dùng IAP.',
+    summary: 'Đơn hàng thanh toán bằng số dư nội bộ. Website nạp bằng VietQR vào tài khoản Công ty. Ứng dụng dùng IAP. Không dùng cổng trung gian.',
     group: 'commerce',
   },
   {

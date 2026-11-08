@@ -127,6 +127,21 @@
           }
         }
 
+        <article class="mini-card" style="margin-top: 1rem">
+          <h3>{{ 'wallet.topupWithdraw.title' | t }}</h3>
+          <p>{{ 'wallet.topupWithdraw.rule' | t }}</p>
+          @if (topupDecision(); as decision) {
+            @if (decision.ok) {
+              <button type="button" (click)="requestVietqrWithdraw()">{{ 'wallet.topupWithdraw.submit' | t: { amount: depositGate()?.payableVnd || 0 } }}</button>
+            } @else {
+              <p>{{ ('wallet.topupWithdraw.blocker.' + decision.blocker) | t }}</p>
+              @if (decision.blocker === 'IDENTITY_REQUIRED') {
+                <a routerLink="/settings/kyc">{{ 'wallet.topupWithdraw.kyc' | t }}</a>
+              }
+            }
+          }
+        </article>
+
         @if (msg()) {
           <p class="msg" [class.msg--err]="msgIsError()">{{ msg() }}</p>
         }

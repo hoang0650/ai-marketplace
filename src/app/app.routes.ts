@@ -778,6 +778,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/admin-kyc.component').then((m) => m.AdminKycComponent),
       },
       {
+        path: 'admin/suppliers',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/admin-supplier-review.component').then((m) => m.AdminSupplierReviewComponent),
+      },
+      {
         path: 'admin/community-agents',
         canActivate: [adminGuard],
         loadComponent: () =>

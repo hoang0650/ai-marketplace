@@ -19,7 +19,7 @@ Nội dung dưới đây là các điều khoản của mẫu Hợp đồng dị
 
 - Sàn AI Markets (Nền tảng): sàn giao dịch thương mại điện tử tại https://aimarkets.vn và ứng dụng di động “AI Markets” (iOS, Android) do Bên A sở hữu, vận hành.
 - Quy chế: Quy chế hoạt động sàn giao dịch thương mại điện tử AI Markets (bản hợp nhất các chính sách của Nền tảng) được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal), kể cả các sửa đổi, bổ sung được thông báo theo Điều 17.
-- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; có thể dùng tín dụng dịch vụ nội bộ không rút/chuyển nhượng để thanh toán sản phẩm đủ điều kiện.
+- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; thanh toán đơn hàng bằng số dư ví trên Nền tảng. Số dư nạp bằng VietQR được rút về tài khoản đứng tên người mua sau khi eKYC được máy chủ duyệt; số dư không được chuyển nhượng. Hoàn tiền đơn hàng là thủ tục khác.
 - Sản phẩm: hàng hóa số, dịch vụ trực tuyến do Bên B đăng bán, gắn nhãn “Bán bởi Seller – tên cửa hàng”, phân biệt với sản phẩm “Bán bởi sàn” do Bên A trực tiếp cung cấp.
 - Ví AI Markets (Ví): số dư của người dùng trên Nền tảng, là phương thức duy nhất để thanh toán đơn hàng.
 - Kênh người bán: khu vực quản lý dành cho Bên B (hồ sơ cửa hàng, xác minh, sản phẩm, đơn hàng, khiếu nại, mã giảm giá, thanh toán, rút tiền, sổ cái).
@@ -49,7 +49,7 @@ c) Doanh nghiệp, tổ chức: tên, mã số thuế, địa chỉ; Giấy ch�
 
 d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngành, nghề kinh doanh có điều kiện (nếu có).
 
-3. Bên B phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán trước khi hồ sơ được phê duyệt và trước khi rút tiền; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.
+3. Bên B phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán trước khi hồ sơ được phê duyệt và trước khi rút tiền; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Rà soát mã số thuế đã khai trên trang tra cứu công khai là bước riêng và không thay eKYC. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.
 
 4. Bên A thẩm định tính nhất quán giữa giấy tờ, mã số thuế và chủ tài khoản nhận tiền; đối chiếu mã số thuế với cơ sở dữ liệu của cơ quan thuế; quyền cung cấp; sản phẩm dự kiến; rủi ro tuân thủ. Hồ sơ được xử lý theo trình tự: Chờ xử lý → Yêu cầu bổ sung (nếu thiếu) → Đang thẩm định → Đã xác minh; hoặc Từ chối, Tạm ngừng, Chấm dứt.
 
@@ -79,7 +79,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 6. Thanh toán, phí dịch vụ và thuế
 
-1. Mọi đơn hàng được Người mua thanh toán bằng số dư dịch vụ AI Markets. Số dư đó là bản ghi kế toán về khoản trả trước hoặc quyền sử dụng dịch vụ, không phải ví điện tử do Bên A cung ứng. AI Markets dự kiến hỗ trợ đồng thời chuyển khoản ngân hàng bằng VietQR thuần và thanh toán qua GPay (Công ty Cổ phần Thanh toán G). VietQR thuần không đồng nghĩa giao dịch được GPay xử lý. GPay không mặc nhiên giữ tiền, ký quỹ hoặc chi hộ. Bên A chỉ kích hoạt tiếp nhận tiền thật qua GPay sau khi kiểm tra hợp đồng có hiệu lực, phạm vi giấy phép hiện hành, cấu hình, tài khoản thụ hưởng hoặc đối soát và kiểm thử hoàn tiền. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing. Ứng dụng iOS không dẫn Người mua sang thanh toán trên website. Bên A không trực tiếp cung cấp dịch vụ trung gian thanh toán và không lưu thông tin thẻ của Người mua.
+1. Mọi đơn hàng được Người mua thanh toán bằng số dư dịch vụ AI Markets. Số dư đó là bản ghi kế toán về khoản trả trước hoặc quyền sử dụng dịch vụ, không phải ví điện tử do Bên A cung ứng. Website nạp ví bằng chuyển khoản VietQR vào tài khoản của Bên A. Không dùng thêm cổng trung gian. Bên A không khẳng định đã được cấp phép trung gian thanh toán. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing. Ứng dụng iOS không dẫn Người mua sang thanh toán trên website. Bên A không trực tiếp cung cấp dịch vụ trung gian thanh toán và không lưu thông tin thẻ của Người mua.
 
 2. Phí sàn: mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho Bên B), lưu cố định tại thời điểm giao kết từng đơn hàng.
 
