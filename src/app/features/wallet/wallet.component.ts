@@ -107,10 +107,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 
   setTopupMethod(m: 'vietqr' | 'gpay'): void {
-    if (m === 'gpay' && !GPAY_UI_ENABLED) return;
-    if (m === 'gpay' && this.topupVnd > 0) this.depositVnd = this.topupVnd;
-    if (m === 'vietqr' && this.depositVnd > 0) this.topupVnd = this.depositVnd;
-    this.topupMethod.set(m);
+    if (m !== 'vietqr') return;
+    if (this.depositVnd > 0) this.topupVnd = this.depositVnd;
+    this.topupMethod.set('vietqr');
   }
 
   onTopupVnd(v: number): void {
