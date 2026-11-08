@@ -197,6 +197,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
         <div class="panel mt-6">
           <h2 class="font-display text-xl">{{ 'aff.rulesTitle' | t }}</h2>
           <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+            <li>{{ 'aff.rule.roles' | t }}</li>
             <li>{{ 'aff.rule.kyc' | t }}</li>
             <li>{{ 'aff.rule.rate' | t }}</li>
             <li>{{ 'aff.rule.window' | t: { days: s.config?.attributionDays || 30 } }}</li>
