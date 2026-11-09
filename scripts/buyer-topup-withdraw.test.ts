@@ -13,27 +13,18 @@ const open = {
   blockedSources: [],
 };
 
-test('VietQR withdrawal needs the server gate, eKYC and a whole VND amount', () => {
-  assert.equal(buyerTopupWithdrawDecision({ snapshot: null }).blocker, 'SERVER_GATE_CLOSED');
-  assert.equal(buyerTopupWithdrawDecision({ snapshot: { ...open, enabled: false } }).blocker, 'SERVER_GATE_CLOSED');
-  assert.equal(buyerTopupWithdrawDecision({ snapshot: { ...open, electronicIdentityStatus: 'pending' } }).blocker, 'IDENTITY_REQUIRED');
-  assert.deepEqual(buyerTopupWithdrawDecision({ snapshot: open, amountVnd: 150000 }), { ok: true, amountVnd: 150000 });
-  assert.equal(buyerTopupWithdrawDecision({ snapshot: open, amountVnd: 150001 }).blocker, 'DEPOSIT_CAP');
+test('withdrawal stays off even when the server reports a separated VND amount', () => {
+  assert.equal(buyerTopupWithdrawDecision({ snapshot: null }).blocker, 'NOT_ACTIVATED');
+  assert.equal(buyerTopupWithdrawDecision({ snapshot: open, amountVnd: 150000 }).blocker, 'NOT_ACTIVATED');
 });
 
-test('app store, GPay and unknown balances are not cashed out', () => {
-  assert.equal(
-    buyerTopupWithdrawDecision({ snapshot: { ...open, payableVnd: 0, blockedSources: ['appstore'] }, amountVnd: 1 }).blocker,
-    'APPSTORE_UNRESOLVED',
-  );
-  assert.equal(
-    buyerTopupWithdrawDecision({ snapshot: { ...open, payableVnd: 0, blockedSources: ['gpay'] }, amountVnd: 1 }).blocker,
-    'GPAY_REMOVED',
-  );
-  assert.equal(
-    buyerTopupWithdrawDecision({ snapshot: { ...open, payableVnd: 0, blockedSources: ['unknown'] }, amountVnd: 1 }).blocker,
-    'SOURCE_NOT_SEPARATED',
-  );
+test('closed withdrawal does not cash out app store, GPay or unknown balances', () => {
+  for (const source of ['appstore', 'gpay', 'unknown']) {
+    assert.equal(
+      buyerTopupWithdrawDecision({ snapshot: { ...open, payableVnd: 0, blockedSources: [source] }, amountVnd: 1 }).blocker,
+      'NOT_ACTIVATED',
+    );
+  }
 });
 
 test('manual tax review is not electronic identity and cannot publish by itself', () => {
@@ -63,11 +54,14 @@ test('admin review requires a role, a reason and a lookup attestation', () => {
   assert.equal(isSupplierTaxCode('012345678901', 'individual'), true);
 });
 
-test('published quy che no longer offers GPay and does not print draft markers', () => {
+test('published quy che names GPay only as a direct contract still being completed', () => {
   const body = readFileSync(new URL('../src/assets/legal/01-quy-che-hoat-dong-san-tmdt.md', import.meta.url), 'utf8');
-  assert.equal(body.includes('GPay'), false);
+  assert.match(body, /đang làm việc trực tiếp với GPay/);
+  assert.match(body, /Hợp đồng cho AI Markets chưa hoàn tất/);
+  assert.equal(body.includes('đối tác dự kiến'), false);
   assert.equal(body.includes('CẦN XÁC NHẬN'), false);
+  assert.equal(/GP-NHNN|số giấy phép\s+\d/.test(body), false);
+  assert.equal(/cổng của GPay|khi kênh được bật/.test(body), false);
   assert.match(body, /Người mua thông thường không/);
-  assert.match(body, /sau khi máy chủ ghi nhận xác minh danh tính \(eKYC\) là đã duyệt/);
   assert.equal(/đã tích hợp VNeID/.test(body), false);
 });

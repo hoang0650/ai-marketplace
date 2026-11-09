@@ -19,7 +19,7 @@ Nội dung dưới đây là các điều khoản của mẫu Hợp đồng dị
 
 - Sàn AI Markets (Nền tảng): sàn giao dịch thương mại điện tử tại https://aimarkets.vn và ứng dụng di động “AI Markets” (iOS, Android) do Bên A sở hữu, vận hành.
 - Quy chế: Quy chế hoạt động sàn giao dịch thương mại điện tử AI Markets (bản hợp nhất các chính sách của Nền tảng) được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal), kể cả các sửa đổi, bổ sung được thông báo theo Điều 17.
-- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; thanh toán đơn hàng bằng số dư ví trên Nền tảng. Số dư nạp bằng VietQR được rút về tài khoản đứng tên người mua sau khi eKYC được máy chủ duyệt; số dư không được chuyển nhượng. Hoàn tiền đơn hàng là thủ tục khác.
+- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; thanh toán đơn hàng bằng số dư ví trên Nền tảng. Số dư không được chuyển nhượng. Lệnh rút số dư nạp đang tắt; số dư đã có được giữ. Hoàn tiền đơn hàng là thủ tục khác.
 - Sản phẩm: hàng hóa số, dịch vụ trực tuyến do Bên B đăng bán, gắn nhãn “Bán bởi Seller – tên cửa hàng”, phân biệt với sản phẩm “Bán bởi sàn” do Bên A trực tiếp cung cấp.
 - Ví AI Markets (Ví): số dư của người dùng trên Nền tảng, là phương thức duy nhất để thanh toán đơn hàng.
 - Kênh người bán: khu vực quản lý dành cho Bên B (hồ sơ cửa hàng, xác minh, sản phẩm, đơn hàng, khiếu nại, mã giảm giá, thanh toán, rút tiền, sổ cái).
@@ -79,7 +79,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 6. Thanh toán, phí dịch vụ và thuế
 
-1. Mọi đơn hàng được Người mua thanh toán bằng số dư dịch vụ AI Markets. Số dư đó là bản ghi kế toán về khoản trả trước hoặc quyền sử dụng dịch vụ, không phải ví điện tử do Bên A cung ứng. Website nạp ví bằng chuyển khoản VietQR vào tài khoản của Bên A. Không dùng thêm cổng trung gian. Bên A không khẳng định đã được cấp phép trung gian thanh toán. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing. Ứng dụng iOS không dẫn Người mua sang thanh toán trên website. Bên A không trực tiếp cung cấp dịch vụ trung gian thanh toán và không lưu thông tin thẻ của Người mua.
+1. Mọi đơn hàng được Người mua thanh toán bằng số dư dịch vụ AI Markets. Website đang nạp ví bằng chuyển khoản VietQR vào tài khoản ngân hàng của Bên A. Tài khoản đó không phải bằng chứng một tổ chức được cấp phép đang nhận, giữ và chi. AI Markets đang làm việc trực tiếp với GPay (Công ty Cổ phần Thanh toán G) để hoàn tất hợp đồng cung ứng dịch vụ cho dự án. Hợp đồng cho AI Markets chưa hoàn tất. Quan hệ sẵn có không chứng minh hợp đồng này đã ký hoặc phạm vi phép đã bao trùm mô hình. Cổng GPay chưa mở. Không ghi số giấy phép. Nếu hợp đồng cuối và phép bao trùm việc nhận, giữ và chi, GPay thực hiện các chức năng đó. Lệnh rút số dư nạp đang tắt. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing. Ứng dụng iOS không dẫn Người mua sang thanh toán trên website. Bên A không lưu thông tin thẻ của Người mua.
 
 2. Phí sàn: mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho Bên B), lưu cố định tại thời điểm giao kết từng đơn hàng.
 

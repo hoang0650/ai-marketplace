@@ -21,6 +21,30 @@
 4. **Đơn hàng giới thiệu** là đơn hàng được ghi nhận cho một người giới thiệu theo quy tắc tại Điều 4.
 5. **Giá trị đơn hàng** dùng để tính hoa hồng là giá sau giảm giá mà người mua thực trả cho sản phẩm.
 
+## Điều 1A. Vai trò
+
+1. **Chủ quản và quản trị viên** vận hành chương trình, sổ hoa hồng và hồ sơ. Quản trị viên không phải tổ chức được cấp phép nhận, giữ và chi tiền.
+2. **Người bán** tự đặt tỷ lệ hoa hồng và chịu khoản đó từ doanh thu của mình.
+3. **Người giới thiệu** là một tư cách của tài khoản người dùng. Không có tuyến dưới, không có khoản nộp tiền để tham gia, không có hoa hồng tuyển dụng.
+4. **Người mua** mở liên kết và thanh toán đơn bằng số dư trên nền tảng.
+5. **Tổ chức thanh toán:** AI Markets đang làm việc trực tiếp với GPay để hoàn tất hợp đồng cung ứng dịch vụ cho dự án. Hợp đồng cho AI Markets chưa hoàn tất. Quan hệ sẵn có không chứng minh hợp đồng này đã ký hoặc phạm vi phép đã bao trùm mô hình. Tài khoản ngân hàng của Công ty đang nhận VietQR không phải giải pháp đã được cấp phép.
+
+## Điều 1B. Quy trình đang chạy trên hệ thống
+
+Các bước dưới đây mô tả mã và hợp đồng API hiện có. Không thêm cửa sổ, mức phí hay nhà cung cấp ngoài những gì hệ thống đang làm.
+
+1. Người dùng đăng ký tài khoản thường. Không có bước đặt cọc.
+2. `GET /v1/affiliate` chỉ trả mã khi `user.kyc.status` là verified. `GET /v1/affiliate/link` từ chối mã `KYC_REQUIRED` nếu chưa tới trạng thái đó. Biểu mẫu này không phải xác thực điện tử đã hoàn tất. Luật 122/2025/QH15 yêu cầu xác thực điện tử người tiếp thị liên kết từ 01/07/2026, trước khi thiết lập đường dẫn. Trang này không gắn nhãn đăng ký chương trình đã được cơ quan chấp thuận.
+3. Rà soát mã số thuế của người bán là hồ sơ người bán, không cấp mã giới thiệu và không sửa trạng thái định danh điện tử.
+4. Người bán đặt tỷ lệ 0–25%. Mặc định 0% là không tham gia. Sản phẩm “Bán bởi sàn” không lấy tỷ lệ bên thứ ba.
+5. Người mua mở liên kết dạng đường dẫn sản phẩm hoặc gian hàng kèm `ref`. Ghi nhận là lượt nhấp cuối. Số ngày lấy từ cấu hình `attributionDays`, giá trị mã đang dùng khi không đặt biến là 30 ngày. Lượt nhấp lặp của cùng thiết bị trong 30 phút được tính một lần.
+6. Đơn được ghi hoa hồng khi không phải tự giới thiệu, tỷ lệ lớn hơn 0, lượt nhấp còn trong cửa sổ, và tài khoản người giới thiệu còn hoạt động với hồ sơ nội bộ ở trạng thái verified tại thời điểm ghi nhận.
+7. Hoa hồng ghi đủ lúc đơn hoàn tất, trạng thái `active`. Trong thời gian giữ hoặc khi đơn đang tranh chấp, số đó là đang giữ. Hết giữ, số còn lại là khả dụng. Hoàn hoặc hủy đảo theo tỷ lệ và có thể đưa dòng sang đã đảo.
+8. Yêu cầu chi trả gửi `POST /v1/wallet/withdraw` với tư cách affiliate và tạo bút toán rút đang chờ. Bút toán đó không phải lệnh ngân hàng đã thực hiện. Chi qua tổ chức được phép chưa mở vì hợp đồng GPay cho AI Markets chưa hoàn tất.
+9. Thuế không được trang này ấn 10% cho mọi người giới thiệu và không coi mẫu cam kết đã duyệt là miễn thuế. Khoản 2 Điều 50 Nghị định 253/2026/NĐ-CP chỉ thuộc nhóm thù lao cụ thể.
+10. Tài khoản người giới thiệu không còn hoạt động thì lượt nhấp mới không được ghi nhận. Hoa hồng hợp lệ không bị xóa chỉ vì tài khoản bị khóa. Gian lận bị thu hồi theo Điều 8.
+11. Mã giới thiệu và lượt nhấp là dữ liệu của người giới thiệu và người mua. Trang này không công bố hồ sơ thuế của người khác.
+
 ## Điều 2. Tham gia chương trình
 
 1. Phản hồi của Bộ Công Thương yêu cầu người tiếp thị liên kết được xác thực điện tử từ 01/07/2026 và trước khi cấp mã hoặc ghi nhận hoa hồng. Ảnh CCCD, hộ chiếu và việc duyệt hồ sơ nội bộ không phải xác thực điện tử qua VNeID hoặc nhà cung cấp xác thực. Khi chưa có tích hợp được chứng minh, nền tảng không gắn nhãn đã hoàn tất xác thực điện tử. Liên kết, khi được cấp, có dạng `https://aimarkets.vn/product/<sản-phẩm>?ref=<mã>` hoặc `https://aimarkets.vn/store/<gian-hàng>?ref=<mã>`.
@@ -51,8 +75,8 @@
 ## Điều 6. Thuế thu nhập cá nhân
 
 1. Thuế trên hoa hồng được xác định theo tư cách, cư trú, bản chất thu nhập và văn bản có hiệu lực tại lúc chi trả. Trang này không áp dụng máy móc một tỷ lệ cố định, và không coi một mẫu cam kết đã duyệt là căn cứ miễn thuế.
-2. Cam kết Mẫu 08/CK-TNCN được nộp và duyệt tương tự quy trình eKYC: người giới thiệu tải lên bản đã ký (PDF/ảnh), chọn năm cam kết và mã số thuế cá nhân; quản trị viên duyệt hoặc từ chối (nêu lý do). Người cam kết chịu trách nhiệm về tính trung thực của cam kết theo pháp luật.
-3. Khoản đã khấu trừ được ghi trên lịch sử ví; nền tảng báo cáo số thuế TNCN đã khấu trừ cho cơ quan thuế theo quý và cuối năm cấp chứng từ khấu trừ thuế TNCN cho người giới thiệu.
+2. Nếu người giới thiệu gửi một bản cam kết thuế, đó là tệp, năm và mã số thuế để quản trị viên duyệt hoặc từ chối, có lý do. Việc duyệt tệp không phải xác thực điện tử và không phải miễn thuế. Nghị định 253/2026/NĐ-CP, khoản 2 Điều 50, chỉ nói cam kết là căn cứ tạm thời chưa khấu trừ đối với nhóm thù lao cụ thể khi đủ điều kiện, không áp cho mọi hoa hồng.
+3. Khoản đã khấu trừ, nếu có, được ghi trên lịch sử ví. Nghị định 252/2026/NĐ-CP, khoản 2 Điều 45, yêu cầu chủ quản nền tảng khai theo tháng số thuế đã khấu trừ đối với hoạt động kinh doanh của hộ và cá nhân kinh doanh. Trang này không xếp mọi hoa hồng người giới thiệu vào nhóm đó và không ghi lịch quý như quy tắc đã chốt.
 4. Khoản thuế, nếu phát sinh, theo văn bản có hiệu lực tại thời điểm chi trả. Người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
 
 ## Điều 7. Hành vi bị cấm
