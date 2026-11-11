@@ -288,30 +288,6 @@
   }
 }
 
-<section class="page lux-section legal-home" aria-labelledby="home-legal-title">
-  <div class="lux-section__head">
-    <div>
-      <h2 id="home-legal-title" class="section-title font-display">{{ 'home.publicPolicies' | t }}</h2>
-      <p class="lux-section__sub">{{ 'home.publicPoliciesLead' | t }}</p>
-    </div>
-    <a routerLink="/legal" class="lux-more">{{ 'footer.publicPolicies' | t }}</a>
-  </div>
-  <ul class="legal-home__list">
-    <li><a routerLink="/legal/thong-tin-chu-quan-nen-tang">{{ 'home.legal.owner' | t }}</a></li>
-    <li><a routerLink="/legal/chinh-sach-bao-mat-va-du-lieu">{{ 'home.legal.privacy' | t }}</a></li>
-    <li><a routerLink="/legal/quyen-va-nghia-vu-cac-ben">{{ 'home.legal.duties' | t }}</a></li>
-    <li><a routerLink="/legal/chinh-sach-khieu-nai-tranh-chap">{{ 'home.legal.complaints' | t }}</a></li>
-    <li><a routerLink="/legal/chinh-sach-gia-ca">{{ 'home.legal.price' | t }}</a></li>
-    <li><a routerLink="/legal/dieu-kien-va-han-che-cung-cap">{{ 'home.legal.conditions' | t }}</a></li>
-    <li><a routerLink="/legal/chinh-sach-thanh-toan-doi-soat">{{ 'home.legal.payment' | t }}</a></li>
-    <li><a routerLink="/legal/chinh-sach-xep-hang-uu-tien-hien-thi">{{ 'home.legal.ranking' | t }}</a></li>
-    <li><a routerLink="/legal/quy-che-livestream-ban-hang">{{ 'home.legal.livestream' | t }}</a></li>
-    <li><a routerLink="/legal/chinh-sach-giao-nhan-san-pham-so">{{ 'home.legal.delivery' | t }}</a></li>
-    <li><a routerLink="/legal/chinh-sach-hoan-tien">{{ 'home.legal.refund' | t }}</a></li>
-    <li><a routerLink="/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu">{{ 'home.legal.service' | t }}</a></li>
-  </ul>
-</section>
-
 <ng-template #railNav let-rail>
   <div class="lux-rail-nav">
     <button type="button" (click)="scrollRail(rail, -1)" [attr.aria-label]="'home.prev' | t">‹</button>

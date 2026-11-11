@@ -34,7 +34,7 @@
 Các bước dưới đây mô tả mã và hợp đồng API hiện có. Không thêm cửa sổ, mức phí hay nhà cung cấp ngoài những gì hệ thống đang làm.
 
 1. Người dùng đăng ký tài khoản thường. Không có bước đặt cọc.
-2. `GET /v1/affiliate` chỉ trả mã khi `user.kyc.status` là verified. `GET /v1/affiliate/link` từ chối mã `KYC_REQUIRED` nếu chưa tới trạng thái đó. Biểu mẫu này không phải xác thực điện tử đã hoàn tất. Luật 122/2025/QH15 yêu cầu xác thực điện tử người tiếp thị liên kết từ 01/07/2026, trước khi thiết lập đường dẫn. Trang này không gắn nhãn đăng ký chương trình đã được cơ quan chấp thuận.
+2. Luật 122/2025/QH15 yêu cầu xác thực điện tử trước khi cấp mã mới, từ 01/07/2026. Xác thực điện tử chưa được triển khai. Mã mới không được mô tả là đã đủ điều kiện luật. Mã đã có, nếu hồ sơ nội bộ đã duyệt, vẫn có thể tạo liên kết; điều đó không phải kết luận mã cũ đã hợp pháp. Biểu mẫu eKYC và rà soát mã số thuế không phải xác thực điện tử. Quy trình đủ mười sáu bước nằm tại [Quy trình tiếp thị liên kết](/legal/quy-trinh-tiep-thi-lien-ket).
 3. Rà soát mã số thuế của người bán là hồ sơ người bán, không cấp mã giới thiệu và không sửa trạng thái định danh điện tử.
 4. Người bán đặt tỷ lệ 0–25%. Mặc định 0% là không tham gia. Sản phẩm “Bán bởi sàn” không lấy tỷ lệ bên thứ ba.
 5. Người mua mở liên kết dạng đường dẫn sản phẩm hoặc gian hàng kèm `ref`. Ghi nhận là lượt nhấp cuối. Số ngày lấy từ cấu hình `attributionDays`, giá trị mã đang dùng khi không đặt biến là 30 ngày. Lượt nhấp lặp của cùng thiết bị trong 30 phút được tính một lần.
