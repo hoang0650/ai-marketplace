@@ -41,7 +41,7 @@ export type PricingModel = 'free' | 'one-time' | 'subscription' | 'usage';
 
 export type PaymentProvider = 'wallet' | 'paypal' | 'paddle' | 'payos';
 
-export type UserRole = 'buyer' | 'seller' | 'talent' | 'freelancer' | 'employer' | 'admin';
+export type UserRole = 'buyer' | 'seller' | 'affiliate' | 'talent' | 'freelancer' | 'employer' | 'admin';
 
 /** Roles a user may pick at signup (admin is never self-assignable). */
 export type SignupRole = Exclude<UserRole, 'admin'>;
@@ -352,6 +352,15 @@ export interface User {
   bio?: string;
   /** none | draft | pending | verified | rejected */
   kycStatus?: string;
+  emailVerified?: boolean;
+  /** Present when role is affiliate. A code is not issued while electronicIdentity is not_implemented. */
+  affiliateOnboarding?: {
+    emailVerified?: boolean;
+    ekycStatus?: string;
+    taxCodeStatus?: string;
+    electronicIdentity?: string;
+    codeIssued?: boolean;
+  };
   hasPassword?: boolean;
   googleLinked?: boolean;
   profile?: UserProfileExtras;
@@ -370,6 +379,7 @@ export interface UserProfileExtras {
   website: string;
   notifyLang: 'vi' | 'en' | 'zh';
   socials: SocialLink[];
+  affiliateOnboarding?: User['affiliateOnboarding'];
 }
 
 export interface UserPreferences {

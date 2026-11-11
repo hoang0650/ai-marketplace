@@ -29,6 +29,22 @@ interface CachedExchangeRates extends ExchangeRateQuote {
   savedAt: number;
 }
 
+function uiLang(): string {
+  if (typeof localStorage === 'undefined' || typeof navigator === 'undefined') return 'vi';
+  try {
+    const q = new URLSearchParams(window.location.search).get('lang');
+    if (q === 'vi' || q === 'en' || q === 'zh') return q;
+    const saved = localStorage.getItem('aimarkets.lang');
+    if (saved === 'vi' || saved === 'en' || saved === 'zh') return saved;
+  } catch {
+    /* ignore */
+  }
+  const nav = navigator.language.toLowerCase();
+  if (nav.startsWith('zh')) return 'zh';
+  if (nav.startsWith('en')) return 'en';
+  return 'vi';
+}
+
 function inRange(n: number, min: number, max: number): boolean {
   return Number.isFinite(n) && n >= min && n <= max;
 }
@@ -66,6 +82,7 @@ export class CurrencyService {
   }
 
   setCurrency(code: AppCurrency): void {
+    if (uiLang() === 'vi' && code !== 'VND') return;
     this.currency.set(code);
     if (isPlatformBrowser(this.platformId)) {
       try {
@@ -206,6 +223,7 @@ export class CurrencyService {
   }
 
   private readInitial(): AppCurrency {
+    if (uiLang() === 'vi') return 'VND';
     if (!isPlatformBrowser(this.platformId)) return 'USD';
     try {
       const saved = localStorage.getItem(STORAGE_KEY);

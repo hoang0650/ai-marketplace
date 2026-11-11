@@ -392,6 +392,7 @@ export class ShellComponent {
   }
 
   setCurrency(code: AppCurrency): void {
+    if (this.i18n.lang() === 'vi' && code !== 'VND') return;
     this.currencySvc.setCurrency(code);
     this.closeCurrency();
     this.closeLang();
@@ -403,7 +404,12 @@ export class ShellComponent {
 
   setLang(lang: AppLang): void {
     this.i18n.setLang(lang);
+    if (lang === 'vi') this.currencySvc.setCurrency('VND');
     this.closeLang();
+  }
+
+  visibleCurrencies(): Array<{ id: AppCurrency; symbol: string }> {
+    return this.i18n.lang() === 'vi' ? this.currencies.filter((item) => item.id === 'VND') : this.currencies;
   }
 
   toggleCart(event: Event): void {

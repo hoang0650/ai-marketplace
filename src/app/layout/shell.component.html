@@ -194,7 +194,7 @@
         <div class="drawer-pref">
           <span><app-icon name="card" />{{ 'hdr.currency' | t }}</span>
           <div class="seg" role="group" [attr.aria-label]="'hdr.currency' | t">
-            @for (c of currencies; track c.id) {
+            @for (c of visibleCurrencies(); track c.id) {
               <button type="button" [class.on]="currencySvc.currency() === c.id" [attr.aria-pressed]="currencySvc.currency() === c.id" (click)="setCurrency(c.id)">{{ c.id }}</button>
             }
           </div>
@@ -227,7 +227,7 @@
               <button type="button" class="dd-item" [class.active]="i18n.lang() === l.id" [attr.aria-pressed]="i18n.lang() === l.id" (click)="setLang(l.id)">{{ l.native }}</button>
             }
             <p class="nav-dd__group">{{ 'hdr.currency' | t }}</p>
-            @for (c of currencies; track c.id) {
+            @for (c of visibleCurrencies(); track c.id) {
               <button type="button" class="dd-item" [class.active]="currencySvc.currency() === c.id" [attr.aria-pressed]="currencySvc.currency() === c.id" (click)="setCurrency(c.id)">{{ ('currency.' + c.id.toLowerCase()) | t }}</button>
             }
           </div>
