@@ -20,7 +20,7 @@ import {
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
-import { switchMap } from 'rxjs';
+import { forkJoin, switchMap } from 'rxjs';
 import { Product, ProductCategory, Review, IssuedLicense, ContentEpisode, ProductFile, CouponPreview, StreamDevice } from '../../models/marketplace.models';
 import { HireService } from '../../services/hire.service';
 import { WalletBalanceService } from '../../services/wallet-balance.service';
@@ -39,6 +39,20 @@ import { CartService } from '../cart/cart.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { UsageCatalogService } from '../usage/usage.service';
 import { accessUnitOf, buyerUnitLabel, viHirePrice, viPrice } from '../usage/usage-contract';
+import {
+  authoritativeVnd,
+  formatDong,
+  listOffer,
+  offerAmount,
+  offerBadge,
+  offerForTerm,
+  offerNote,
+  offerPriceLabel,
+  periodOffers,
+  periodTerm,
+  usageOffers,
+  type SellOffer,
+} from '../usage/billing-display';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { InvoiceChoiceComponent } from '../orders/invoice-choice.component';
 import { TPipe } from '../../i18n/t.pipe';
@@ -296,6 +310,10 @@ export class ProductDetailComponent implements OnInit {
   readonly accessView = signal<{ active: boolean; expiresAt: string | null; unit: string | null } | null>(null);
   readonly accessError = signal('');
   readonly accessBusy = signal(false);
+  /** Buyer choice when a listing has both a metered rate and a time-period pass. */
+  readonly buyMode = signal<'metered' | 'period'>('metered');
+  readonly selectedOfferId = signal('');
+  readonly termQuotes = signal<Partial<Record<'day' | 'month' | 'year', number | null>>>({});
 
   /** Persistent-memory agent chat (hire-agent) */
   agentDraft = '';
@@ -486,6 +504,12 @@ export class ProductDetailComponent implements OnInit {
         this.hireBrief = '';
         this.paymentChoice.set('staged');
         this.selectedServicePackage = p.servicePackages?.[0]?.code || '';
+        const listed = listOffer(p);
+        this.selectedOfferId.set(listed?.id || '');
+        this.buyMode.set(listed?.billingMode === 'period' ? 'period' : 'metered');
+        const offerTerm = periodTerm(listed?.unit);
+        if (offerTerm === 'day' || offerTerm === 'month' || offerTerm === 'year') this.licenseTerm = offerTerm;
+        this.termQuotes.set({});
         this.accessView.set(null);
         this.accessError.set('');
         if (accessUnitOf(p.pricing) && this.auth.user()) this.loadUsageAccess(p.id);
@@ -505,13 +529,16 @@ export class ProductDetailComponent implements OnInit {
     if (pr.model === 'free') {
       return this.displayCurrency === 'VND' ? '0 đ' : this.i18n.t('card.free');
     }
-    if (this.i18n.lang() === 'vi' && (pr.model === 'usage' || isHireRequestCategory(p.category))) {
-      const quoted = pr.model === 'usage'
-        ? viPrice(p.pricingVnd?.usageRate)
-        : viHirePrice(p, p.id === this.product()?.id ? this.selectedServicePackage : p.servicePackages?.[0]?.code);
-      const unit = pr.model === 'usage' ? buyerUnitLabel(pr, 'vi') : '';
-      const amount = quoted || this.i18n.t('money.missingVnd');
-      return unit ? `${amount}/${unit}` : amount;
+    const offer = p.id === this.product()?.id ? this.chosenOffer(p) : listOffer(p);
+    if (offer) {
+      return offerPriceLabel(offer, this.i18n.lang()) || this.i18n.t(offer.status === 'needs_review' ? 'bill.needsReview' : 'money.missingVnd');
+    }
+    if (this.i18n.lang() === 'vi' && isHireRequestCategory(p.category)) {
+      return viHirePrice(p, p.id === this.product()?.id ? this.selectedServicePackage : p.servicePackages?.[0]?.code) || this.i18n.t('money.missingVnd');
+    }
+    if (this.i18n.lang() === 'vi' && isLicenseCategory(p.category)) {
+      const quoted = this.termQuotes()[this.licenseTerm];
+      return quoted == null ? this.i18n.t('money.missingVnd') : `${formatDong(quoted)}/${this.termUnit(this.licenseTerm)}`;
     }
     const qty = Math.max(1, Number(units) || 1);
     const unitUsd = isLicenseCategory(p.category)
@@ -1118,8 +1145,93 @@ export class ProductDetailComponent implements OnInit {
     return `${pkg.price} ${pkg.currency}`;
   }
 
+  chosenOffer(p: Product): SellOffer | null {
+    const offers = p.offers || [];
+    return offers.find((offer) => offer.id === this.selectedOfferId()) || listOffer(p);
+  }
+
+  selectOffer(offer: SellOffer): void {
+    this.selectedOfferId.set(offer.id);
+    this.buyMode.set(offer.billingMode === 'period' ? 'period' : 'metered');
+    const term = periodTerm(offer.unit);
+    if (term === 'day' || term === 'month' || term === 'year') this.licenseTerm = term;
+  }
+
+  usageOfferList(p: Product): SellOffer[] {
+    return usageOffers(p);
+  }
+
+  periodOfferList(p: Product): SellOffer[] {
+    return periodOffers(p);
+  }
+
+  offerPrice(offer: SellOffer): string {
+    return offerPriceLabel(offer, this.i18n.lang()) || this.i18n.t(offer.status === 'needs_review' ? 'bill.needsReview' : 'money.missingVnd');
+  }
+
+  offerNoteText(offer: SellOffer): string {
+    return offerNote(offer, this.i18n.lang());
+  }
+
+  offerBadgeText(offer: SellOffer): string {
+    return offerBadge(offer, this.i18n.lang());
+  }
+
+  isMetered(p: Product): boolean {
+    const offer = this.chosenOffer(p);
+    if (offer) return offer.billingMode === 'usage';
+    return p.pricing?.model === 'usage';
+  }
+
+  hasPeriodPass(p: Product): boolean {
+    return periodOffers(p).length > 0;
+  }
+
   accessPeriod(p: Product): boolean {
     return !!accessUnitOf(p.pricing);
+  }
+
+  loadTermQuotes(p: Product): void {
+    const prices = p.contentMeta?.licensePrices || {};
+    const currency = p.pricing?.currency || 'USD';
+    const terms = (['day', 'month', 'year'] as const).filter((term) => Number(prices[term]) > 0);
+    if (!terms.length) return;
+    forkJoin(
+      Object.fromEntries(terms.map((term) => [term, this.usageApi.quote(Number(prices[term]), currency)])),
+    ).subscribe({
+      next: (rows) => {
+        const next: Partial<Record<'day' | 'month' | 'year', number | null>> = {};
+        for (const term of terms) next[term] = authoritativeVnd(rows[term]);
+        this.termQuotes.set(next);
+      },
+      error: () => this.termQuotes.set({}),
+    });
+  }
+
+  termPriceLabel(term: 'day' | 'month' | 'year'): string {
+    if (this.i18n.lang() !== 'vi') {
+      const usd = Number(this.product()?.contentMeta?.licensePrices?.[term]) || 0;
+      return `${this.currencySvc.formatFromUsd(usd, 'USD')}/${this.termUnit(term)}`;
+    }
+    const quoted = this.termQuotes()[term];
+    return quoted == null ? this.i18n.t('money.missingVnd') : `${formatDong(quoted)}/${this.termUnit(term)}`;
+  }
+
+  walletText(): string {
+    if (this.i18n.lang() === 'vi') {
+      const amount = authoritativeVnd(this.walletBal.displayAvailable());
+      return amount == null ? this.i18n.t('money.missingVnd') : formatDong(amount);
+    }
+    const amount = this.walletBalance();
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
+  }
+
+  chargesLicense(p: Product): boolean {
+    const offer = p.offers?.length ? this.chosenOffer(p) : null;
+    if (offer) return offer.billingMode === 'period' && offer.status === 'priced';
+    if (!isLicenseCategory(p.category)) return false;
+    if (p.pricing?.model === 'usage' && this.buyMode() === 'metered') return false;
+    return true;
   }
 
   accessExpiryLabel(): string {
@@ -1283,6 +1395,10 @@ export class ProductDetailComponent implements OnInit {
         return;
       }
       this.checkout();
+      return;
+    }
+    if (this.chosenOffer(p)?.billingMode === 'usage' || (!p.offers?.length && this.isMetered(p) && this.buyMode() === 'metered')) {
+      this.setWorkspace('playground');
       return;
     }
     this.checkout();
@@ -2032,7 +2148,13 @@ export class ProductDetailComponent implements OnInit {
     const quantity = isLicenseCategory(p.category) || isTemplateCategory(p.category)
       ? 1
       : Math.min(99, Math.max(1, Math.floor(this.qty) || 1));
-    const licenseTerm = isLicenseCategory(p.category) ? this.licenseTerm : undefined;
+    const licenseTerm = this.chargesLicense(p) ? this.licenseTerm : undefined;
+    const priced = this.chosenOffer(p);
+    const offerVnd = priced?.billingMode === 'period' ? offerAmount(priced) : null;
+    if (this.i18n.lang() === 'vi' && licenseTerm && offerVnd == null && this.termQuotes()[licenseTerm] == null) {
+      this.checkoutMsg.set(this.i18n.t('money.missingVnd'));
+      return;
+    }
     const couponCode = this.useCoupon ? this.couponCode.trim() || undefined : undefined;
     const intent = `${p.id}|${quantity}|${licenseTerm || ''}|${couponCode || ''}`;
     if (intent !== this.checkoutKeyFor || !this.checkoutKey) {
@@ -2043,7 +2165,15 @@ export class ProductDetailComponent implements OnInit {
     this.checkingOut.set(true);
     this.checkoutMsg.set('');
     this.purchaseNotice.set({ state: 'loading', productName: p.name, template: isTpl });
-    this.billing.checkout({ productId: p.id, quantity, licenseTerm, couponCode, idempotencyKey: this.checkoutKey }).subscribe({
+    const amountVnd = offerVnd ?? (licenseTerm ? this.termQuotes()[licenseTerm] ?? undefined : undefined);
+    this.billing.checkout({
+      productId: p.id,
+      quantity,
+      licenseTerm,
+      couponCode,
+      idempotencyKey: this.checkoutKey,
+      ...(amountVnd != null ? { amountVnd } : {}),
+    }).subscribe({
       next: (res) => {
         this.checkingOut.set(false);
         this.checkoutKey = '';
@@ -2204,7 +2334,11 @@ export class ProductDetailComponent implements OnInit {
       void this.router.navigate(['/cart']);
       return;
     }
-    this.cart.add(p.id, 1, isLicenseCategory(p.category) ? this.licenseTerm : undefined).subscribe({
+    if (this.i18n.lang() === 'vi' && this.chargesLicense(p) && offerAmount(this.chosenOffer(p)) == null && this.termQuotes()[this.licenseTerm] == null) {
+      this.checkoutMsg.set(this.i18n.t('money.missingVnd'));
+      return;
+    }
+    this.cart.add(p.id, 1, this.chargesLicense(p) ? this.licenseTerm : undefined).subscribe({
       next: (lines) => {
         const added = lines.some((line) => line.product?.id === p.id);
         this.checkoutMsg.set(this.i18n.t(added ? 'cart.added' : 'cart.err.addFail'));

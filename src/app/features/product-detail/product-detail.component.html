@@ -114,6 +114,9 @@
             }
             {{ displayPrice(p) }}
           </p>
+          @if (isMetered(p)) {
+            <p class="text-xs text-muted">{{ 'bill.metered' | t: { price: displayPrice(p) } }}</p>
+          }
           <p class="pd-buy__ok">{{ 'pd.inStock' | t }}</p>
         </div>
 
@@ -138,6 +141,7 @@
           </div>
         }
 
+        @if (p.pricing.model !== 'usage') {
         <p class="pd-buy__section">{{ 'pd.choosePkg' | t }}</p>
         <div class="pd-packages">
           @for (pkg of packages(); track pkg.id) {
@@ -156,6 +160,7 @@
             </button>
           }
         </div>
+        }
 
         <label class="pd-buy__section" for="pd-qty">{{ 'pd.qty' | t }}</label>
         <div class="pd-qty">
@@ -164,12 +169,38 @@
           <button type="button" (click)="bumpQty(1)" aria-label="Increase" [disabled]="isLicense(p.category) || isTemplate(p.category)">+</button>
         </div>
 
-        @if (isLicense(p.category)) {
-          <label class="pd-buy__section">{{ 'pd.accessTerm' | t }}</label>
+        @if (p.offers?.length) {
+          @if (usageOfferList(p).length) {
+            <p class="pd-buy__section">{{ 'bill.usageTitle' | t }}</p>
+            @for (offer of usageOfferList(p); track offer.id) {
+              <button type="button" class="pd-term" [class.active]="selectedOfferId() === offer.id" (click)="selectOffer(offer)">
+                <strong>{{ offerBadgeText(offer) }}</strong>
+                · {{ offerPrice(offer) }}
+                <span class="mt-1 block text-xs text-muted">{{ offerNoteText(offer) }}</span>
+              </button>
+            }
+          }
+          @if (periodOfferList(p).length) {
+            <p class="pd-buy__section">{{ 'bill.periodTitle' | t }}</p>
+            @for (offer of periodOfferList(p); track offer.id) {
+              <button type="button" class="pd-term" [class.active]="selectedOfferId() === offer.id" (click)="selectOffer(offer)">
+                <strong>{{ offerBadgeText(offer) }}</strong>
+                · {{ offerPrice(offer) }}
+                <span class="mt-1 block text-xs text-muted">{{ offerNoteText(offer) }}</span>
+              </button>
+            }
+          }
+        }
+        @if (!p.offers?.length && isLicense(p.category) && (!isMetered(p) || buyMode() === 'period')) {
+          <label class="pd-buy__section">{{ isMetered(p) ? ('bill.periodTitle' | t) : ('pd.accessTerm' | t) }}</label>
+          @if (isMetered(p)) {
+            <p class="text-xs text-muted">{{ 'bill.periodLimit' | t }}</p>
+          }
           <div class="pd-terms" role="group" [attr.aria-label]="'pd.accessTerm' | t">
             @for (t of licenseTerms; track t) {
               <button type="button" class="pd-term" [class.active]="licenseTerm === t" [attr.aria-pressed]="licenseTerm === t" (click)="licenseTerm = t; couponPreview.set(null)">
                 {{ t === 'day' ? ('pd.termDay' | t) : t === 'month' ? ('pd.termMonth' | t) : ('pd.termYear' | t) }}
+                · {{ termPriceLabel(t) }}
               </button>
             }
           </div>
@@ -219,7 +250,7 @@
         <div class="pd-pay">
           <p class="pd-pay__method">{{ 'pd.walletMethod' | t }}</p>
           @if (auth.user()) {
-            <p class="pd-pay__bal">{{ 'pd.walletBalance' | t }} {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
+            <p class="pd-pay__bal">{{ 'pd.walletBalance' | t }} {{ walletText() }}</p>
             <a routerLink="/wallet" class="pd-pay__topup">{{ 'cart.topUp' | t }}</a>
           } @else {
             <a routerLink="/auth/login" class="pd-pay__topup">{{ 'pd.loginToPay' | t }}</a>
@@ -257,6 +288,10 @@
             {{ 'pd.ctaDownloadSkill' | t }}
           } @else if (isDataset(p.category)) {
             {{ 'pd.ctaDownloadDataset' | t }}
+          } @else if (isMetered(p) && buyMode() === 'metered') {
+            {{ 'bill.useMetered' | t }}
+          } @else if (isMetered(p) && buyMode() === 'period') {
+            {{ 'bill.buyPeriod' | t }}
           } @else if (isLicense(p.category)) {
             {{ 'pd.ctaRead' | t }}
           } @else if (isVoiceClone(p.category)) {
@@ -701,7 +736,7 @@
         }
         <p class="cost-hint">{{ priceHint() }}</p>
         @if (auth.user()) {
-          <p class="text-sm">{{ 'pd.walletBalance' | t }} {{ walletBalance() | currency: 'USD':'symbol-narrow':'1.2-2' }}</p>
+          <p class="text-sm">{{ 'pd.walletBalance' | t }} {{ walletText() }}</p>
         }
         @if (!streamOnPc(p)) {
           <p class="stream-devices__warn">{{ 'compute.device.mobileOnly' | t }}</p>

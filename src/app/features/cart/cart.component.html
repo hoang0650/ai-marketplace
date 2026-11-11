@@ -74,7 +74,13 @@
               <p class="stock"><i></i> {{ 'cart.inStock' | t }}</p>
             </div>
             <div class="line__side">
-              <p class="price">{{ cart.lineUnitPrice(line) | currency: line.product.pricing.currency: 'symbol-narrow': '1.0-2' }}@if (line.licenseTerm) {<span class="price__unit">/{{ termUnit(line.licenseTerm) }}</span>}</p>
+              <p class="price">
+                @if (i18n.lang() === 'vi') {
+                  {{ linePrice(line) }}
+                } @else {
+                  {{ cart.lineUnitPrice(line) | currency: line.product.pricing.currency: 'symbol-narrow': '1.0-2' }}@if (line.licenseTerm) {<span class="price__unit">/{{ termUnit(line.licenseTerm) }}</span>}
+                }
+              </p>
               <div class="qty">
                 <button type="button" (click)="cart.setQty(line.product.id, line.qty - 1)" [attr.aria-label]="'cart.qtyDecrease' | t">−</button>
                 <span>{{ line.qty }}</span>
@@ -103,7 +109,7 @@
                 <div>
                   <a [routerLink]="['/product', p.slug]" class="suggest__title">{{ p.name }}</a>
                   <p class="suggest__price">
-                    {{ cart.unitPrice(p) | currency: p.pricing.currency: 'symbol-narrow': '1.0-2' }}
+                    @if (suggestPrice(p)) { {{ suggestPrice(p) }} } @else { {{ cart.unitPrice(p) | currency: p.pricing.currency: 'symbol-narrow': '1.0-2' }} }
                   </p>
                   <a [routerLink]="['/product', p.slug]" class="suggest__link">{{ 'cart.viewDetails' | t }}</a>
                 </div>
@@ -117,8 +123,8 @@
     <aside class="cart-aside">
       <div class="wallet-card">
         <div>
-          <p class="wallet-card__label">{{ 'cart.walletLabel' | t: { currency: walletCurrency() } }}</p>
-          <p class="wallet-card__bal">{{ balance() | currency: walletCurrency(): 'symbol-narrow': '1.2-2' }}</p>
+          <p class="wallet-card__label">{{ 'cart.walletLabel' | t: { currency: i18n.lang() === 'vi' ? 'VND' : walletCurrency() } }}</p>
+          <p class="wallet-card__bal">@if (i18n.lang() === 'vi') { {{ cartWallet() }} } @else { {{ balance() | currency: walletCurrency(): 'symbol-narrow': '1.2-2' }} }</p>
         </div>
         <a routerLink="/wallet" class="btn-outline">{{ 'cart.topUp' | t }}</a>
       </div>
@@ -128,15 +134,15 @@
         <dl>
           <div>
             <dt>{{ 'cart.subtotal' | t }}</dt>
-            <dd>{{ cart.subtotal() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
+            <dd>@if (i18n.lang() === 'vi') { {{ viSubtotal() }} } @else { {{ cart.subtotal() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }} }</dd>
           </div>
           <div>
             <dt>{{ 'cart.discountSeller' | t }}</dt>
-            <dd>{{ discountSeller() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
+            <dd>@if (i18n.lang() === 'vi') { {{ discountSeller() ? ('money.missingVnd' | t) : '0 đ' }} } @else { {{ discountSeller() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }} }</dd>
           </div>
           <div>
             <dt>{{ 'cart.discountPlatform' | t }}</dt>
-            <dd>{{ discountPlatform() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</dd>
+            <dd>@if (i18n.lang() === 'vi') { {{ discountPlatform() ? ('money.missingVnd' | t) : '0 đ' }} } @else { {{ discountPlatform() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }} }</dd>
           </div>
         </dl>
 
@@ -154,7 +160,7 @@
 
         <div class="total">
           <span>{{ 'cart.payTotal' | t }}</span>
-          <strong>{{ total() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }}</strong>
+          <strong>@if (i18n.lang() === 'vi') { {{ viSubtotal() }} } @else { {{ total() | currency: cart.currency(): 'symbol-narrow': '1.0-2' }} }</strong>
         </div>
 
         <button type="button" class="btn-pay" [disabled]="paying() || paid() || !cart.selectedLines().length" (click)="pay()">

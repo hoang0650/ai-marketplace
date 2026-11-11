@@ -837,6 +837,8 @@ export class BillingService {
     couponCode?: string;
     /** Same key on a retry = same order, never a second charge. */
     idempotencyKey?: string;
+    /** Server quote for this charge. Omitted when the quote is not authoritative. */
+    amountVnd?: number;
   }): Observable<CheckoutResult> {
     const headers = input.idempotencyKey ? new HttpHeaders({ 'Idempotency-Key': input.idempotencyKey }) : undefined;
     return this.http.post<CheckoutResult>(
@@ -846,6 +848,7 @@ export class BillingService {
         quantity: input.quantity,
         licenseTerm: input.licenseTerm,
         couponCode: input.couponCode,
+        ...(Number.isSafeInteger(input.amountVnd) ? { amountVnd: input.amountVnd } : {}),
         // Last-click referral (cookie set by AffiliateService); the API validates window/self-referral.
         affiliateClickId: this.affiliate.currentClickId(),
         provider: 'wallet',

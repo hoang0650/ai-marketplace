@@ -15,6 +15,8 @@ export class WalletBalanceService {
   readonly held = signal(0);
   readonly currency = signal('USD');
   readonly loaded = signal(false);
+  /** Server VND quote of `available`. Null until /wallet/summary sends displayVnd. */
+  readonly displayAvailable = signal<{ amountVnd?: number | null; authoritative?: boolean; code?: string | null } | null>(null);
 
   refresh(): void {
     this.api.walletSummary().subscribe({
@@ -24,12 +26,19 @@ export class WalletBalanceService {
   }
 
   /** Server responses (checkout) can carry fresh numbers; avoid a round trip. */
-  apply(s: { balance?: number; available?: number; held?: number; currency?: string }): void {
+  apply(s: {
+    balance?: number;
+    available?: number;
+    held?: number;
+    currency?: string;
+    displayVnd?: { available?: { amountVnd?: number | null; authoritative?: boolean; code?: string | null } | null } | null;
+  }): void {
     if (typeof s.balance === 'number') this.balance.set(s.balance);
     if (typeof s.available === 'number') this.available.set(s.available);
     else if (typeof s.balance === 'number') this.available.set(Math.max(0, s.balance - this.held()));
     if (typeof s.held === 'number') this.held.set(s.held);
     if (s.currency) this.currency.set(s.currency);
+    if (s.displayVnd) this.displayAvailable.set(s.displayVnd.available || null);
     this.loaded.set(true);
   }
 
@@ -38,5 +47,6 @@ export class WalletBalanceService {
     this.balance.set(0);
     this.held.set(0);
     this.loaded.set(false);
+    this.displayAvailable.set(null);
   }
 }
