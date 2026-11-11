@@ -96,7 +96,7 @@ d) Dịch vụ AI agent do Công ty trực tiếp cung cấp (OpenClaw, Hermes A
 
 e) Dịch vụ chuyên môn trọn gói do người bán cung cấp theo kết quả bàn giao và thanh toán theo giai đoạn (milestone), gồm các nhóm: làm website, làm ứng dụng, marketing, SEO, sáng tạo nội dung (creator) và tự động hóa quy trình; điều kiện cung cấp tại khoản 6 Mục X.
 
-g) Phim AI nhiều tập và truyện/sách AI do người bán đăng tải, cấp quyền xem/đọc theo thời hạn (license key ngày/tháng/năm). Người bán chịu trách nhiệm về quyền tác giả, phân loại phim, cảnh báo độ tuổi và các nghĩa vụ khác theo pháp luật về điện ảnh, xuất bản.
+g) Phim AI nhiều tập, truyện/sách AI, giọng nhân bản và dịch vụ điện toán đám mây vẫn được liệt kê. Hồ sơ chuyên ngành của từng mục chưa được xác nhận. Việc liệt kê không phải kết luận đã đủ điều kiện điện ảnh, xuất bản, đồng ý giọng nói hoặc thông báo điện toán đám mây. Người bán chịu trách nhiệm về quyền tác giả, phân loại phim, cảnh báo độ tuổi và các nghĩa vụ khác theo pháp luật về điện ảnh, xuất bản.
 
 h) Dataset (bộ dữ liệu) do người bán đăng bán theo giấy phép sử dụng do người bán công bố; không được chứa dữ liệu cá nhân hoặc dữ liệu thu thập trái phép (khoản 1 Mục XV). Dataset, giọng đọc AI chỉ được dùng để huấn luyện, tinh chỉnh mô hình khi giấy phép đã mua cho phép mục đích huấn luyện; tại trang Huấn luyện, người mua chỉ chọn được dataset/giọng đọc mình đã được cấp phép và mô hình tạo ra phải tuân thủ phạm vi giấy phép đó.
 

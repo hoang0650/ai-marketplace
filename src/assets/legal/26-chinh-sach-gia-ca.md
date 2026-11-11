@@ -8,7 +8,9 @@
 
 Giá niêm yết, xác nhận giao dịch, hạch toán và thanh toán trong nước bằng VND. AI Markets không nhận nạp hoặc rút, và không duy trì tài khoản, bằng USD hoặc CNY. Số USD hoặc CNY trên giao diện, nếu còn hiển thị, không phải số dư ngoại tệ và không phải số tiền bị trừ. Số VND tại bước xác nhận là số có hiệu lực.
 
-Trang này không xác nhận đã có căn cứ pháp lý để tiếp tục hiển thị quy đổi ngoại tệ. Khi một quy đổi được hiển thị, trang phải ghi nguồn, thời điểm, tỷ giá và tổng VND đã chốt. Không dùng một tỷ giá cố định được ghi cứng làm giá giao dịch.
+Trang này không xác nhận đã có căn cứ pháp lý để tiếp tục hiển thị quy đổi ngoại tệ. Giao diện tiếng Việt phải hiện số VND do máy chủ trả cho từng cách mua. Nguồn tỷ giá nội bộ là Exchange Rate API mà máy chủ đang dùng. Trình duyệt không được tự nhân tỷ giá hoặc gắn một số USD vào nhãn đồng. Không dùng một tỷ giá cố định được ghi cứng làm giá giao dịch.
+
+Một listing có thể có nhiều offer. Offer `usage` là đơn giá theo đơn vị máy chủ đo được, ví dụ 1K ký tự, và bị trừ theo lượng dùng thực tế. Offer `period` là gói 1 ngày, 1 tháng hoặc 1 năm, với giá riêng. Hai offer không được ghi chung một nhãn. Offer `needs_review` là chưa có giá đã lưu, không được bịa số. Gói dịch vụ nhiếp ảnh và dịch vụ chuyên môn khác có thể thanh toán theo giai đoạn hoặc trả trước vào khoản giữ; phần trả trước chỉ giải ngân khi người mua nghiệm thu.
 
 ## Phí đang công bố trên sản phẩm
 

@@ -159,7 +159,14 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-affiliate',
     file: '20-chinh-sach-affiliate.md',
     title: 'Chính sách chương trình Affiliate',
-    summary: 'Phiên bản 2026.10.12: hoa hồng 0–25% giá trị đơn do người bán chi trả, last-click 30 ngày, giữ 48 giờ, thuế TNCN, hành vi cấm và thu hồi hoa hồng.',
+    summary: 'Hoa hồng 0–25% do người bán đặt, nhấp cuối, giữ 48 giờ. Xác thực điện tử chưa được triển khai.',
+    group: 'commerce',
+  },
+  {
+    slug: 'quy-trinh-tiep-thi-lien-ket',
+    file: '29-quy-trinh-tiep-thi-lien-ket.md',
+    title: 'Quy trình tiếp thị liên kết (Affiliate)',
+    summary: 'Năm vai trò và mười sáu bước theo khoản 11 Mục XI Quy chế. Một cấp, không phí tham gia.',
     group: 'commerce',
   },
   {
@@ -234,6 +241,7 @@ const ALIASES: Record<string, string> = {
   'invoice-policy': 'chinh-sach-hoa-don',
   'affiliate-policy': 'chinh-sach-affiliate',
   affiliate: 'chinh-sach-affiliate',
+  'affiliate-process': 'quy-trinh-tiep-thi-lien-ket',
   ranking: 'chinh-sach-xep-hang-uu-tien-hien-thi',
   livestream: 'quy-che-livestream-ban-hang',
   delivery: 'chinh-sach-giao-nhan-san-pham-so',
