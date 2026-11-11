@@ -11,6 +11,9 @@ import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/marketplace.models';
 import { isLicenseCategory } from '../../models/categories';
 import { forkJoin } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { authoritativeVnd, formatDong, listOffer, offerAmount, offerForTerm, offerPriceLabel } from '../usage/billing-display';
+import { UsageCatalogService } from '../usage/usage.service';
 import { CartService } from './cart.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { InvoiceChoiceComponent } from '../orders/invoice-choice.component';
@@ -30,7 +33,8 @@ export class CartComponent implements OnInit {
   private readonly walletApi = inject(DashboardService);
   private readonly billing = inject(BillingService);
   private readonly productsApi = inject(ProductService);
-  private readonly i18n = inject(I18nService);
+  readonly i18n = inject(I18nService);
+  private readonly usageApi = inject(UsageCatalogService);
 
   private readonly walletBal = inject(WalletBalanceService);
   readonly balance = this.walletBal.available;
@@ -118,6 +122,41 @@ export class CartComponent implements OnInit {
     }
   }
 
+  suggestPrice(product: Product): string {
+    if (this.i18n.lang() !== 'vi') return '';
+    const offer = listOffer(product);
+    return offer ? offerPriceLabel(offer, 'vi') || this.i18n.t('money.missingVnd') : '';
+  }
+
+  cartWallet(): string {
+    const amount = authoritativeVnd(this.walletBal.displayAvailable());
+    return amount == null ? this.i18n.t('money.missingVnd') : formatDong(amount);
+  }
+
+  viSubtotal(): string {
+    if (this.i18n.lang() !== 'vi') return '';
+    let sum = 0;
+    for (const line of this.cart.selectedLines()) {
+      if (line.qty !== 1 || line.serverUnitVnd == null) return this.i18n.t('money.missingVnd');
+      sum += line.serverUnitVnd;
+    }
+    return formatDong(sum);
+  }
+
+  lineOffer(line: { product: Product; licenseTerm: string }) {
+    if (line.licenseTerm) return offerForTerm(line.product, line.licenseTerm);
+    return listOffer(line.product);
+  }
+
+  linePrice(line: { product: Product; qty: number; licenseTerm: string; serverUnitVnd: number | null }): string {
+    if (this.i18n.lang() !== 'vi') return '';
+    const offer = this.lineOffer(line);
+    const label = offerPriceLabel(offer, 'vi');
+    if (label) return label;
+    if (line.serverUnitVnd != null && line.qty === 1) return formatDong(line.serverUnitVnd);
+    return this.i18n.t('money.missingVnd');
+  }
+
   pay(): void {
     if (this.paying()) return;
     const selected = this.cart.selectedLines();
@@ -130,16 +169,30 @@ export class CartComponent implements OnInit {
       return;
     }
     this.paying.set(true);
-    const requests = selected.map((line) =>
-      this.billing.checkout({
-        productId: line.product.id,
-        quantity: line.qty,
-        // The period chosen on the product page (stored on the cart line), so the charge matches the cart.
-        licenseTerm: isLicenseCategory(line.product.category) ? line.licenseTerm || this.defaultTerm(line) : undefined,
-        // Same key for a retried pay of the same line, so a lost response never charges twice.
-        idempotencyKey: this.payKey(line.product.id, line.qty),
-      }),
-    );
+    const requests = selected.map((line) => {
+      const licenseTerm = isLicenseCategory(line.product.category) ? line.licenseTerm || this.defaultTerm(line) : undefined;
+      const usd = this.cart.lineUnitPrice(line) * (licenseTerm ? 1 : line.qty);
+      const currency = line.product.pricing?.currency || 'USD';
+      const checkout = (amountVnd?: number) =>
+        this.billing.checkout({
+          productId: line.product.id,
+          quantity: line.qty,
+          licenseTerm,
+          idempotencyKey: this.payKey(line.product.id, line.qty),
+          ...(amountVnd != null ? { amountVnd } : {}),
+        });
+      const offered = offerAmount(this.lineOffer(line));
+      if (this.i18n.lang() !== 'vi') return checkout(offered ?? undefined);
+      if (offered != null) return checkout(offered);
+      if (!(usd > 0)) return checkout();
+      return this.usageApi.quote(usd, currency).pipe(
+        switchMap((quote) => {
+          const amountVnd = authoritativeVnd(quote);
+          if (amountVnd == null) throw { error: { message: this.i18n.t('money.missingVnd') } };
+          return checkout(amountVnd);
+        }),
+      );
+    });
     forkJoin(requests).subscribe({
       next: (rows) => {
         this.paying.set(false);

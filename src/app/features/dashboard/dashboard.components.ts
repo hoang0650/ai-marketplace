@@ -557,12 +557,25 @@ export class DashboardAnalyticsComponent implements OnInit {
               <audio class="mt-3 w-full" [src]="draft.voiceSampleUrl" controls preload="metadata"></audio>
               <p class="mt-1 break-all font-mono text-[11px] text-muted">{{ draft.voiceSampleUrl }}</p>
             }
+            <fieldset class="mt-3 grid gap-2 text-sm">
+              <legend class="mb-1 text-xs font-semibold uppercase tracking-wider text-muted">{{ 'bill.sellerChoose' | t }}</legend>
+              <label class="flex items-start gap-2">
+                <input type="radio" name="billingMode" value="metered" [checked]="draft.billingMode === 'metered'" (change)="setVoiceBilling('metered')" />
+                <span>{{ 'bill.sellerMetered' | t }}</span>
+              </label>
+              <label class="flex items-start gap-2">
+                <input type="radio" name="billingMode" value="period" [checked]="draft.billingMode === 'period'" (change)="setVoiceBilling('period')" />
+                <span>{{ 'bill.sellerPeriod' | t }}</span>
+              </label>
+            </fieldset>
+            @if (draft.billingMode === 'metered') {
             <label class="mt-3 mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Ký tự / 1 credit</label>
             <input class="input" type="number" min="1" [(ngModel)]="draft.charactersPerCredit" name="charactersPerCredit" />
             <p class="mt-2 text-xs text-muted">Usage = credit theo khối văn bản buyer TTS. File gốc chỉ dùng làm mẫu clone, không phát nguyên cho buyer như sản phẩm cuối.</p>
+            }
           </div>
         }
-        @if (isLicenseDraft()) {
+        @if (isLicenseDraft() && (!isVoiceDraft() || draft.billingMode === 'period')) {
           <div class="md:col-span-2 rounded-lg border border-line p-3">
             <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">License key theo thời hạn</p>
             <p class="mb-3 text-xs text-muted">Phim / truyện / skill / dataset / giọng đọc: buyer nhận AIM-xxxx theo ngày / tháng / năm. Key gửi email. Hoàn tiền thu hồi key. Giọng sàn (VieNeu preset) do AI Markets đăng; seller đăng giọng clone từ MP3 — cùng bảng giá ký tự + thời hạn.</p>
@@ -586,8 +599,8 @@ export class DashboardAnalyticsComponent implements OnInit {
             @if (draft.category === 'skill-pack' || draft.category === 'dataset') {
             <p class="mt-3 text-xs text-muted">Buyer thanh toán theo ngày/tháng/năm sẽ nhận license key AIM-xxxx (email + dashboard). Key chỉ mở khóa đúng listing này, chỉ dùng online (API / skill chạy phía máy chủ trong sandbox cách ly, không tải về) — hết hạn thì dừng ngay.</p>
             }
-            @if (draft.category === 'voice-clone') {
-            <p class="mt-3 text-xs text-muted">Giọng clone của bạn bán giống giọng sàn: không có license thì trừ phí theo ký tự; có AIM-xxxx còn hạn thì TTS/STT không trừ usage.</p>
+            @if (draft.category === 'voice-clone' && draft.billingMode === 'period') {
+            <p class="mt-3 text-xs text-muted">{{ 'bill.sellerPeriodOnly' | t }}</p>
             }
           </div>
         }
@@ -979,6 +992,7 @@ export class DashboardProductsComponent implements OnInit {
       affiliatePct: '' as number | string,
       acceptOnlineTerms: false,
       serviceDeliveryDays: 7,
+      billingMode: 'metered' as 'metered' | 'period',
     };
   }
 
@@ -1030,6 +1044,17 @@ export class DashboardProductsComponent implements OnInit {
       price: 0,
       currency: this.i18n.lang() === 'vi' ? 'VND' : 'USD',
     });
+  }
+
+  setVoiceBilling(mode: 'metered' | 'period'): void {
+    this.draft.billingMode = mode;
+    if (mode === 'period') {
+      this.draft.pricingModel = 'subscription';
+      this.draft.interval = 'month';
+      return;
+    }
+    this.draft.pricingModel = 'usage';
+    this.draft.usageUnit = snapUsageUnit(this.usageCatalog.catalog(), this.draft.category, this.draft.usageUnit || '1k_characters');
   }
 
   removeServicePackage(index: number): void {
@@ -1182,6 +1207,7 @@ export class DashboardProductsComponent implements OnInit {
       if (this.draft.pricingModel !== 'free') this.draft.pricingModel = 'one-time';
       if (this.draft.price === 29) this.draft.price = 19;
     } else if (this.isVoiceDraft()) {
+      this.draft.billingMode = 'metered';
       this.draft.pricingModel = 'usage';
       this.draft.usageUnit = '1k_characters';
       this.draft.usageRate = 0.02;
@@ -1278,12 +1304,18 @@ export class DashboardProductsComponent implements OnInit {
             currency: 'USD',
             negotiable: false,
           }
-        : this.isVoiceDraft()
+        : this.isVoiceDraft() && this.draft.billingMode === 'period'
         ? {
-            model: 'usage' as const,
+            model: 'subscription' as const,
             price: Number(this.draft.priceMonth) || Number(this.draft.price) || 0,
             currency: 'USD',
             interval: this.draft.interval || 'month',
+          }
+        : this.isVoiceDraft()
+        ? {
+            model: 'usage' as const,
+            price: 0,
+            currency: 'USD',
             usageUnit: this.draft.usageUnit,
             usageRate: Number(this.draft.usageRate) || 0,
           }
@@ -1325,12 +1357,16 @@ export class DashboardProductsComponent implements OnInit {
           voiceSampleUrl: this.draft.voiceSampleUrl,
           creditUnit: 'character' as const,
           charactersPerCredit: Number(this.draft.charactersPerCredit) || 1000,
-          licenseTerm: this.draft.interval || 'month',
-          licensePrices: {
-            day: Number(this.draft.priceDay) || 0,
-            month: Number(this.draft.priceMonth) || Number(this.draft.price) || 0,
-            year: Number(this.draft.priceYear) || 0,
-          },
+          ...(this.draft.billingMode === 'period'
+            ? {
+                licenseTerm: this.draft.interval || 'month',
+                licensePrices: {
+                  day: Number(this.draft.priceDay) || 0,
+                  month: Number(this.draft.priceMonth) || Number(this.draft.price) || 0,
+                  year: Number(this.draft.priceYear) || 0,
+                },
+              }
+            : {}),
         }
       : this.isLicenseDraft()
         ? {

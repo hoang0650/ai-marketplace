@@ -403,7 +403,18 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /** History amount: cents for anything under $1 (a $0.01 game minute must not read "$0"). */
+  availableVndText(): string {
+    if (this.i18n.lang() !== 'vi') return '';
+    const quote = this.walletBal.displayAvailable();
+    const amount = quote?.authoritative === true && Number.isSafeInteger(quote.amountVnd) ? quote.amountVnd : null;
+    return amount == null ? this.i18n.t('money.missingVnd') : `${amount.toLocaleString('vi-VN')} đ`;
+  }
+
   txAmount(t: WalletTx): string {
+    if (this.i18n.lang() === 'vi') {
+      const amount = t.displayVnd?.authoritative === true && Number.isSafeInteger(t.displayVnd.amountVnd) ? t.displayVnd.amountVnd : null;
+      return amount == null ? this.i18n.t('money.missingVnd') : `${amount.toLocaleString('vi-VN')} đ`;
+    }
     return this.fx.formatAmount(t.amount, t.currency);
   }
 

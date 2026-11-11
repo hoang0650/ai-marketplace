@@ -5,6 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/marketplace.models';
+import { authoritativeVnd, type VndQuote } from '../usage/billing-display';
 
 export type LicenseTerm = 'day' | 'month' | 'year';
 
@@ -14,12 +15,20 @@ export interface CartLine {
   selected: boolean;
   /** License period chosen on the product page ('' for non-license products). */
   licenseTerm: LicenseTerm | '';
-  /** Server price for that period — the same amount checkout charges. */
+  /** Server price for that period — the same amount checkout charges, in the ledger currency. */
   serverUnitPrice: number | null;
+  /** Server VND quote of serverUnitPrice, when the cart response includes one. */
+  serverUnitVnd: number | null;
 }
 
 interface CartResponse {
-  items: Array<{ product: Product; qty: number; licenseTerm?: LicenseTerm | ''; unitPrice?: number | null }>;
+  items: Array<{
+    product: Product;
+    qty: number;
+    licenseTerm?: LicenseTerm | '';
+    unitPrice?: number | null;
+    unitPriceVnd?: VndQuote | null;
+  }>;
   count: number;
 }
 
@@ -128,6 +137,7 @@ export class CartService {
         selected: !this.unselected.has(it.product.id),
         licenseTerm: it.licenseTerm || '',
         serverUnitPrice: typeof it.unitPrice === 'number' ? it.unitPrice : null,
+        serverUnitVnd: authoritativeVnd(it.unitPriceVnd),
       })),
     );
   }

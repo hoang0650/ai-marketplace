@@ -3,7 +3,8 @@ import { Router, RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Product } from '../../models/marketplace.models';
 import { canonicalCategory, isHireRequestCategory } from '../../models/categories';
-import { buyerUnitLabel, viHirePrice, viPrice } from '../../features/usage/usage-contract';
+import { viHirePrice } from '../../features/usage/usage-contract';
+import { listOffer, offerBadge, offerPriceLabel, periodOffers } from '../../features/usage/billing-display';
 import { categoryCoverDataUrl, isGenericCover } from '../cover-fallback';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
@@ -145,6 +146,9 @@ const UNIT_KEYS: Record<string, string> = {
               }
             </p>
           }
+          @if (billingBadgeText) {
+            <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ billingBadgeText }}</p>
+          }
           <p class="lux-card__price">
             @if (onSale) {
               <span class="lux-card__was">{{ wasPrice }}</span>
@@ -176,6 +180,9 @@ const UNIT_KEYS: Record<string, string> = {
         <div class="shop-card__body">
           <h3 class="shop-card__title">{{ product.name }}</h3>
           <p class="shop-card__cat">{{ label }}</p>
+          @if (billingBadgeText) {
+            <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ billingBadgeText }}</p>
+          }
           <p class="shop-card__price">{{ shopPrice }}</p>
           <div class="shop-card__stats">
             <span class="shop-card__stars">★ {{ product.rating | number: '1.1-1' }}</span>
@@ -1034,7 +1041,7 @@ export class ProductCardComponent {
   }
 
   get priceUnit(): string {
-    if (this.i18n.lang() === 'vi' && (this.product.pricing?.model === 'usage' || isHireRequestCategory(this.product.category))) {
+    if (this.i18n.lang() === 'vi' && (listOffer(this.product) || isHireRequestCategory(this.product.category))) {
       return '';
     }
     const p = this.product.pricing;
@@ -1050,15 +1057,21 @@ export class ProductCardComponent {
     return this.i18n.t(key);
   }
 
+  get billingBadgeText(): string {
+    const offer = listOffer(this.product);
+    const badge = offerBadge(offer, this.i18n.lang());
+    if (!badge) return '';
+    return periodOffers(this.product).length && offer?.billingMode === 'usage' && this.i18n.lang() === 'vi'
+      ? `${badge} · Có gói thời hạn`
+      : badge;
+  }
+
   /** Server VND for usage rates and service packages. Other models keep their existing label. */
   private viListedPrice(): string | null {
     if (this.i18n.lang() !== 'vi') return null;
     const product = this.product;
-    if (product.pricing?.model === 'usage') {
-      const amount = viPrice(product.pricingVnd?.usageRate) || this.i18n.t('money.missingVnd');
-      const unit = buyerUnitLabel(product.pricing, 'vi');
-      return unit ? `${amount}/${unit}` : amount;
-    }
+    const offer = listOffer(product);
+    if (offer) return offerPriceLabel(offer, 'vi') || this.i18n.t('money.missingVnd');
     if (isHireRequestCategory(product.category)) {
       return viHirePrice(product) || this.i18n.t('money.missingVnd');
     }
