@@ -31,6 +31,16 @@ import {
 import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { PRODUCT_KIND_MESSAGES } from '../../i18n/extra/product-kind.messages';
+import { UsageCatalogService } from '../usage/usage.service';
+import {
+  servicePackagePayload,
+  snapUsageUnit,
+  unitAllowed,
+  unitsFor,
+  type ServicePackageDraft,
+  type ServicePackagePayload,
+  type UsageUnitDef,
+} from '../usage/usage-contract';
 
 @Component({
   selector: 'app-dashboard-shell',
@@ -423,7 +433,7 @@ export class DashboardAnalyticsComponent implements OnInit {
             }
           </fieldset>
           @if (isTalentOnly()) {
-            <p class="mt-1 text-xs text-muted">Tài khoản dịch vụ chuyên môn chỉ đăng được gói dịch vụ giá cố định: Làm web, Làm app, Marketing, SEO, Creator, Tự động hóa.</p>
+            <p class="mt-1 text-xs text-muted">{{ 'svc.seller.talentOnly' | t }}</p>
           }
         </div>
         @if (isHireDraft()) {
@@ -437,10 +447,33 @@ export class DashboardAnalyticsComponent implements OnInit {
             <p class="mt-1 text-xs text-muted">Cam kết tính từ khi đơn dịch vụ được xác nhận.</p>
           </div>
           <div class="md:col-span-2">
-            <p class="mt-1 text-xs text-muted">
-              Dịch vụ chuyên môn được bán theo gói giá cố định: mô tả rõ phạm vi, sản phẩm bàn giao và thời gian thực hiện.
-              Không báo giá, không tính theo giờ/tháng. Khách thanh toán bằng số dư dịch vụ khi mua. Phí sàn là điều kiện thương mại. Thuế, nếu có, ghi trên từng đơn. Khoản phải trả được tạm giữ đối soát 48 giờ. Đây không phải tài khoản escrow.
-            </p>
+            <p class="mt-1 text-xs text-muted">{{ 'svc.seller.ledger' | t }}</p>
+            <div class="mt-3 grid gap-3">
+              @for (pkg of servicePackages; track $index) {
+                <div class="rounded-lg border border-line p-3">
+                  <div class="mb-2 flex items-center justify-between gap-2">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ 'svc.seller.package' | t }} {{ $index + 1 }}</p>
+                    <button type="button" class="btn btn-outline text-xs" (click)="removeServicePackage($index)">{{ 'svc.seller.remove' | t }}</button>
+                  </div>
+                  <div class="grid gap-3 md:grid-cols-2">
+                    <input class="input" [(ngModel)]="pkg.name" [name]="'pkgName' + $index" [placeholder]="'svc.seller.name' | t" />
+                    <input class="input" [(ngModel)]="pkg.code" [name]="'pkgCode' + $index" [placeholder]="'svc.seller.code' | t" />
+                    <textarea class="input md:col-span-2" rows="2" [(ngModel)]="pkg.scope" [name]="'pkgScope' + $index" [placeholder]="'svc.seller.scope' | t"></textarea>
+                    <textarea class="input md:col-span-2" rows="3" [(ngModel)]="pkg.deliverablesText" [name]="'pkgDel' + $index" [placeholder]="'svc.seller.deliverables' | t"></textarea>
+                    <input class="input" type="number" min="1" max="365" step="1" [(ngModel)]="pkg.durationDays" [name]="'pkgDays' + $index" [placeholder]="'svc.seller.days' | t" />
+                    <div class="flex gap-2">
+                      <input class="input" type="number" min="1" step="1" [(ngModel)]="pkg.price" [name]="'pkgPrice' + $index" [placeholder]="'svc.seller.price' | t" />
+                      <select class="input" style="width:auto" [(ngModel)]="pkg.currency" [name]="'pkgCur' + $index">
+                        <option value="VND">VND</option>
+                        <option value="USD">USD</option>
+                      </select>
+                    </div>
+                  </div>
+                  <p class="mt-2 text-xs text-muted">{{ 'svc.seller.noClientFx' | t }}</p>
+                </div>
+              }
+              <button type="button" class="btn btn-outline" (click)="addServicePackage()">{{ 'svc.seller.add' | t }}</button>
+            </div>
           </div>
         } @else {
         <div>
@@ -461,7 +494,18 @@ export class DashboardAnalyticsComponent implements OnInit {
           </div>
           <div>
             <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Per unit</label>
-            <input class="input" [(ngModel)]="draft.usageUnit" name="usageUnit" placeholder="1M tokens / second / image" />
+            <select class="input" name="usageUnit" [(ngModel)]="draft.usageUnit" [disabled]="!unitChoices().length">
+              @for (unit of unitChoices(); track unit.code) {
+                <option [value]="unit.code">{{ unitLabel(unit) }}</option>
+              }
+            </select>
+            @if (usageCatalog.loadError()) {
+              <p class="mt-1 text-xs" style="color:#c62828">{{ 'usageUnit.loadError' | t }}</p>
+            } @else if (!unitChoices().length) {
+              <p class="mt-1 text-xs text-muted">{{ 'usageUnit.none' | t }}</p>
+            } @else {
+              <p class="mt-1 text-xs text-muted">{{ 'usageUnit.meterHint' | t }}</p>
+            }
           </div>
         }
         @if (draft.pricingModel === 'subscription' || draft.pricingModel === 'one-time') {
@@ -643,6 +687,21 @@ export class DashboardAnalyticsComponent implements OnInit {
             <p class="text-xs uppercase tracking-[0.14em] text-muted">{{ categoryLabel(p.category) }}</p>
             <a [routerLink]="['/product', p.slug]" class="font-display text-xl no-underline">{{ p.name }}</a>
             <p class="text-sm text-muted">{{ (p.salesCount || 0) | number }} đã bán · ★ {{ p.rating | number:'1.1-1' }}</p>
+            @if (p.pricing.usageUnitStatus === 'needs_review') {
+              <p class="mt-1 text-xs" style="color:#9a3412">{{ 'usageUnit.needsReview' | t: { legacy: p.pricing.usageUnitLegacy || p.pricing.usageUnit || '' } }}</p>
+              @if (fixChoices(p.category); as fixes) {
+                @if (fixes.length) {
+                  <label class="mt-1 flex flex-wrap items-center gap-2 text-xs">
+                    <select class="input" style="width:auto" [name]="'unit-' + p.id" (change)="correctUsageUnit(p, $any($event.target).value)">
+                      <option value="">{{ 'usageUnit.pick' | t }}</option>
+                      @for (unit of fixes; track unit.code) {
+                        <option [value]="unit.code">{{ unitLabel(unit) }}</option>
+                      }
+                    </select>
+                  </label>
+                }
+              }
+            }
             <label class="mt-1 flex items-center gap-2 text-xs text-muted">
               {{ 'productKind.label' | t }}:
               <select class="input" style="width:auto;padding:2px 8px" [ngModel]="p.productKind || 'DIGITAL'" (ngModelChange)="setKind(p, $event)" [name]="'kind-' + p.id">
@@ -782,6 +841,7 @@ export class DashboardProductsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly i18n = inject(I18nService);
+  readonly usageCatalog = inject(UsageCatalogService);
   private readonly i18nT = (key: string) => this.i18n.t(key);
   private readonly _kindMessages = this.i18n.extend(PRODUCT_KIND_MESSAGES);
   readonly products = signal<Product[]>([]);
@@ -825,11 +885,13 @@ export class DashboardProductsComponent implements OnInit {
   chapterBusy = false;
   chapterError = '';
   draft = this.emptyDraft();
+  servicePackages: ServicePackageDraft[] = [];
   readonly productKinds: ProductKind[] = ['DIGITAL', 'PHYSICAL'];
   readonly kindRates = signal<ProductKindRates | null>(null);
   kindError = '';
 
   ngOnInit(): void {
+    this.usageCatalog.load();
     this.reload();
     this.productsApi.productKindRates().subscribe({ next: (r) => this.kindRates.set(r), error: () => {} });
     if (this.isTalentOnly()) {
@@ -894,7 +956,7 @@ export class DashboardProductsComponent implements OnInit {
       pricingModel: 'usage' as PricingModel,
       price: 29,
       usageRate: 0.05,
-      usageUnit: '1K tokens',
+      usageUnit: '1k_tokens',
       interval: 'month' as 'day' | 'month' | 'year',
       coverUrl: '',
       tags: '',
@@ -935,6 +997,55 @@ export class DashboardProductsComponent implements OnInit {
 
   isHireDraft(): boolean {
     return isHireRequestCategory(this.draft.category);
+  }
+
+  fixChoices(category: string): UsageUnitDef[] {
+    return unitsFor(this.usageCatalog.catalog(), category);
+  }
+
+  unitChoices(): UsageUnitDef[] {
+    const choices = unitsFor(this.usageCatalog.catalog(), this.draft.category);
+    if (
+      this.draft.pricingModel === 'usage' &&
+      choices.length &&
+      !choices.some((unit) => unit.code === this.draft.usageUnit)
+    ) {
+      this.draft.usageUnit = choices[0].code;
+    }
+    return choices;
+  }
+
+  unitLabel(unit: UsageUnitDef): string {
+    return this.i18n.lang() === 'vi' ? unit.labelVi : unit.labelEn;
+  }
+
+  addServicePackage(): void {
+    if (this.servicePackages.length >= 12) return;
+    this.servicePackages.push({
+      code: '',
+      name: '',
+      scope: '',
+      deliverablesText: '',
+      durationDays: Number(this.draft.serviceDeliveryDays) || 7,
+      price: 0,
+      currency: this.i18n.lang() === 'vi' ? 'VND' : 'USD',
+    });
+  }
+
+  removeServicePackage(index: number): void {
+    this.servicePackages.splice(index, 1);
+  }
+
+  correctUsageUnit(product: Product, code: string): void {
+    if (!code || !unitAllowed(this.usageCatalog.catalog(), product.category, code)) return;
+    this.productsApi.update(product.id, { pricing: { ...product.pricing, usageUnit: code } }).subscribe({
+      next: (saved) => this.products.update((list) => list.map((row) => (row.id === saved.id ? saved : row))),
+      error: (err) => {
+        this.publishError = err?.error?.code === 'USAGE_UNIT_NOT_METERABLE' || err?.error?.code === 'USAGE_UNIT_INVALID'
+          ? this.i18nT('usageUnit.invalid')
+          : err?.error?.message || this.i18nT('usageUnit.invalid');
+      },
+    });
   }
 
   /** Seller đăng giọng clone (MP3). Giọng sàn VieNeu do AI Markets seed, không hiện ở form này. */
@@ -1072,7 +1183,7 @@ export class DashboardProductsComponent implements OnInit {
       if (this.draft.price === 29) this.draft.price = 19;
     } else if (this.isVoiceDraft()) {
       this.draft.pricingModel = 'usage';
-      this.draft.usageUnit = '1K characters';
+      this.draft.usageUnit = '1k_characters';
       this.draft.usageRate = 0.02;
       this.draft.interval = 'month';
       this.draft.priceDay = this.draft.priceDay || 1.49;
@@ -1082,6 +1193,9 @@ export class DashboardProductsComponent implements OnInit {
       this.draft.pricingModel = 'subscription';
       this.draft.interval = 'month';
       this.draft.price = Number(this.draft.priceMonth) || 9;
+    }
+    if (this.draft.pricingModel === 'usage') {
+      this.draft.usageUnit = snapUsageUnit(this.usageCatalog.catalog(), this.draft.category, this.draft.usageUnit);
     }
   }
 
@@ -1119,10 +1233,24 @@ export class DashboardProductsComponent implements OnInit {
       this.kindError = this.i18nT('productKind.required');
       return;
     }
+    let servicePackages: ServicePackagePayload[] = [];
     if (this.isHireDraft()) {
       const deliveryDays = Number(this.draft.serviceDeliveryDays);
       if (!Number.isInteger(deliveryDays) || deliveryDays < 1 || deliveryDays > 365) {
         this.publishError = 'Vui lòng nhập thời gian hoàn thành từ 1 đến 365 ngày.';
+        return;
+      }
+      const packed = servicePackagePayload(this.servicePackages);
+      if (!packed.ok) {
+        this.publishError = this.i18nT('svc.seller.invalid');
+        return;
+      }
+      servicePackages = packed.packages;
+    }
+    if (!this.isHireDraft() && !this.isTemplateDraft() && this.draft.pricingModel === 'usage') {
+      this.draft.usageUnit = snapUsageUnit(this.usageCatalog.catalog(), this.draft.category, this.draft.usageUnit);
+      if (!unitAllowed(this.usageCatalog.catalog(), this.draft.category, this.draft.usageUnit)) {
+        this.publishError = this.i18nT('usageUnit.invalid');
         return;
       }
     }
@@ -1156,7 +1284,7 @@ export class DashboardProductsComponent implements OnInit {
             price: Number(this.draft.priceMonth) || Number(this.draft.price) || 0,
             currency: 'USD',
             interval: this.draft.interval || 'month',
-            usageUnit: this.draft.usageUnit || '1K characters',
+            usageUnit: this.draft.usageUnit,
             usageRate: Number(this.draft.usageRate) || 0,
           }
         : this.draft.pricingModel === 'usage'
@@ -1164,7 +1292,7 @@ export class DashboardProductsComponent implements OnInit {
             model: 'usage' as const,
             price: 0,
             currency: 'USD',
-            usageUnit: this.draft.usageUnit || 'request',
+            usageUnit: this.draft.usageUnit,
             usageRate: Number(this.draft.usageRate) || 0,
           }
         : this.draft.pricingModel === 'subscription'
@@ -1234,6 +1362,7 @@ export class DashboardProductsComponent implements OnInit {
         productKind: this.draft.productKind || 'DIGITAL',
         pricing,
         serviceDeliveryDays: this.isHireDraft() ? Number(this.draft.serviceDeliveryDays) : undefined,
+        ...(this.isHireDraft() ? { servicePackages } : {}),
         affiliateRate: this.draftAffiliateRate(),
         ...(this.isOnlineTermsDraft() ? { acceptOnlineTerms: !!this.draft.acceptOnlineTerms } : {}),
         contentMeta,

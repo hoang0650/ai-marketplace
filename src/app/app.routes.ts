@@ -452,6 +452,12 @@ export const routes: Routes = [
         data: { category: 'hire-workflow', title: 'Workflow automation' },
       },
       {
+        path: 'hire-photographer',
+        loadComponent: () =>
+          import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),
+        data: { category: 'hire-photographer', title: 'Book photographer' },
+      },
+      {
         path: 'hire-build-app',
         loadComponent: () =>
           import('./features/category-hub/category-hub.component').then((m) => m.CategoryHubComponent),

@@ -37,6 +37,8 @@ import { VoiceControlsComponent, VoiceFx, DEFAULT_VOICE_FX, voiceFxBody } from '
 import { BuilderService } from '../builder/builder.service';
 import { CartService } from '../cart/cart.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { UsageCatalogService } from '../usage/usage.service';
+import { accessUnitOf, buyerUnitLabel, viHirePrice, viPrice } from '../usage/usage-contract';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
 import { InvoiceChoiceComponent } from '../orders/invoice-choice.component';
 import { TPipe } from '../../i18n/t.pipe';
@@ -95,6 +97,7 @@ export class ProductDetailComponent implements OnInit {
   private readonly agentChatApi = inject(AgentChatService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
+  private readonly usageApi = inject(UsageCatalogService);
   private readonly currencySvc = inject(CurrencyService);
   private readonly openclaw = inject(OpenClawGatewayService);
   private readonly launchNotice = inject(LaunchNoticeService);
@@ -288,6 +291,11 @@ export class ProductDetailComponent implements OnInit {
   hireSent = signal(false);
   readonly hireBusy = signal(false);
   readonly hireError = signal('');
+  readonly paymentChoice = signal<'staged' | 'prepaid'>('staged');
+  selectedServicePackage = '';
+  readonly accessView = signal<{ active: boolean; expiresAt: string | null; unit: string | null } | null>(null);
+  readonly accessError = signal('');
+  readonly accessBusy = signal(false);
 
   /** Persistent-memory agent chat (hire-agent) */
   agentDraft = '';
@@ -476,6 +484,11 @@ export class ProductDetailComponent implements OnInit {
         this.hireSent.set(false);
         this.hireError.set('');
         this.hireBrief = '';
+        this.paymentChoice.set('staged');
+        this.selectedServicePackage = p.servicePackages?.[0]?.code || '';
+        this.accessView.set(null);
+        this.accessError.set('');
+        if (accessUnitOf(p.pricing) && this.auth.user()) this.loadUsageAccess(p.id);
         this.hireDeadline = '';
         this.hireBudget = isHireRequestCategory(p.category) && p.pricing?.price ? p.pricing.price : null;
         this.skillInstalled.set(false);
@@ -491,6 +504,14 @@ export class ProductDetailComponent implements OnInit {
     const pr = p.pricing;
     if (pr.model === 'free') {
       return this.displayCurrency === 'VND' ? '0 đ' : this.i18n.t('card.free');
+    }
+    if (this.i18n.lang() === 'vi' && (pr.model === 'usage' || isHireRequestCategory(p.category))) {
+      const quoted = pr.model === 'usage'
+        ? viPrice(p.pricingVnd?.usageRate)
+        : viHirePrice(p, p.id === this.product()?.id ? this.selectedServicePackage : p.servicePackages?.[0]?.code);
+      const unit = pr.model === 'usage' ? buyerUnitLabel(pr, 'vi') : '';
+      const amount = quoted || this.i18n.t('money.missingVnd');
+      return unit ? `${amount}/${unit}` : amount;
     }
     const qty = Math.max(1, Number(units) || 1);
     const unitUsd = isLicenseCategory(p.category)
@@ -1023,7 +1044,7 @@ export class ProductDetailComponent implements OnInit {
     );
   }
 
-  /** Opens the phase workspace for a service package (no charge until a phase is approved). */
+  /** Opens the package workspace. Prepaid debits escrow immediately; staged does not. */
   startServicePackage(): void {
     const p = this.product();
     if (!p || this.hireBusy()) return;
@@ -1033,7 +1054,18 @@ export class ProductDetailComponent implements OnInit {
     }
     this.hireBusy.set(true);
     this.hireError.set('');
-    this.hireService.startPackage(p.id, this.hireBrief.trim() || undefined).subscribe({
+    const packages = p.servicePackages || [];
+    const packageCode = packages.length ? this.selectedServicePackage || packages[0].code : undefined;
+    if (packages.length && this.i18n.lang() === 'vi' && !viHirePrice(p, packageCode)) {
+      this.hireBusy.set(false);
+      this.hireError.set(this.i18n.t('money.missingVnd'));
+      return;
+    }
+    this.hireService.startPackage(p.id, {
+      brief: this.hireBrief.trim() || undefined,
+      packageCode,
+      paymentChoice: this.paymentChoice(),
+    }).subscribe({
       next: (project) => {
         this.hireBusy.set(false);
         void this.router.navigate(['/hire/projects', project.id], { queryParams: project.existing ? {} : { started: '1' } });
@@ -1043,6 +1075,57 @@ export class ProductDetailComponent implements OnInit {
         this.hireError.set(err?.error?.message || this.i18n.t('hire.err.generic'));
       },
     });
+  }
+
+  loadUsageAccess(productId: string): void {
+    this.usageApi.access(productId).subscribe({
+      next: (row) => this.accessView.set(row),
+      error: () => this.accessView.set(null),
+    });
+  }
+
+  buyUsageAccess(): void {
+    const p = this.product();
+    if (!p || this.accessBusy()) return;
+    if (!this.auth.user()) {
+      void this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+    if (this.i18n.lang() === 'vi' && !viPrice(p.pricingVnd?.usageRate)) {
+      this.accessError.set(this.i18n.t('money.missingVnd'));
+      return;
+    }
+    this.accessBusy.set(true);
+    this.accessError.set('');
+    this.usageApi.buyAccess(p.id).subscribe({
+      next: (row) => {
+        this.accessBusy.set(false);
+        this.accessView.set({ active: true, expiresAt: row.expiresAt, unit: row.unit });
+      },
+      error: (err) => {
+        this.accessBusy.set(false);
+        this.accessError.set(
+          err?.error?.code === 'ENTITLEMENT_REQUIRED'
+            ? this.i18n.t('usageAccess.required')
+            : err?.error?.message || this.i18n.t('usageAccess.fail'),
+        );
+      },
+    });
+  }
+
+  packagePriceLabel(pkg: { price: number; currency: string; priceVnd?: { amountVnd?: number | null; authoritative?: boolean; code?: string | null } | null }): string {
+    if (this.i18n.lang() === 'vi') return viPrice(pkg.priceVnd) || this.i18n.t('money.missingVnd');
+    return `${pkg.price} ${pkg.currency}`;
+  }
+
+  accessPeriod(p: Product): boolean {
+    return !!accessUnitOf(p.pricing);
+  }
+
+  accessExpiryLabel(): string {
+    const row = this.accessView();
+    if (!row?.active || !row.expiresAt) return '';
+    return row.expiresAt;
   }
 
   submitHireRequest(): void {
@@ -1176,6 +1259,10 @@ export class ProductDetailComponent implements OnInit {
     // Professional services: fixed package paid per phase after the buyer approves each one (Đề án / Quy chế).
     if (isHireRequestCategory(p.category)) {
       this.startServicePackage();
+      return;
+    }
+    if (accessUnitOf(p.pricing)) {
+      this.buyUsageAccess();
       return;
     }
     if (isHireCategory(p.category)) {
@@ -1523,8 +1610,12 @@ export class ProductDetailComponent implements OnInit {
           if (this.auth.user()?.id !== runOwner) return;
           const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
           this.lastLatencyMs = Math.round(now - started);
+          const code = err?.error?.code;
+          if (code === 'ENTITLEMENT_REQUIRED') this.accessError.set(this.i18n.t('usageAccess.required'));
           const message =
-            err?.error?.message || err?.message || 'Playground run failed via marketplace API';
+            code === 'ENTITLEMENT_REQUIRED'
+              ? this.i18n.t('usageAccess.required')
+              : err?.error?.message || err?.message || 'Playground run failed via marketplace API';
           this.previewText = message;
           this.resultJson = JSON.stringify(
             { error: message, status: err?.status, detail: err?.error },

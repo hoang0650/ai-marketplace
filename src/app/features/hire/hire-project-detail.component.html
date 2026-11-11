@@ -30,6 +30,12 @@
       </div>
     </header>
 
+    @if (p.paymentChoice === 'prepaid') {
+      <p class="mt-4 text-sm" style="color:#9a3412">{{ 'svc.prepaid.held' | t }}</p>
+    } @else if (p.paymentChoice === 'staged') {
+      <p class="mt-4 text-sm text-muted">{{ 'svc.staged.note' | t }}</p>
+    }
+
     @if (started()) {
       <div class="hp-success" role="status">
         <strong>✓ {{ 'hire.pkg.startedTitle' | t }}</strong>

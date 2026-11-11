@@ -226,6 +226,18 @@
           }
         </div>
 
+        @if (accessPeriod(p)) {
+          <div class="pd-buy__section">
+            <p class="text-sm">{{ 'usageAccess.price' | t }} {{ displayPrice(p, 1) }}</p>
+            @if (accessView()?.active && accessView()?.expiresAt) {
+              <p class="text-sm">{{ 'usageAccess.expires' | t }} {{ accessView()?.expiresAt }}</p>
+            } @else {
+              <p class="text-xs text-muted">{{ 'usageAccess.none' | t }}</p>
+            }
+            @if (accessError()) { <p class="text-sm" style="color:#c62828">{{ accessError() }}</p> }
+          </div>
+        }
+
         <button type="button" class="pd-buy__cta" (click)="primaryCta()">
           @if (isTemplate(p.category)) {
             {{ (p.pricing.model === 'free' || !p.pricing.price ? 'builder.tpl.ctaFree' : 'builder.tpl.ctaBuy') | t }}
@@ -235,6 +247,8 @@
             {{ 'compute.cta.play' | t }}
           } @else if (isHireRequest(p.category)) {
             {{ 'svc.cta' | t }}
+          } @else if (accessPeriod(p)) {
+            {{ accessBusy() ? ('usageAccess.buying' | t) : ('usageAccess.buy' | t) }}
           } @else if (isHire(p.category)) {
             {{ isOpenClawHire() ? 'Launch ' + hireBrand() : 'Hire / Request' }}
           } @else if (isFilm(p.category)) {
@@ -530,6 +544,37 @@
             <li>{{ 'svc.step3' | t }}</li>
           </ol>
           @if (!isContentOwner()) {
+            @if (p.servicePackages?.length) {
+              <div class="grid gap-2">
+                @for (pkg of p.servicePackages; track pkg.code) {
+                  <label class="rounded-lg border border-line p-3 text-sm">
+                    <span class="flex items-start gap-2">
+                      <input type="radio" name="servicePackage" [value]="pkg.code" [(ngModel)]="selectedServicePackage" />
+                      <span>
+                        <strong>{{ pkg.name }}</strong>
+                        <span class="block text-muted">{{ pkg.scope }}</span>
+                        <span class="block">{{ packagePriceLabel(pkg) }} · {{ pkg.durationDays }} {{ 'svc.seller.dayUnit' | t }}</span>
+                        @for (item of pkg.deliverables; track item) {
+                          <span class="block text-xs text-muted">· {{ item }}</span>
+                        }
+                      </span>
+                    </span>
+                  </label>
+                }
+              </div>
+            }
+            <label class="mt-3 block text-sm" for="hire-brief">{{ 'hire.req.brief' | t }}</label>
+            <textarea id="hire-brief" class="input mt-1" rows="3" [(ngModel)]="hireBrief" name="hireBrief"></textarea>
+            <fieldset class="mt-3 grid gap-2 text-sm">
+              <label class="flex items-start gap-2">
+                <input type="radio" name="paymentChoice" value="staged" [checked]="paymentChoice() === 'staged'" (change)="paymentChoice.set('staged')" />
+                <span>{{ 'svc.staged.note' | t }}</span>
+              </label>
+              <label class="flex items-start gap-2">
+                <input type="radio" name="paymentChoice" value="prepaid" [checked]="paymentChoice() === 'prepaid'" (change)="paymentChoice.set('prepaid')" />
+                <span>{{ 'svc.prepaid.held' | t }}</span>
+              </label>
+            </fieldset>
             <div class="pg-actions">
               <button type="button" class="btn btn-run" (click)="startServicePackage()" [disabled]="hireBusy()">{{ 'svc.cta' | t }}</button>
             </div>
@@ -539,6 +584,9 @@
         <aside class="pg-pane">
           <div class="pg-pane__head"><h2>{{ 'svc.price' | t }}</h2></div>
           <p class="hire-price">{{ displayPrice(p, 1) }}</p>
+          @if (paymentChoice() === 'prepaid') {
+            <p class="cost-hint">{{ 'svc.prepaid.held' | t }}</p>
+          }
           @if (p.serviceDeliveryDays) {
             <p class="cost-hint"><strong>Thời gian hoàn thành:</strong> {{ p.serviceDeliveryDays }} ngày kể từ khi xác nhận đơn.</p>
           }
