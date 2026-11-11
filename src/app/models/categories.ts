@@ -248,6 +248,15 @@ export const AI_CATEGORIES: CategoryMeta[] = [
     lane: 'ai',
   },
   {
+    id: 'hire-photographer',
+    label: 'Book photographer',
+    description: 'Fixed-package photography. The buyer pays per phase or prepays into escrow.',
+    hubPath: '/hire-photographer',
+    group: 'hire',
+    navGroup: 'talent',
+    lane: 'ai',
+  },
+  {
     id: 'hire-build-web',
     label: 'Build web',
     description: 'Fixed-package websites, dashboards and web apps.',
@@ -357,7 +366,7 @@ export const NAV_SECTIONS: NavSection[] = ([
     id: 'talent',
     titleKey: 'group.talent',
     links: (
-      ['hire-build-web', 'hire-build-app', 'hire-marketing', 'hire-seo', 'hire-creator', 'hire-workflow'] as ProductCategory[]
+      ['hire-build-web', 'hire-build-app', 'hire-marketing', 'hire-seo', 'hire-creator', 'hire-workflow', 'hire-photographer'] as ProductCategory[]
     ).map(catLink),
   },
 ] as NavSection[]).map((s) => ({ ...s, links: s.links.filter((l) => !HIDDEN_PATHS.has(l.path)) }));
@@ -433,6 +442,7 @@ export const HIRE_REQUEST_CATEGORIES: readonly ProductCategory[] = [
   'hire-seo',
   'hire-creator',
   'hire-workflow',
+  'hire-photographer',
 ];
 
 export function isHireRequestCategory(id?: ProductCategory | string): boolean {

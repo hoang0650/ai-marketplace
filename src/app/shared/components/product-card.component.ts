@@ -2,7 +2,8 @@ import { Component, Input, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Product } from '../../models/marketplace.models';
-import { canonicalCategory } from '../../models/categories';
+import { canonicalCategory, isHireRequestCategory } from '../../models/categories';
+import { buyerUnitLabel, viHirePrice, viPrice } from '../../features/usage/usage-contract';
 import { categoryCoverDataUrl, isGenericCover } from '../cover-fallback';
 import { I18nService } from '../../i18n/i18n.service';
 import { AppCurrency, CurrencyService } from '../../i18n/currency.service';
@@ -1001,6 +1002,8 @@ export class ProductCardComponent {
   get priceLabel(): string {
     const p = this.product.pricing;
     if (p.model === 'free') return this.i18n.t('card.free');
+    const vi = this.viListedPrice();
+    if (vi) return vi;
     if (p.model === 'usage') return `$${p.usageRate}/${p.usageUnit || '1K tokens'}`;
     if (p.model === 'subscription') return `$${p.price}/${p.interval}`;
     return `$${p.price}`;
@@ -1023,12 +1026,17 @@ export class ProductCardComponent {
   /** Amount only. The unit is `priceUnit` so "/minute" stays readable and translatable. */
   get priceAmount(): string {
     const p = this.product.pricing;
+    const vi = this.viListedPrice();
+    if (vi) return vi;
     if (!p || p.model === 'free') return this.shopPrice;
     const usd = p.model === 'usage' ? Number(p.usageRate) || 0 : Number(p.price) || 0;
     return this.currencySvc.formatRateFromUsd(usd, this.currency);
   }
 
   get priceUnit(): string {
+    if (this.i18n.lang() === 'vi' && (this.product.pricing?.model === 'usage' || isHireRequestCategory(this.product.category))) {
+      return '';
+    }
     const p = this.product.pricing;
     if (!p || p.model === 'free') return '';
     if (p.model === 'usage') return this.unitLabel(p.usageUnit);
@@ -1042,7 +1050,24 @@ export class ProductCardComponent {
     return this.i18n.t(key);
   }
 
+  /** Server VND for usage rates and service packages. Other models keep their existing label. */
+  private viListedPrice(): string | null {
+    if (this.i18n.lang() !== 'vi') return null;
+    const product = this.product;
+    if (product.pricing?.model === 'usage') {
+      const amount = viPrice(product.pricingVnd?.usageRate) || this.i18n.t('money.missingVnd');
+      const unit = buyerUnitLabel(product.pricing, 'vi');
+      return unit ? `${amount}/${unit}` : amount;
+    }
+    if (isHireRequestCategory(product.category)) {
+      return viHirePrice(product) || this.i18n.t('money.missingVnd');
+    }
+    return null;
+  }
+
   get shopPrice(): string {
+    const vi = this.viListedPrice();
+    if (vi) return vi;
     const p = this.product.pricing;
     if (p.model === 'free') {
       return this.currency === 'VND' ? '0 đ' : this.i18n.t('card.free');

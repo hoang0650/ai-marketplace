@@ -59,6 +59,9 @@ export interface HireProject {
   events: { at: string; actor: string; action: string; note: string }[];
   messages?: { id: string; at: string; actor: 'buyer' | 'seller' | 'admin' | 'system'; body: string; link: string; attachments?: import('../shared/attachments/attachments').FileAttachment[] }[];
   origin?: 'quote' | 'package';
+  packageCode?: string;
+  paymentChoice?: 'staged' | 'prepaid' | string;
+  escrow?: { status: string; gross: number; releasedNet: number } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -84,9 +87,17 @@ export class HireService {
     return this.http.get<HireProject>(`${this.base}/${id}`);
   }
 
-  /** Start a fixed-price service package: opens the phase workspace; nothing is charged until a phase is approved. */
-  startPackage(productId: string, brief?: string): Observable<HireProject & { existing?: boolean }> {
-    return this.http.post<HireProject & { existing?: boolean }>(`${environment.apiUrl}/hire/packages`, { productId, brief });
+  /** Start a fixed-price package. `prepaid` debits the wallet into escrow immediately. */
+  startPackage(
+    productId: string,
+    body: { brief?: string; packageCode?: string; paymentChoice?: 'staged' | 'prepaid' } = {},
+  ): Observable<HireProject & { existing?: boolean }> {
+    return this.http.post<HireProject & { existing?: boolean }>(`${environment.apiUrl}/hire/packages`, {
+      productId,
+      brief: body.brief,
+      packageCode: body.packageCode,
+      paymentChoice: body.paymentChoice || 'staged',
+    });
   }
 
   message(id: string, body: string, link?: string, attachmentIds?: string[]): Observable<HireProject> {
