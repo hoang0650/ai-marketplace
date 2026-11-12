@@ -19,6 +19,18 @@ Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 3
 
 Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase. Trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website.
 
+Công ty đã thiết lập nhận khoản chi trả từ Apple và Google về tài khoản ngân hàng đứng tên Công ty. Theo đối chiếu ngày 12/11/2026 trên App Store Connect, Thỏa thuận Paid Apps đang trạng thái Active (hiệu lực từ 26/10/2026 đến 08/07/2027); tài khoản ngân hàng gắn với thỏa thuận là Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank), số tài khoản 395951335, chủ tài khoản Công ty TNHH Giải pháp Công nghệ PHGroup, quốc gia Việt Nam, đồng tiền VND, trạng thái Active. Trên Google Play Console, phương thức nhận thanh toán chính là chuyển khoản ngân hàng đến tài khoản kết thúc bằng 335, đứng tên PHGROUP TECHNOLOGY SOLUTIONS COMPANY LIMITED (cùng pháp nhân). Các ảnh dưới đây minh họa việc đã thiết lập kênh nhận tiền; không phải chứng từ khoản chi trả đã phát sinh (tại thời điểm đối chiếu, Google Play Console hiển thị thu nhập 0,00 USD) và không phải chứng từ đã chi trả cho người bán.
+
+![Hình 1. App Store Connect – Thỏa thuận Paid Apps và tài khoản ngân hàng trạng thái Active (12/11/2026)](assets/legal/img/01-app-store-connect-agreements-bank.png)
+
+![Hình 2. App Store Connect – thông tin tài khoản VPBank số 395951335 đứng tên Công ty (12/11/2026)](assets/legal/img/02-app-store-connect-edit-bank.png)
+
+![Hình 3. Google Play Console – hồ sơ thanh toán, phương thức nhận về tài khoản …335 (12/11/2026)](assets/legal/img/03-google-play-ho-so-thanh-toan.png)
+
+![Hình 4. Google Play Console – phương thức thanh toán chính, chuyển khoản đến tài khoản …335 (12/11/2026)](assets/legal/img/04-google-play-phuong-thuc-thanh-toan.png)
+
+Sau khi Công ty nhận được khoản Apple hoặc Google chi trả vào tài khoản nêu trên, Công ty thực hiện chi trả doanh thu hợp lệ cho người bán và hoa hồng affiliate theo Hợp đồng dịch vụ thương mại điện tử và quy trình đối soát tại Điều 7 (đối soát, tạm giữ 48 giờ, chi trả bằng VND trong 03 ngày làm việc). IAP vẫn chỉ là kênh nạp số dư nội bộ trong ứng dụng, không phải kênh thanh toán chung cho sản phẩm của người bán bên thứ ba. Việc đã thiết lập tài khoản nhận tiền không thay thế chứng từ đối soát và chứng từ chi trả thực tế.
+
 Số dư trả trước của người mua không được rút tiền mặt và không được chuyển cho người khác. Số dư đã ghi có không vì vậy mà bị xóa. Yêu cầu hoàn tiền hợp pháp vẫn được tiếp nhận; khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết được ghi sổ riêng và chi trả riêng.
 
 | Kênh | Tài khoản hoặc kênh | Phương thức | Mục đích |
@@ -30,7 +42,7 @@ Số dư trả trước của người mua không được rút tiền mặt và
 
 Nền tảng không lưu thông tin thẻ của người mua.
 
-![Hình 1. Mã QR chuyển khoản VietQR để nạp ví](assets/legal/img/ma-qr-vietqr-nap-vi.png)
+![Hình 5. Mã QR chuyển khoản VietQR để nạp ví](assets/legal/img/ma-qr-vietqr-nap-vi.png)
 
 ## Điều 2. Giá và mã giảm giá
 

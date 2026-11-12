@@ -37,14 +37,31 @@ const RULES_CAPTIONS = [
   'Hình 19. Biểu mẫu xác minh người bán cá nhân',
   'Hình 20. Biểu mẫu thông tin người bán tổ chức',
   'Hình 21. Tài liệu đại diện và ô đính kèm đăng ký doanh nghiệp',
-  'Hình 22. Biểu mẫu đăng ký với tư cách Người tiếp thị liên kết',
-  'Hình 23. Trang chương trình tiếp thị liên kết',
-  'Hình 24. Trang quy trình tiếp thị liên kết',
-  'Hình 25. Danh sách yêu cầu khiếu nại',
-  'Hình 26. Biểu mẫu gửi khiếu nại',
-  'Hình 27. Trang khiếu nại của người bán',
-  'Hình 28. Trung tâm pháp lý – bảng chính sách',
+  'Hình 22. App Store Connect – Thỏa thuận Paid Apps và tài khoản ngân hàng trạng thái Active (12/11/2026)',
+  'Hình 23. App Store Connect – thông tin tài khoản VPBank số 395951335 đứng tên Công ty (12/11/2026)',
+  'Hình 24. Google Play Console – hồ sơ thanh toán, phương thức nhận về tài khoản …335 (12/11/2026)',
+  'Hình 25. Google Play Console – phương thức thanh toán chính, chuyển khoản đến tài khoản …335 (12/11/2026)',
+  'Hình 26. Biểu mẫu đăng ký với tư cách Người tiếp thị liên kết',
+  'Hình 27. Trang chương trình tiếp thị liên kết',
+  'Hình 28. Trang quy trình tiếp thị liên kết',
+  'Hình 29. Danh sách yêu cầu khiếu nại',
+  'Hình 30. Biểu mẫu gửi khiếu nại',
+  'Hình 31. Trang khiếu nại của người bán',
+  'Hình 32. Trung tâm pháp lý – bảng chính sách',
 ];
+
+const PAYMENT_CAPTIONS = [
+  'Hình 1. App Store Connect – Thỏa thuận Paid Apps và tài khoản ngân hàng trạng thái Active (12/11/2026)',
+  'Hình 2. App Store Connect – thông tin tài khoản VPBank số 395951335 đứng tên Công ty (12/11/2026)',
+  'Hình 3. Google Play Console – hồ sơ thanh toán, phương thức nhận về tài khoản …335 (12/11/2026)',
+  'Hình 4. Google Play Console – phương thức thanh toán chính, chuyển khoản đến tài khoản …335 (12/11/2026)',
+  'Hình 5. Mã QR chuyển khoản VietQR để nạp ví',
+];
+
+/** The approved payout caption names the public company account. Other long digit runs stay banned. */
+function withoutPublishedAccount(caption: string): string {
+  return caption.split('395951335').join('');
+}
 
 const GUIDE_CAPTIONS = [
   'Hình 1. Trang tra cứu mã số thuế của Cục Thuế',
@@ -58,12 +75,13 @@ test('public legal figure captions restart at 1 and omit internal codes', () => 
   for (const [file, expected] of [
     ['01-quy-che-hoat-dong-san-tmdt.md', RULES_CAPTIONS],
     ['13-quy-trinh-xac-minh-nguoi-ban.md', GUIDE_CAPTIONS],
+    ['05-chinh-sach-thanh-toan-doi-soat.md', PAYMENT_CAPTIONS],
   ] as const) {
     const captions = captionsOf(read(file));
     assert.deepEqual(captions, [...expected], file);
     captions.forEach((caption, index) => {
       assert.match(caption, new RegExp(`^Hình ${index + 1}\\. .+`), caption);
-      assert.equal(banned.test(caption), false, `${file}: ${caption}`);
+      assert.equal(banned.test(withoutPublishedAccount(caption)), false, `${file}: ${caption}`);
     });
   }
 });
@@ -84,12 +102,12 @@ test('seller eKYC guide matches the individual and organization form', () => {
   assert.match(guide, /v7-k03-giay-to-dai-dien\.png/);
   assert.match(seller, /13-quy-trinh-xac-minh-nguoi-ban\.md/);
   const figures = [...rules.matchAll(/^!\[([^\]]*)\]\((assets\/legal\/img\/[^)]+)\)/gm)];
-  assert.equal(figures.length, 28);
+  assert.equal(figures.length, 32);
   const names = figures.map((row) => row[2]);
-  assert.equal(new Set(names).size, 28);
+  assert.equal(new Set(names).size, 32);
   for (const [, caption] of figures) {
     assert.equal(/cccd/i.test(caption), false, caption);
-    assert.equal(/\d{9,}/.test(caption), false, caption);
+    assert.equal(/\d{9,}/.test(withoutPublishedAccount(caption)), false, caption);
   }
   assert.deepEqual(
     figures.map((row) => row[1]),
@@ -116,5 +134,5 @@ test('published legal figures point at files that exist', () => {
       assert.equal(existsSync(join(root, 'src', rel)), true, `${file} -> ${rel}`);
     }
   }
-  assert.equal(figures, 37);
+  assert.equal(figures, 45);
 });
