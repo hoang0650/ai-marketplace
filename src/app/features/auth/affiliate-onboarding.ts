@@ -1,38 +1,86 @@
 /**
- * Affiliate signup contract.
- * Register and Google sign-up send `role: "affiliate"`.
- * Auth responses may include `affiliateOnboarding` on the user or under `profile`.
- * Codes stay unissued while electronic identity is not implemented.
+ * Reads the public user.affiliateOnboarding view from GET/POST auth.
+ * Signup with role affiliate sets intent only. It does not verify eKYC,
+ * issue affiliateCode, create commission, or approve a payout.
+ * A new code can stay closed (403 ELECTRONIC_IDENTITY_NOT_IMPLEMENTED)
+ * even after internal eKYC.
  */
 
-export interface AffiliateOnboarding {
+export interface AffiliateOnboardingStatus {
+  intent: boolean;
   emailVerified: boolean;
-  ekycStatus: string;
-  taxCodeStatus: string;
+  ekycVerified: boolean;
+  taxApproved: boolean;
+  policyAccepted: boolean;
+  policyVersion: string;
   electronicIdentity: string;
   codeIssued: boolean;
+  readyForCode: boolean;
+  canSell: boolean;
+  canBuy: boolean;
 }
+
+type Step = { done?: boolean; status?: string; version?: string };
 
 type OnboardingSource = {
   role?: string | null;
   emailVerified?: boolean | null;
   kycStatus?: string | null;
-  affiliateOnboarding?: Partial<AffiliateOnboarding> | null;
-  profile?: { affiliateOnboarding?: Partial<AffiliateOnboarding> | null } | null;
+  affiliateOnboarding?: {
+    intent?: boolean;
+    canSell?: boolean;
+    canBuy?: boolean;
+    readyForCode?: boolean;
+    codeIssued?: boolean;
+    electronicIdentity?: string;
+    ekycStatus?: string;
+    emailVerified?: boolean | Step;
+    steps?: {
+      emailVerified?: Step;
+      internalKyc?: Step;
+      taxCode?: Step;
+      policyAccepted?: Step;
+      statutoryElectronicIdentity?: Step;
+    };
+  } | null;
+  profile?: { affiliateOnboarding?: OnboardingSource['affiliateOnboarding'] } | null;
 };
 
-export function readAffiliateOnboarding(user: OnboardingSource | null | undefined): AffiliateOnboarding {
+export function readAffiliateOnboarding(user: OnboardingSource | null | undefined): AffiliateOnboardingStatus {
   const raw = user?.affiliateOnboarding || user?.profile?.affiliateOnboarding || {};
+  const steps = raw.steps || {};
+  const electronic = electronicIdentity(raw, steps.statutoryElectronicIdentity);
+  const identityOpen = electronic !== 'not_implemented' && steps.statutoryElectronicIdentity?.done === true;
+  const serverReady = raw.readyForCode === true || raw.codeIssued === true;
+  const emailStep = steps.emailVerified;
+  const emailVerified = emailStep ? emailStep.done === true : raw.emailVerified === true || user?.emailVerified === true;
+  const kycStep = steps.internalKyc;
+  const ekycVerified = kycStep ? kycStep.done === true : raw.ekycStatus === 'verified' || user?.kycStatus === 'verified';
   return {
-    emailVerified: raw.emailVerified === true || user?.emailVerified === true,
-    ekycStatus: String(raw.ekycStatus || user?.kycStatus || 'none'),
-    taxCodeStatus: String(raw.taxCodeStatus || 'missing'),
-    electronicIdentity: String(raw.electronicIdentity || 'not_implemented'),
-    codeIssued: raw.codeIssued === true && String(raw.electronicIdentity || 'not_implemented') !== 'not_implemented' ? true : false,
+    intent: raw.intent === true || user?.role === 'affiliate',
+    emailVerified,
+    ekycVerified,
+    taxApproved: steps.taxCode?.done === true,
+    policyAccepted: steps.policyAccepted?.done === true,
+    policyVersion: String(steps.policyAccepted?.version || ''),
+    electronicIdentity: electronic,
+    codeIssued: identityOpen && serverReady,
+    readyForCode: identityOpen && raw.readyForCode === true,
+    canSell: raw.canSell === true,
+    canBuy: raw.canBuy !== false,
   };
 }
 
+function electronicIdentity(
+  raw: NonNullable<OnboardingSource['affiliateOnboarding']>,
+  step: Step | undefined,
+): string {
+  if (typeof step?.status === 'string' && step.status) return step.status;
+  if (typeof raw.electronicIdentity === 'string' && raw.electronicIdentity) return raw.electronicIdentity;
+  return 'not_implemented';
+}
+
 export function postAuthPath(role: string | null | undefined): string | null {
-  if (role === 'affiliate') return '/affiliate';
+  if (String(role || '').trim().toLowerCase() === 'affiliate') return '/affiliate';
   return null;
 }

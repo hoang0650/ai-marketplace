@@ -29,6 +29,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     req.url.includes('/auth/logout') ||
     req.url.includes('/auth/login') ||
     req.url.includes('/auth/register') ||
+    req.url.includes('/auth/roles') ||
     req.url.includes('/auth/google') ||
     (req.method === 'GET' && req.url.includes('/auth/me'));
 

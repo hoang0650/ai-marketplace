@@ -2,10 +2,11 @@ import { Injectable, PLATFORM_ID, inject, signal, computed } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, ReplaySubject, tap, map, of, catchError, shareReplay, switchMap, filter, take } from 'rxjs';
+import { Observable, ReplaySubject, tap, map, of, catchError, shareReplay, switchMap, filter, take, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User, UserRole, SignupRole, UserPreferences, UserProfileExtras } from '../models/marketplace.models';
 import { payoutIdentityRequired } from '../features/wallet/buyer-credit';
+import { AuthRoleOption, buildRegisterBody } from '../features/auth/signup-roles';
 
 interface AuthResponse {
   token: string;
@@ -134,19 +135,37 @@ export class AuthService {
       .pipe(tap((res) => this.persist(res)), map((res) => res.user));
   }
 
+  /** GET /v1/auth/roles. Empty when the list cannot be loaded; the form then uses its fallback. */
+  signupRoles(): Observable<AuthRoleOption[]> {
+    return this.http.get<{ roles?: AuthRoleOption[] }>(`${environment.apiUrl}/auth/roles`).pipe(
+      map((res) =>
+        (res?.roles || [])
+          .map((role) => ({ id: String(role?.id || '').trim(), label: String(role?.label || '').trim() }))
+          .filter((role) => !!role.id),
+      ),
+      catchError(() => of([])),
+    );
+  }
+
   register(payload: {
     email: string;
     name: string;
     password: string;
     confirmPassword?: string;
-    role?: SignupRole;
+    role?: SignupRole | string;
     /** @deprecated use role */
     asCreator?: boolean;
     avatarUrl?: string;
     googleSignupToken?: string;
+    /** Optional. Sent only for role affiliate when the box is checked. */
+    acceptAffiliatePolicy?: boolean;
   }): Observable<User> {
+    const built = buildRegisterBody(payload);
+    if (!built.ok) {
+      return throwError(() => ({ error: { code: built.code, roles: built.roles, message: 'Invalid role' } }));
+    }
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, payload, { withCredentials: true })
+      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, built.body, { withCredentials: true })
       .pipe(tap((res) => this.persist(res)), map((res) => res.user));
   }
 

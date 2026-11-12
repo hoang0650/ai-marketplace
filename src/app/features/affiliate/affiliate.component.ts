@@ -39,9 +39,10 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
           <p class="mt-1 text-sm text-muted">{{ 'aff.onboard.lead' | t }}</p>
           <ul class="mt-3 list-disc space-y-1 pl-5 text-sm">
             <li>{{ onboarding().emailVerified ? ('aff.onboard.emailDone' | t) : ('aff.onboard.emailTodo' | t) }}</li>
-            <li>{{ 'aff.onboard.ekyc' | t: { status: onboarding().ekycStatus } }}</li>
-            <li>{{ 'aff.onboard.mst' | t: { status: onboarding().taxCodeStatus } }}</li>
-            <li>{{ 'aff.onboard.noCode' | t }}</li>
+            <li>{{ onboarding().ekycVerified ? ('aff.onboard.ekycDone' | t) : ('aff.onboard.ekycTodo' | t) }}</li>
+            <li>{{ onboarding().taxApproved ? ('aff.onboard.taxDone' | t) : ('aff.onboard.taxTodo' | t) }}</li>
+            <li>{{ 'aff.onboard.noPayout' | t }}</li>
+            <li>{{ onboarding().codeIssued ? ('aff.onboard.codeIssued' | t) : ('aff.onboard.noCode' | t) }}</li>
           </ul>
           <p class="mt-3 text-sm">
             <a routerLink="/legal/chinh-sach-affiliate" class="underline">{{ 'signup.affiliate.policy' | t }}</a>

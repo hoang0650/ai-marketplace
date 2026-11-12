@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -10,6 +10,7 @@ import { GoogleSignInComponent } from './google-sign-in.component';
 import { environment } from '../../../environments/environment';
 import { WORK_BOARD_ENABLED } from '../../models/feature-flags';
 import { postAuthPath } from './affiliate-onboarding';
+import { signupChoices } from './signup-roles';
 
 function afterAuthRoute(user: User, returnUrl?: string | null): string {
   const affiliateHome = postAuthPath(user.role);
@@ -94,15 +95,22 @@ export class RegisterComponent implements OnInit {
   private readonly i18n = inject(I18nService);
 
   readonly brand = environment.brandName;
-  readonly roles: SignupRole[] = WORK_BOARD_ENABLED
-    ? ['buyer', 'seller', 'affiliate', 'talent', 'freelancer', 'employer']
-    : ['buyer', 'seller', 'affiliate'];
+  private readonly apiRoles = signal<Array<{ id: string; label?: string }> | null>(null);
+  readonly roleChoices = computed(() =>
+    signupChoices({
+      apiRoles: this.apiRoles(),
+      workBoard: WORK_BOARD_ENABLED,
+      lang: this.i18n.lang(),
+      translate: (id) => this.i18n.t(`signup.role.${id}`),
+    }),
+  );
   readonly role = signal<SignupRole>('buyer');
   name = '';
   email = '';
   password = '';
   confirmPassword = '';
   agreed = false;
+  /** Optional. When checked with role affiliate, POST acceptAffiliatePolicy:true. */
   agreedAffiliate = false;
   showPassword = false;
   readonly error = signal('');
@@ -121,6 +129,9 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.auth.signupRoles().subscribe((roles) => {
+      if (roles.length) this.apiRoles.set(roles);
+    });
     const q = this.route.snapshot.queryParamMap;
     // Google redirect back to /auth/register?google=prefill&email=&name=&googleSignupToken=
     if (q.get('google') === 'prefill') {
@@ -173,10 +184,6 @@ export class RegisterComponent implements OnInit {
       this.error.set(this.i18n.t('auth.mustAgree'));
       return;
     }
-    if (this.role() === 'affiliate' && !this.agreedAffiliate) {
-      this.error.set(this.i18n.t('auth.mustAgreeAffiliate'));
-      return;
-    }
     if (!this.role()) {
       this.error.set(this.i18n.t('auth.roleRequired'));
       return;
@@ -194,6 +201,7 @@ export class RegisterComponent implements OnInit {
         confirmPassword: this.confirmPassword,
         role: this.role(),
         googleSignupToken: this.googleSignupToken() || undefined,
+        acceptAffiliatePolicy: this.role() === 'affiliate' && this.agreedAffiliate,
       })
       .subscribe({
         next: (user) => void this.router.navigateByUrl(afterAuthRoute(user)),

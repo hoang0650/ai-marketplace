@@ -110,8 +110,8 @@
             (ngModelChange)="chooseRole($event)"
             aria-describedby="register-role-desc"
           >
-            @for (r of roles; track r) {
-              <option [value]="r">{{ ('signup.role.' + r) | t }}</option>
+            @for (r of roleChoices(); track r.id) {
+              <option [value]="r.id">{{ r.label }}</option>
             }
           </select>
           <small id="register-role-desc" class="auth-field__hint">{{ ('signup.role.' + role() + 'Desc') | t }}</small>
@@ -137,10 +137,11 @@
 
         @if (role() === 'affiliate') {
           <label class="auth-check">
-            <input type="checkbox" [(ngModel)]="agreedAffiliate" name="agreedAffiliate" required />
+            <input type="checkbox" [(ngModel)]="agreedAffiliate" name="agreedAffiliate" />
             <span>
               {{ 'signup.affiliate.agree' | t }}
               <a routerLink="/legal/chinh-sach-affiliate" target="_blank">{{ 'signup.affiliate.policy' | t }}</a>.
+              {{ 'signup.affiliate.agreeOptional' | t }}
             </span>
           </label>
         }
