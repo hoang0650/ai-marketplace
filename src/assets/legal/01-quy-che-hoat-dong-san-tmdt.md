@@ -487,6 +487,18 @@ Nền tảng áp dụng hạn mức (quota), giới hạn tần suất (rate lim
 
 Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có sau khi nội dung chuyển khoản khớp giao dịch ghi có. Mọi đơn hàng được thanh toán bằng số dư nội bộ. Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase; trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Số dư trả trước của người mua không được rút và không được chuyển. Yêu cầu hoàn tiền hợp pháp vẫn được tiếp nhận; khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết được ghi sổ riêng và chi trả riêng. Hợp đồng dịch vụ giao kết trên hệ thống là hợp đồng điện tử và có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP. Mã QR nạp ví là Hình 14.
 
+Công ty đã thiết lập nhận khoản chi trả từ Apple và Google về tài khoản ngân hàng đứng tên Công ty. Theo đối chiếu ngày 12/11/2026 trên App Store Connect, Thỏa thuận Paid Apps đang trạng thái Active (hiệu lực từ 26/10/2026 đến 08/07/2027); tài khoản ngân hàng gắn với thỏa thuận là Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank), số tài khoản 395951335, chủ tài khoản Công ty TNHH Giải pháp Công nghệ PHGroup, quốc gia Việt Nam, đồng tiền VND, trạng thái Active. Trên Google Play Console, phương thức nhận thanh toán chính là chuyển khoản ngân hàng đến tài khoản kết thúc bằng 335, đứng tên PHGROUP TECHNOLOGY SOLUTIONS COMPANY LIMITED (cùng pháp nhân). Các ảnh dưới đây minh họa việc đã thiết lập kênh nhận tiền; không phải chứng từ khoản chi trả đã phát sinh (tại thời điểm đối chiếu, Google Play Console hiển thị thu nhập 0,00 USD) và không phải chứng từ đã chi trả cho người bán.
+
+![Hình 22. App Store Connect – Thỏa thuận Paid Apps và tài khoản ngân hàng trạng thái Active (12/11/2026)](assets/legal/img/01-app-store-connect-agreements-bank.png)
+
+![Hình 23. App Store Connect – thông tin tài khoản VPBank số 395951335 đứng tên Công ty (12/11/2026)](assets/legal/img/02-app-store-connect-edit-bank.png)
+
+![Hình 24. Google Play Console – hồ sơ thanh toán, phương thức nhận về tài khoản …335 (12/11/2026)](assets/legal/img/03-google-play-ho-so-thanh-toan.png)
+
+![Hình 25. Google Play Console – phương thức thanh toán chính, chuyển khoản đến tài khoản …335 (12/11/2026)](assets/legal/img/04-google-play-phuong-thuc-thanh-toan.png)
+
+Sau khi Công ty nhận được khoản Apple hoặc Google chi trả vào tài khoản nêu trên, Công ty thực hiện chi trả doanh thu hợp lệ cho người bán và hoa hồng affiliate theo Hợp đồng dịch vụ thương mại điện tử và quy trình đối soát tại Điều 7 (đối soát, tạm giữ 48 giờ, chi trả bằng VND trong 03 ngày làm việc). IAP vẫn chỉ là kênh nạp số dư nội bộ trong ứng dụng, không phải kênh thanh toán chung cho sản phẩm của người bán bên thứ ba. Việc đã thiết lập tài khoản nhận tiền không thay thế chứng từ đối soát và chứng từ chi trả thực tế.
+
 | Kênh | Bên xử lý khoản tiền | Phương thức | Mục đích |
 |---|---|---|---|
 | Website | VPBank 395951335, Công ty TNHH Giải pháp Công nghệ PHGroup | VietQR, đối soát theo nội dung chuyển khoản | Nạp ví để thanh toán đơn hàng |
@@ -581,21 +593,21 @@ Người bán và người mua không được thỏa thuận thanh toán ngoài
 
 Tiếp thị liên kết là một cấp. Không có tuyến dưới, không có phí tham gia và không có khoản đặt cọc. Quy trình trên website như sau. Chi tiết cùng [Chính sách chương trình Affiliate](20-chinh-sach-affiliate.md) và [Quy trình tiếp thị liên kết](29-quy-trinh-tiep-thi-lien-ket.md).
 
-1. **Đăng ký.** Người dùng tạo tài khoản và chọn tư cách Người tiếp thị liên kết, rồi chấp nhận Chính sách chương trình Affiliate. Đăng ký không tự duyệt eKYC, không cấp mã, không tạo hoa hồng và không duyệt chi trả (Hình 22).
+1. **Đăng ký.** Người dùng tạo tài khoản và chọn tư cách Người tiếp thị liên kết, rồi chấp nhận Chính sách chương trình Affiliate. Đăng ký không tự duyệt eKYC, không cấp mã, không tạo hoa hồng và không duyệt chi trả (Hình 26).
 2. **Hồ sơ trước khi có mã và trước khi chi trả.** Người tiếp thị liên kết phải hoàn tất biểu mẫu eKYC và Cam kết Mẫu 08/CK-TNCN khi chương trình yêu cầu tệp đó. Nhân sự nội bộ duyệt hồ sơ. Hai bước này không được duyệt sẵn lúc đăng ký. Luật Thương mại điện tử số 122/2025/QH15 yêu cầu xác thực điện tử người tiếp thị liên kết trước khi thiết lập đường dẫn, từ 01/07/2026. Biểu mẫu nội bộ và bản cam kết không phải xác thực điện tử đã hoàn tất. Khi chưa có tích hợp được chứng minh, việc cấp mã không được mô tả là đã đủ điều kiện luật đó.
-3. **Mã và liên kết.** Sau khi hồ sơ nội bộ được duyệt, hệ thống cấp mã giới thiệu và cho tạo liên kết sản phẩm hoặc gian hàng (Hình 23).
+3. **Mã và liên kết.** Sau khi hồ sơ nội bộ được duyệt, hệ thống cấp mã giới thiệu và cho tạo liên kết sản phẩm hoặc gian hàng (Hình 27).
 4. **Ghi nhận.** Theo lượt nhấp cuối cùng trong 30 ngày. Liên kết sản phẩm chỉ ghi nhận đơn của sản phẩm đó; liên kết gian hàng ghi nhận đơn của sản phẩm tham gia thuộc gian hàng. Không ghi nhận khi người mua là chính người giới thiệu, hoặc người giới thiệu là người bán của sản phẩm.
 5. **Tỷ lệ.** Người bán đặt từ 0% đến 25% giá sau giảm giá, cho từng sản phẩm hoặc cho cả gian hàng. Mặc định 0% là không tham gia. Hoa hồng trừ vào phần của người bán, không trừ vào phí sàn. Tỷ lệ được chốt lúc đặt hàng.
 6. **Tạm giữ.** Hoa hồng được ghi có khi đơn hoàn tất và tạm giữ 48 giờ, hoặc lâu hơn nếu đơn đang tranh chấp. Việc tạm giữ không phải tài khoản escrow hay bảo lãnh ngân hàng.
 7. **Chi trả.** Không có mức chi trả tối thiểu thương mại. Mọi khoản hoa hồng khả dụng lớn hơn 0, sau đối soát và khi có yêu cầu hợp lệ, được chi bằng VND trong 03 ngày làm việc vào tài khoản đứng tên người tiếp thị liên kết. Sổ hoa hồng tách khỏi doanh thu người bán và khỏi số dư trả trước của người mua. Nghĩa vụ thuế của người nhận vẫn còn. Mẫu cam kết được duyệt không phải miễn thuế. Khoản 2 Điều 50 Nghị định 253/2026/NĐ-CP chỉ áp dụng cho nhóm thù lao cụ thể, ngưỡng 05 triệu đồng một lần, không phải cho mọi hoa hồng.
 8. **Hoàn, hủy và vi phạm.** Đơn bị hoàn hoặc hủy thì hoa hồng đảo theo tỷ lệ. Thư rác, quảng cáo gây nhầm lẫn, đặt thầu từ khóa thương hiệu khi chưa được chấp thuận, đơn ảo, nhồi cookie và tự giới thiệu bị thu hồi hoa hồng liên quan và xử lý theo Mục XV.
-9. **Trang quy trình.** Các bước công bố tại https://aimarkets.vn/legal/quy-trinh-tiep-thi-lien-ket (Hình 24).
+9. **Trang quy trình.** Các bước công bố tại https://aimarkets.vn/legal/quy-trinh-tiep-thi-lien-ket (Hình 28).
 
-![Hình 22. Biểu mẫu đăng ký với tư cách Người tiếp thị liên kết](assets/legal/img/affiliate-dang-ky-nguoi-tiep-thi.png)
+![Hình 26. Biểu mẫu đăng ký với tư cách Người tiếp thị liên kết](assets/legal/img/affiliate-dang-ky-nguoi-tiep-thi.png)
 
-![Hình 23. Trang chương trình tiếp thị liên kết](assets/legal/img/affiliate-trang-chuong-trinh.png)
+![Hình 27. Trang chương trình tiếp thị liên kết](assets/legal/img/affiliate-trang-chuong-trinh.png)
 
-![Hình 24. Trang quy trình tiếp thị liên kết](assets/legal/img/affiliate-quy-trinh.png)
+![Hình 28. Trang quy trình tiếp thị liên kết](assets/legal/img/affiliate-quy-trinh.png)
 
 ## XII. THUẾ, HÓA ĐƠN VÀ CHỨNG TỪ
 
@@ -939,11 +951,11 @@ Không gửi mật khẩu, khóa API, khóa SSH, khóa bí mật hoặc dữ li�
 
 Ảnh ngày 07/11/2026: danh sách khiếu nại đang có, một phần biểu mẫu chưa gửi, và trang khiếu nại trong kênh bán hàng khi chưa có hồ sơ. Bộ ảnh không có chi tiết trao đổi, kết quả xử lý, hoặc biểu mẫu yêu cầu hoàn trước khi gửi.
 
-![Hình 25. Danh sách yêu cầu khiếu nại](assets/legal/img/v7-b04-khieu-nai-danh-sach.png)
+![Hình 29. Danh sách yêu cầu khiếu nại](assets/legal/img/v7-b04-khieu-nai-danh-sach.png)
 
-![Hình 26. Biểu mẫu gửi khiếu nại](assets/legal/img/v7-b05-khieu-nai-form.png)
+![Hình 30. Biểu mẫu gửi khiếu nại](assets/legal/img/v7-b05-khieu-nai-form.png)
 
-![Hình 27. Trang khiếu nại của người bán](assets/legal/img/v7-t04-khieu-nai-kenh-ban.png)
+![Hình 31. Trang khiếu nại của người bán](assets/legal/img/v7-t04-khieu-nai-kenh-ban.png)
 
 ### 3. Phân loại khiếu nại
 
@@ -1287,7 +1299,7 @@ Ngân hàng nơi hiển thị tài khoản nhận chuyển khoản VietQR, Apple
 
 4. Đơn hàng đã giao kết tiếp tục áp dụng điều kiện tại thời điểm giao kết.
 
-![Hình 28. Trung tâm pháp lý – bảng chính sách](assets/legal/img/v7-v04-trung-tam-phap-ly.png)
+![Hình 32. Trung tâm pháp lý – bảng chính sách](assets/legal/img/v7-v04-trung-tam-phap-ly.png)
 
 ## XXVI. ĐIỀU KHOẢN CAM KẾT
 

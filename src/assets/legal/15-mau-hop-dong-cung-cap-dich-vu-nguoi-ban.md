@@ -95,6 +95,8 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 1. Doanh thu của Bên B = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ theo loại người bán (khoản 3 Điều 6) − hoa hồng affiliate (nếu có) − hoàn tiền/điều chỉnh. Số dư hiển thị của Bên B là số dư ròng.
 
+Khoản Apple và Google chi trả cho Bên A từ giao dịch mua trong ứng dụng cũng được chuyển về tài khoản này sau khi Bên A đã thiết lập nhận thanh toán trên App Store Connect và Google Play Console (đối chiếu ngày 12/11/2026; thỏa thuận Paid Apps và tài khoản ngân hàng trạng thái Active; phương thức nhận trên Google Play là chuyển khoản đến tài khoản kết thúc 335 đứng tên pháp nhân Bên A). Sau khi nhận được khoản chi trả đó, Bên A chi trả doanh thu hợp lệ cho Bên B theo quy trình đối soát, tạm giữ và chi trả tại Điều này. Việc thiết lập tài khoản nhận tiền không phải chứng từ đã phát sinh khoản chi trả từ Apple/Google và không thay thế bảng đối soát, chứng từ chi trả thực tế.
+
 2. Quy trình đối soát:
 
 a) Người mua nạp ví bằng VietQR vào tài khoản VPBank số 395951335 của Bên A, hoặc bằng IAP trong ứng dụng. Đơn hàng được trả từ số dư ví.
