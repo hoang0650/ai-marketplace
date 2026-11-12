@@ -13,6 +13,8 @@
 
 ---
 
+![Hình 1. Trang chính sách chương trình tiếp thị liên kết](assets/legal/img/affiliate-chinh-sach.png)
+
 ## Điều 1. Phạm vi và khái niệm
 
 1. Chính sách này điều chỉnh Chương trình Affiliate (tiếp thị liên kết) trên AI Markets, là một phần không tách rời của Quy chế hoạt động sàn, Chính sách người bán và Thỏa thuận cung cấp dịch vụ cho người bán.
@@ -27,20 +29,20 @@
 2. **Người bán** tự đặt tỷ lệ hoa hồng và chịu khoản đó từ doanh thu của mình.
 3. **Người giới thiệu** là một tư cách của tài khoản người dùng. Không có tuyến dưới, không có khoản nộp tiền để tham gia, không có hoa hồng tuyển dụng.
 4. **Người mua** mở liên kết và thanh toán đơn bằng số dư trên nền tảng.
-5. **Tổ chức thanh toán:** AI Markets đang làm việc trực tiếp với GPay để hoàn tất hợp đồng cung ứng dịch vụ cho dự án. Hợp đồng cho AI Markets chưa hoàn tất. Quan hệ sẵn có không chứng minh hợp đồng này đã ký hoặc phạm vi phép đã bao trùm mô hình. Tài khoản ngân hàng của Công ty đang nhận VietQR không phải giải pháp đã được cấp phép.
+5. **Sổ hoa hồng** tách khỏi doanh thu người bán và khỏi số dư trả trước của người mua. Số dư trả trước không được rút hoặc chuyển. Hoa hồng được chi bằng VND vào tài khoản đứng tên người giới thiệu.
 
 ## Điều 1B. Quy trình đang chạy trên hệ thống
 
 Các bước dưới đây mô tả mã và hợp đồng API hiện có. Không thêm cửa sổ, mức phí hay nhà cung cấp ngoài những gì hệ thống đang làm.
 
-1. Người dùng đăng ký tài khoản thường. Không có bước đặt cọc.
-2. Luật 122/2025/QH15 yêu cầu xác thực điện tử trước khi cấp mã mới, từ 01/07/2026. Xác thực điện tử chưa được triển khai. Mã mới không được mô tả là đã đủ điều kiện luật. Mã đã có, nếu hồ sơ nội bộ đã duyệt, vẫn có thể tạo liên kết; điều đó không phải kết luận mã cũ đã hợp pháp. Biểu mẫu eKYC và rà soát mã số thuế không phải xác thực điện tử. Quy trình đủ mười sáu bước nằm tại [Quy trình tiếp thị liên kết](/legal/quy-trinh-tiep-thi-lien-ket).
+1. Người dùng đăng ký và chọn tư cách Người tiếp thị liên kết, rồi chấp nhận chính sách này. Đăng ký không tự duyệt eKYC, không cấp mã và không duyệt chi trả. Không có bước đặt cọc.
+2. Trước khi có mã, liên kết hoặc chi trả, người tiếp thị liên kết phải có biểu mẫu eKYC được duyệt và Cam kết Mẫu 08/CK-TNCN khi chương trình yêu cầu tệp đó. Hai bước này không được duyệt sẵn lúc đăng ký. Luật 122/2025/QH15 yêu cầu xác thực điện tử trước khi cấp mã mới, từ 01/07/2026. Xác thực điện tử chưa được triển khai. Mã mới không được mô tả là đã đủ điều kiện luật. Mã đã có, nếu hồ sơ nội bộ đã duyệt, vẫn có thể tạo liên kết; điều đó không phải kết luận mã cũ đã hợp pháp. Biểu mẫu eKYC và bản cam kết không phải xác thực điện tử. Quy trình đủ mười sáu bước nằm tại [Quy trình tiếp thị liên kết](29-quy-trinh-tiep-thi-lien-ket.md).
 3. Rà soát mã số thuế của người bán là hồ sơ người bán, không cấp mã giới thiệu và không sửa trạng thái định danh điện tử.
 4. Người bán đặt tỷ lệ 0–25%. Mặc định 0% là không tham gia. Sản phẩm “Bán bởi sàn” không lấy tỷ lệ bên thứ ba.
 5. Người mua mở liên kết dạng đường dẫn sản phẩm hoặc gian hàng kèm `ref`. Ghi nhận là lượt nhấp cuối. Số ngày lấy từ cấu hình `attributionDays`, giá trị mã đang dùng khi không đặt biến là 30 ngày. Lượt nhấp lặp của cùng thiết bị trong 30 phút được tính một lần.
 6. Đơn được ghi hoa hồng khi không phải tự giới thiệu, tỷ lệ lớn hơn 0, lượt nhấp còn trong cửa sổ, và tài khoản người giới thiệu còn hoạt động với hồ sơ nội bộ ở trạng thái verified tại thời điểm ghi nhận.
 7. Hoa hồng ghi đủ lúc đơn hoàn tất, trạng thái `active`. Trong thời gian giữ hoặc khi đơn đang tranh chấp, số đó là đang giữ. Hết giữ, số còn lại là khả dụng. Hoàn hoặc hủy đảo theo tỷ lệ và có thể đưa dòng sang đã đảo.
-8. Yêu cầu chi trả gửi `POST /v1/wallet/withdraw` với tư cách affiliate và tạo bút toán rút đang chờ. Bút toán đó không phải lệnh ngân hàng đã thực hiện. Chi qua tổ chức được phép chưa mở vì hợp đồng GPay cho AI Markets chưa hoàn tất.
+8. Yêu cầu chi trả ghi một bút toán trên sổ hoa hồng. Không có mức chi trả tối thiểu thương mại. Sau đối soát và yêu cầu hợp lệ, Công ty chi bằng VND trong 03 ngày làm việc vào tài khoản đứng tên người giới thiệu. Nghĩa vụ thuế vẫn còn.
 9. Thuế không được trang này ấn 10% cho mọi người giới thiệu và không coi mẫu cam kết đã duyệt là miễn thuế. Khoản 2 Điều 50 Nghị định 253/2026/NĐ-CP chỉ thuộc nhóm thù lao cụ thể.
 10. Tài khoản người giới thiệu không còn hoạt động thì lượt nhấp mới không được ghi nhận. Hoa hồng hợp lệ không bị xóa chỉ vì tài khoản bị khóa. Gian lận bị thu hồi theo Điều 8.
 11. Mã giới thiệu và lượt nhấp là dữ liệu của người giới thiệu và người mua. Trang này không công bố hồ sơ thuế của người khác.
@@ -69,7 +71,7 @@ Các bước dưới đây mô tả mã và hợp đồng API hiện có. Không
 ## Điều 5. Ghi có, tạm giữ và rút tiền
 
 1. Hoa hồng được ghi có vào ví của người giới thiệu ngay khi đơn hàng hoàn tất và được **tạm giữ 48 giờ** như doanh thu của người bán; nếu đơn hàng phát sinh khiếu nại, khoản hoa hồng tiếp tục bị giữ đến khi khiếu nại được giải quyết.
-2. Sau thời gian tạm giữ, hoa hồng khả dụng được chi bằng VND về tài khoản đứng tên đúng người giới thiệu. Không có mức chi trả tối thiểu. Mọi số dư khả dụng lớn hơn 0 đều có thể được yêu cầu, trong đơn vị tiền của ví. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa.
+2. Sau thời gian tạm giữ 48 giờ và khi có yêu cầu hợp lệ, hoa hồng khả dụng được chi bằng VND về tài khoản đứng tên đúng người giới thiệu trong 03 ngày làm việc. Không có mức chi trả tối thiểu thương mại. Mọi số dư khả dụng lớn hơn 0 đều có thể được yêu cầu. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa. Việc tạm giữ không phải tài khoản escrow.
 3. Trang Affiliate hiển thị: liên kết, số lượt nhấp, số đơn, hoa hồng đang tạm giữ, hoa hồng khả dụng và hoa hồng bị thu hồi.
 
 ## Điều 6. Thuế thu nhập cá nhân

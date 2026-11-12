@@ -54,7 +54,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Đơn hàng thanh toán bằng số dư nội bộ. Website đang nạp bằng VietQR. AI Markets đang làm việc trực tiếp với GPay để hoàn tất hợp đồng; cổng chưa mở.',
+    summary: 'Đơn hàng thanh toán bằng số dư nội bộ. Website nạp ví bằng VietQR vào VPBank 395951335. IAP chỉ nạp ví trong ứng dụng. Đối soát 48 giờ, chi trả trong 03 ngày làm việc.',
     group: 'commerce',
   },
   {

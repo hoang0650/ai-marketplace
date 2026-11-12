@@ -17,7 +17,6 @@ import { TPipe } from '../../i18n/t.pipe';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../i18n/currency.service';
 import { BankTopupComponent } from './bank-topup.component';
-import { GpayTopupComponent } from './gpay-topup.component';
 import { isIosAppShell } from './gpay-ui';
 import { buyerTopupWithdrawDecision } from './buyer-topup-withdraw';
 
@@ -40,7 +39,7 @@ const GPAY_POLL_MAX = 225;
 @Component({
   selector: 'app-wallet',
   standalone: true,
-  imports: [BankTopupComponent, GpayTopupComponent, CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
+  imports: [BankTopupComponent, CurrencyPipe, DatePipe, FormsModule, RouterLink, TPipe],
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.scss',
 })
@@ -98,12 +97,12 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly topupLabels = computed(() => {
     const lang = this.i18n.lang();
     if (lang === 'vi') {
-      return { vietqr: 'Chuyển khoản VietQR', vietqrDesc: 'Quét mã, admin xác nhận', gpay: 'GPay', gpayDesc: 'Cổng thanh toán, cộng ví khi GPay xác nhận' };
+      return { vietqr: 'Chuyển khoản VietQR', vietqrDesc: 'VPBank 395951335', gpay: '', gpayDesc: '' };
     }
     if (lang === 'zh') {
-      return { vietqr: 'VietQR 银行转账', vietqrDesc: '扫码转账，由我们确认', gpay: 'GPay', gpayDesc: '支付网关，GPay 确认后入账' };
+      return { vietqr: 'VietQR 银行转账', vietqrDesc: 'VPBank 395951335', gpay: '', gpayDesc: '' };
     }
-    return { vietqr: 'VietQR bank transfer', vietqrDesc: 'Scan & transfer, confirmed by us', gpay: 'GPay', gpayDesc: 'Payment gateway, credited when GPay confirms' };
+    return { vietqr: 'VietQR bank transfer', vietqrDesc: 'VPBank 395951335', gpay: '', gpayDesc: '' };
   });
 
   setTopupMethod(m: 'vietqr' | 'gpay'): void {

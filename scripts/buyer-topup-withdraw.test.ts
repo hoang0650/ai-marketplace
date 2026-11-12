@@ -54,14 +54,19 @@ test('admin review requires a role, a reason and a lookup attestation', () => {
   assert.equal(isSupplierTaxCode('012345678901', 'individual'), true);
 });
 
-test('published quy che names GPay only as a direct contract still being completed', () => {
+test('published quy che uses VietQR to VPBank and a manual tax lookup', () => {
   const body = readFileSync(new URL('../src/assets/legal/01-quy-che-hoat-dong-san-tmdt.md', import.meta.url), 'utf8');
-  assert.match(body, /đang làm việc trực tiếp với GPay/);
-  assert.match(body, /Hợp đồng cho AI Markets chưa hoàn tất/);
+  assert.equal(/GPay|gpay/.test(body), false);
+  assert.match(body, /VPBank số 395951335/);
+  assert.match(body, /https:\/\/tracuunnt\.gdt\.gov\.vn\/tcnnt\/mstdn\.jsp/);
+  assert.match(body, /không kích hoạt quyền bán/);
+  assert.match(body, /không phải chức năng tự động/);
+  assert.match(body, /01\/01\/2027/);
+  assert.match(body, /01\/07\/2026/);
+  assert.match(body, /Người tiếp thị liên kết/);
   assert.equal(body.includes('đối tác dự kiến'), false);
   assert.equal(body.includes('CẦN XÁC NHẬN'), false);
   assert.equal(/GP-NHNN|số giấy phép\s+\d/.test(body), false);
-  assert.equal(/cổng của GPay|khi kênh được bật/.test(body), false);
   assert.match(body, /Người mua thông thường không/);
   assert.equal(/đã tích hợp VNeID/.test(body), false);
 });

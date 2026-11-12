@@ -89,49 +89,10 @@
             }
           </div>
         } @else {
-          @if (gpayVisible) {
-            <div class="topup-switch" role="tablist">
-              <button type="button" role="tab" [class.on]="topupMethod() === 'vietqr'" [attr.aria-selected]="topupMethod() === 'vietqr'" (click)="setTopupMethod('vietqr'); $event.stopPropagation()">
-                <span class="topup-switch__icon topup-switch__icon--qr" aria-hidden="true">QR</span>
-                <span class="topup-switch__txt"><strong>{{ topupLabels().vietqr }}</strong><small>{{ topupLabels().vietqrDesc }}</small></span>
-              </button>
-              <button type="button" role="tab" [class.on]="topupMethod() === 'gpay'" [attr.aria-selected]="topupMethod() === 'gpay'" (click)="setTopupMethod('gpay'); $event.stopPropagation()">
-                <span class="topup-switch__icon topup-switch__icon--gpay" aria-hidden="true">G</span>
-                <span class="topup-switch__txt"><strong>{{ topupLabels().gpay }}</strong><small>{{ topupLabels().gpayDesc }}</small></span>
-              </button>
-            </div>
-          }
-          @switch (topupMethod()) {
-            @case ('gpay') {
-              @if (gpayVisible) {
-            <app-gpay-topup
-              [enabled]="gpayEnabled()"
-              [portalEnabled]="gpayPortalEnabled()"
-              [qrEnabled]="gpayQrEnabled()"
-              [busy]="gpayBusy()"
-              [polling]="gpayPolling()"
-              [qr]="gpayQr()"
-              [qrSrc]="gpayQrSrc()"
-              [quickAmounts]="gpayQuickAmounts()"
-              [vndPerUsd]="fx.vndPerUsd()"
-              [minVnd]="gpayMinTopupVnd()"
-              [amountVnd]="depositVnd"
-              (amountVndChange)="onTopupVnd($event)"
-              (checkout)="gpayCheckout()"
-              (createQr)="gpayCreateQr()"
-              (closeQr)="closeGpayQr()"
-            />
-              } @else {
             <app-bank-topup [initialVnd]="topupVnd" (vndChange)="onTopupVnd($event)" />
-              }
-            }
-            @default {
-            <app-bank-topup [initialVnd]="topupVnd" (vndChange)="onTopupVnd($event)" />
-            }
-          }
         }
 
-        <p class="hint">{{ 'wallet.gpay.pending' | t }}</p>
+        <p class="hint">{{ 'wallet.deposit.hint' | t }}</p>
 
         <article class="mini-card" style="margin-top: 1rem">
           <h3>{{ 'wallet.topupWithdraw.title' | t }}</h3>

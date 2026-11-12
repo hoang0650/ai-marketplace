@@ -2,7 +2,7 @@
 
 Bộ tài liệu pháp lý của sàn giao dịch TMĐT AI Markets (https://aimarkets.vn), do Công ty TNHH giải pháp công nghệ PHGroup (MST 3703279135) vận hành. Nội dung thống nhất với Đề án cung cấp dịch vụ sàn giao dịch TMĐT nộp Bộ Công Thương.
 
-**Phiên bản hiện hành:** 2.2 — công bố 05/11/2026, hiệu lực 05/12/2026; các nội dung bắt buộc theo pháp luật áp dụng từ thời điểm luật định. Chính sách thanh toán và đối soát là phiên bản 2.5 (08/11/2026): website đang nạp bằng VietQR vào tài khoản Công ty. AI Markets đang làm việc trực tiếp với GPay để hoàn tất hợp đồng cho dự án; hợp đồng chưa hoàn tất và cổng chưa mở. Lệnh rút số dư nạp đang tắt. Bảng thuế suất cố định không được dùng làm căn cứ công bố. Hoàn tiền là thủ tục riêng.
+**Phiên bản hiện hành:** 2.2 — công bố 05/11/2026, hiệu lực 05/12/2026; các nội dung bắt buộc theo pháp luật áp dụng từ thời điểm luật định. Chính sách thanh toán và đối soát là phiên bản 2.6 (12/11/2026): website nạp ví bằng VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Số dư trả trước của người mua không được rút hoặc chuyển. IAP chỉ dùng để nạp ví trong ứng dụng. Bảng thuế suất cố định không được dùng làm căn cứ công bố. Hoàn tiền là thủ tục riêng và không được hứa trả về đúng phương thức thanh toán ban đầu.
 
 ## Các tài liệu
 1. `01-quy-che-hoat-dong-san-tmdt.md` — Quy chế hoạt động

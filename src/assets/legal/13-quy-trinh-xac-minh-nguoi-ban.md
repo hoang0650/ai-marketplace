@@ -39,7 +39,11 @@ Trường hợp kinh doanh ngành, nghề có điều kiện, người bán bổ
 
 ## Điều 3. Thẩm định
 
-Quản trị viên kiểm tra: tính nhất quán giữa giấy tờ, mã số thuế và chủ tài khoản nhận tiền; đối chiếu mã số thuế với cơ sở dữ liệu của cơ quan thuế; quyền cung cấp; sản phẩm dự kiến; rủi ro tuân thủ.
+Sau khi người bán đăng ký và gửi hồ sơ, nhân sự của Công ty kiểm tra giấy tờ và tra cứu mã số thuế trên trang chính thức của Cục Thuế: https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp. Nếu mã số thuế khớp dữ liệu Cục Thuế, Công ty tiếp tục để ký hợp đồng dịch vụ thương mại điện tử. Nếu không khớp, Công ty từ chối hồ sơ và không kích hoạt quyền bán. Đây là thủ tục thủ công do nhân sự thực hiện, không phải chức năng tự động của sản phẩm. Công ty có hai nhân sự nội bộ kiêm nhiệm việc kiểm tra hồ sơ, tra cứu mã số thuế và theo dõi hợp đồng. Trang này không ghi tên từng người.
+
+Nhân sự cũng kiểm tra tính nhất quán giữa giấy tờ và chủ tài khoản nhận tiền, quyền cung cấp, sản phẩm dự kiến và rủi ro tuân thủ. Việc tra cứu mã số thuế không phải xác thực điện tử và không thay biểu mẫu eKYC. Mốc xác thực điện tử người bán vẫn là 01/01/2027 theo Nghị định 248/2026/NĐ-CP. Mốc xác thực điện tử người tiếp thị liên kết vẫn là 01/07/2026 theo Luật Thương mại điện tử số 122/2025/QH15.
+
+![Hình 1. Trang tra cứu mã số thuế của Cục Thuế](assets/legal/img/thue-tra-cuu-mst-cuc-thue.png)
 
 ## Điều 4. Kết quả
 
@@ -74,10 +78,10 @@ Biểu mẫu có hai lựa chọn ở mục “Loại hồ sơ”.
 
 Nút gửi là “Gửi xác minh”. Sau khi gửi, nếu hồ sơ chưa được duyệt, trang ghi “Hồ sơ đang chờ sàn duyệt”. Ảnh và tệp PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán, không phải nhãn xác thực điện tử, và không phải bằng chứng đã chi trả về ngân hàng. Tài khoản nhận tiền là bước riêng, chỉ dùng cho doanh thu người bán hoặc hoa hồng affiliate đã đủ điều kiện.
 
-Ba ảnh ngày 07/11/2026 dưới đây là đúng biểu mẫu đó. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ, tên và các trường còn lại giữ như ảnh đã duyệt. Ô tệp không phải giấy chứng nhận đã được kiểm chứng.
+Ba ảnh ngày 07/11/2026 dưới đây (Hình 2, Hình 3 và Hình 4) là đúng biểu mẫu đó. Trang tra cứu mã số thuế là Hình 1. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ, tên và các trường còn lại giữ như ảnh đã duyệt. Ô tệp không phải giấy chứng nhận đã được kiểm chứng.
 
-![Hình 1. Biểu mẫu xác minh người bán cá nhân](assets/legal/img/v7-k01-ho-so-ca-nhan.png)
+![Hình 2. Biểu mẫu xác minh người bán cá nhân](assets/legal/img/v7-k01-ho-so-ca-nhan.png)
 
-![Hình 2. Biểu mẫu thông tin người bán tổ chức](assets/legal/img/v7-k02-ho-so-to-chuc.png)
+![Hình 3. Biểu mẫu thông tin người bán tổ chức](assets/legal/img/v7-k02-ho-so-to-chuc.png)
 
-![Hình 3. Tài liệu đại diện và ô đính kèm đăng ký doanh nghiệp](assets/legal/img/v7-k03-giay-to-dai-dien.png)
+![Hình 4. Tài liệu đại diện và ô đính kèm đăng ký doanh nghiệp](assets/legal/img/v7-k03-giay-to-dai-dien.png)

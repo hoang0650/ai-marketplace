@@ -47,11 +47,11 @@ Người mua được hoàn tiền (toàn bộ hoặc theo phần chưa sử d�
 1. Người mua gửi yêu cầu hoàn tiền hoặc khiếu nại tại trang đơn hàng hoặc https://aimarkets.vn/complaints/new.
 2. Nền tảng xác nhận tiếp nhận trong **24 giờ**, xác minh đơn hàng, thanh toán, mức sử dụng; lấy ý kiến người bán nếu cần.
 3. Nền tảng ra quyết định trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ, theo [Chính sách khiếu nại và tranh chấp](07-chinh-sach-khieu-nai-tranh-chap.md).
-4. Khi được chấp thuận, khoản hoàn hiện được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Đây là thủ tục hoàn tiền, khác với lệnh rút số dư nạp VietQR. Việc trả về ngân hàng hoặc kênh gốc khác, kèm mã theo dõi của đơn vị thanh toán, chưa có quy trình đã kiểm chứng. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
+4. Khi được chấp thuận, khoản hoàn được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Đây là thủ tục hoàn tiền, khác với quy tắc số dư trả trước không được rút hoặc chuyển. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
 
 ## Điều 6. Nơi nhận tiền hoàn
 
-Người mua giữ quyền gửi yêu cầu hoàn và quyền được xem xét. Kết quả chấp thuận hiện ghi có vào tín dụng dịch vụ dùng được trên sàn. Trả về đúng nguồn thanh toán ban đầu chưa có quy trình đã kiểm chứng; khoản ghi có này không được mô tả như khoản đã hoàn về ngân hàng. Không thu phí xử lý hoàn khi lỗi thuộc người bán hoặc nền tảng. Phần dịch vụ đã dùng chỉ không hoàn trong phạm vi pháp luật cho phép. Xem [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
+Người mua giữ quyền gửi yêu cầu hoàn và quyền được xem xét. Kết quả chấp thuận ghi có vào tín dụng dịch vụ dùng được trên sàn. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu và không mô tả khoản ghi có như khoản đã hoàn về ngân hàng. Không thu phí xử lý hoàn khi lỗi thuộc người bán hoặc nền tảng. Phần dịch vụ đã dùng chỉ không hoàn trong phạm vi pháp luật cho phép. Xem [Chính sách thanh toán](05-chinh-sach-thanh-toan-doi-soat.md).
 
 ## Điều 7. Chấm dứt dịch vụ
 
