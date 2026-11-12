@@ -11,6 +11,56 @@ function read(name: string): string {
   return readFileSync(join(legalDir, name), 'utf8');
 }
 
+function captionsOf(body: string): string[] {
+  return [...body.matchAll(/^!\[([^\]]*)\]\((assets\/legal\/img\/[^)]+)\)/gm)].map((row) => row[1]);
+}
+
+const RULES_CAPTIONS = [
+  'Hình 1. Trang chủ',
+  'Hình 2. Màn hình đăng nhập',
+  'Hình 3. Danh sách sản phẩm trên sàn',
+  'Hình 4. Xem gói sản phẩm trước khi mua',
+  'Hình 5. Danh sách đơn hàng của người mua',
+  'Hình 6. Chi tiết đơn hàng',
+  'Hình 7. Kênh bán hàng khi hồ sơ còn nháp',
+  'Hình 8. Gian hàng nháp và xác thực bị từ chối',
+  'Hình 9. Biểu mẫu hồ sơ người bán trước khi gửi',
+  'Hình 10. Hồ sơ gian hàng ở trạng thái nháp',
+  'Hình 11. Danh sách sản phẩm trong kênh bán hàng',
+  'Hình 12. Danh sách đơn hàng trong kênh bán hàng',
+  'Hình 13. Giỏ hàng',
+  'Hình 14. Màn hình thanh toán khi chưa hoàn tất hồ sơ người bán',
+  'Hình 15. Màn hình rút doanh thu khi xác thực bị từ chối',
+  'Hình 16. Biểu mẫu xác minh người bán cá nhân',
+  'Hình 17. Biểu mẫu thông tin người bán tổ chức',
+  'Hình 18. Tài liệu đại diện và ô đính kèm đăng ký doanh nghiệp',
+  'Hình 19. Danh sách yêu cầu khiếu nại',
+  'Hình 20. Biểu mẫu gửi khiếu nại',
+  'Hình 21. Trang khiếu nại của người bán',
+  'Hình 22. Trung tâm pháp lý – bảng chính sách',
+];
+
+const GUIDE_CAPTIONS = [
+  'Hình 1. Biểu mẫu xác minh người bán cá nhân',
+  'Hình 2. Biểu mẫu thông tin người bán tổ chức',
+  'Hình 3. Tài liệu đại diện và ô đính kèm đăng ký doanh nghiệp',
+];
+
+test('public legal figure captions restart at 1 and omit internal codes', () => {
+  const banned = /Nguồn|aimarkets\.vn|Asia\/Bangkok|không chứng minh|theo yêu cầu chủ tài khoản|manifest|qc-\d+|\b(?:V|P|B|S|T|K)\d{2}\b|cccd|\d{9,}/i;
+  for (const [file, expected] of [
+    ['01-quy-che-hoat-dong-san-tmdt.md', RULES_CAPTIONS],
+    ['13-quy-trinh-xac-minh-nguoi-ban.md', GUIDE_CAPTIONS],
+  ] as const) {
+    const captions = captionsOf(read(file));
+    assert.deepEqual(captions, [...expected], file);
+    captions.forEach((caption, index) => {
+      assert.match(caption, new RegExp(`^Hình ${index + 1}\\. .+`), caption);
+      assert.equal(banned.test(caption), false, `${file}: ${caption}`);
+    });
+  }
+});
+
 test('seller eKYC guide matches the individual and organization form', () => {
   const guide = read('13-quy-trinh-xac-minh-nguoi-ban.md');
   const rules = read('01-quy-che-hoat-dong-san-tmdt.md');
@@ -34,6 +84,11 @@ test('seller eKYC guide matches the individual and organization form', () => {
     assert.equal(/cccd/i.test(caption), false, caption);
     assert.equal(/\d{9,}/.test(caption), false, caption);
   }
+  assert.deepEqual(
+    figures.map((row) => row[1]),
+    RULES_CAPTIONS,
+  );
+  assert.deepEqual(captionsOf(guide), GUIDE_CAPTIONS);
   for (const file of ['01-quy-che-hoat-dong-san-tmdt.md', '13-quy-trinh-xac-minh-nguoi-ban.md', '03-chinh-sach-nguoi-ban.md', '04-chinh-sach-nguoi-mua.md']) {
     const body = read(file);
     assert.equal(/assets\/legal\/img\/(?:qc-|h\d)/.test(body), false, file);
