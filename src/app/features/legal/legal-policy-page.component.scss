@@ -415,6 +415,24 @@
   }
 }
 
+:host ::ng-deep .legal-doc__body .legal-signatory {
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: min(22rem, 100%);
+  margin: 2rem 0 0.25rem auto;
+  text-align: right;
+  overflow-wrap: break-word;
+
+  p {
+    margin: 0 0 0.35rem;
+    max-width: none;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
 :host ::ng-deep .legal-doc__body figure.legal-fig {
   margin: 1.25rem auto;
   max-width: 100%;

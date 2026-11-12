@@ -1323,6 +1323,6 @@ Mọi thắc mắc, khiếu nại, yêu cầu hỗ trợ hoặc pháp lý xin vu
 
 (Ký, ghi rõ họ tên và đóng dấu)
 
-……………………………………
+Phan Huy Hoàng
 
-Chức vụ: ……………………
+Chức vụ: Giám đốc
