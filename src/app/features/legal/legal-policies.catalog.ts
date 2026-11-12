@@ -47,14 +47,14 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-nguoi-mua',
     file: '04-chinh-sach-nguoi-mua.md',
     title: 'Chính sách người mua',
-    summary: 'Quyền, nghĩa vụ người mua. Lệnh rút số dư nạp đang tắt. Hoàn tiền là thủ tục riêng.',
+    summary: 'Quyền, nghĩa vụ người mua. Số dư trả trước không được rút thành tiền và không được chuyển nhượng. Hoàn tiền hợp pháp theo chính sách hoàn tiền; không cam kết hoàn về phương thức thanh toán ban đầu.',
     group: 'commerce',
   },
   {
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Đơn hàng thanh toán bằng số dư nội bộ. Website nạp ví bằng VietQR vào VPBank 395951335. IAP chỉ nạp ví trong ứng dụng. Đối soát 48 giờ, chi trả trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ).',
+    summary: 'Đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán. Số dư trả trước không được rút thành tiền, không được chuyển nhượng. Chi trả người bán và hoa hồng affiliate sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ).',
     group: 'commerce',
   },
   {
@@ -68,7 +68,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-khieu-nai-tranh-chap',
     file: '07-chinh-sach-khieu-nai-tranh-chap.md',
     title: 'Khiếu nại và tranh chấp',
-    summary: 'Tiếp nhận 24 giờ, xác minh 01 ngày làm việc, người bán phản hồi 02 ngày làm việc, quyết định 07 ngày làm việc; khiếu nại lại trong 07 ngày.',
+    summary: 'Tiếp nhận trong 02 ngày làm việc, xác minh 01 ngày làm việc, người bán phản hồi 02 ngày làm việc, quyết định 07 ngày làm việc; khiếu nại lại trong 07 ngày.',
     group: 'commerce',
   },
   {

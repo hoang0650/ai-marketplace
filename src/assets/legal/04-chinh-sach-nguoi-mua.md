@@ -27,12 +27,12 @@
 - Sử dụng sản phẩm đúng giấy phép và [Chính sách sử dụng chấp nhận được](10-chinh-sach-su-dung-chap-nhan-duoc.md);
 - Không chia sẻ khóa API, tài khoản trái phép; không dịch ngược nhằm vượt qua cơ chế bảo mật; không lạm dụng GPU, API;
 - Duy trì đủ số dư ví với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
-- Người mua thông thường không phải nộp CCCD hoặc hồ sơ eKYC của người bán để đặt hàng, nạp tín dụng, sử dụng dịch vụ, gửi khiếu nại hoặc yêu cầu hoàn tiền. Đăng nhập và bảo mật tài khoản vẫn bắt buộc. Một yêu cầu hoàn cụ thể có thể cần chứng minh chủ giao dịch khi kênh thanh toán yêu cầu việc đó. Khoản hoàn đã được duyệt ghi có vào tín dụng dịch vụ dùng được trên sàn. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu. Số dư trả trước không được rút và không được chuyển. Số dư đã có được giữ, kể cả khoản nạp qua Apple hoặc Google.
+- Người mua thông thường không phải nộp CCCD hoặc hồ sơ eKYC của người bán để đặt hàng, nạp tín dụng, sử dụng dịch vụ, gửi khiếu nại hoặc yêu cầu hoàn tiền. Đăng nhập và bảo mật tài khoản vẫn bắt buộc. Một yêu cầu hoàn cụ thể có thể cần chứng minh chủ giao dịch khi kênh thanh toán yêu cầu việc đó. Khoản hoàn đã được duyệt ghi có vào tín dụng dịch vụ dùng được trên sàn. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu. Số dư trả trước không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác. Số dư đã có được giữ, kể cả khoản nạp qua Apple hoặc Google.
 
 ## Điều 3. Đặt hàng và thanh toán
 
 1. Người mua có thể lưu sản phẩm vào giỏ hàng, danh sách yêu thích (đồng bộ giữa website và ứng dụng), kiểm tra tổng giá rồi xác nhận thanh toán.
-2. Đơn hàng đủ điều kiện thanh toán bằng số dư AI Markets. Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Trên ứng dụng, nạp ví chỉ qua IAP. Số dư trả trước không được rút, không được chuyển và không sinh lãi. Yêu cầu hoàn tiền hợp pháp là thủ tục khác.
+2. Đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán. Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Trên ứng dụng, nạp ví chỉ qua IAP. Số dư trả trước của người mua không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác và không sinh lãi. Hoàn tiền hợp pháp theo chính sách hoàn tiền; trang này không cam kết hoàn về phương thức thanh toán ban đầu.
 3. Giá thanh toán, hóa đơn và đối soát tại Việt Nam ghi bằng VND. Giao diện hiện vẫn quy đổi USD hoặc CNY. Nhãn tham khảo không được trang này ghi là ngoại lệ của Điều 3 Thông tư 32/2013/TT-NHNN. Số tiền VND tại bước xác nhận là số tiền giao dịch đang dùng.
 4. Người mua giữ quyền yêu cầu hoàn tiền và quyền được xem xét theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md). Khoản được duyệt ghi có vào tín dụng dịch vụ dùng được trên sàn. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu.
 

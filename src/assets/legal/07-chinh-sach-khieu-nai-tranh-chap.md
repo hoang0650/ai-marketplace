@@ -36,7 +36,7 @@ Không gửi mật khẩu, khóa API, khóa SSH hoặc dữ liệu bí mật kh�
 
 | Bước | Nội dung | Thời hạn |
 |---|---|---|
-| 1. Tiếp nhận | Xác nhận đã nhận hồ sơ, cấp mã | Trong **24 giờ** |
+| 1. Tiếp nhận | Xác nhận đã nhận hồ sơ, cấp mã | Trong **02 ngày làm việc** |
 | 2. Xác minh, phân loại | Kiểm tra đơn hàng, thanh toán, mức sử dụng; yêu cầu bổ sung nếu thiếu | Trong 01 ngày làm việc |
 | 3. Người bán phản hồi | Với khiếu nại người mua – người bán | Trong **02 ngày làm việc** kể từ khi nền tảng yêu cầu |
 | 4. Xem xét, quyết định | Đánh giá bằng chứng; quyết định chấp nhận, từ chối hoặc hòa giải | Trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ |

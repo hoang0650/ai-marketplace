@@ -61,8 +61,8 @@ Nền tảng **không mua bán dữ liệu cá nhân**.
 
 Thông tin 123HOST tại Việt Nam và Hostinger tại Malaysia trong hồ sơ nguồn chưa phải báo cáo kiểm chứng hạ tầng và không phải chứng nhận. Máy chủ web ở nước ngoài, GPU, API mô hình AI và truy cập quản trị xuyên biên giới có thể xử lý dữ liệu cá nhân ngoài Việt Nam dù cơ sở dữ liệu gốc được mô tả là đặt tại Việt Nam và có đường kết nối riêng. Trang này không khẳng định dữ liệu không ra khỏi Việt Nam.
 
-- **Máy chủ Web/API:** VPS Hostinger International Ltd., IP 72.62.72.165, đặt tại Kuala Lumpur, Malaysia; quản trị và kết nối dữ liệu qua mạng riêng Tailscale.
-- **Máy chủ dữ liệu/cơ sở dữ liệu:** NVMe VPS của Công ty TNHH Lưu Trữ Số (123HOST), IP 103.97.127.39, đặt tại TP. Hồ Chí Minh, Việt Nam. Toàn bộ cơ sở dữ liệu hệ thống, thông tin người dùng và dữ liệu cá nhân được lưu trữ thường xuyên, tập trung tại đây.
+- **Máy chủ Web/API:** VPS Hostinger International Ltd., đặt tại Kuala Lumpur, Malaysia; quản trị và kết nối dữ liệu qua mạng riêng Tailscale.
+- **Máy chủ dữ liệu/cơ sở dữ liệu:** NVMe VPS của Công ty TNHH Lưu Trữ Số (123HOST), đặt tại TP. Hồ Chí Minh, Việt Nam. Toàn bộ cơ sở dữ liệu hệ thống, thông tin người dùng và dữ liệu cá nhân được lưu trữ thường xuyên, tập trung tại đây.
 - **Hạ tầng GPU/API AI:** nhà cung cấp suy luận có thể ở ngoài Việt Nam và chỉ nên nhận dữ liệu cần cho yêu cầu. Bản đồ dữ liệu, quốc gia hoặc region của từng nhà cung cấp, bên nhận, mục đích, thời hạn, hợp đồng xử lý dữ liệu và hồ sơ đánh giá tác động chưa được đính kèm trang này.
 
 Việc truy cập/xử lý dữ liệu từ máy chủ đặt ngoài Việt Nam qua Tailscale **vẫn có thể là xử lý xuyên biên giới**. Nội dung gửi tới nhà cung cấp mô hình AI/GPU ở nước ngoài chỉ được chuyển trong phạm vi cần thiết, theo lựa chọn và cơ sở pháp lý phù hợp. Công ty lập/cập nhật hồ sơ đánh giá tác động xử lý và chuyển dữ liệu ra nước ngoài khi pháp luật yêu cầu, ghi rõ quốc gia, nhà cung cấp, loại dữ liệu, mục đích, thời hạn, biện pháp bảo vệ và cơ chế xóa. Tailscale giảm bề mặt tấn công nhưng không phải cam kết “an toàn tuyệt đối”.

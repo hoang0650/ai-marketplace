@@ -10,7 +10,7 @@ Tự gia hạn chỉ thực hiện khi đã có thông báo rõ và chấp thu�
 
 Dịch vụ có thể bị tạm ngừng khi hết thời hạn, không đủ tín dụng dịch vụ, có dấu hiệu gian lận, vi phạm chính sách sử dụng, phát sinh rủi ro an toàn thông tin hoặc theo yêu cầu của cơ quan có thẩm quyền. Nền tảng thông báo lý do và phương thức khắc phục, trừ trường hợp pháp luật yêu cầu bảo mật.
 
-## Chấm dứt theo yêu cầu người dùng
+## Chấm dứt theo yêu cầu người dùng {#dieu-16}
 
 Người dùng dừng phiên GPU, tắt gia hạn hoặc gửi yêu cầu chấm dứt tại trang đơn, mục hỗ trợ hoặc support@aimarkets.vn. Yêu cầu được tiếp nhận trong 24 giờ. Với yêu cầu chấm dứt ngay, thời điểm thông báo hợp lệ là thời điểm chấm dứt, trừ khi một mốc khác đã được công bố và chấp thuận. Tắt gia hạn làm dừng kỳ kế tiếp, không xóa quyền của kỳ đã trả. Chỉ tính phí hợp lệ đến mốc chấm dứt. Giai đoạn chưa nghiệm thu không bị thu. Phần trả trước chưa dùng và đủ điều kiện hoàn được đối soát theo yêu cầu, không mặc định mất. Khoản được duyệt hiện ghi có vào tín dụng dịch vụ; trả về kênh gốc chưa có quy trình đã kiểm chứng.
 
