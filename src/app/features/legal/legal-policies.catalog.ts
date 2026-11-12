@@ -54,7 +54,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Đơn hàng thanh toán bằng số dư nội bộ. Website nạp ví bằng VietQR vào VPBank 395951335. IAP chỉ nạp ví trong ứng dụng. Đối soát 48 giờ, chi trả trong 03 ngày làm việc.',
+    summary: 'Đơn hàng thanh toán bằng số dư nội bộ. Website nạp ví bằng VietQR vào VPBank 395951335. IAP chỉ nạp ví trong ứng dụng. Đối soát 48 giờ, chi trả trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ).',
     group: 'commerce',
   },
   {

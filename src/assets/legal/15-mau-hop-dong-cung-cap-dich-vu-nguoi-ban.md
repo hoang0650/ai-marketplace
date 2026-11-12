@@ -107,7 +107,7 @@ c) Bảng đối soát của từng đơn ghi: mã đơn, doanh thu, phí, thu�
 
 d) Ba sổ được giữ riêng: doanh thu Bên B, hoa hồng tiếp thị liên kết, và số dư trả trước của Người mua. Số dư trả trước không được rút hoặc chuyển.
 
-e) Sau khi hết thời gian tạm giữ và có yêu cầu chi trả hợp lệ, Bên A chi bằng VND vào tài khoản đứng tên đúng người nhận trong 03 ngày làm việc. Khoản đang tranh chấp hoặc chưa đủ hồ sơ không nằm trong thời hạn này.
+e) Sau khi hết thời gian tạm giữ và có yêu cầu chi trả hợp lệ, Bên A chi bằng VND vào tài khoản đứng tên đúng người nhận trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Khoản đang tranh chấp hoặc chưa đủ hồ sơ không nằm trong thời hạn này.
 
 f) Hợp đồng này là hợp đồng điện tử giao kết trên hệ thống. Bản ghi giao kết có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP.
 

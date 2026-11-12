@@ -29,7 +29,7 @@ Công ty đã thiết lập nhận khoản chi trả từ Apple và Google về 
 
 ![Hình 4. Google Play Console – phương thức thanh toán chính, chuyển khoản đến tài khoản …335 (12/11/2026)](assets/legal/img/04-google-play-phuong-thuc-thanh-toan.png)
 
-Sau khi Công ty nhận được khoản Apple hoặc Google chi trả vào tài khoản nêu trên, Công ty thực hiện chi trả doanh thu hợp lệ cho người bán và hoa hồng affiliate theo Hợp đồng dịch vụ thương mại điện tử và quy trình đối soát tại Điều 7 (đối soát, tạm giữ 48 giờ, chi trả bằng VND trong 03 ngày làm việc). IAP vẫn chỉ là kênh nạp số dư nội bộ trong ứng dụng, không phải kênh thanh toán chung cho sản phẩm của người bán bên thứ ba. Việc đã thiết lập tài khoản nhận tiền không thay thế chứng từ đối soát và chứng từ chi trả thực tế.
+Sau khi Công ty nhận được khoản Apple hoặc Google chi trả vào tài khoản nêu trên, Công ty thực hiện chi trả doanh thu hợp lệ cho người bán và hoa hồng affiliate theo Hợp đồng dịch vụ thương mại điện tử và quy trình đối soát tại Điều 7 (đối soát, tạm giữ 48 giờ, chi trả bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ)). IAP vẫn chỉ là kênh nạp số dư nội bộ trong ứng dụng, không phải kênh thanh toán chung cho sản phẩm của người bán bên thứ ba. Việc đã thiết lập tài khoản nhận tiền không thay thế chứng từ đối soát và chứng từ chi trả thực tế.
 
 Số dư trả trước của người mua không được rút tiền mặt và không được chuyển cho người khác. Số dư đã ghi có không vì vậy mà bị xóa. Yêu cầu hoàn tiền hợp pháp vẫn được tiếp nhận; khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết được ghi sổ riêng và chi trả riêng.
 
@@ -73,7 +73,7 @@ Trên ứng dụng, Apple In-App Purchase và Google Play Billing chỉ áp dụ
 2. Đơn hàng được thanh toán từ số dư ví. IAP không dùng để trả thẳng đơn hàng.
 3. Khi đơn hoàn tất, khoản phải trả người bán và hoa hồng tiếp thị liên kết, nếu có, được tạm giữ 48 giờ. Thời gian này là tạm giữ đối soát, không phải tài khoản escrow hay bảo lãnh ngân hàng. Chỉ giữ tiếp phần đang tranh chấp, và phải báo lý do cùng thời hạn rà soát.
 4. Bảng đối soát của từng đơn ghi: mã đơn, doanh thu, phí, thuế, hủy hoặc hoàn, tạm giữ, và thực nhận.
-5. Sau khi hết thời gian tạm giữ và có yêu cầu chi trả hợp lệ, Công ty chi bằng VND vào tài khoản đứng tên đúng người bán hoặc người tiếp thị liên kết trong 03 ngày làm việc. Khoản đang tranh chấp hoặc chưa đủ hồ sơ không nằm trong thời hạn này. Không có mức chi trả tối thiểu thương mại đối với hoa hồng.
+5. Sau khi hết thời gian tạm giữ và có yêu cầu chi trả hợp lệ, Công ty chi bằng VND vào tài khoản đứng tên đúng người bán hoặc người tiếp thị liên kết trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Khoản đang tranh chấp hoặc chưa đủ hồ sơ không nằm trong thời hạn này. Không có mức chi trả tối thiểu thương mại đối với hoa hồng.
 6. Ba sổ được giữ riêng: doanh thu người bán, hoa hồng tiếp thị liên kết, và số dư trả trước của người mua. Số dư trả trước không được rút tiền mặt và không được chuyển cho người dùng khác.
 7. Hợp đồng cung cấp dịch vụ giao kết trên hệ thống là hợp đồng điện tử. Bản ghi giao kết có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP.
 
