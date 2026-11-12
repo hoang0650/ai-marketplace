@@ -19,7 +19,7 @@ Nội dung dưới đây là các điều khoản của mẫu Hợp đồng dị
 
 - Sàn AI Markets (Nền tảng): sàn giao dịch thương mại điện tử tại https://aimarkets.vn và ứng dụng di động “AI Markets” (iOS, Android) do Bên A sở hữu, vận hành.
 - Quy chế: Quy chế hoạt động sàn giao dịch thương mại điện tử AI Markets (bản hợp nhất các chính sách của Nền tảng) được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal), kể cả các sửa đổi, bổ sung được thông báo theo Điều 17.
-- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; thanh toán đơn hàng bằng số dư ví trên Nền tảng. Số dư không được chuyển nhượng. Lệnh rút số dư nạp đang tắt; số dư đã có được giữ. Hoàn tiền đơn hàng là thủ tục khác.
+- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; thanh toán đơn hàng bằng số dư ví trên Nền tảng. Số dư trả trước không được rút và không được chuyển. Số dư đã có được giữ. Yêu cầu hoàn hợp pháp là thủ tục khác; Hợp đồng không hứa hoàn về đúng phương thức thanh toán ban đầu.
 - Sản phẩm: hàng hóa số, dịch vụ trực tuyến do Bên B đăng bán, gắn nhãn “Bán bởi Seller – tên cửa hàng”, phân biệt với sản phẩm “Bán bởi sàn” do Bên A trực tiếp cung cấp.
 - Ví AI Markets (Ví): số dư của người dùng trên Nền tảng, là phương thức duy nhất để thanh toán đơn hàng.
 - Kênh người bán: khu vực quản lý dành cho Bên B (hồ sơ cửa hàng, xác minh, sản phẩm, đơn hàng, khiếu nại, mã giảm giá, thanh toán, rút tiền, sổ cái).
@@ -49,9 +49,9 @@ c) Doanh nghiệp, tổ chức: tên, mã số thuế, địa chỉ; Giấy ch�
 
 d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngành, nghề kinh doanh có điều kiện (nếu có).
 
-3. Bên B phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán trước khi hồ sơ được phê duyệt và trước khi rút tiền; khi chưa xác minh danh tính, chức năng rút tiền bị khóa. Rà soát mã số thuế đã khai trên trang tra cứu công khai là bước riêng và không thay eKYC. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán thực hiện qua VNeID hoặc dịch vụ xác thực điện tử được cấp phép theo quy định.
+3. Bên B phải hoàn tất xác minh danh tính (eKYC) tại Kênh người bán trước khi hồ sơ được phê duyệt và trước khi chi trả doanh thu; khi chưa xác minh danh tính, chức năng chi trả bị khóa. Từ ngày 01/01/2027, việc định danh, xác thực điện tử của người bán được rà soát theo Nghị định 248/2026/NĐ-CP. Hợp đồng này không khẳng định VNeID đã được tích hợp.
 
-4. Bên A thẩm định tính nhất quán giữa giấy tờ, mã số thuế và chủ tài khoản nhận tiền; đối chiếu mã số thuế với cơ sở dữ liệu của cơ quan thuế; quyền cung cấp; sản phẩm dự kiến; rủi ro tuân thủ. Hồ sơ được xử lý theo trình tự: Chờ xử lý → Yêu cầu bổ sung (nếu thiếu) → Đang thẩm định → Đã xác minh; hoặc Từ chối, Tạm ngừng, Chấm dứt.
+4. Sau khi Bên B đăng ký và gửi hồ sơ, nhân sự của Bên A kiểm tra giấy tờ và tra cứu mã số thuế trên trang chính thức của Cục Thuế tại https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp. Nếu mã số thuế khớp dữ liệu Cục Thuế, hai bên tiếp tục ký Hợp đồng dịch vụ thương mại điện tử. Nếu không khớp, Bên A từ chối hồ sơ và không kích hoạt quyền bán. Đây là thủ tục thủ công của nhân sự Bên A, không phải chức năng tự động trên sản phẩm. Bên A có hai nhân sự nội bộ kiêm nhiệm việc này; Hợp đồng không ghi tên từng người. Nhân sự cũng kiểm tra tính nhất quán giữa giấy tờ và chủ tài khoản nhận tiền, quyền cung cấp, sản phẩm dự kiến và rủi ro tuân thủ. Việc tra cứu mã số thuế không thay eKYC. Hồ sơ được xử lý theo trình tự: Chờ xử lý → Yêu cầu bổ sung (nếu thiếu) → Đang thẩm định → Đã xác minh; hoặc Từ chối, Tạm ngừng, Chấm dứt.
 
 5. Bên A có thể yêu cầu xác minh lại khi Bên B thay đổi thông tin pháp lý, chủ thể hoặc tài khoản nhận tiền; có dấu hiệu gian lận; có khiếu nại nghiêm trọng; thay đổi sản phẩm, mức độ rủi ro. Bên B có nghĩa vụ cập nhật thông tin khi có thay đổi.
 
@@ -79,7 +79,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 6. Thanh toán, phí dịch vụ và thuế
 
-1. Mọi đơn hàng được Người mua thanh toán bằng số dư dịch vụ AI Markets. Website đang nạp ví bằng chuyển khoản VietQR vào tài khoản ngân hàng của Bên A. Tài khoản đó không phải bằng chứng một tổ chức được cấp phép đang nhận, giữ và chi. AI Markets đang làm việc trực tiếp với GPay (Công ty Cổ phần Thanh toán G) để hoàn tất hợp đồng cung ứng dịch vụ cho dự án. Hợp đồng cho AI Markets chưa hoàn tất. Quan hệ sẵn có không chứng minh hợp đồng này đã ký hoặc phạm vi phép đã bao trùm mô hình. Cổng GPay chưa mở. Không ghi số giấy phép. Nếu hợp đồng cuối và phép bao trùm việc nhận, giữ và chi, GPay thực hiện các chức năng đó. Lệnh rút số dư nạp đang tắt. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing. Ứng dụng iOS không dẫn Người mua sang thanh toán trên website. Bên A không lưu thông tin thẻ của Người mua.
+1. Mọi đơn hàng được Người mua thanh toán bằng số dư dịch vụ AI Markets. Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có khi nội dung chuyển khoản khớp giao dịch ghi có. Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase; trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn Người mua sang thanh toán trên website. Số dư trả trước của Người mua không được rút và không được chuyển. Yêu cầu hoàn hợp pháp vẫn được xem xét; Hợp đồng không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu Bên B và hoa hồng tiếp thị liên kết được ghi sổ riêng. Bên A không lưu thông tin thẻ của Người mua.
 
 2. Phí sàn: mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho Bên B), lưu cố định tại thời điểm giao kết từng đơn hàng.
 
@@ -95,15 +95,29 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 1. Doanh thu của Bên B = giá trị đơn sau giảm giá − phí sàn (20%) − thuế khấu trừ theo loại người bán (khoản 3 Điều 6) − hoa hồng affiliate (nếu có) − hoàn tiền/điều chỉnh. Số dư hiển thị của Bên B là số dư ròng.
 
-2. Với dịch vụ chuyên môn trọn gói, doanh thu được ghi nhận theo từng giai đoạn khi người mua nghiệm thu (mặc định 30% – 40% – 30% khi các bên không thỏa thuận mốc khác trước dự án); giai đoạn chưa nghiệm thu bị hủy khi người mua chấm dứt và không bị thu. Thời gian tạm giữ đối soát là 48 giờ từ khi giao dịch hoàn tất. Chỉ giữ tiếp khoản liên quan tranh chấp, và phải thông báo lý do cùng thời hạn rà soát. Việc tạm giữ không phải tài khoản escrow hoặc bảo lãnh ngân hàng.
+2. Quy trình đối soát:
 
-3. Bên B gửi yêu cầu chi trả về tài khoản ngân hàng đứng tên Bên B hoặc tổ chức người bán đại diện. Ảnh giấy tờ và duyệt hồ sơ nội bộ không đồng nghĩa đã xác thực điện tử danh tính. Chi trả bằng VND vào tài khoản đúng chủ thể trong 03 ngày làm việc, tính từ thời điểm muộn hơn giữa lúc hết thời gian tạm giữ và lúc nhận yêu cầu hợp lệ. Khoản đang tranh chấp hoặc chưa đủ điều kiện không nằm trong thời hạn này.
+a) Người mua nạp ví bằng VietQR vào tài khoản VPBank số 395951335 của Bên A, hoặc bằng IAP trong ứng dụng. Đơn hàng được trả từ số dư ví.
 
-4. Bên A có quyền tạm dừng chi trả khi có dấu hiệu gian lận, yêu cầu của cơ quan có thẩm quyền hoặc khoản hoàn tiền/bồi hoàn chưa được bù trừ. Số dư của Bên B là khoản phải trả theo đối soát, không phải tiền gửi.
+b) Khi giao dịch hoàn tất, Bên A tạm giữ khoản phải trả Bên B và hoa hồng tiếp thị liên kết, nếu có, trong 48 giờ. Việc tạm giữ không phải tài khoản escrow hay bảo lãnh ngân hàng. Chỉ giữ tiếp phần đang tranh chấp, và phải báo lý do cùng thời hạn rà soát.
 
-5. Bên B theo dõi doanh thu, số tạm giữ, số khả dụng, thuế đã khấu trừ và lịch sử đối soát tại Kênh người bán (sổ cái).
+c) Bảng đối soát của từng đơn ghi: mã đơn, doanh thu, phí, thuế, hủy hoặc hoàn, tạm giữ, và thực nhận.
 
-6. Hai bên không được thỏa thuận thanh toán ngoài Nền tảng cho giao dịch phát sinh trên Nền tảng.
+d) Ba sổ được giữ riêng: doanh thu Bên B, hoa hồng tiếp thị liên kết, và số dư trả trước của Người mua. Số dư trả trước không được rút hoặc chuyển.
+
+e) Sau khi hết thời gian tạm giữ và có yêu cầu chi trả hợp lệ, Bên A chi bằng VND vào tài khoản đứng tên đúng người nhận trong 03 ngày làm việc. Khoản đang tranh chấp hoặc chưa đủ hồ sơ không nằm trong thời hạn này.
+
+f) Hợp đồng này là hợp đồng điện tử giao kết trên hệ thống. Bản ghi giao kết có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP.
+
+3. Với dịch vụ chuyên môn trọn gói, doanh thu được ghi nhận theo từng giai đoạn khi người mua nghiệm thu (mặc định 30% – 40% – 30% khi các bên không thỏa thuận mốc khác trước dự án); giai đoạn chưa nghiệm thu bị hủy khi người mua chấm dứt và không bị thu. Thời gian tạm giữ của từng giai đoạn đã nghiệm thu vẫn là 48 giờ theo điểm b khoản này.
+
+4. Bên B gửi yêu cầu chi trả về tài khoản ngân hàng đứng tên Bên B hoặc tổ chức người bán đại diện. Ảnh giấy tờ và duyệt hồ sơ nội bộ không đồng nghĩa đã xác thực điện tử danh tính. Không có mức chi trả tối thiểu thương mại đối với hoa hồng tiếp thị liên kết phát sinh từ đơn của Bên B.
+
+5. Bên A có quyền tạm dừng chi trả khi có dấu hiệu gian lận, yêu cầu của cơ quan có thẩm quyền hoặc khoản hoàn tiền/bồi hoàn chưa được bù trừ. Số dư của Bên B là khoản phải trả theo đối soát, không phải tiền gửi.
+
+6. Bên B theo dõi doanh thu, số tạm giữ, số khả dụng, thuế đã khấu trừ và lịch sử đối soát tại Kênh người bán (sổ cái).
+
+7. Hai bên không được thỏa thuận thanh toán ngoài Nền tảng cho giao dịch phát sinh trên Nền tảng.
 
 ## Điều 8. Hoàn tiền, khiếu nại và giải quyết tranh chấp với Người mua
 

@@ -60,9 +60,9 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Người bán:** tổ chức, hộ kinh doanh, cá nhân đã đăng ký và được xác minh, đăng bán sản phẩm, dịch vụ trên nền tảng. Khi đăng ký, người bán bắt buộc chọn một trong ba loại: cá nhân kinh doanh, hộ kinh doanh, doanh nghiệp/tổ chức, và cung cấp mã số thuế (hộ kinh doanh, doanh nghiệp/tổ chức kèm giấy chứng nhận đăng ký kinh doanh); loại người bán là căn cứ xác định mức khấu trừ thuế.
 
-- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán bằng số dư nội bộ. Số dư không chuyển nhượng. Lệnh rút số dư nạp đang tắt; số dư đã ghi có không bị xóa. Người mua vẫn gửi được yêu cầu hoàn; khoản được duyệt hiện ghi có vào số dư. Việc trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng.
+- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán bằng số dư nội bộ. Số dư trả trước không được rút tiền mặt và không được chuyển cho người khác. Số dư đã ghi có không vì vậy mà bị xóa. Người mua vẫn gửi được yêu cầu hoàn hợp pháp; khoản được duyệt ghi có vào số dư dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu.
 
-- **Người giới thiệu (affiliate, người tiếp thị liên kết):** một tư cách của tài khoản người dùng, không phải loại tài khoản riêng, không phải tuyến dưới và không phải khoản phải nộp tiền để tham gia. Người giới thiệu chia sẻ liên kết sản phẩm hoặc gian hàng của người bán và nhận hoa hồng từ 0% đến 25% giá sau giảm giá do người bán chi trả. Không có mức chi trả tối thiểu của sàn: mọi hoa hồng khả dụng lớn hơn 0 có thể được yêu cầu. Yêu cầu đó là bút toán rút trên sổ, chưa phải khoản ngân hàng đã chuyển. Thuế không được trang này ấn một tỷ lệ cố định, và một mẫu cam kết được duyệt không phải miễn thuế. Biểu mẫu hồ sơ nội bộ không phải xác thực điện tử đã hoàn tất.
+- **Người giới thiệu (affiliate, người tiếp thị liên kết):** một tư cách của tài khoản người dùng, không phải loại tài khoản riêng, không phải tuyến dưới và không phải khoản phải nộp tiền để tham gia. Người dùng đăng ký với tư cách này và chấp nhận chính sách; đăng ký không tự cấp mã, không tự duyệt eKYC và không tự duyệt chi trả. Mã và liên kết chỉ có sau khi nhân sự nội bộ duyệt hồ sơ. Hoa hồng từ 0% đến 25% giá sau giảm giá do người bán chi trả từ phần của người bán. Không có mức chi trả tối thiểu thương mại. Sau đối soát và yêu cầu hợp lệ, hoa hồng được chi bằng VND trong 03 ngày làm việc. Nghĩa vụ thuế của người nhận vẫn còn. Biểu mẫu hồ sơ nội bộ không phải xác thực điện tử đã hoàn tất.
 
 - **Ban quản trị (quản trị viên):** nhân sự của chủ quản, phân quyền vận hành người dùng, hồ sơ người bán, biểu mẫu định danh nội bộ, kiểm duyệt, khiếu nại và sổ. Quản trị viên không phải tổ chức được cấp phép nhận, giữ và chi tiền. Số thuế đã khấu trừ đối với hoạt động kinh doanh của hộ và cá nhân kinh doanh trên nền tảng được khai theo tháng theo khoản 2 Điều 45 Nghị định 252/2026/NĐ-CP. Việc duyệt một bản cam kết thuế, nếu có, không phải miễn thuế tự động và không phải xác thực điện tử.
 
@@ -74,7 +74,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Chính sách sử dụng chấp nhận được (AUP):** các quy định về hàng hóa, dịch vụ cấm kinh doanh và hành vi bị cấm tại Mục XV của Quy chế này.
 
-- **Tín dụng dịch vụ AI Markets:** số dư nội bộ dùng để thanh toán đơn hàng trên nền tảng; không chuyển nhượng và không sinh lãi. Hiện tại, website ghi có số dư sau khi đối soát chuyển khoản VietQR vào tài khoản ngân hàng của Công ty được hiển thị tại bước nạp. Tài khoản đó là tài khoản của Công ty, không phải bằng chứng một tổ chức được cấp phép đang nhận, giữ và chi tiền. Lệnh rút số dư nạp đang tắt. Số dư đã ghi có không bị xóa vì lệnh rút tắt. Khoản nạp qua Apple hoặc Google không nằm trong lệnh rút này. Hoàn tiền đơn hàng là thủ tục khác. AI Markets đang làm việc trực tiếp với GPay (Công ty Cổ phần Thanh toán G) để hoàn tất hợp đồng cung ứng dịch vụ cho dự án. Hợp đồng cho AI Markets chưa hoàn tất. Quan hệ sẵn có không chứng minh hợp đồng này đã ký hoặc phạm vi phép đã bao trùm mô hình. Quy chế không ghi số giấy phép và không mở thanh toán qua GPay. Nếu hợp đồng cuối và phép bao trùm việc nhận, giữ và chi, GPay thực hiện các chức năng đó; hiện chưa tới bước đó. Điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP là nghĩa vụ cơ chế giữ, đối soát, thanh toán và rút tiền của người bán phát sinh từ giao dịch; điều đó không miễn giấy phép theo Nghị định 52/2024/NĐ-CP.
+- **Tín dụng dịch vụ AI Markets:** số dư nội bộ dùng để thanh toán đơn hàng trên nền tảng; không rút tiền mặt, không chuyển cho người khác và không sinh lãi. Website ghi có số dư sau khi đối soát chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Trên ứng dụng, nạp ví chỉ qua mua trong ứng dụng (Apple In-App Purchase hoặc Google Play Billing). Số dư đã ghi có không bị xóa vì không được rút. Yêu cầu hoàn tiền hợp pháp là thủ tục riêng: khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết nằm trên sổ riêng và được chi trả riêng.
 
 - **Mã giảm giá (voucher, coupon):** khoản giảm trừ do người bán hoặc nền tảng áp dụng vào giá trị đơn hàng theo khoản 2 Mục XI.
 
@@ -150,7 +150,7 @@ Người bán phải hoàn tất Quy trình xác minh người bán và xác nh�
 
 ## V. QUY TRÌNH GIAO DỊCH TRÊN WEBSITE
 
-Các bước dưới đây mô tả thao tác trên website https://aimarkets.vn. Ảnh minh họa là các màn hình đã chụp ngày 07/11/2026. Bước chưa được chụp trong bộ ảnh này chỉ được mô tả bằng chữ. Quy định chi tiết áp dụng theo các Mục được dẫn chiếu của Quy chế này.
+Các bước dưới đây mô tả thao tác trên website https://aimarkets.vn. Ảnh minh họa gồm màn hình chụp ngày 07/11/2026 và các màn hình chụp ngày 12/11/2026 (trang sản phẩm, mã QR nạp ví, tra cứu mã số thuế và tiếp thị liên kết). Bước chưa được chụp chỉ được mô tả bằng chữ. Quy định chi tiết áp dụng theo các Mục được dẫn chiếu của Quy chế này.
 
 ![Hình 1. Trang chủ](assets/legal/img/v7-v01-trang-chu.png)
 
@@ -170,6 +170,10 @@ Chưa có ảnh mới của riêng trang danh mục Suy luận.
 
 ![Hình 4. Xem gói sản phẩm trước khi mua](assets/legal/img/v7-b06-chi-tiet-san-pham.png)
 
+Trang sản phẩm đang chạy có khung chọn mua: số lượng, gói thời hạn, số dư ví, nút mua và nút xem giỏ. Đơn hàng vẫn trừ số dư ví sau khi người mua đã nạp. Ảnh này không phải mã QR nạp ví.
+
+![Hình 5. Trang sản phẩm và khung chọn mua](assets/legal/img/chon-mua-san-pham.png)
+
 Chưa có ảnh mới của trang cửa hàng người bán. Người mua có thể xem trang cửa hàng của người bán: nhãn “Verified seller” (người bán đã xác minh), số sản phẩm, lượt bán, đánh giá và chính sách cửa hàng (thanh toán qua ví AI Markets; khiếu nại, tranh chấp được giải quyết trên nền tảng, không gửi đường dẫn ra ngoài nền tảng trong tin nhắn).
 
 **Bước 4:** Đặt hàng và thanh toán. Người mua thêm sản phẩm vào giỏ hàng và thanh toán theo khoản 1 Mục VI. Khi thanh toán thành công, hợp đồng được giao kết, hệ thống tạo mã đơn hàng và gửi email xác nhận (khoản 1 Mục X). Bộ ảnh ngày 07/11/2026 không có giỏ đã có hàng hay màn hình xem lại trước khi đặt; ảnh giỏ trống nằm ở Mục VI.
@@ -180,9 +184,9 @@ Chưa có ảnh mới của trang cửa hàng người bán. Người mua có th
 
 **Bước 6: Quản lý đơn hàng. Tại trang hồ sơ, người mua xem số đơn hàng, giao dịch thành công, tranh chấp, số dư ví, tổng quan mua hàng và danh sách đơn hàng gần đây (trạng thái “Đã thanh toán”), kèm nút “Khiếu nại” cho từng đơn. Tại “Bảng điều khiển” (menu tài khoản → Bảng điều khiển), người mua xem tập trung các thẻ: Đơn hàng (trạng thái, chi tiết và hóa đơn, nút “Khiếu nại”, “Yêu cầu hoàn tiền”), Khiếu nại (trạng thái, tiến trình xử lý, trao đổi), Hoàn tiền (số tiền, trạng thái, liên kết sổ giao dịch ví), Dự án dịch vụ, License/sản phẩm đã mua và API key.**
 
-![Hình 5. Danh sách đơn hàng của người mua](assets/legal/img/v7-b02-don-hang-nguoi-mua.png)
+![Hình 6. Danh sách đơn hàng của người mua](assets/legal/img/v7-b02-don-hang-nguoi-mua.png)
 
-![Hình 6. Chi tiết đơn hàng](assets/legal/img/v7-b03-chi-tiet-don.png)
+![Hình 7. Chi tiết đơn hàng](assets/legal/img/v7-b03-chi-tiet-don.png)
 
 Chưa có ảnh mới của riêng tab hoàn tiền. Nhãn hoàn trên danh sách đơn là ghi nhận trong tài khoản, không phải tiền đã trả về ngân hàng hoặc kênh gốc.
 
@@ -194,27 +198,27 @@ Chưa có ảnh mới của riêng tab hoàn tiền. Nhãn hoàn trên danh sác
 
 **Bước 1:** Truy cập Kênh người bán (Seller Center). Trang tổng quan hiển thị trạng thái hồ sơ cửa hàng, xác minh danh tính (eKYC), sản phẩm, đơn hàng, tài liệu API và token, thanh toán. Menu gồm: thiết lập cửa hàng (eKYC, Seller verification, Shop profile, Images); bán hàng (Products, Web/app templates, Orders, Messages, Complaints, Coupons); tài chính (Payments, Withdraw, Ledger).
 
-![Hình 7. Kênh bán hàng khi hồ sơ còn nháp](assets/legal/img/v7-s01-kenh-ban-hang.png)
+![Hình 8. Kênh bán hàng khi hồ sơ còn nháp](assets/legal/img/v7-s01-kenh-ban-hang.png)
 
-![Hình 8. Gian hàng nháp và xác thực bị từ chối](assets/legal/img/v7-t01-kenh-ban-hang-tu-choi.png)
+![Hình 9. Gian hàng nháp và xác thực bị từ chối](assets/legal/img/v7-t01-kenh-ban-hang-tu-choi.png)
 
-**Bước 2:** Xác minh người bán. Tại “Seller verification”, người bán chọn loại người bán (bắt buộc: Cá nhân, Hộ kinh doanh hoặc Doanh nghiệp/Tổ chức – căn cứ xác định mức khấu trừ thuế theo khoản 3 Mục XII), nhập tên pháp lý, tên hiển thị, mã số thuế (bắt buộc; cá nhân có thể dùng số CCCD 12 số), số đăng ký kinh doanh (bắt buộc đối với hộ kinh doanh, doanh nghiệp/tổ chức), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII. Quản trị viên rà soát mã số thuế đã khai với trang tra cứu công khai của cơ quan thuế; bước rà soát này không phải định danh điện tử và không thay eKYC.
+**Bước 2:** Xác minh người bán. Tại “Seller verification”, người bán chọn loại người bán (bắt buộc: Cá nhân, Hộ kinh doanh hoặc Doanh nghiệp/Tổ chức – căn cứ xác định mức khấu trừ thuế theo khoản 3 Mục XII), nhập tên pháp lý, tên hiển thị, mã số thuế (bắt buộc; cá nhân có thể dùng số CCCD 12 số), số đăng ký kinh doanh (bắt buộc đối với hộ kinh doanh, doanh nghiệp/tổ chức), địa chỉ kinh doanh, email liên hệ, số điện thoại; đọc và xác nhận Thỏa thuận người bán (giao diện hiển thị phiên bản v2026.10.05) rồi chọn “Submit verification”. Giao diện ghi rõ: để bán với tư cách bên thứ ba, người bán phải hoàn tất hồ sơ pháp lý, chấp nhận Thỏa thuận người bán và được sàn phê duyệt; nhà cung cấp hạ tầng không phải là người bán; người bán phải xác minh danh tính (eKYC) để được phê duyệt và rút tiền. Hồ sơ được thẩm định theo Mục VIII. Sau khi người bán gửi hồ sơ, nhân sự của Công ty kiểm tra giấy tờ và tra cứu mã số thuế trên trang chính thức của Cục Thuế (Hình 18). Nếu mã số thuế khớp dữ liệu Cục Thuế, Công ty tiếp tục để ký hợp đồng dịch vụ thương mại điện tử. Nếu không khớp, Công ty từ chối hồ sơ và không kích hoạt quyền bán. Đây là việc làm thủ công của nhân sự, không phải chức năng tự động trên sản phẩm, và không thay eKYC.
 
-![Hình 9. Biểu mẫu hồ sơ người bán trước khi gửi](assets/legal/img/v7-s03-xac-minh-nguoi-ban.png)
+![Hình 10. Biểu mẫu hồ sơ người bán trước khi gửi](assets/legal/img/v7-s03-xac-minh-nguoi-ban.png)
 
-![Hình 10. Hồ sơ gian hàng ở trạng thái nháp](assets/legal/img/v7-s05-ho-so-gian-hang.png)
+![Hình 11. Hồ sơ gian hàng ở trạng thái nháp](assets/legal/img/v7-s05-ho-so-gian-hang.png)
 
 **Bước 3:** Đăng sản phẩm. Tại sản phẩm → thêm mới, người bán nhập tên, tagline, mô tả, danh mục, mô hình tính giá, đơn giá, đơn vị tính, giá gốc so sánh (nếu có), ảnh bìa, thẻ và thông tin kỹ thuật. Sản phẩm được gửi kiểm duyệt theo Mục IX và chỉ hiển thị sau khi được duyệt. Chưa có ảnh biểu mẫu đăng sản phẩm mới: trên phiên đã chụp, nút đăng sản phẩm không mở được biểu mẫu.
 
 **Bước 4:** Quản lý sản phẩm. Danh sách sản phẩm hiển thị loại, số lượt bán, đánh giá và thao tác theo từng loại (giọng đọc, tập/chương, listing, giấy phép, triển khai, mẫu website/ứng dụng).
 
-![Hình 11. Danh sách sản phẩm trong kênh bán hàng](assets/legal/img/v7-t02-danh-sach-san-pham.png)
+![Hình 12. Danh sách sản phẩm trong kênh bán hàng](assets/legal/img/v7-t02-danh-sach-san-pham.png)
 
 **Bước 5:** Tạo mã giảm giá (nếu có). Tại mã giảm giá, người bán tạo mã cho toàn cửa hàng hoặc từng sản phẩm: mã, loại giảm giá, giá trị, phạm vi, giá trị đơn tối thiểu, mức giảm tối đa, số lượt và ngày hết hạn. Khoản giảm giá được áp dụng vào đơn trước khi tính phí sàn và người bán chịu khoản giảm giá. Chưa có ảnh mới của trang mã giảm giá.
 
 **Bước 6:** Theo dõi đơn hàng. Tại “Orders”, người bán xem mã đơn hàng, sản phẩm, người mua, số tiền, trạng thái (ví dụ “Paid” – đã thanh toán) và ngày giao dịch; cung cấp sản phẩm, dịch vụ theo cam kết.
 
-![Hình 12. Danh sách đơn hàng trong kênh bán hàng](assets/legal/img/v7-t03-don-kenh-ban.png)
+![Hình 13. Danh sách đơn hàng trong kênh bán hàng](assets/legal/img/v7-t03-don-kenh-ban.png)
 
 **Bước 7:** Xử lý khiếu nại. Tại mục khiếu nại của kênh bán, người bán theo dõi hồ sơ theo quy trình: tiếp nhận, xác minh, phân loại, phản hồi, xem xét bằng chứng, quyết định và đóng hồ sơ; thời hạn phản hồi theo khoản 4 Mục XVII. Với dịch vụ chuyên môn theo giai đoạn, người bán bàn giao từng giai đoạn trong không gian dự án. Ảnh danh sách khiếu nại của phiên đã chụp nằm ở Mục XVII và chưa có hồ sơ. Chưa có ảnh bàn giao giai đoạn hoặc trang phản hồi chi tiết.
 
@@ -224,13 +228,17 @@ Chưa có ảnh mới của riêng tab hoàn tiền. Nhãn hoàn trên danh sác
 
 Người mua thanh toán đơn hàng thông qua ví AI Markets; nền tảng thu tiền và đối soát, chi trả cho người bán theo Mục XI. Người mua và người bán không thanh toán trực tiếp cho nhau ngoài nền tảng (khoản 10 Mục XI).
 
-**Bước 1:** Mua tín dụng dịch vụ. Tại ví → nạp tiền, người mua nhập số tiền bằng VND hoặc chọn mức nhanh. Website nạp bằng một cách: quét mã VietQR và chuyển khoản vào tài khoản thanh toán của Công ty được hiển thị tại bước nạp, ghi đúng nội dung chuyển khoản; ví được ghi có sau khi nền tảng đối soát nội dung đó với giao dịch ghi có. Cổng GPay không mở. Số tiền giao dịch đang dùng là VND. USD/CNY trên giao diện là quy đổi đang hiển thị, không được ghi là ngoại lệ của Điều 3 Thông tư 32/2013/TT-NHNN. Trang ví đồng thời hiển thị số dư khả dụng, lịch sử giao dịch và tổng quan theo tháng. Trên ứng dụng iOS, việc mua tín dụng dịch vụ thực hiện qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing, theo khoản 4 Mục XI. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Các phương thức này chỉ dùng để mua tín dụng dịch vụ; đơn hàng được thanh toán bằng số dư nội bộ (Bước 2). Chưa có ảnh mới của trang nạp VietQR.
+**Bước 1:** Mua tín dụng dịch vụ. Tại ví → nạp tiền, người mua nhập số tiền bằng VND hoặc chọn mức nhanh. Website nạp bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335, chủ tài khoản Công ty TNHH Giải pháp Công nghệ PHGroup, ghi đúng nội dung chuyển khoản. Ví được ghi có sau khi nền tảng đối soát nội dung đó với giao dịch ghi có. Số tiền giao dịch đang dùng là VND. USD/CNY trên giao diện là quy đổi đang hiển thị, không được ghi là ngoại lệ của Điều 3 Thông tư 32/2013/TT-NHNN. Trang ví đồng thời hiển thị số dư khả dụng, lịch sử giao dịch và tổng quan theo tháng. Trên ứng dụng iOS, việc mua tín dụng dịch vụ thực hiện qua Apple In-App Purchase; trên ứng dụng Android, qua Google Play Billing, theo khoản 4 Mục XI. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Các cách nạp này chỉ dùng để mua tín dụng dịch vụ; đơn hàng được thanh toán bằng số dư nội bộ (Bước 2). Số dư trả trước không được rút và không được chuyển.
+
+Mã QR dưới đây là mã chuyển khoản để nạp ví, không phải màn hình thanh toán giỏ hàng. Người mua nạp ví trước, sau đó trả đơn từ số dư.
+
+![Hình 14. Mã QR chuyển khoản VietQR để nạp ví](assets/legal/img/ma-qr-vietqr-nap-vi.png)
 
 **Bước 2:** Kiểm tra giỏ hàng và thanh toán. Quy trình gồm 3 bước: 1 Giỏ hàng (Cart) → 2 Thanh toán (Checkout) → 3 Hoàn tất (Done). Mỗi sản phẩm được thanh toán riêng; phim, truyện và gói kỹ năng được cấp một giấy phép cho mỗi listing, kể cả cùng cửa hàng. Khung thanh toán hiển thị tạm tính, giảm giá của người bán, giảm giá của nền tảng, ô nhập mã giảm giá và tổng đơn hàng. Phương thức thanh toán trên giao diện là ví AI Markets (“Pay with AI Markets wallet only”); người mua chọn “Pay with AI Markets wallet”. Nếu số dư không đủ, người mua nạp thêm theo Bước 1.
 
-Ảnh đã chụp là giỏ đang trống. Bộ ảnh không có giỏ đã có hàng, màn hình xem lại trước khi đặt, hoặc mã VietQR đang hoạt động.
+Ảnh giỏ dưới đây là giỏ đang trống, chụp ngày 07/11/2026. Bộ ảnh không dùng màn giỏ đang báo thiếu số tiền VND. Mã QR nạp ví nằm ở Hình 14, trước bước trả đơn bằng số dư.
 
-![Hình 13. Giỏ hàng](assets/legal/img/v7-b07-gio-trong.png)
+![Hình 15. Giỏ hàng](assets/legal/img/v7-b07-gio-trong.png)
 
 **Bước 3:** Hoàn tất giao dịch. Hệ thống trừ số dư ví, tạo mã đơn hàng, lưu bản chụp giá, phí, thuế tại thời điểm giao kết và gửi email xác nhận; đơn hàng hiển thị trạng thái đã thanh toán ở trang của người mua và Kênh người bán. Doanh thu của người bán được ghi nhận và tạm giữ 48 giờ (khoản 8 Mục XI). Sau khi mua thành công, người mua chọn lấy hoặc không lấy hóa đơn điện tử (mặc định không lấy) theo khoản 9 Mục XII. Hoàn tiền (nếu có) thực hiện theo Mục XIII.
 
@@ -242,11 +250,11 @@ Nền tảng (Ban quản lý website) thu tiền của người mua, khấu tr�
 
 **Bước 2:** Hoàn tất hồ sơ để sử dụng chức năng thanh toán. Mục thanh toán chỉ mở sau khi có hồ sơ người bán.
 
-![Hình 14. Màn hình thanh toán khi chưa hoàn tất hồ sơ người bán](assets/legal/img/v7-s07-thanh-toan-chua-mo.png)
+![Hình 16. Màn hình thanh toán khi chưa hoàn tất hồ sơ người bán](assets/legal/img/v7-s07-thanh-toan-chua-mo.png)
 
 **Bước 3:** Rút tiền. Tại mục rút tiền của kênh bán, giao diện nêu phí sàn, thuế theo loại người bán, thời gian tạm giữ 48 giờ, số khả dụng và số đang giữ. Phí sàn và thuế được khấu trừ khi đơn hoàn tất nên số dư hiển thị là số ròng. Khi hồ sơ xác minh chưa được duyệt, chức năng rút bị khóa. Ảnh đã chụp là trạng thái bị từ chối, không phải lệnh chi đã thực hiện. Tỷ lệ trên ảnh không được dùng làm biểu phí đã được chứng minh ngoài Quy chế.
 
-![Hình 15. Màn hình rút doanh thu khi xác thực bị từ chối](assets/legal/img/v7-t06-rut-bi-tu-choi.png)
+![Hình 17. Màn hình rút doanh thu khi xác thực bị từ chối](assets/legal/img/v7-t06-rut-bi-tu-choi.png)
 
 **Bước 4:** Đối soát. Tại “Ledger”, người bán xem sổ cái doanh thu, phí sàn và số dư để đối chiếu với lịch sử đơn hàng, rút tiền (khoản 7 Mục XI).
 
@@ -327,7 +335,11 @@ Trường hợp kinh doanh ngành, nghề có điều kiện, người bán bổ
 
 ### 3. Thẩm định
 
-Quản trị viên kiểm tra: tính nhất quán giữa giấy tờ, mã số thuế và chủ tài khoản nhận tiền; đối chiếu mã số thuế với cơ sở dữ liệu của cơ quan thuế; quyền cung cấp; sản phẩm dự kiến; rủi ro tuân thủ.
+Sau khi người bán đăng ký và gửi hồ sơ, nhân sự của Công ty kiểm tra giấy tờ và tra cứu mã số thuế trên trang chính thức của Cục Thuế: https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp. Nếu mã số thuế khớp dữ liệu Cục Thuế, Công ty tiếp tục để ký hợp đồng dịch vụ thương mại điện tử với người bán. Nếu không khớp, Công ty từ chối hồ sơ và không kích hoạt quyền bán. Đây là thủ tục thủ công do nhân sự thực hiện, không phải chức năng tự động của sản phẩm. Công ty có hai nhân sự nội bộ kiêm nhiệm việc kiểm tra hồ sơ, tra cứu mã số thuế và theo dõi hợp đồng. Quy chế không ghi tên từng người.
+
+Nhân sự cũng kiểm tra tính nhất quán giữa giấy tờ và chủ tài khoản nhận tiền, quyền cung cấp, sản phẩm dự kiến và rủi ro tuân thủ. Việc tra cứu mã số thuế không phải xác thực điện tử và không thay biểu mẫu eKYC.
+
+![Hình 18. Trang tra cứu mã số thuế của Cục Thuế](assets/legal/img/thue-tra-cuu-mst-cuc-thue.png)
 
 ### 4. Kết quả xác minh
 
@@ -349,15 +361,15 @@ Nền tảng có thể yêu cầu xác minh lại khi: thay đổi thông tin ph
 
 ### 7. Xác minh danh tính (eKYC) và định danh điện tử
 
-Người bán và người giới thiệu affiliate hoàn tất biểu mẫu eKYC tại https://aimarkets.vn/settings/kyc hoặc https://aimarkets.vn/sell/kyc trước khi hồ sơ người bán được phê duyệt, trước khi chi trả doanh thu người bán, và trước khi nhận mã affiliate. Người mua thông thường không nộp biểu mẫu này để mua, nạp, dùng dịch vụ, khiếu nại hoặc yêu cầu hoàn. Khi chưa có hồ sơ chi trả được duyệt, chức năng chi trả doanh thu bị khóa. Lệnh rút số dư nạp đang tắt. Số dư không được chuyển nhượng. Rà soát mã số thuế thủ công không phải xác thực điện tử. Người bán xác thực điện tử theo mốc 01/01/2027 tại Điều 52 khoản 2 Nghị định 248/2026/NĐ-CP. Người tiếp thị liên kết đã phải xác thực điện tử từ 01/07/2026 theo Luật Thương mại điện tử 122/2025/QH15. Nghị định 320/2026/NĐ-CP, hiệu lực 28/09/2026, yêu cầu tài khoản giao dịch điện tử thuộc nhóm đã tạo trước ngày hiệu lực, trừ ngân hàng, được liên kết và xác thực với tài khoản định danh điện tử chậm nhất trước 31/12/2026. Biểu mẫu có loại hồ sơ Cá nhân và Tổ chức. Cá nhân nhập họ tên trên giấy tờ, loại giấy tờ (CCCD, CMND, hộ chiếu hoặc khác), số giấy tờ, mã số thuế cá nhân, rồi tải ảnh mặt trước và mặt sau. Tổ chức chọn Hộ kinh doanh hoặc Công ty / doanh nghiệp, nhập tên theo giấy chứng nhận, mã số thuế, địa chỉ, giấy tờ người đại diện, và tải giấy chứng nhận đăng ký bằng PDF tối đa 10 MB. Ảnh hoặc PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán và không phải tích hợp VNeID. Dòng ghi chú trên biểu mẫu về mốc 01/01/2027 là mốc rà soát định danh điện tử, không phải xác nhận tích hợp đã hoàn tất.
+Người bán và người giới thiệu affiliate hoàn tất biểu mẫu eKYC tại https://aimarkets.vn/settings/kyc hoặc https://aimarkets.vn/sell/kyc trước khi hồ sơ người bán được phê duyệt, trước khi chi trả doanh thu người bán, và trước khi nhận mã affiliate. Người mua thông thường không nộp biểu mẫu này để mua, nạp, dùng dịch vụ, khiếu nại hoặc yêu cầu hoàn. Khi chưa có hồ sơ chi trả được duyệt, chức năng chi trả doanh thu bị khóa. Số dư trả trước của người mua không được rút và không được chuyển. Việc tra cứu mã số thuế tại khoản 3 Mục này là thủ tục thủ công của nhân sự, không phải xác thực điện tử và không thay eKYC. Người bán xác thực điện tử theo mốc 01/01/2027 tại Điều 52 khoản 2 Nghị định 248/2026/NĐ-CP. Người tiếp thị liên kết đã phải xác thực điện tử từ 01/07/2026 theo Luật Thương mại điện tử 122/2025/QH15. Nghị định 320/2026/NĐ-CP, hiệu lực 28/09/2026, yêu cầu tài khoản giao dịch điện tử thuộc nhóm đã tạo trước ngày hiệu lực, trừ ngân hàng, được liên kết và xác thực với tài khoản định danh điện tử chậm nhất trước 31/12/2026. Biểu mẫu có loại hồ sơ Cá nhân và Tổ chức. Cá nhân nhập họ tên trên giấy tờ, loại giấy tờ (CCCD, CMND, hộ chiếu hoặc khác), số giấy tờ, mã số thuế cá nhân, rồi tải ảnh mặt trước và mặt sau. Tổ chức chọn Hộ kinh doanh hoặc Công ty / doanh nghiệp, nhập tên theo giấy chứng nhận, mã số thuế, địa chỉ, giấy tờ người đại diện, và tải giấy chứng nhận đăng ký bằng PDF tối đa 10 MB. Ảnh hoặc PDF đang hiện trên trang là tài liệu đã lưu, không phải quyết định đã duyệt người bán và không phải tích hợp VNeID. Dòng ghi chú trên biểu mẫu về mốc 01/01/2027 là mốc rà soát định danh điện tử, không phải xác nhận tích hợp đã hoàn tất.
 
-Ba ảnh dưới đây là biểu mẫu đã lưu tài liệu tại https://aimarkets.vn/settings/kyc, ngày 07/11/2026. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ, tên và các trường còn lại giữ như ảnh đã duyệt. Ảnh không phải quyết định đã duyệt người bán, không phải tích hợp định danh điện tử, và ô tệp không phải giấy chứng nhận đăng ký đã được kiểm chứng.
+Ba ảnh dưới đây (Hình 19, Hình 20 và Hình 21) là biểu mẫu đã lưu tài liệu tại https://aimarkets.vn/settings/kyc, ngày 07/11/2026. Số giấy tờ trên ô nhập và trên ảnh giấy tờ đã được che. Ảnh giấy tờ, tên và các trường còn lại giữ như ảnh đã duyệt. Ảnh không phải quyết định đã duyệt người bán, không phải tích hợp định danh điện tử, và ô tệp không phải giấy chứng nhận đăng ký đã được kiểm chứng. Trang tra cứu mã số thuế là Hình 18.
 
-![Hình 16. Biểu mẫu xác minh người bán cá nhân](assets/legal/img/v7-k01-ho-so-ca-nhan.png)
+![Hình 19. Biểu mẫu xác minh người bán cá nhân](assets/legal/img/v7-k01-ho-so-ca-nhan.png)
 
-![Hình 17. Biểu mẫu thông tin người bán tổ chức](assets/legal/img/v7-k02-ho-so-to-chuc.png)
+![Hình 20. Biểu mẫu thông tin người bán tổ chức](assets/legal/img/v7-k02-ho-so-to-chuc.png)
 
-![Hình 18. Tài liệu đại diện và ô đính kèm đăng ký doanh nghiệp](assets/legal/img/v7-k03-giay-to-dai-dien.png)
+![Hình 21. Tài liệu đại diện và ô đính kèm đăng ký doanh nghiệp](assets/legal/img/v7-k03-giay-to-dai-dien.png)
 
 ## IX. KIỂM DUYỆT SẢN PHẨM AI
 
@@ -473,11 +485,11 @@ Nền tảng áp dụng hạn mức (quota), giới hạn tần suất (rate lim
 
 ### 1. Đối tác và phương thức thanh toán
 
-Hiện tại, website nạp ví bằng chuyển khoản VietQR vào tài khoản ngân hàng của Công ty được hiển thị tại bước nạp. Mọi đơn hàng được thanh toán bằng số dư nội bộ. Tài khoản ngân hàng của Công ty không đứng thay cho tổ chức được cấp phép nhận, giữ và chi. Lệnh rút số dư nạp đang tắt cho đến khi có hợp đồng, phạm vi phép đã kiểm tra và tích hợp thật. Trên ứng dụng iOS, nạp qua Apple In-App Purchase; trên ứng dụng Android, nạp qua Google Play Billing. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. AI Markets đang làm việc trực tiếp với GPay (Công ty Cổ phần Thanh toán G) để hoàn tất hợp đồng cung ứng dịch vụ cho dự án. Hợp đồng cho AI Markets chưa hoàn tất. Quan hệ sẵn có không chứng minh hợp đồng này đã ký hoặc phạm vi phép đã bao trùm mô hình. Không có cổng thanh toán GPay trên website. Không ghi số giấy phép. Nếu hợp đồng cuối và phép bao trùm việc nhận, giữ và chi, GPay thực hiện các chức năng đó; hiện chưa tới bước đó. Điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP không miễn Nghị định 52/2024/NĐ-CP.
+Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có sau khi nội dung chuyển khoản khớp giao dịch ghi có. Mọi đơn hàng được thanh toán bằng số dư nội bộ. Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase; trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Số dư trả trước của người mua không được rút và không được chuyển. Yêu cầu hoàn tiền hợp pháp vẫn được tiếp nhận; khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết được ghi sổ riêng và chi trả riêng. Hợp đồng dịch vụ giao kết trên hệ thống là hợp đồng điện tử và có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP. Mã QR nạp ví là Hình 14.
 
 | Kênh | Bên xử lý khoản tiền | Phương thức | Mục đích |
 |---|---|---|---|
-| Website | Tài khoản thanh toán hiển thị tại bước nạp | VietQR / chuyển khoản, đối soát theo nội dung | Mua tín dụng dịch vụ nội bộ |
+| Website | VPBank 395951335, Công ty TNHH Giải pháp Công nghệ PHGroup | VietQR, đối soát theo nội dung chuyển khoản | Nạp ví để thanh toán đơn hàng |
 | Ứng dụng iOS | Apple In-App Purchase | Theo tài khoản Apple của người mua | Mua tín dụng dịch vụ nội bộ |
 | Ứng dụng Android | Google Play Billing | Theo tài khoản Google Play của người mua | Mua tín dụng dịch vụ nội bộ |
 | Website và ứng dụng | Ví AI Markets | Số dư đã nạp qua các kênh trên | Thanh toán đơn hàng |
@@ -494,11 +506,11 @@ c) **Mã giảm giá (voucher):** người bán có thể tạo mã giảm giá 
 
 ### 3. Ví người mua
 
-a) Trên website, người mua nạp ví bằng chuyển khoản VietQR. Trên ứng dụng, người mua dùng hệ thống thanh toán trong ứng dụng theo khoản 4 Mục này. Giao dịch được ghi nhận bằng VND sau khi kênh thanh toán xác nhận thành công. USD/CNY trên giao diện là quy đổi đang hiển thị, không được ghi là ngoại lệ của Điều 3 Thông tư 32/2013/TT-NHNN.
+a) Trên website, người mua nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty. Trên ứng dụng, người mua dùng hệ thống thanh toán trong ứng dụng theo khoản 4 Mục này. Giao dịch được ghi nhận bằng VND sau khi khoản chuyển hoặc biên nhận trong ứng dụng được xác nhận. USD/CNY trên giao diện là quy đổi đang hiển thị, không được ghi là ngoại lệ của Điều 3 Thông tư 32/2013/TT-NHNN.
 
 b) Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
-c) Số dư không được chuyển nhượng và không sinh lãi. Lệnh rút số dư đã nạp đang tắt. Số dư đã có được giữ nguyên. Khoản nạp qua Apple hoặc Google không thuộc lệnh rút dự kiến. Yêu cầu hoàn tiền đơn hàng là thủ tục khác: khoản được duyệt hiện ghi có vào tín dụng dịch vụ; việc trả về phương thức thanh toán ban đầu chưa có quy trình đã kiểm chứng. Rút số dư nạp chỉ được mở sau khi hợp đồng với tổ chức được phép, phạm vi phép và tích hợp được kiểm tra; hiện chưa có hợp đồng đó.
+c) Số dư trả trước không được rút tiền mặt, không được chuyển cho người khác và không sinh lãi. Số dư đã có được giữ nguyên, kể cả khoản nạp qua Apple hoặc Google. Yêu cầu hoàn tiền đơn hàng là thủ tục khác: khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu.
 
 d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát; không phải tài khoản tiền gửi hay tài khoản thanh toán, không được trả lãi.
 
@@ -530,7 +542,14 @@ Thay đổi mức phí được thông báo **ít nhất 30 ngày** trước khi
 
 ### 7. Sổ cái và đối soát
 
-Nền tảng ghi nhận riêng từng khoản: tiền người mua thanh toán; doanh thu người bán; phí sàn; chi phí nhà cung cấp hạ tầng; thuế khấu trừ; hoàn tiền; điều chỉnh. Đối soát định kỳ giữa đơn hàng, thanh toán, hoàn tiền, sổ cái, chi trả và số liệu sử dụng.
+Đối soát thực hiện theo các bước sau.
+
+1. Ghi nhận khoản nạp ví khi nội dung chuyển khoản VietQR khớp giao dịch ghi có vào tài khoản VPBank số 395951335, hoặc khi biên nhận nạp trong ứng dụng được xác nhận.
+2. Khi đơn hoàn tất, ghi riêng mã đơn, doanh thu, phí sàn, thuế, hủy hoặc hoàn, số tạm giữ và số thực nhận.
+3. Tạm giữ khoản phải trả người bán và hoa hồng tiếp thị liên kết trong 48 giờ kể từ khi giao dịch hoàn tất. Chỉ giữ tiếp phần đang tranh chấp, và phải báo lý do cùng thời hạn rà soát. Việc tạm giữ không phải tài khoản escrow hay bảo lãnh ngân hàng.
+4. Giữ ba sổ riêng: doanh thu người bán, hoa hồng người tiếp thị liên kết, và số dư trả trước của người mua. Số dư trả trước không được rút hoặc chuyển.
+5. Sau khi hết thời gian tạm giữ và có yêu cầu chi trả hợp lệ, chi bằng VND vào tài khoản đứng tên đúng người nhận trong 03 ngày làm việc.
+6. Hợp đồng điện tử được lưu trên hệ thống có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP.
 
 ### 8. Doanh thu và chi trả cho người bán
 
@@ -560,19 +579,23 @@ Người bán và người mua không được thỏa thuận thanh toán ngoài
 
 ### 11. Chương trình Affiliate (tiếp thị liên kết)
 
-a) Tham gia: người dùng đã đăng nhập. Mã và liên kết chỉ được API cấp khi `user.kyc.status` là verified. Cổng đó là biểu mẫu hồ sơ nội bộ, không phải xác thực điện tử đã hoàn tất. Luật Thương mại điện tử số 122/2025/QH15 yêu cầu xác thực điện tử người tiếp thị liên kết trước khi thiết lập đường dẫn, từ 01/07/2026. Khi chưa có tích hợp xác thực điện tử được chứng minh, việc cấp mã không được mô tả là đã đủ điều kiện luật đó và không phải đăng ký chương trình đã được cơ quan chấp thuận. Người bán tự nguyện đặt tỷ lệ; mặc định 0% là không tham gia. Không có khoản nộp tiền để tham gia và không có hoa hồng tuyến dưới.
+Tiếp thị liên kết là một cấp. Không có tuyến dưới, không có phí tham gia và không có khoản đặt cọc. Quy trình trên website như sau. Chi tiết cùng [Chính sách chương trình Affiliate](20-chinh-sach-affiliate.md) và [Quy trình tiếp thị liên kết](29-quy-trinh-tiep-thi-lien-ket.md).
 
-b) Tỷ lệ và người chịu chi phí: người bán đặt hoa hồng từ 0% đến 25% giá trị đơn hàng sau giảm giá, cho từng sản phẩm hoặc làm mức mặc định của gian hàng; hệ thống từ chối mọi tỷ lệ trên 25%. Hoa hồng do người bán chi trả từ doanh thu của mình, không trừ vào phí sàn và không thay đổi thuế khấu trừ. Tỷ lệ được chốt tại thời điểm đặt hàng; thay đổi chỉ áp dụng cho đơn hàng mới.
+1. **Đăng ký.** Người dùng tạo tài khoản và chọn tư cách Người tiếp thị liên kết, rồi chấp nhận Chính sách chương trình Affiliate. Đăng ký không tự duyệt eKYC, không cấp mã, không tạo hoa hồng và không duyệt chi trả (Hình 22).
+2. **Hồ sơ trước khi có mã và trước khi chi trả.** Người tiếp thị liên kết phải hoàn tất biểu mẫu eKYC và Cam kết Mẫu 08/CK-TNCN khi chương trình yêu cầu tệp đó. Nhân sự nội bộ duyệt hồ sơ. Hai bước này không được duyệt sẵn lúc đăng ký. Luật Thương mại điện tử số 122/2025/QH15 yêu cầu xác thực điện tử người tiếp thị liên kết trước khi thiết lập đường dẫn, từ 01/07/2026. Biểu mẫu nội bộ và bản cam kết không phải xác thực điện tử đã hoàn tất. Khi chưa có tích hợp được chứng minh, việc cấp mã không được mô tả là đã đủ điều kiện luật đó.
+3. **Mã và liên kết.** Sau khi hồ sơ nội bộ được duyệt, hệ thống cấp mã giới thiệu và cho tạo liên kết sản phẩm hoặc gian hàng (Hình 23).
+4. **Ghi nhận.** Theo lượt nhấp cuối cùng trong 30 ngày. Liên kết sản phẩm chỉ ghi nhận đơn của sản phẩm đó; liên kết gian hàng ghi nhận đơn của sản phẩm tham gia thuộc gian hàng. Không ghi nhận khi người mua là chính người giới thiệu, hoặc người giới thiệu là người bán của sản phẩm.
+5. **Tỷ lệ.** Người bán đặt từ 0% đến 25% giá sau giảm giá, cho từng sản phẩm hoặc cho cả gian hàng. Mặc định 0% là không tham gia. Hoa hồng trừ vào phần của người bán, không trừ vào phí sàn. Tỷ lệ được chốt lúc đặt hàng.
+6. **Tạm giữ.** Hoa hồng được ghi có khi đơn hoàn tất và tạm giữ 48 giờ, hoặc lâu hơn nếu đơn đang tranh chấp. Việc tạm giữ không phải tài khoản escrow hay bảo lãnh ngân hàng.
+7. **Chi trả.** Không có mức chi trả tối thiểu thương mại. Mọi khoản hoa hồng khả dụng lớn hơn 0, sau đối soát và khi có yêu cầu hợp lệ, được chi bằng VND trong 03 ngày làm việc vào tài khoản đứng tên người tiếp thị liên kết. Sổ hoa hồng tách khỏi doanh thu người bán và khỏi số dư trả trước của người mua. Nghĩa vụ thuế của người nhận vẫn còn. Mẫu cam kết được duyệt không phải miễn thuế. Khoản 2 Điều 50 Nghị định 253/2026/NĐ-CP chỉ áp dụng cho nhóm thù lao cụ thể, ngưỡng 05 triệu đồng một lần, không phải cho mọi hoa hồng.
+8. **Hoàn, hủy và vi phạm.** Đơn bị hoàn hoặc hủy thì hoa hồng đảo theo tỷ lệ. Thư rác, quảng cáo gây nhầm lẫn, đặt thầu từ khóa thương hiệu khi chưa được chấp thuận, đơn ảo, nhồi cookie và tự giới thiệu bị thu hồi hoa hồng liên quan và xử lý theo Mục XV.
+9. **Trang quy trình.** Các bước công bố tại https://aimarkets.vn/legal/quy-trinh-tiep-thi-lien-ket (Hình 24).
 
-c) Công thức: doanh thu người bán = giá trị đơn sau giảm giá − phí sàn 20% − thuế khấu trừ theo loại người bán (khoản thuế theo pháp luật tại thời điểm phát sinh; chưa công bố bảng tỷ lệ đã đối chiếu) − hoa hồng affiliate. Quy chế không dùng ví dụ số về thuế khi chưa có bảng tỷ lệ đã đối chiếu.
+![Hình 22. Biểu mẫu đăng ký với tư cách Người tiếp thị liên kết](assets/legal/img/affiliate-dang-ky-nguoi-tiep-thi.png)
 
-d) Ghi nhận: theo nguyên tắc nhấp chuột cuối cùng (last-click) trong thời hạn 30 ngày kể từ lượt nhấp (nền tảng có thể công bố thời hạn khác); liên kết sản phẩm chỉ ghi nhận đơn của sản phẩm đó, liên kết gian hàng ghi nhận đơn của các sản phẩm tham gia thuộc gian hàng. Không ghi nhận khi người mua là người giới thiệu, hoặc người giới thiệu là người bán của sản phẩm.
+![Hình 23. Trang chương trình tiếp thị liên kết](assets/legal/img/affiliate-trang-chuong-trinh.png)
 
-đ) Ghi có và rút tiền: hoa hồng được ghi có vào ví của người giới thiệu khi đơn hàng hoàn tất, tạm giữ 48 giờ như doanh thu người bán (kéo dài khi có khiếu nại), sau đó số còn lại chuyển sang khả dụng để yêu cầu chi trả. Yêu cầu đó là bút toán rút trên sổ, chưa phải khoản đã chuyển từ tổ chức được cấp phép. AI Markets đang làm việc trực tiếp với GPay để hoàn tất hợp đồng cho dự án; hợp đồng chưa hoàn tất nên chức năng nhận, giữ và chi của tổ chức được phép chưa chạy. Hoa hồng được ghi có đủ. Không có mức chi trả tối thiểu của sàn. Thuế không được ấn một tỷ lệ cố định cho mọi người giới thiệu. Mẫu cam kết được duyệt không phải miễn thuế. Khoản 2 Điều 50 Nghị định 253/2026/NĐ-CP chỉ áp dụng cho nhóm thù lao cụ thể, ngưỡng 05 triệu đồng một lần, không phải cho mọi hoa hồng.
-
-e) Hoàn tiền và thu hồi: đơn hàng bị hoàn tiền hoặc hủy (toàn bộ hay một phần) thì hoa hồng tương ứng bị đảo ngược theo tỷ lệ. Nghiêm cấm thư rác, quảng cáo sai sự thật hoặc gây nhầm lẫn, đặt giá thầu từ khóa thương hiệu khi chưa được chấp thuận, đơn hàng ảo, nhồi cookie (cookie stuffing) và tự giới thiệu; khi phát hiện vi phạm, nền tảng thu hồi toàn bộ hoa hồng liên quan (kể cả khoản đã khả dụng), tạm khóa tính năng affiliate hoặc tài khoản và xử lý theo Mục XV của Quy chế này.
-
-g) Chi tiết tại Chính sách chương trình Affiliate (phiên bản 2026.10.12, hiệu lực 12/10/2026) công bố tại https://aimarkets.vn/legal/chinh-sach-affiliate.
+![Hình 24. Trang quy trình tiếp thị liên kết](assets/legal/img/affiliate-quy-trinh.png)
 
 ## XII. THUẾ, HÓA ĐƠN VÀ CHỨNG TỪ
 
@@ -693,7 +716,7 @@ b) Nền tảng xác nhận tiếp nhận trong **24 giờ**, xác minh đơn h�
 
 c) Nền tảng ra quyết định trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ, theo Mục XVII của Quy chế này.
 
-d) Khi được chấp thuận, khoản hoàn hiện được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Việc này khác với lệnh rút số dư nạp VietQR. Việc trả về ngân hàng hoặc kênh gốc khác chưa có quy trình đã kiểm chứng. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
+d) Khi được chấp thuận, khoản hoàn được ghi có vào tín dụng dịch vụ có thể dùng trên sàn. Việc này khác với quy tắc số dư trả trước không được rút hoặc chuyển. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu. Khoản mua qua Apple hoặc Google vẫn theo chính sách hoàn của kho ứng dụng và không được hoàn trùng trên sàn.
 
 ### 6. Nơi nhận tiền hoàn
 
@@ -916,11 +939,11 @@ Không gửi mật khẩu, khóa API, khóa SSH, khóa bí mật hoặc dữ li�
 
 Ảnh ngày 07/11/2026: danh sách khiếu nại đang có, một phần biểu mẫu chưa gửi, và trang khiếu nại trong kênh bán hàng khi chưa có hồ sơ. Bộ ảnh không có chi tiết trao đổi, kết quả xử lý, hoặc biểu mẫu yêu cầu hoàn trước khi gửi.
 
-![Hình 19. Danh sách yêu cầu khiếu nại](assets/legal/img/v7-b04-khieu-nai-danh-sach.png)
+![Hình 25. Danh sách yêu cầu khiếu nại](assets/legal/img/v7-b04-khieu-nai-danh-sach.png)
 
-![Hình 20. Biểu mẫu gửi khiếu nại](assets/legal/img/v7-b05-khieu-nai-form.png)
+![Hình 26. Biểu mẫu gửi khiếu nại](assets/legal/img/v7-b05-khieu-nai-form.png)
 
-![Hình 21. Trang khiếu nại của người bán](assets/legal/img/v7-t04-khieu-nai-kenh-ban.png)
+![Hình 27. Trang khiếu nại của người bán](assets/legal/img/v7-t04-khieu-nai-kenh-ban.png)
 
 ### 3. Phân loại khiếu nại
 
@@ -1014,7 +1037,7 @@ Dữ liệu chỉ được chia sẻ trong phạm vi cần thiết với:
 
 - **Người bán:** thông tin cần để thực hiện đơn hàng với người mua;
 
-- **Đối tác thanh toán: ngân hàng nơi hiển thị tài khoản nhận chuyển khoản VietQR; Apple và Google đối với nạp trong ứng dụng;**
+- **Đối tác thanh toán: VPBank, tài khoản 395951335 của Công ty, đối với nạp ví trên website; Apple và Google đối với nạp ví trong ứng dụng;**
 
 - **Nhà cung cấp hạ tầng:** máy chủ ứng dụng, máy chủ cơ sở dữ liệu và lưu trữ (cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232)), GPU, API mô hình AI, dịch vụ thư điện tử, đăng nhập Google;
 
@@ -1264,7 +1287,7 @@ Ngân hàng nơi hiển thị tài khoản nhận chuyển khoản VietQR, Apple
 
 4. Đơn hàng đã giao kết tiếp tục áp dụng điều kiện tại thời điểm giao kết.
 
-![Hình 22. Trung tâm pháp lý – bảng chính sách](assets/legal/img/v7-v04-trung-tam-phap-ly.png)
+![Hình 28. Trung tâm pháp lý – bảng chính sách](assets/legal/img/v7-v04-trung-tam-phap-ly.png)
 
 ## XXVI. ĐIỀU KHOẢN CAM KẾT
 

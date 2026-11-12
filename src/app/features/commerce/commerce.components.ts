@@ -28,7 +28,7 @@ type AdminTab = 'overview' | 'shops' | 'people' | 'ops' | 'disputes';
         Mọi đơn hàng trên AI Markets được thanh toán bằng ví aimarkets.vn. Nạp tiền vào ví rồi mua trên trang sản phẩm hoặc giỏ hàng.
       </p>
       <div class="panel mt-8 grid gap-3">
-        <p class="text-sm">Phương thức đang mở: ví aimarkets.vn, nạp website bằng VietQR vào tài khoản được hiển thị khi nạp. AI Markets đang làm việc trực tiếp với GPay để hoàn tất hợp đồng cho dự án; cổng GPay chưa mở. Ứng dụng iOS dùng Apple IAP, ứng dụng Android dùng Google Play Billing.</p>
+        <p class="text-sm">Đơn hàng thanh toán bằng ví aimarkets.vn. Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Ứng dụng iOS và Android chỉ nạp ví bằng IAP.</p>
         <a class="btn btn-fill w-fit" routerLink="/wallet">Mở ví & nạp tiền</a>
       </div>
     </section>
