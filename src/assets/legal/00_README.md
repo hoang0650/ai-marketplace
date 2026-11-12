@@ -24,7 +24,7 @@ Bộ tài liệu pháp lý của sàn giao dịch TMĐT AI Markets (https://aima
 17. `17-chinh-sach-luu-tru-va-cung-cap-du-lieu.md` — Lưu trữ và cung cấp dữ liệu
 18. `18-chinh-sach-thue.md` — Thuế
 19. `19-chinh-sach-hoa-don.md` — Hóa đơn và chứng từ
-20. `20-chinh-sach-affiliate.md` — Chương trình Affiliate (phiên bản riêng 2026.10.12, hiệu lực 12/10/2026)
+20. `20-chinh-sach-affiliate.md` — Chương trình Affiliate (phiên bản 2026.11.05, công bố 05/11/2026, hiệu lực 05/12/2026)
 21. `21-chinh-sach-xep-hang-uu-tien-hien-thi.md` — Xếp hạng và ưu tiên hiển thị
 22. `22-quy-che-livestream-ban-hang.md` — Quy chế livestream bán hàng
 23. `23-chinh-sach-giao-nhan-san-pham-so.md` — Giao nhận sản phẩm số, dịch vụ chuyên môn và hàng hóa

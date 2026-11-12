@@ -1,8 +1,8 @@
 /**
- * Buyer withdrawal stays off until an AI Markets contract, permit scope and
- * integration are actually in place. A server flag alone does not open it.
- * App Store and Google Play top-ups are outside this request.
- * A manual supplier-tax review is not an identity status.
+ * Buyer prepaid balance cannot be withdrawn or transferred. This gate stays
+ * closed. A server flag alone does not open a cash-out. App Store and Google
+ * Play top-ups are outside any payout request. A manual supplier-tax review
+ * is not an identity status.
  */
 export const BUYER_TOPUP_WITHDRAW_ACTIVATED = false;
 export interface BuyerDepositWithdrawSnapshot {

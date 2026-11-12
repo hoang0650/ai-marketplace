@@ -19,7 +19,7 @@ Nội dung dưới đây là các điều khoản của mẫu Hợp đồng dị
 
 - Sàn AI Markets (Nền tảng): sàn giao dịch thương mại điện tử tại https://aimarkets.vn và ứng dụng di động “AI Markets” (iOS, Android) do Bên A sở hữu, vận hành.
 - Quy chế: Quy chế hoạt động sàn giao dịch thương mại điện tử AI Markets (bản hợp nhất các chính sách của Nền tảng) được công bố tại Trung tâm pháp lý (https://aimarkets.vn/legal), kể cả các sửa đổi, bổ sung được thông báo theo Điều 17.
-- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; thanh toán đơn hàng bằng số dư ví trên Nền tảng. Số dư trả trước không được rút và không được chuyển. Số dư đã có được giữ. Yêu cầu hoàn hợp pháp là thủ tục khác; Hợp đồng không hứa hoàn về đúng phương thức thanh toán ban đầu.
+- Người mua: tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên Nền tảng; đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán. Số dư trả trước không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác. Số dư đã có được giữ. Hoàn tiền hợp pháp theo chính sách hoàn tiền; Hợp đồng không cam kết hoàn về phương thức thanh toán ban đầu.
 - Sản phẩm: hàng hóa số, dịch vụ trực tuyến do Bên B đăng bán, gắn nhãn “Bán bởi Seller – tên cửa hàng”, phân biệt với sản phẩm “Bán bởi sàn” do Bên A trực tiếp cung cấp.
 - Ví AI Markets (Ví): số dư của người dùng trên Nền tảng, là phương thức duy nhất để thanh toán đơn hàng.
 - Kênh người bán: khu vực quản lý dành cho Bên B (hồ sơ cửa hàng, xác minh, sản phẩm, đơn hàng, khiếu nại, mã giảm giá, thanh toán, rút tiền, sổ cái).
@@ -71,7 +71,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 5. Giá, đơn vị tiền tệ và mã giảm giá
 
-1. Giá phải nêu rõ đơn vị tính, phí bổ sung và điều kiện áp dụng. Giá thanh toán, hóa đơn và đối soát tại Việt Nam bằng VND; USD/CNY nếu hiển thị chỉ là ước tính tham khảo có nhãn rõ ràng.
+1. Giá phải nêu rõ đơn vị tính, phí bổ sung và điều kiện áp dụng. Giá niêm yết để tuân thủ, hóa đơn và đối soát tại Việt Nam bằng VND. Giao diện vẫn có thể hiển thị USD hoặc CNY như quy đổi tham khảo; lần sửa này không gỡ cách hiển thị đó. Nguồn tỷ giá hiển thị là báo giá Exchange Rate API mà máy chủ đang dùng. Khi chưa có báo giá, mức tham khảo trong mã hiển thị là 26.500 VND/USD. Chênh lệch tỷ giá theo tỷ giá đang hiển thị tại thời điểm giao dịch. Mức tham khảo không thay số VND đã xác nhận.
 
 2. Người mua thanh toán giá sau giảm (nếu có); phí sàn do Bên B chịu và không cộng thêm vào giá của Người mua.
 
@@ -79,7 +79,7 @@ d) Giấy phép tương ứng đối với hàng hóa, dịch vụ thuộc ngàn
 
 ## Điều 6. Thanh toán, phí dịch vụ và thuế
 
-1. Mọi đơn hàng được Người mua thanh toán bằng số dư dịch vụ AI Markets. Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có khi nội dung chuyển khoản khớp giao dịch ghi có. Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase; trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn Người mua sang thanh toán trên website. Số dư trả trước của Người mua không được rút và không được chuyển. Yêu cầu hoàn hợp pháp vẫn được xem xét; Hợp đồng không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu Bên B và hoa hồng tiếp thị liên kết được ghi sổ riêng. Bên A không lưu thông tin thẻ của Người mua.
+1. Đơn hàng trên nền tảng được Người mua thanh toán bằng số dư dịch vụ AI Markets, kể cả đơn của người bán. Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có khi nội dung chuyển khoản khớp giao dịch ghi có. Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase; trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn Người mua sang thanh toán trên website. Số dư trả trước của Người mua không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác. Hoàn tiền hợp pháp theo chính sách hoàn tiền; Hợp đồng không cam kết hoàn về phương thức thanh toán ban đầu. Chi trả Bên B và hoa hồng affiliate là khoản phải trả riêng, sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Bên A không phải ví điện tử và không phải tổ chức cung ứng dịch vụ trung gian thanh toán được cấp phép theo Nghị định 52/2024/NĐ-CP. Hợp đồng không khẳng định mô hình đã được cơ quan nhà nước chấp thuận theo nghị định đó. Bên A không lưu thông tin thẻ của Người mua.
 
 2. Phí sàn: mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho Bên B), lưu cố định tại thời điểm giao kết từng đơn hàng.
 
@@ -127,7 +127,7 @@ f) Hợp đồng này là hợp đồng điện tử giao kết trên hệ thố
 
 2. Điều kiện hoàn tiền theo từng loại sản phẩm thực hiện theo Quy chế (phần đã sử dụng theo mức sử dụng không được hoàn, trừ trường hợp tính sai hoặc lỗi dịch vụ được xác minh). Hoàn tiền không xóa đơn hàng gốc; hệ thống tạo bản ghi hoàn tiền riêng và điều chỉnh doanh thu, phí sàn, thuế tương ứng.
 
-3. Thời hạn giải quyết khiếu nại: tiếp nhận, cấp mã trong 24 giờ; xác minh, phân loại trong 01 ngày làm việc; Bên B phản hồi trong 02 ngày làm việc kể từ khi Bên A yêu cầu; ra quyết định trong 07 ngày làm việc kể từ khi nhận đủ hồ sơ; thực hiện quyết định ngay sau khi có quyết định.
+3. Thời hạn giải quyết khiếu nại: tiếp nhận, cấp mã trong 02 ngày làm việc; xác minh, phân loại trong 01 ngày làm việc; Bên B phản hồi trong 02 ngày làm việc kể từ khi Bên A yêu cầu; ra quyết định trong 07 ngày làm việc kể từ khi nhận đủ hồ sơ; thực hiện quyết định ngay sau khi có quyết định.
 
 4. Bên A hỗ trợ giải quyết tranh chấp trên cơ sở hồ sơ giao dịch, chính sách và bằng chứng; việc hỗ trợ không làm Bên A trở thành bên cung cấp sản phẩm của Bên B. Các bên có quyền yêu cầu xem xét lại trong 07 ngày kể từ khi nhận quyết định; Bên A trả lời trong 07 ngày làm việc.
 
@@ -201,7 +201,7 @@ i) Không mạo nhận là sản phẩm “Bán bởi sàn” hoặc dùng tên 
 
 1. Bên A xử lý dữ liệu cá nhân của Bên B và Người mua theo Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15, Nghị định số 356/2025/NĐ-CP và Quy chế. Ảnh giấy tờ tùy thân được xử lý như dữ liệu cá nhân nhạy cảm (lưu trong kho riêng, chỉ người có thẩm quyền xác minh được truy cập, hiển thị dạng che một phần).
 
-2. Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232) (trung tâm dữ liệu của 123HOST tại TP. Hồ Chí Minh, địa chỉ IP 103.97.127.39). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ (nội dung gửi tới nhà cung cấp mô hình AI, dữ liệu xử lý trên hạ tầng GPU ở nước ngoài) theo hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài.
+2. Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232), tại trung tâm dữ liệu của 123HOST ở TP. Hồ Chí Minh. Một phần web và API đặt tại Hostinger, Malaysia. Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ (nội dung gửi tới nhà cung cấp mô hình AI, dữ liệu xử lý trên hạ tầng GPU ở nước ngoài). Hợp đồng này không khẳng định hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài đã được nộp.
 
 3. Thời hạn lưu trữ tối thiểu: thông tin sản phẩm 01 năm; hợp đồng, đơn hàng, giao dịch, đối soát, hoàn tiền 03 năm kể từ ngày phát sinh; hồ sơ xác minh người bán trong thời gian hoạt động và 03 năm sau khi chấm dứt; khiếu nại, quyết định xử lý vi phạm 03 năm kể từ khi đóng; chứng từ kế toán, thuế theo pháp luật kế toán, thuế.
 

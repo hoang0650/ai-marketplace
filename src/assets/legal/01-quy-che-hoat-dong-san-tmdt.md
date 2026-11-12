@@ -1,6 +1,6 @@
 # QUY CHẾ HOẠT ĐỘNG SÀN GIAO DỊCH THƯƠNG MẠI ĐIỆN TỬ AI MARKETS
 
-> CÔNG TY TNHH GIẢI PHÁP · CÔNG NGHỆ PHGROUP · CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM · Độc lập – Tự do – Hạnh phúc · Số: 01/2026/QC-PHGROUP · Hồ Chí Minh, ngày …… tháng …… năm 2026
+> CÔNG TY TNHH GIẢI PHÁP · CÔNG NGHỆ PHGROUP · CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM · Độc lập – Tự do – Hạnh phúc · Số: 01/2026/QC-PHGROUP · Hồ Chí Minh, ngày 05 tháng 10 năm 2026
 
 **(https://aimarkets.vn và ứng dụng di động “AI Markets”)**
 
@@ -60,7 +60,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Người bán:** tổ chức, hộ kinh doanh, cá nhân đã đăng ký và được xác minh, đăng bán sản phẩm, dịch vụ trên nền tảng. Khi đăng ký, người bán bắt buộc chọn một trong ba loại: cá nhân kinh doanh, hộ kinh doanh, doanh nghiệp/tổ chức, và cung cấp mã số thuế (hộ kinh doanh, doanh nghiệp/tổ chức kèm giấy chứng nhận đăng ký kinh doanh); loại người bán là căn cứ xác định mức khấu trừ thuế.
 
-- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng được thanh toán bằng số dư nội bộ. Số dư trả trước không được rút tiền mặt và không được chuyển cho người khác. Số dư đã ghi có không vì vậy mà bị xóa. Người mua vẫn gửi được yêu cầu hoàn hợp pháp; khoản được duyệt ghi có vào số dư dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu.
+- **Người mua:** tổ chức, cá nhân có tài khoản, mua hoặc sử dụng sản phẩm, dịch vụ trên nền tảng; đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán. Số dư trả trước không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác. Số dư đã ghi có không vì vậy mà bị xóa. Người mua vẫn gửi được yêu cầu hoàn hợp pháp; khoản được duyệt ghi có vào số dư dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu.
 
 - **Người giới thiệu (affiliate, người tiếp thị liên kết):** một tư cách của tài khoản người dùng, không phải loại tài khoản riêng, không phải tuyến dưới và không phải khoản phải nộp tiền để tham gia. Người dùng đăng ký với tư cách này và chấp nhận chính sách; đăng ký không tự cấp mã, không tự duyệt eKYC và không tự duyệt chi trả. Mã và liên kết chỉ có sau khi nhân sự nội bộ duyệt hồ sơ. Hoa hồng từ 0% đến 25% giá sau giảm giá do người bán chi trả từ phần của người bán. Không có mức chi trả tối thiểu thương mại. Sau đối soát và yêu cầu hợp lệ, hoa hồng được chi bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Nghĩa vụ thuế của người nhận vẫn còn. Biểu mẫu hồ sơ nội bộ không phải xác thực điện tử đã hoàn tất.
 
@@ -74,7 +74,7 @@ Trong Quy chế này, các từ ngữ dưới đây được hiểu như sau:
 
 - **Chính sách sử dụng chấp nhận được (AUP):** các quy định về hàng hóa, dịch vụ cấm kinh doanh và hành vi bị cấm tại Mục XV của Quy chế này.
 
-- **Tín dụng dịch vụ AI Markets:** số dư nội bộ dùng để thanh toán đơn hàng trên nền tảng; không rút tiền mặt, không chuyển cho người khác và không sinh lãi. Website ghi có số dư sau khi đối soát chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Trên ứng dụng, nạp ví chỉ qua mua trong ứng dụng (Apple In-App Purchase hoặc Google Play Billing). Số dư đã ghi có không bị xóa vì không được rút. Yêu cầu hoàn tiền hợp pháp là thủ tục riêng: khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết nằm trên sổ riêng và được chi trả riêng.
+- **Tín dụng dịch vụ AI Markets:** số dư nội bộ dùng để thanh toán đơn hàng trên nền tảng, kể cả đơn của người bán; không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác và không sinh lãi. Công ty không phải ví điện tử và không phải tổ chức cung ứng dịch vụ trung gian thanh toán được cấp phép theo Nghị định 52/2024/NĐ-CP. Quy chế không khẳng định mô hình đã được cơ quan nhà nước chấp thuận theo nghị định đó. Website ghi có số dư sau khi đối soát chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Trên ứng dụng, nạp ví chỉ qua mua trong ứng dụng (Apple In-App Purchase hoặc Google Play Billing). Số dư đã ghi có không bị xóa vì không được rút. Yêu cầu hoàn tiền hợp pháp là thủ tục riêng: khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết nằm trên sổ riêng và được chi trả riêng.
 
 - **Mã giảm giá (voucher, coupon):** khoản giảm trừ do người bán hoặc nền tảng áp dụng vào giá trị đơn hàng theo khoản 2 Mục XI.
 
@@ -485,7 +485,7 @@ Nền tảng áp dụng hạn mức (quota), giới hạn tần suất (rate lim
 
 ### 1. Đối tác và phương thức thanh toán
 
-Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có sau khi nội dung chuyển khoản khớp giao dịch ghi có. Mọi đơn hàng được thanh toán bằng số dư nội bộ. Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase; trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Số dư trả trước của người mua không được rút và không được chuyển. Yêu cầu hoàn tiền hợp pháp vẫn được tiếp nhận; khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết được ghi sổ riêng và chi trả riêng. Hợp đồng dịch vụ giao kết trên hệ thống là hợp đồng điện tử và có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP. Mã QR nạp ví là Hình 14.
+Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có sau khi nội dung chuyển khoản khớp giao dịch ghi có. Đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán. Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase; trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Số dư trả trước của người mua không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác. Yêu cầu hoàn tiền hợp pháp vẫn được tiếp nhận; khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết được ghi sổ riêng và chi trả riêng. Hợp đồng dịch vụ giao kết trên hệ thống là hợp đồng điện tử và có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP. Mã QR nạp ví là Hình 14.
 
 Công ty đã thiết lập nhận khoản chi trả từ Apple và Google về tài khoản ngân hàng đứng tên Công ty. Theo đối chiếu ngày 12/11/2026 trên App Store Connect, Thỏa thuận Paid Apps đang trạng thái Active (hiệu lực từ 26/10/2026 đến 08/07/2027); tài khoản ngân hàng gắn với thỏa thuận là Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank), số tài khoản 395951335, chủ tài khoản Công ty TNHH Giải pháp Công nghệ PHGroup, quốc gia Việt Nam, đồng tiền VND, trạng thái Active. Trên Google Play Console, phương thức nhận thanh toán chính là chuyển khoản ngân hàng đến tài khoản kết thúc bằng 335, đứng tên PHGROUP TECHNOLOGY SOLUTIONS COMPANY LIMITED (cùng pháp nhân). Các ảnh dưới đây minh họa việc đã thiết lập kênh nhận tiền; không phải chứng từ khoản chi trả đã phát sinh (tại thời điểm đối chiếu, Google Play Console hiển thị thu nhập 0,00 USD) và không phải chứng từ đã chi trả cho người bán.
 
@@ -497,7 +497,7 @@ Công ty đã thiết lập nhận khoản chi trả từ Apple và Google về 
 
 ![Hình 25. Google Play Console – phương thức thanh toán chính, chuyển khoản đến tài khoản …335 (12/11/2026)](assets/legal/img/04-google-play-phuong-thuc-thanh-toan.png)
 
-Sau khi Công ty nhận được khoản Apple hoặc Google chi trả vào tài khoản nêu trên, Công ty thực hiện chi trả doanh thu hợp lệ cho người bán và hoa hồng affiliate theo Hợp đồng dịch vụ thương mại điện tử và quy trình đối soát tại Điều 7 (đối soát, tạm giữ 48 giờ, chi trả bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ)). IAP vẫn chỉ là kênh nạp số dư nội bộ trong ứng dụng, không phải kênh thanh toán chung cho sản phẩm của người bán bên thứ ba. Việc đã thiết lập tài khoản nhận tiền không thay thế chứng từ đối soát và chứng từ chi trả thực tế.
+Sau khi Công ty nhận được khoản Apple hoặc Google chi trả vào tài khoản nêu trên, Công ty thực hiện chi trả doanh thu hợp lệ cho người bán và hoa hồng affiliate theo Hợp đồng dịch vụ thương mại điện tử và quy trình đối soát tại Điều 7 (đối soát, tạm giữ 48 giờ, chi trả bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ)). IAP vẫn chỉ là kênh nạp số dư nội bộ trong ứng dụng. Đơn hàng trên nền tảng, kể cả đơn của người bán, được thanh toán bằng số dư nội bộ đó. Việc đã thiết lập tài khoản nhận tiền không thay thế chứng từ đối soát và chứng từ chi trả thực tế.
 
 | Kênh | Bên xử lý khoản tiền | Phương thức | Mục đích |
 |---|---|---|---|
@@ -510,7 +510,7 @@ Nền tảng không lưu thông tin thẻ của người mua. Nền tảng hiệ
 
 ### 2. Giá và mã giảm giá
 
-a) Giá thanh toán, hóa đơn và đối soát tại Việt Nam được ghi bằng **VND**. Giao diện hiện vẫn quy đổi và hiển thị USD hoặc CNY. Điều 3 Thông tư 32/2013/TT-NHNN, theo bản hợp nhất đã gồm cả quy đổi hoặc điều chỉnh giá, không cho thực hiện các hình thức đó bằng ngoại hối trên lãnh thổ Việt Nam trừ trường hợp ở Điều 4 Thông tư này. Nhãn tham khảo không được Quy chế ghi là ngoại lệ. Việc bỏ hiển thị ngoại tệ là quyết định riêng, chưa làm trong lần sửa này. Khi nguồn tỷ giá tạm thời không khả dụng, hệ thống dùng tỷ giá thành công gần nhất còn hiệu lực hoặc tạm ngừng báo giá quy đổi; không ấn định cứng một tỷ giá. Số tiền VND tại bước xác nhận thanh toán là số tiền giao dịch đang dùng.
+a) Giá niêm yết để tuân thủ, hóa đơn và thanh toán trong nước được ghi bằng **VND**. Giao diện vẫn hiển thị USD hoặc CNY như quy đổi tham khảo; lần sửa này không gỡ cách hiển thị đó. Nguồn tỷ giá hiển thị là báo giá Exchange Rate API mà máy chủ đang dùng. Khi chưa có báo giá, mức tham khảo trong mã hiển thị là 26.500 VND/USD. Chênh lệch tỷ giá theo tỷ giá đang hiển thị tại thời điểm giao dịch. Mức tham khảo không thay số VND đã xác nhận. Điều 3 Thông tư 32/2013/TT-NHNN, theo bản hợp nhất đã gồm cả quy đổi hoặc điều chỉnh giá, không cho thực hiện các hình thức đó bằng ngoại hối trên lãnh thổ Việt Nam trừ trường hợp ở Điều 4 Thông tư này. Nhãn tham khảo không được Quy chế ghi là ngoại lệ. Số tiền VND tại bước xác nhận thanh toán là số tiền giao dịch đang dùng.
 
 b) Giá hiển thị phải nêu rõ: loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Người mua thanh toán **giá sau giảm (nếu có)**; phí sàn do người bán chịu và không cộng thêm vào giá của người mua.
 
@@ -520,11 +520,11 @@ c) **Mã giảm giá (voucher):** người bán có thể tạo mã giảm giá 
 
 a) Trên website, người mua nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335 của Công ty. Trên ứng dụng, người mua dùng hệ thống thanh toán trong ứng dụng theo khoản 4 Mục này. Giao dịch được ghi nhận bằng VND sau khi khoản chuyển hoặc biên nhận trong ứng dụng được xác nhận. USD/CNY trên giao diện là quy đổi đang hiển thị, không được ghi là ngoại lệ của Điều 3 Thông tư 32/2013/TT-NHNN.
 
-b) Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
+b) Số dư ví là **phương thức duy nhất để thanh toán đơn hàng** trên nền tảng, kể cả đơn của người bán, gồm cả trừ dần phí sử dụng (API, GPU, máy chủ trò chơi, token agent) và phí thuê bao agent tự gia hạn. Người mua cần duy trì đủ số dư ví đối với dịch vụ trả theo mức sử dụng hoặc thuê bao tự gia hạn.
 
-c) Số dư trả trước không được rút tiền mặt, không được chuyển cho người khác và không sinh lãi. Số dư đã có được giữ nguyên, kể cả khoản nạp qua Apple hoặc Google. Yêu cầu hoàn tiền đơn hàng là thủ tục khác: khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không hứa hoàn về đúng phương thức thanh toán ban đầu.
+c) Số dư trả trước của người mua không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác và không sinh lãi. Số dư đã có được giữ nguyên, kể cả khoản nạp qua Apple hoặc Google. Hoàn tiền hợp pháp theo chính sách hoàn tiền; khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Quy chế không cam kết hoàn về phương thức thanh toán ban đầu.
 
-d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát; không phải tài khoản tiền gửi hay tài khoản thanh toán, không được trả lãi.
+d) Số dư ví và sổ cái nội bộ phản ánh dữ liệu giao dịch và nghĩa vụ đối soát, và không được trả lãi. Công ty không phải ví điện tử và không phải tổ chức cung ứng dịch vụ trung gian thanh toán được cấp phép theo Nghị định 52/2024/NĐ-CP. Quy chế không khẳng định mô hình đã được cơ quan nhà nước chấp thuận theo nghị định đó. Chi trả người bán và hoa hồng affiliate là khoản phải trả riêng, sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ).
 
 ### 4. Thanh toán trong ứng dụng
 
@@ -545,7 +545,7 @@ c) Khoản chuyển khoản VietQR được đối chiếu với giao dịch ghi
 | Mở, duy trì tài khoản | Miễn phí |
 | Phí sàn với người bán bên thứ ba | Mặc định 20% giá trị đơn hàng sau giảm giá (mức khác theo thỏa thuận riêng được công bố cho người bán), lưu cố định tại thời điểm giao kết từng đơn. Phí sàn không phải là thuế |
 | Hoa hồng affiliate (tùy chọn) | Người bán tự nguyện đặt từ 0% đến 25% giá trị đơn hàng sau giảm giá cho từng sản phẩm hoặc toàn gian hàng (mặc định 0% = không tham gia). Hoa hồng chỉ phát sinh với đơn hàng được ghi nhận cho người giới thiệu, do người bán chi trả từ doanh thu của mình (không trừ vào phí sàn, không thay đổi thuế khấu trừ) và được lưu cố định tại thời điểm đặt hàng (chi tiết tại khoản 11 Mục này) |
-| Dịch vụ AI agent (Bán bởi sàn) | 199.000 VNĐ/agent/30 ngày (hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị); phí token khi dùng mô hình của nền tảng = giá gốc nhà cung cấp mô hình + 25%; dùng khóa API riêng (BYOK) không thu phí token |
+| Dịch vụ AI agent (Bán bởi sàn) | 199.000 VNĐ/agent/30 ngày (hoặc giá trị tương đương theo đơn vị tiền tệ hiển thị); phí token khi dùng mô hình của nền tảng = giá gốc nhà cung cấp mô hình cộng 25%; dùng khóa API riêng (BYOK) không thu phí token |
 | Dịch vụ Bán bởi sàn khác (API, GPU, máy chủ trò chơi) | Giá niêm yết trên trang sản phẩm theo đơn vị sử dụng (token, ký tự, phút, giờ) |
 | Phí kho ứng dụng | Không áp dụng đối với đơn hàng. Apple In-App Purchase / Google Play Billing chỉ dùng để nạp tiền vào ví AI Markets; đơn hàng chỉ thanh toán bằng số dư ví; không khấu trừ phí kho ứng dụng trên đơn hàng hay từ doanh thu người bán |
 | Thuế khấu trừ | Theo loại người bán, tính trên giá sau giảm giá, khấu trừ khi đơn hàng hoàn tất (chi tiết tại khoản 3 Mục XII): khoản thuế theo pháp luật có hiệu lực tại thời điểm phát sinh; Quy chế không công bố bảng tỷ lệ đã đối chiếu. Tổng khấu trừ = phí sàn 20% + thuế theo loại người bán, cộng hoa hồng affiliate 0–25% nếu người bán tham gia; người bán tự chịu trách nhiệm về nghĩa vụ thuế khác theo pháp luật |
@@ -724,7 +724,7 @@ b) Yêu cầu gửi sau thời hạn trên vẫn được tiếp nhận; việc 
 
 a) Người mua gửi yêu cầu hoàn tiền hoặc khiếu nại tại trang đơn hàng hoặc https://aimarkets.vn/complaints/new.
 
-b) Nền tảng xác nhận tiếp nhận trong **24 giờ**, xác minh đơn hàng, thanh toán, mức sử dụng; lấy ý kiến người bán nếu cần.
+b) Nền tảng xác nhận tiếp nhận trong **02 ngày làm việc**, xác minh đơn hàng, thanh toán, mức sử dụng; lấy ý kiến người bán nếu cần.
 
 c) Nền tảng ra quyết định trong **07 ngày làm việc** kể từ khi nhận đủ hồ sơ, theo Mục XVII của Quy chế này.
 
@@ -969,7 +969,7 @@ Không gửi mật khẩu, khóa API, khóa SSH, khóa bí mật hoặc dữ li�
 
 | Bước | Nội dung | Thời hạn |
 |---|---|---|
-| 1. Tiếp nhận | Xác nhận đã nhận hồ sơ, cấp mã | Trong 24 giờ |
+| 1. Tiếp nhận | Xác nhận đã nhận hồ sơ, cấp mã | Trong 02 ngày làm việc |
 | 2. Xác minh, phân loại | Kiểm tra đơn hàng, thanh toán, mức sử dụng; yêu cầu bổ sung nếu thiếu | Trong 01 ngày làm việc |
 | 3. Người bán phản hồi | Với khiếu nại người mua – người bán | Trong 02 ngày làm việc kể từ khi nền tảng yêu cầu |
 | 4. Xem xét, quyết định | Đánh giá bằng chứng; quyết định chấp nhận, từ chối hoặc hòa giải | Trong 07 ngày làm việc kể từ khi nhận đủ hồ sơ |
@@ -1059,7 +1059,7 @@ Nền tảng **không mua bán dữ liệu cá nhân**.
 
 ### 7. Chuyển dữ liệu ra nước ngoài
 
-Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (khoản 5 Mục này) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Nền tảng lập hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài và lựa chọn nhà cung cấp có cam kết bảo mật theo quy định về bảo vệ dữ liệu cá nhân và an ninh mạng.
+Cơ sở dữ liệu và dữ liệu cá nhân của người dùng được lưu trữ tại Việt Nam trên máy chủ của Công ty TNHH Lưu Trữ Số (123HOST, mã số thuế 0312088232). Dữ liệu chỉ được chuyển ra nước ngoài trong phạm vi cần thiết để cung cấp dịch vụ: nội dung người dùng gửi tới nhà cung cấp mô hình AI (khoản 5 Mục này) và dữ liệu xử lý trên hạ tầng GPU đặt tại nước ngoài. Quy chế này không khẳng định hồ sơ đánh giá tác động chuyển dữ liệu cá nhân ra nước ngoài đã được nộp.
 
 ### 8. Biện pháp bảo vệ
 

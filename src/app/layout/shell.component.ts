@@ -65,6 +65,22 @@ export class ShellComponent {
     { path: '/complaints/new', key: 'complaint.cta.file' },
     { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms' },
   ];
+  /** Decree 248/2026 Articles 4–16. Điều 16 shares the Điều 15 page and uses an anchor. */
+  readonly footerDecreePolicies: { path: string; fragment?: string; key: string }[] = [
+    { path: '/legal/thong-tin-chu-quan-nen-tang', key: 'footer.decree248.d4' },
+    { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.decree248.d5' },
+    { path: '/legal/quyen-va-nghia-vu-cac-ben', key: 'footer.decree248.d6' },
+    { path: '/legal/chinh-sach-khieu-nai-tranh-chap', key: 'footer.decree248.d7' },
+    { path: '/legal/chinh-sach-gia-ca', key: 'footer.decree248.d8' },
+    { path: '/legal/dieu-kien-va-han-che-cung-cap', key: 'footer.decree248.d9' },
+    { path: '/legal/chinh-sach-thanh-toan-doi-soat', key: 'footer.decree248.d10' },
+    { path: '/legal/chinh-sach-xep-hang-uu-tien-hien-thi', key: 'footer.decree248.d11' },
+    { path: '/legal/quy-che-livestream-ban-hang', key: 'footer.decree248.d12' },
+    { path: '/legal/chinh-sach-giao-nhan-san-pham-so', key: 'footer.decree248.d13' },
+    { path: '/legal/chinh-sach-hoan-tien', key: 'footer.decree248.d14' },
+    { path: '/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu', key: 'footer.decree248.d15' },
+    { path: '/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu', fragment: 'dieu-16', key: 'footer.decree248.d16' },
+  ];
   /** "Popular" column of the Categories mega-menu (former top-level Agent / Model links + key hubs). */
   readonly quickLinks = [
     { path: '/hire-agent/marketplace', key: 'hdr.quick.agent', desc: 'hdr.quick.agentDesc', icon: 'bot', cat: '' },

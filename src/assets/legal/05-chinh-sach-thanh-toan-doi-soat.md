@@ -15,7 +15,7 @@
 
 ## Điều 1. Phương thức thanh toán
 
-Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335, chủ tài khoản Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có sau khi nội dung chuyển khoản khớp giao dịch ghi có. Mọi đơn hàng được thanh toán bằng số dư nội bộ.
+Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335, chủ tài khoản Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có sau khi nội dung chuyển khoản khớp giao dịch ghi có. Đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán.
 
 Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase. Trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website.
 
@@ -29,9 +29,9 @@ Công ty đã thiết lập nhận khoản chi trả từ Apple và Google về 
 
 ![Hình 4. Google Play Console – phương thức thanh toán chính, chuyển khoản đến tài khoản …335 (12/11/2026)](assets/legal/img/04-google-play-phuong-thuc-thanh-toan.png)
 
-Sau khi Công ty nhận được khoản Apple hoặc Google chi trả vào tài khoản nêu trên, Công ty thực hiện chi trả doanh thu hợp lệ cho người bán và hoa hồng affiliate theo Hợp đồng dịch vụ thương mại điện tử và quy trình đối soát tại Điều 7 (đối soát, tạm giữ 48 giờ, chi trả bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ)). IAP vẫn chỉ là kênh nạp số dư nội bộ trong ứng dụng, không phải kênh thanh toán chung cho sản phẩm của người bán bên thứ ba. Việc đã thiết lập tài khoản nhận tiền không thay thế chứng từ đối soát và chứng từ chi trả thực tế.
+Sau khi Công ty nhận được khoản Apple hoặc Google chi trả vào tài khoản nêu trên, Công ty thực hiện chi trả doanh thu hợp lệ cho người bán và hoa hồng affiliate theo Hợp đồng dịch vụ thương mại điện tử và quy trình đối soát tại Điều 7 (đối soát, tạm giữ 48 giờ, chi trả bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ)). IAP vẫn chỉ là kênh nạp số dư nội bộ trong ứng dụng. Đơn hàng trên nền tảng, kể cả đơn của người bán, được thanh toán bằng số dư nội bộ đó. Việc đã thiết lập tài khoản nhận tiền không thay thế chứng từ đối soát và chứng từ chi trả thực tế.
 
-Số dư trả trước của người mua không được rút tiền mặt và không được chuyển cho người khác. Số dư đã ghi có không vì vậy mà bị xóa. Yêu cầu hoàn tiền hợp pháp vẫn được tiếp nhận; khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu. Doanh thu người bán và hoa hồng người tiếp thị liên kết được ghi sổ riêng và chi trả riêng.
+Số dư trả trước của người mua không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người khác. Số dư đã ghi có không vì vậy mà bị xóa. Hoàn tiền hợp pháp theo chính sách hoàn tiền; trang này không cam kết hoàn về phương thức thanh toán ban đầu. Khoản được duyệt ghi có vào tín dụng dịch vụ dùng trên sàn. Chi trả người bán và hoa hồng affiliate là khoản phải trả riêng, sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ).
 
 | Kênh | Tài khoản hoặc kênh | Phương thức | Mục đích |
 |---|---|---|---|
@@ -46,16 +46,16 @@ Nền tảng không lưu thông tin thẻ của người mua.
 
 ## Điều 2. Giá và mã giảm giá
 
-1. Giá bán, số tiền thanh toán, hóa đơn và đối soát tại Việt Nam được ghi bằng **đồng Việt Nam (VND)**. Giao diện hiện vẫn quy đổi USD hoặc CNY. Điều 3 Thông tư 32/2013/TT-NHNN, bản hợp nhất đã gồm cả quy đổi hoặc điều chỉnh giá, không cho thực hiện bằng ngoại hối trên lãnh thổ Việt Nam trừ Điều 4. Nhãn tham khảo không được trang này ghi là ngoại lệ. Việc chỉ còn hiển thị VND chưa được làm trong lần sửa này. Số tiền VND tại bước xác nhận là số tiền giao dịch đang dùng.
+1. Giá niêm yết để tuân thủ, số tiền thanh toán, hóa đơn và đối soát tại Việt Nam được ghi bằng **đồng Việt Nam (VND)**. Giao diện vẫn hiển thị USD hoặc CNY như quy đổi tham khảo; lần sửa này không gỡ cách hiển thị đó. Nguồn tỷ giá hiển thị là báo giá Exchange Rate API mà máy chủ đang dùng. Khi chưa có báo giá, mức tham khảo trong mã hiển thị là 26.500 VND/USD. Chênh lệch tỷ giá theo tỷ giá đang hiển thị tại thời điểm giao dịch. Mức tham khảo không thay số VND đã xác nhận. Điều 3 Thông tư 32/2013/TT-NHNN, bản hợp nhất đã gồm cả quy đổi hoặc điều chỉnh giá, không cho thực hiện bằng ngoại hối trên lãnh thổ Việt Nam trừ Điều 4. Nhãn tham khảo không được trang này ghi là ngoại lệ. Số tiền VND tại bước xác nhận là số tiền giao dịch đang dùng.
 2. Giá hiển thị phải nêu rõ: loại tiền, đơn vị tính (token, ký tự, phút, giờ, chu kỳ 30 ngày…), phí bổ sung nếu có và điều kiện áp dụng. Người mua thanh toán giá sau giảm (nếu có); phí sàn do người bán chịu và không cộng thêm vào giá của người mua.
 3. Mã giảm giá: khoản giảm giá được áp dụng vào giá trị đơn hàng trước khi tính phí sàn; khoản giảm giá do người bán phát hành do người bán chịu. Giỏ hàng có thể hiển thị khoản giảm giá của người bán và khoản giảm giá của nền tảng (“Platform discount”).
 
 ## Điều 3. Tín dụng dịch vụ của người mua
 
 1. Người mua nạp tín dụng dịch vụ trên website bằng VietQR và trên ứng dụng bằng hệ thống thanh toán trong ứng dụng. Số tiền có hiệu lực là số VND của giao dịch được xác nhận.
-2. Số dư dịch vụ là khoản ghi trên sổ để thanh toán đơn hàng trên nền tảng, gồm cả trừ dần phí sử dụng và phí thuê bao agent khi người dùng đã chấp thuận gia hạn. Việc gọi số dư là “ví” trên giao diện không quyết định số dư đó nằm trong hay ngoài Nghị định 52/2024/NĐ-CP.
-3. Người mua không rút số dư trả trước, không chuyển số dư cho người dùng khác, không đổi số dư sang ngoại tệ và không được trả lãi. Số dư đã có được giữ, kể cả khoản nạp qua Apple hoặc Google. Yêu cầu hoàn là thủ tục khác: khoản được duyệt ghi có vào tín dụng dịch vụ dùng được trên sàn. Trang này không hứa hoàn về đúng phương thức thanh toán ban đầu. Chi tiết tại [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md).
-4. Khoản phải trả người bán và hoa hồng affiliate được hạch toán riêng với số dư của người mua. Số dư và sổ cái nội bộ không phải tiền gửi, tài khoản thanh toán hay phương tiện thanh toán.
+2. Số dư dịch vụ là khoản ghi trên sổ để thanh toán đơn hàng trên nền tảng, kể cả đơn của người bán, gồm cả trừ dần phí sử dụng và phí thuê bao agent khi người dùng đã chấp thuận gia hạn. Giao diện có thể gọi số dư là “ví”. Công ty không phải ví điện tử và không phải tổ chức cung ứng dịch vụ trung gian thanh toán được cấp phép theo Nghị định 52/2024/NĐ-CP. Trang này không khẳng định mô hình đã được cơ quan nhà nước chấp thuận theo nghị định đó.
+3. Người mua không rút số dư trả trước thành tiền, không chuyển nhượng hoặc chuyển số dư cho người dùng khác, không đổi số dư sang ngoại tệ và không được trả lãi. Số dư đã có được giữ, kể cả khoản nạp qua Apple hoặc Google. Hoàn tiền hợp pháp theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md); trang này không cam kết hoàn về phương thức thanh toán ban đầu. Khoản được duyệt ghi có vào tín dụng dịch vụ dùng được trên sàn.
+4. Chi trả người bán và hoa hồng affiliate là khoản phải trả riêng, sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ).
 
 ## Điều 4. Thanh toán trong ứng dụng
 
@@ -74,7 +74,7 @@ Trên ứng dụng, Apple In-App Purchase và Google Play Billing chỉ áp dụ
 3. Khi đơn hoàn tất, khoản phải trả người bán và hoa hồng tiếp thị liên kết, nếu có, được tạm giữ 48 giờ. Thời gian này là tạm giữ đối soát, không phải tài khoản escrow hay bảo lãnh ngân hàng. Chỉ giữ tiếp phần đang tranh chấp, và phải báo lý do cùng thời hạn rà soát.
 4. Bảng đối soát của từng đơn ghi: mã đơn, doanh thu, phí, thuế, hủy hoặc hoàn, tạm giữ, và thực nhận.
 5. Sau khi hết thời gian tạm giữ và có yêu cầu chi trả hợp lệ, Công ty chi bằng VND vào tài khoản đứng tên đúng người bán hoặc người tiếp thị liên kết trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Khoản đang tranh chấp hoặc chưa đủ hồ sơ không nằm trong thời hạn này. Không có mức chi trả tối thiểu thương mại đối với hoa hồng.
-6. Ba sổ được giữ riêng: doanh thu người bán, hoa hồng tiếp thị liên kết, và số dư trả trước của người mua. Số dư trả trước không được rút tiền mặt và không được chuyển cho người dùng khác.
+6. Ba sổ được giữ riêng: doanh thu người bán, hoa hồng tiếp thị liên kết, và số dư trả trước của người mua. Số dư trả trước không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người dùng khác.
 7. Hợp đồng cung cấp dịch vụ giao kết trên hệ thống là hợp đồng điện tử. Bản ghi giao kết có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP.
 
 ## Điều 7. Chi trả cho người bán
