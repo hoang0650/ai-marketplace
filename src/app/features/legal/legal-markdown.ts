@@ -107,15 +107,37 @@ export function renderLegalMarkdown(source: string): string {
       continue;
     }
 
-    if (/^\s*[-*]\s+/.test(line) || /^\s*\d+\.\s+/.test(line)) {
-      const ordered = /^\s*\d+\.\s+/.test(line);
+    // Blank lines stay inside a list when the next content line is the same kind.
+    // A heading, paragraph, image, table, quote, rule, or fence ends the list.
+    if (isOrderedItem(line) || isUnorderedItem(line)) {
+      const ordered = isOrderedItem(line);
       const items: string[] = [];
-      while (i < lines.length && (ordered ? /^\s*\d+\.\s+/.test(lines[i]) : /^\s*[-*]\s+/.test(lines[i]))) {
+      const startDigits = ordered ? orderedStartDigits(line) : '';
+      while (i < lines.length) {
+        if (!lines[i].trim()) {
+          const next = nextNonEmpty(lines, i + 1);
+          if (next >= lines.length) break;
+          const same = ordered ? isOrderedItem(lines[next]) : isUnorderedItem(lines[next]);
+          if (!same) break;
+          i = next;
+          continue;
+        }
+        const same = ordered ? isOrderedItem(lines[i]) : isUnorderedItem(lines[i]);
+        if (!same) break;
         items.push(lines[i].replace(/^\s*(?:[-*]|\d+\.)\s+/, ''));
         i += 1;
       }
       const tag = ordered ? 'ol' : 'ul';
-      out.push(`<${tag}>${items.map((it) => `<li>${inline(it)}</li>`).join('')}</${tag}>`);
+      const startAttr = ordered && !/^0*1$/.test(startDigits) ? ` start="${startDigits}"` : '';
+      out.push(`<${tag}${startAttr}>${items.map((it) => `<li>${inline(it)}</li>`).join('')}</${tag}>`);
+      continue;
+    }
+
+    // Raw HTML in the source is escaped, so the company closing is wrapped here.
+    const signatory = readSignatory(lines, i);
+    if (signatory) {
+      out.push(signatory.html);
+      i = signatory.next;
       continue;
     }
 
@@ -147,6 +169,62 @@ export function renderLegalMarkdown(source: string): string {
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function isOrderedItem(line: string): boolean {
+  return /^\s*\d+\.\s+/.test(line);
+}
+
+function isUnorderedItem(line: string): boolean {
+  return /^\s*[-*]\s+/.test(line);
+}
+
+function orderedStartDigits(line: string): string {
+  const match = /^\s*(\d+)\.\s+/.exec(line);
+  return match ? match[1] : '1';
+}
+
+function nextNonEmpty(lines: string[], from: number): number {
+  let j = from;
+  while (j < lines.length && !lines[j].trim()) j += 1;
+  return j;
+}
+
+function isSignatoryBarrier(line: string): boolean {
+  const trimmed = line.trim();
+  if (line.startsWith('```')) return true;
+  if (trimmed.startsWith('---') && trimmed.replace(/-/g, '') === '') return true;
+  if (/^#{1,4}\s+/.test(trimmed)) return true;
+  if (line.startsWith('&gt; ')) return true;
+  if (/^!\[([^\]]*)\]\((assets\/legal\/img\/[A-Za-z0-9._-]+\.(?:png|jpe?g|webp))\)\s*$/.test(trimmed)) {
+    return true;
+  }
+  if (isOrderedItem(line) || isUnorderedItem(line)) return true;
+  if (line.includes('|')) return true;
+  return false;
+}
+
+/** Company closing only: title, wet-ink note, printed name, chức vụ. */
+function readSignatory(lines: string[], start: number): { html: string; next: number } | null {
+  if (lines[start].trim() !== 'ĐẠI DIỆN CÔNG TY') return null;
+  const indexes = [start];
+  let cursor = start;
+  for (let n = 0; n < 3; n += 1) {
+    const next = nextNonEmpty(lines, cursor + 1);
+    if (next >= lines.length) return null;
+    indexes.push(next);
+    cursor = next;
+  }
+  const parts = indexes.map((index) => lines[index].trim());
+  if (parts[1] !== '(Ký, ghi rõ họ tên và đóng dấu)') return null;
+  if (isSignatoryBarrier(lines[indexes[2]])) return null;
+  if (!parts[3].startsWith('Chức vụ:')) return null;
+  if (!parts[3].slice('Chức vụ:'.length).trim()) return null;
+  const html =
+    '<div class="legal-signatory">' +
+    parts.map((part) => `<p>${inline(part)}</p>`).join('') +
+    '</div>';
+  return { html, next: indexes[3] + 1 };
 }
 
 function splitTableRow(line: string): string[] {
