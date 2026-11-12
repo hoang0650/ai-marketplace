@@ -7,6 +7,7 @@ import {
   buyerPrepaidCashoutBlocked,
   cashoutErrorKind,
   earnedPayoutCap,
+  hasEarnedPayoutPersona,
   payoutIdentityRequired,
 } from '../src/app/features/wallet/buyer-credit.ts';
 
@@ -54,11 +55,15 @@ test('role separation: buyers skip identity; sellers and affiliates keep it', ()
   assert.equal(payoutIdentityRequired('freelancer'), true);
   assert.equal(payoutIdentityRequired('employer'), true);
   assert.equal(payoutIdentityRequired('admin'), true);
+  assert.equal(payoutIdentityRequired('affiliate'), true);
   assert.deepEqual(IDENTITY_REQUIRED_FOR, ['seller_approval', 'seller_payout', 'affiliate_link', 'affiliate_payout']);
 });
 
 test('wallet summary flags close buyer cash-out and cap prepaid', () => {
   assert.equal(buyerCashoutClosed({ role: 'buyer', buyerCashoutAllowed: false, prepaidWithdrawable: false, payableAmount: 0 }), true);
+  assert.equal(buyerCashoutClosed({ role: 'buyer', persona: 'buyer', payableAmount: 50 }), true);
+  assert.equal(hasEarnedPayoutPersona(['affiliate']), false);
+  assert.equal(buyerCashoutClosed({ role: 'affiliate', persona: 'affiliate', buyerCashoutAllowed: false, payableAmount: 0 }), true);
   assert.equal(buyerCashoutClosed({ role: 'seller', personas: ['seller'], buyerCashoutAllowed: false, payableAmount: 12.5 }), false);
   assert.equal(buyerCashoutClosed({ persona: 'buyer', role: 'seller', personas: ['seller'], payableAmount: 12.5 }), true);
   assert.equal(earnedPayoutCap({ available: 40, payableAmount: 12.5, prepaidWithdrawable: false }), 12.5);

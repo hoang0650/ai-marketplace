@@ -353,13 +353,27 @@ export interface User {
   /** none | draft | pending | verified | rejected */
   kycStatus?: string;
   emailVerified?: boolean;
-  /** Present when role is affiliate. A code is not issued while electronicIdentity is not_implemented. */
+  /**
+   * Public view from auth. role affiliate sets intent only: no code, no eKYC
+   * approval, no commission, and no payout approval.
+   */
   affiliateOnboarding?: {
-    emailVerified?: boolean;
-    ekycStatus?: string;
-    taxCodeStatus?: string;
-    electronicIdentity?: string;
-    codeIssued?: boolean;
+    role?: string;
+    intent?: boolean;
+    labelVi?: string;
+    labelEn?: string;
+    canSell?: boolean;
+    canBuy?: boolean;
+    codeIssuedAtSignup?: boolean;
+    readyForCode?: boolean;
+    codeIssuance?: string;
+    steps?: {
+      emailVerified?: { done?: boolean; required?: boolean };
+      internalKyc?: { done?: boolean; required?: boolean; kind?: string };
+      taxCode?: { done?: boolean; required?: boolean; status?: string; grantsElectronicIdentity?: boolean };
+      policyAccepted?: { done?: boolean; required?: boolean; version?: string };
+      statutoryElectronicIdentity?: { done?: boolean; required?: boolean; status?: string };
+    };
   };
   hasPassword?: boolean;
   googleLinked?: boolean;

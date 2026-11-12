@@ -10,7 +10,7 @@ import { ADMIN_PEOPLE_MESSAGES } from './admin-people.messages';
 
 type View = 'users' | 'products';
 const SIZES = [20, 50, 100];
-const USER_ROLES = ['buyer', 'seller', 'admin'];
+const USER_ROLES = ['buyer', 'seller', 'affiliate', 'admin'];
 const USER_STATUSES = ['active', 'suspended', 'blocked', 'inactive', 'deleted'];
 const PRODUCT_STATUSES = ['published', 'unpublished', 'pending_review', 'suspended', 'blocked', 'inactive'];
 

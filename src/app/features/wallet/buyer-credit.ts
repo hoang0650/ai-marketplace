@@ -6,9 +6,19 @@ export function buyerPrepaidCashoutBlocked(input: {
   return input.persona === 'buyer' || input.policyPersona === 'buyer';
 }
 
-/** Seller, talent, freelancer, employer and admin payouts still require identity. Ordinary buyers do not. */
+/**
+ * Seller, talent, freelancer, employer, admin and affiliate codes or payouts still require identity.
+ * Ordinary buyers do not. Affiliate signup does not count as verified eKYC.
+ */
 export function payoutIdentityRequired(role: string | null | undefined): boolean {
-  return role === 'seller' || role === 'talent' || role === 'freelancer' || role === 'employer' || role === 'admin';
+  return (
+    role === 'seller' ||
+    role === 'talent' ||
+    role === 'freelancer' ||
+    role === 'employer' ||
+    role === 'admin' ||
+    role === 'affiliate'
+  );
 }
 
 /** Cases that still require identity. Ordinary buyer checkout, top-up, use, complaints and refund requests are not in this list. */
