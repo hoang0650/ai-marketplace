@@ -9,8 +9,11 @@ import { I18nService } from '../../i18n/i18n.service';
 import { GoogleSignInComponent } from './google-sign-in.component';
 import { environment } from '../../../environments/environment';
 import { WORK_BOARD_ENABLED } from '../../models/feature-flags';
+import { postAuthPath } from './affiliate-onboarding';
 
 function afterAuthRoute(user: User, returnUrl?: string | null): string {
+  const affiliateHome = postAuthPath(user.role);
+  if (affiliateHome && !(returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//'))) return affiliateHome;
   if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) return returnUrl;
   if (user.role === 'admin') return '/admin';
   if (user.role === 'seller') return '/dashboard';
@@ -92,14 +95,15 @@ export class RegisterComponent implements OnInit {
 
   readonly brand = environment.brandName;
   readonly roles: SignupRole[] = WORK_BOARD_ENABLED
-    ? ['buyer', 'seller', 'talent', 'freelancer', 'employer']
-    : ['buyer', 'seller'];
+    ? ['buyer', 'seller', 'affiliate', 'talent', 'freelancer', 'employer']
+    : ['buyer', 'seller', 'affiliate'];
   readonly role = signal<SignupRole>('buyer');
   name = '';
   email = '';
   password = '';
   confirmPassword = '';
   agreed = false;
+  agreedAffiliate = false;
   showPassword = false;
   readonly error = signal('');
   readonly loading = signal(false);
@@ -167,6 +171,10 @@ export class RegisterComponent implements OnInit {
     this.error.set('');
     if (!this.agreed) {
       this.error.set(this.i18n.t('auth.mustAgree'));
+      return;
+    }
+    if (this.role() === 'affiliate' && !this.agreedAffiliate) {
+      this.error.set(this.i18n.t('auth.mustAgreeAffiliate'));
       return;
     }
     if (!this.role()) {

@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AffiliateService } from '../../services/affiliate.service';
@@ -9,6 +9,8 @@ import { quoteAffiliateWithdraw } from './affiliate-withdraw';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
 import { CurrencyService } from '../../i18n/currency.service';
+import { AuthService } from '../../services/auth.service';
+import { readAffiliateOnboarding } from '../auth/affiliate-onboarding';
 
 /** Parse a pasted product/store URL or slug into a link target. */
 export function parseAffiliateTarget(raw: string): { productSlug?: string; storeSlug?: string } | null {
@@ -30,6 +32,24 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
       <h1 class="section-title">{{ 'aff.title' | t }}</h1>
       <p class="mt-2 text-lg font-semibold">{{ 'aff.hero' | t }}</p>
       <p class="mt-2 max-w-3xl text-muted">{{ 'aff.lead' | t }}</p>
+
+      @if (auth.user()?.role === 'affiliate') {
+        <div class="panel mt-6" role="status">
+          <h2 class="font-display text-xl">{{ 'aff.onboard.title' | t }}</h2>
+          <p class="mt-1 text-sm text-muted">{{ 'aff.onboard.lead' | t }}</p>
+          <ul class="mt-3 list-disc space-y-1 pl-5 text-sm">
+            <li>{{ onboarding().emailVerified ? ('aff.onboard.emailDone' | t) : ('aff.onboard.emailTodo' | t) }}</li>
+            <li>{{ 'aff.onboard.ekyc' | t: { status: onboarding().ekycStatus } }}</li>
+            <li>{{ 'aff.onboard.mst' | t: { status: onboarding().taxCodeStatus } }}</li>
+            <li>{{ 'aff.onboard.noCode' | t }}</li>
+          </ul>
+          <p class="mt-3 text-sm">
+            <a routerLink="/legal/chinh-sach-affiliate" class="underline">{{ 'signup.affiliate.policy' | t }}</a>
+            ·
+            <a routerLink="/legal/quy-trinh-tiep-thi-lien-ket" class="underline">{{ 'signup.affiliate.process' | t }}</a>
+          </p>
+        </div>
+      }
 
       @if (stats(); as s) {
         @if (s.kycRequired || !s.payoutReady) {
@@ -219,6 +239,8 @@ export class AffiliateComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
   private readonly currency = inject(CurrencyService);
+  readonly auth = inject(AuthService);
+  readonly onboarding = computed(() => readAffiliateOnboarding(this.auth.user()));
   readonly stats = signal<AffiliateStats | null>(null);
   readonly link = signal<AffiliateLink | null>(null);
   readonly linkError = signal('');

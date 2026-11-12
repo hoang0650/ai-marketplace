@@ -13,6 +13,7 @@ function afterAuthRoute(user: User, next: string): string {
     pathOnly.startsWith('/auth/') ||
     pathOnly.startsWith('//');
   if (!skip && next.startsWith('/')) return next;
+  if (user.role === 'affiliate') return '/affiliate';
   if (user.role === 'admin') return '/admin';
   if (user.role === 'seller') return '/dashboard';
   if (user.role === 'talent') return WORK_BOARD_ENABLED ? '/work/talents' : '/';

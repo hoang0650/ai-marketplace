@@ -115,6 +115,14 @@
             }
           </select>
           <small id="register-role-desc" class="auth-field__hint">{{ ('signup.role.' + role() + 'Desc') | t }}</small>
+          @if (role() === 'affiliate') {
+            <p class="auth-field__hint" id="register-affiliate-note">
+              {{ 'signup.affiliate.note' | t }}
+              <a routerLink="/legal/chinh-sach-affiliate" target="_blank">{{ 'signup.affiliate.policy' | t }}</a>
+              {{ 'auth.and' | t }}
+              <a routerLink="/legal/quy-trinh-tiep-thi-lien-ket" target="_blank">{{ 'signup.affiliate.process' | t }}</a>.
+            </p>
+          }
         </div>
 
         <label class="auth-check">
@@ -126,6 +134,16 @@
             <a routerLink="/privacy-policy" target="_blank">{{ 'auth.privacy' | t }}</a>.
           </span>
         </label>
+
+        @if (role() === 'affiliate') {
+          <label class="auth-check">
+            <input type="checkbox" [(ngModel)]="agreedAffiliate" name="agreedAffiliate" required />
+            <span>
+              {{ 'signup.affiliate.agree' | t }}
+              <a routerLink="/legal/chinh-sach-affiliate" target="_blank">{{ 'signup.affiliate.policy' | t }}</a>.
+            </span>
+          </label>
+        }
 
         @if (error()) {
           <div class="auth-alert" role="alert">{{ error() }}</div>
