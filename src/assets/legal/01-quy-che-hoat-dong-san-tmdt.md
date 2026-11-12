@@ -1,6 +1,6 @@
 # QUY CHẾ HOẠT ĐỘNG SÀN GIAO DỊCH THƯƠNG MẠI ĐIỆN TỬ AI MARKETS
 
-> CÔNG TY TNHH GIẢI PHÁP · CÔNG NGHỆ PHGROUP · CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM · Độc lập – Tự do – Hạnh phúc · Số: 01/2026/QC-PHGROUP · Bình Dương, ngày …… tháng …… năm 2026
+> CÔNG TY TNHH GIẢI PHÁP · CÔNG NGHỆ PHGROUP · CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM · Độc lập – Tự do – Hạnh phúc · Số: 01/2026/QC-PHGROUP · Hồ Chí Minh, ngày …… tháng …… năm 2026
 
 **(https://aimarkets.vn và ứng dụng di động “AI Markets”)**
 
@@ -16,7 +16,7 @@
 
 - Mã số thuế: 3703279135.
 
-- Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam.
+- Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Hồ Chí Minh, Việt Nam.
 
 - Điện thoại (hotline): 0931 881 584.
 
@@ -1299,7 +1299,7 @@ Mọi thắc mắc, khiếu nại, yêu cầu hỗ trợ hoặc pháp lý xin vu
 
 - Công ty: Công ty TNHH giải pháp công nghệ PHGroup
 
-- Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam
+- Địa chỉ: Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Hồ Chí Minh, Việt Nam
 
 - Email hỗ trợ / pháp lý: support@aimarkets.vn
 

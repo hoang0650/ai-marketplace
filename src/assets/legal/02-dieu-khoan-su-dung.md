@@ -4,7 +4,7 @@
 **Website:** https://aimarkets.vn · Ứng dụng di động “AI Markets” (iOS, Android)  
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
-**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Hồ Chí Minh, Việt Nam  
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày hiệu lực:** 04/10/2026  
@@ -76,7 +76,7 @@ Trong phạm vi pháp luật cho phép, nền tảng không chịu trách nhiệ
 
 **Email hỗ trợ / pháp lý:** support@aimarkets.vn  
 **Hotline:** 0931 881 584  
-**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Hồ Chí Minh, Việt Nam
 
 ## Điều 14. Giấy phép trực tuyến AI Markets (AIM-OL 1.0) {#online-license}
 

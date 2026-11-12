@@ -4,7 +4,7 @@
 **Website:** https://aimarkets.vn  
 **Đơn vị vận hành:** Công ty TNHH giải pháp công nghệ PHGroup  
 **MST:** 3703279135  
-**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam  
+**Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Hồ Chí Minh, Việt Nam  
 **Điện thoại:** 0931 881 584  
 **Email:** support@aimarkets.vn  
 **Ngày công bố:** 05/11/2026

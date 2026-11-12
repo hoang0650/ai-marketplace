@@ -4,7 +4,7 @@
 
 - **Tên doanh nghiệp:** Công ty TNHH Giải pháp Công nghệ PHGroup
 - **Mã số thuế:** 3703279135
-- **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, Khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Thuận An, Tỉnh Bình Dương, Việt Nam
+- **Địa chỉ:** Lô A1-15 Đường Bình Hoà 24, Khu dân cư Đồng An 4, Phường Bình Hòa, Thành phố Hồ Chí Minh, Việt Nam
 - **Website:** https://aimarkets.vn
 - **Email hỗ trợ:** support@aimarkets.vn
 - **Điện thoại:** 0931 881 584
