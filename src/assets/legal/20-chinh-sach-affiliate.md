@@ -42,7 +42,7 @@ Các bước dưới đây mô tả mã và hợp đồng API hiện có. Không
 5. Người mua mở liên kết dạng đường dẫn sản phẩm hoặc gian hàng kèm `ref`. Ghi nhận là lượt nhấp cuối. Số ngày lấy từ cấu hình `attributionDays`, giá trị mã đang dùng khi không đặt biến là 30 ngày. Lượt nhấp lặp của cùng thiết bị trong 30 phút được tính một lần.
 6. Đơn được ghi hoa hồng khi không phải tự giới thiệu, tỷ lệ lớn hơn 0, lượt nhấp còn trong cửa sổ, và tài khoản người giới thiệu còn hoạt động với hồ sơ nội bộ ở trạng thái verified tại thời điểm ghi nhận.
 7. Hoa hồng ghi đủ lúc đơn hoàn tất, trạng thái `active`. Trong thời gian giữ hoặc khi đơn đang tranh chấp, số đó là đang giữ. Hết giữ, số còn lại là khả dụng. Hoàn hoặc hủy đảo theo tỷ lệ và có thể đưa dòng sang đã đảo.
-8. Yêu cầu chi trả ghi một bút toán trên sổ hoa hồng. Không có mức chi trả tối thiểu thương mại. Sau đối soát và yêu cầu hợp lệ, Công ty chi bằng VND trong 03 ngày làm việc vào tài khoản đứng tên người giới thiệu. Nghĩa vụ thuế vẫn còn.
+8. Yêu cầu chi trả ghi một bút toán trên sổ hoa hồng. Không có mức chi trả tối thiểu thương mại. Sau đối soát và yêu cầu hợp lệ, Công ty chi bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ) vào tài khoản đứng tên người giới thiệu. Nghĩa vụ thuế vẫn còn.
 9. Thuế không được trang này ấn 10% cho mọi người giới thiệu và không coi mẫu cam kết đã duyệt là miễn thuế. Khoản 2 Điều 50 Nghị định 253/2026/NĐ-CP chỉ thuộc nhóm thù lao cụ thể.
 10. Tài khoản người giới thiệu không còn hoạt động thì lượt nhấp mới không được ghi nhận. Hoa hồng hợp lệ không bị xóa chỉ vì tài khoản bị khóa. Gian lận bị thu hồi theo Điều 8.
 11. Mã giới thiệu và lượt nhấp là dữ liệu của người giới thiệu và người mua. Trang này không công bố hồ sơ thuế của người khác.
@@ -71,7 +71,7 @@ Các bước dưới đây mô tả mã và hợp đồng API hiện có. Không
 ## Điều 5. Ghi có, tạm giữ và rút tiền
 
 1. Hoa hồng được ghi có vào ví của người giới thiệu ngay khi đơn hàng hoàn tất và được **tạm giữ 48 giờ** như doanh thu của người bán; nếu đơn hàng phát sinh khiếu nại, khoản hoa hồng tiếp tục bị giữ đến khi khiếu nại được giải quyết.
-2. Sau thời gian tạm giữ 48 giờ và khi có yêu cầu hợp lệ, hoa hồng khả dụng được chi bằng VND về tài khoản đứng tên đúng người giới thiệu trong 03 ngày làm việc. Không có mức chi trả tối thiểu thương mại. Mọi số dư khả dụng lớn hơn 0 đều có thể được yêu cầu. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa. Việc tạm giữ không phải tài khoản escrow.
+2. Sau thời gian tạm giữ 48 giờ và khi có yêu cầu hợp lệ, hoa hồng khả dụng được chi bằng VND về tài khoản đứng tên đúng người giới thiệu trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Không có mức chi trả tối thiểu thương mại. Mọi số dư khả dụng lớn hơn 0 đều có thể được yêu cầu. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa. Việc tạm giữ không phải tài khoản escrow.
 3. Trang Affiliate hiển thị: liên kết, số lượt nhấp, số đơn, hoa hồng đang tạm giữ, hoa hồng khả dụng và hoa hồng bị thu hồi.
 
 ## Điều 6. Thuế thu nhập cá nhân

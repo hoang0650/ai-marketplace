@@ -58,4 +58,4 @@ Chưa công bố vì không có chứng từ trong repo này:
 - Tài khoản chuyên dùng, sơ đồ luồng tiền, biện pháp bảo đảm số dư
 - Đề án Bộ Công Thương (DOCX đang được sửa riêng, không nằm trong repo; không đưa tài khoản rà soát nội bộ lên trang công khai)
 
-Chi trả người bán trong thỏa thuận vẫn là chuyển khoản VND vào tài khoản đứng tên người bán trong 03 ngày làm việc sau 48 giờ tạm giữ. Không mô tả chi hộ qua GPay, vì payout engine công khai không gọi GPay.
+Chi trả người bán trong thỏa thuận vẫn là chuyển khoản VND vào tài khoản đứng tên người bán trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ) sau 48 giờ tạm giữ. Không mô tả chi hộ qua GPay, vì payout engine công khai không gọi GPay.
