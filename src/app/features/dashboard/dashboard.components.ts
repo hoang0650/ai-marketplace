@@ -37,6 +37,7 @@ import {
   snapUsageUnit,
   unitAllowed,
   unitsFor,
+  usageProductPricing,
   type ServicePackageDraft,
   type ServicePackagePayload,
   type UsageUnitDef,
@@ -489,14 +490,24 @@ export class DashboardAnalyticsComponent implements OnInit {
         </div>
         @if (draft.pricingModel === 'usage') {
           <div>
-            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Rate (USD)</label>
-            <input class="input" type="number" min="0" step="0.001" [(ngModel)]="draft.usageRate" name="usageRate" />
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'usagePrice.currency' | t }}</label>
+            <select class="input" name="usageCurrency" [(ngModel)]="draft.usageCurrency">
+              <option value="USD">USD</option>
+              <option value="VND">VND</option>
+              <option value="CNY">CNY</option>
+            </select>
+            <p class="mt-1 text-xs text-muted">{{ 'usagePrice.currencyHint' | t }}</p>
           </div>
           <div>
-            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Per unit</label>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'usagePrice.rate' | t }}</label>
+            <input class="input" type="number" min="0" step="any" [(ngModel)]="draft.usageRate" name="usageRate" />
+            <p class="mt-1 text-xs text-muted">{{ 'usagePrice.rateHint' | t }}</p>
+          </div>
+          <div class="md:col-span-2">
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'usagePrice.unit' | t }}</label>
             <select class="input" name="usageUnit" [(ngModel)]="draft.usageUnit" [disabled]="!unitChoices().length">
               @for (unit of unitChoices(); track unit.code) {
-                <option [value]="unit.code">{{ unitLabel(unit) }}</option>
+                <option [value]="unit.code">{{ unitLabel(unit) }} · {{ unit.code }}</option>
               }
             </select>
             @if (usageCatalog.loadError()) {
@@ -507,6 +518,23 @@ export class DashboardAnalyticsComponent implements OnInit {
               <p class="mt-1 text-xs text-muted">{{ 'usageUnit.meterHint' | t }}</p>
             }
           </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'usagePrice.input' | t }}</label>
+            <input class="input" type="number" min="0" step="any" [(ngModel)]="draft.inputRate" name="inputRate" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'usagePrice.output' | t }}</label>
+            <input class="input" type="number" min="0" step="any" [(ngModel)]="draft.outputRate" name="outputRate" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'usagePrice.cached' | t }}</label>
+            <input class="input" type="number" min="0" step="any" [(ngModel)]="draft.cachedInputRate" name="cachedInputRate" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">{{ 'usagePrice.min' | t }}</label>
+            <input class="input" type="number" min="0" step="any" [(ngModel)]="draft.minCharge" name="minCharge" />
+          </div>
+          <p class="md:col-span-2 text-xs text-muted">{{ 'usagePrice.splitHint' | t }}</p>
         }
         @if (draft.pricingModel === 'subscription' || draft.pricingModel === 'one-time') {
           <div>
@@ -969,6 +997,11 @@ export class DashboardProductsComponent implements OnInit {
       pricingModel: 'usage' as PricingModel,
       price: 29,
       usageRate: 0.05,
+      usageCurrency: 'USD' as 'USD' | 'VND' | 'CNY',
+      inputRate: null as number | null,
+      outputRate: null as number | null,
+      cachedInputRate: null as number | null,
+      minCharge: null as number | null,
       usageUnit: '1k_tokens',
       interval: 'month' as 'day' | 'month' | 'year',
       coverUrl: '',
@@ -1031,6 +1064,18 @@ export class DashboardProductsComponent implements OnInit {
 
   unitLabel(unit: UsageUnitDef): string {
     return this.i18n.lang() === 'vi' ? unit.labelVi : unit.labelEn;
+  }
+
+  usagePricing() {
+    return usageProductPricing({
+      usageUnit: this.draft.usageUnit,
+      usageRate: Number(this.draft.usageRate) || 0,
+      currency: this.draft.usageCurrency,
+      inputRate: this.draft.inputRate,
+      outputRate: this.draft.outputRate,
+      cachedInputRate: this.draft.cachedInputRate,
+      minCharge: this.draft.minCharge,
+    });
   }
 
   addServicePackage(): void {
@@ -1312,21 +1357,9 @@ export class DashboardProductsComponent implements OnInit {
             interval: this.draft.interval || 'month',
           }
         : this.isVoiceDraft()
-        ? {
-            model: 'usage' as const,
-            price: 0,
-            currency: 'USD',
-            usageUnit: this.draft.usageUnit,
-            usageRate: Number(this.draft.usageRate) || 0,
-          }
+        ? this.usagePricing()
         : this.draft.pricingModel === 'usage'
-        ? {
-            model: 'usage' as const,
-            price: 0,
-            currency: 'USD',
-            usageUnit: this.draft.usageUnit,
-            usageRate: Number(this.draft.usageRate) || 0,
-          }
+        ? this.usagePricing()
         : this.draft.pricingModel === 'subscription'
           ? {
               model: 'subscription' as const,

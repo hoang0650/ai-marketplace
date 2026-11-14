@@ -105,6 +105,66 @@ export function accessUnitOf(pricing: {
   return isAccessUnit(code) ? String(code) : null;
 }
 
+const USAGE_CURRENCIES = new Set(['USD', 'VND', 'CNY']);
+
+/** Blank optional rates are omitted. 0 is kept (cached input at 0 is free). */
+export function optionalUsageAmount(value: unknown): number | undefined {
+  if (value === '' || value === null || value === undefined) return undefined;
+  const n = typeof value === 'number' ? value : Number(String(value).trim());
+  if (!Number.isFinite(n) || n < 0) return undefined;
+  return n;
+}
+
+/** Pricing payload for a usage product. Unit codes still come from GET /usage/units. */
+export function usageProductPricing(input: {
+  usageUnit: string;
+  usageRate: number;
+  currency?: string | null;
+  inputRate?: unknown;
+  outputRate?: unknown;
+  cachedInputRate?: unknown;
+  minCharge?: unknown;
+}): {
+  model: 'usage';
+  price: 0;
+  currency: 'USD' | 'VND' | 'CNY';
+  usageUnit: string;
+  usageRate: number;
+  inputRate?: number;
+  outputRate?: number;
+  cachedInputRate?: number;
+  minCharge?: number;
+} {
+  const raw = String(input.currency || '');
+  const currency = (USAGE_CURRENCIES.has(raw) ? raw : 'USD') as 'USD' | 'VND' | 'CNY';
+  const pricing: {
+    model: 'usage';
+    price: 0;
+    currency: 'USD' | 'VND' | 'CNY';
+    usageUnit: string;
+    usageRate: number;
+    inputRate?: number;
+    outputRate?: number;
+    cachedInputRate?: number;
+    minCharge?: number;
+  } = {
+    model: 'usage',
+    price: 0,
+    currency,
+    usageUnit: input.usageUnit,
+    usageRate: Number(input.usageRate) || 0,
+  };
+  const inputRate = optionalUsageAmount(input.inputRate);
+  const outputRate = optionalUsageAmount(input.outputRate);
+  const cachedInputRate = optionalUsageAmount(input.cachedInputRate);
+  const minCharge = optionalUsageAmount(input.minCharge);
+  if (inputRate !== undefined) pricing.inputRate = inputRate;
+  if (outputRate !== undefined) pricing.outputRate = outputRate;
+  if (cachedInputRate !== undefined) pricing.cachedInputRate = cachedInputRate;
+  if (minCharge !== undefined) pricing.minCharge = minCharge;
+  return pricing;
+}
+
 export function snapUsageUnit(
   catalog: UsageUnitCatalog | null | undefined,
   category: string,
