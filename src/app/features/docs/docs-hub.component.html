@@ -48,7 +48,7 @@
 
     <h3>{{ 'docs.pricing.fieldsTitle' | t }}</h3>
     <p>{{ 'docs.pricing.fieldsIntro' | t }}</p>
-    <app-docs-code [text]="pricingSample"></app-docs-code>
+    <app-docs-code [text]="pricingSample" lang="json"></app-docs-code>
     <div class="docs-table-wrap">
       <table>
         <thead>
@@ -96,7 +96,7 @@
 
     <h3>{{ 'docs.pricing.meterTitle' | t }}</h3>
     <p>{{ 'docs.pricing.meterIntro' | t }}</p>
-    <app-docs-code [text]="meterSample"></app-docs-code>
+    <app-docs-code [text]="meterSample" lang="json"></app-docs-code>
 
     <h3>{{ 'docs.pricing.measureTitle' | t }}</h3>
     <p>{{ 'docs.pricing.measureNote' | t }}</p>
@@ -152,13 +152,13 @@
     <p>{{ 'docs.pricing.report.runtime' | t }}</p>
 
     <h3>{{ 'docs.pricing.report.openaiTitle' | t }}</h3>
-    <app-docs-code [text]="openaiUsageSample"></app-docs-code>
+    <app-docs-code [text]="openaiUsageSample" lang="json"></app-docs-code>
     <p>{{ 'docs.pricing.report.openaiNote' | t }}</p>
 
     <h3>{{ 'docs.pricing.report.explicitTitle' | t }}</h3>
     <p>{{ 'docs.pricing.report.explicitNote' | t }}</p>
-    <app-docs-code [text]="imageReportSample"></app-docs-code>
-    <app-docs-code [text]="tokenReportSample"></app-docs-code>
+    <app-docs-code [text]="imageReportSample" lang="json"></app-docs-code>
+    <app-docs-code [text]="tokenReportSample" lang="json"></app-docs-code>
     <p>{{ 'docs.pricing.report.flatNote' | t }}</p>
 
     <h3>{{ 'docs.pricing.report.headerTitle' | t }}</h3>

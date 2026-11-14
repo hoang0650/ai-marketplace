@@ -24,8 +24,10 @@ export class DocsModelsComponent implements OnInit {
   readonly aiBase = environment.aiV1Url;
   models: RunpodPublicEndpoint[] = [];
   kind: RunpodPublicEndpoint['kind'] | 'all' = 'all';
+  query = '';
   loading = true;
   loadError = false;
+  readonly skeletons = [1, 2, 3, 4, 5, 6];
 
   ngOnInit(): void {
     this.seo.set({
@@ -61,14 +63,19 @@ export class DocsModelsComponent implements OnInit {
   priceLine(row: RunpodPublicEndpoint): string {
     const price = row.price;
     if (price && typeof price.rate === 'number' && price.unit) {
-      return `${price.rate} ${price.currency || 'USD'} / ${price.unit}`;
+      const rate = Number(price.rate).toLocaleString('en-US', { maximumFractionDigits: 6 });
+      return `${rate} ${price.currency || 'USD'} / ${price.unit}`;
     }
     return row.pricing || '';
   }
 
   filtered(): RunpodPublicEndpoint[] {
-    if (this.kind === 'all') return this.models;
-    return this.models.filter((m) => m.kind === this.kind);
+    const q = this.query.trim().toLowerCase();
+    return this.models.filter((row) => {
+      if (this.kind !== 'all' && row.kind !== this.kind) return false;
+      if (!q) return true;
+      return `${row.name} ${row.slug} ${row.description || ''}`.toLowerCase().includes(q);
+    });
   }
 
   setKind(kind: RunpodPublicEndpoint['kind'] | 'all'): void {

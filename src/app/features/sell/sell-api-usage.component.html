@@ -43,7 +43,7 @@
     <h2>{{ 'sellDocs.flow.title' | t }}</h2>
     <pre class="seller-docs__diagram">{{ flowDiagram }}</pre>
     <p>{{ 'sellDocs.flow.p1' | t }}</p>
-    <app-docs-code [text]="sampleResponse"></app-docs-code>
+    <app-docs-code [text]="sampleResponse" lang="json"></app-docs-code>
   </article>
 
   <article id="seller-setup" class="seller-docs__section">
@@ -63,27 +63,27 @@
   <article id="buyer-api" class="seller-docs__section">
     <h2>{{ 'sellDocs.buyerApi.title' | t }}</h2>
     <p>{{ 'sellDocs.buyerApi.p1' | t: { apiBase } }}</p>
-    <ul>
-      <li><code>GET {{ apiBase }}/models</code></li>
-      <li><code>POST {{ apiBase }}/chat/completions</code></li>
-      <li><code>POST {{ apiBase }}/embeddings</code></li>
-      <li><code>POST {{ apiBase }}/images</code></li>
-      <li><code>POST {{ apiBase }}/audio</code></li>
-      <li><code>POST {{ apiBase }}/api-keys</code> — {{ 'sellDocs.buyerApi.keys' | t }}</li>
-    </ul>
+    <div class="docs-endpoints">
+      <div><span class="docs-verb docs-verb--get">GET</span><code>{{ apiBase }}/models</code></div>
+      <div><span class="docs-verb docs-verb--post">POST</span><code>{{ apiBase }}/chat/completions</code></div>
+      <div><span class="docs-verb docs-verb--post">POST</span><code>{{ apiBase }}/embeddings</code></div>
+      <div><span class="docs-verb docs-verb--post">POST</span><code>{{ apiBase }}/images</code></div>
+      <div><span class="docs-verb docs-verb--post">POST</span><code>{{ apiBase }}/audio</code></div>
+      <div><span class="docs-verb docs-verb--post">POST</span><code>{{ apiBase }}/api-keys</code><span>{{ 'sellDocs.buyerApi.keys' | t }}</span></div>
+    </div>
     <h3>{{ 'sellDocs.buyerApi.example' | t }}</h3>
-    <app-docs-code [text]="curlExample"></app-docs-code>
+    <app-docs-code [samples]="chatSamples" lang="bash"></app-docs-code>
     <p class="seller-docs__hint">{{ 'sellDocs.buyerApi.hint' | t }}</p>
   </article>
 
   <article id="seller-stats" class="seller-docs__section">
     <h2>{{ 'sellDocs.stats.title' | t }}</h2>
     <p>{{ 'sellDocs.stats.p1' | t }}</p>
-    <ul>
-      <li><code>GET {{ apiBase }}/usage</code> — {{ 'sellDocs.stats.usage' | t }}</li>
-      <li><code>GET {{ apiBase }}/dashboard/summary</code> — {{ 'sellDocs.stats.summary' | t }}</li>
-      <li><code>GET {{ apiBase }}/deployments/:id/usage</code> — {{ 'sellDocs.stats.deploy' | t }}</li>
-    </ul>
+    <div class="docs-endpoints">
+      <div><span class="docs-verb docs-verb--get">GET</span><code>{{ apiBase }}/usage</code><span>{{ 'sellDocs.stats.usage' | t }}</span></div>
+      <div><span class="docs-verb docs-verb--get">GET</span><code>{{ apiBase }}/dashboard/summary</code><span>{{ 'sellDocs.stats.summary' | t }}</span></div>
+      <div><span class="docs-verb docs-verb--get">GET</span><code>{{ apiBase }}/deployments/:id/usage</code><span>{{ 'sellDocs.stats.deploy' | t }}</span></div>
+    </div>
     <p>{{ 'sellDocs.stats.fee' | t }}</p>
   </article>
 

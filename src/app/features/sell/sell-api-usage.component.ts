@@ -2,7 +2,7 @@ import { DOCS_RUNTIME_MESSAGES } from '../docs/docs-runtime.messages';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DocsShellComponent } from '../docs/docs-shell.component';
-import { DocsCodeComponent } from '../docs/docs-code.component';
+import { DocsCodeComponent, DocsCodeSample } from '../docs/docs-code.component';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -69,6 +69,43 @@ marketplace.cost is the USD charged for this call (exact_pro_rata_round6 on the 
     "model": "your-product-slug",
     "messages": [{"role": "user", "content": "Hello"}]
   }'`;
+
+  get chatSamples(): DocsCodeSample[] {
+    const url = `${this.apiBase}/chat/completions`;
+    return [
+      { id: 'curl', label: 'cURL', lang: 'bash', text: this.curlExample },
+      {
+        id: 'js',
+        label: 'JavaScript',
+        lang: 'js',
+        text: `await fetch('${url}', {
+  method: 'POST',
+  headers: {
+    Authorization: 'Bearer mk_live_xxxxxxxx',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    model: 'your-product-slug',
+    messages: [{ role: 'user', content: 'Hello' }],
+  }),
+});`,
+      },
+      {
+        id: 'py',
+        label: 'Python',
+        lang: 'py',
+        text: `import requests
+requests.post(
+    '${url}',
+    headers={'Authorization': 'Bearer mk_live_xxxxxxxx'},
+    json={
+        'model': 'your-product-slug',
+        'messages': [{'role': 'user', 'content': 'Hello'}],
+    },
+)`,
+      },
+    ];
+  }
 
   readonly toc = [
     { id: 'runtime-metering', labelKey: 'docsRuntime.meter.title' },
