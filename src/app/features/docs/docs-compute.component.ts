@@ -28,8 +28,9 @@ Buyer  → POST /v1/game-sessions { productSlug, client? }
   → (2) Hosted: GPU Pod via AI Markets AI (ai.aimarkets.vn)
   → (3) Dedicated game server: private server, connect = IP:port
   → Player /v1/game-sessions/:id/player · stream via /v1/game-sessions/:id/proxy/*
-Live → heartbeat every 30s · wallet debited every minute
-Stop (user / idle / insufficient_funds) → final minute rounded up · webhook session.stop`;
+Live → heartbeat every 30s · worker debits whole minutes (default every 60s)
+Stop (user / idle / insufficient_funds) → last partial minute rounds up · webhook session.stop
+A single gateway call is separate: exact_pro_rata_round6, not this session ledger`;
 
   readonly registerExample = `# External (seller infra) — 201 Created
 POST https://api.aimarkets.vn/v1/seller/compute/nodes
@@ -99,11 +100,14 @@ Authorization: Bearer <buyer_token>
 { "productSlug": "my-game-box", "client": "pc" }
 
 → 201 { "sessionId", "status": "live", "device", "profile", "streamKind", "playerUrl",
-        "heartbeatMs": 30000, "idleTimeoutMs": 600000, "billedMinutes", "billedCost", … }
+        "heartbeatMs": 30000, "idleTimeoutMs": 300000, "billedMinutes": 0, "billedCost": 0, … }
 
-POST .../game-sessions/:sessionId/heartbeat   (every heartbeatMs)
-→ { "ok": true, "status", "ratePerHour", "billedMinutes", "billedCost", "currency", "available", "minutesLeft" }
-→ 410 SESSION_STOPPED { stopReason, … } once the session has ended
+POST .../game-sessions/:sessionId/heartbeat   (every heartbeatMs; does not itself charge)
+→ { "ok": true, "status": "live", "device": "pc", "heartbeatMs": 30000,
+    "ratePerHour": 1.2, "billedMinutes": 0, "billedCost": 0, "currency": "USD",
+    "usedMinutes": 1, "usedCost": 0.02, "estimatedCharge": 0.02,
+    "available": 9.76, "minutesLeft": 488 }
+→ 410 SESSION_STOPPED { "code": "SESSION_STOPPED", "stopReason", "ratePerHour", "billedMinutes", "billedCost", … }
 
 GET    .../game-sessions/:sessionId          (state)
 GET    .../game-sessions/:sessionId/player?access_token=<buyer_token>   (HTML player)
@@ -140,9 +144,10 @@ S=$(curl -sS -X POST "$API/game-sessions" -H "Authorization: Bearer $BUYER" \\
   -H "Content-Type: application/json" -d '{"productSlug":"my-game-box","client":"pc"}')
 SID=$(echo "$S" | jq -r .sessionId)
 curl -sS -X POST "$API/game-sessions/$SID/heartbeat" -H "Authorization: Bearer $BUYER"
-# → {"ok":true,"status":"live","ratePerHour":0.6,"billedMinutes":0,"billedCost":0,"currency":"USD","available":…,"minutesLeft":…}
+# Listing usageUnit 1_hour, usageRate 0.60 → ratePerHour 0.60 (USD).
+# → {"ok":true,"status":"live","device":"pc","heartbeatMs":30000,"ratePerHour":0.6,"billedMinutes":0,"billedCost":0,"currency":"USD","usedMinutes":1,"usedCost":0.01,"estimatedCharge":0.01,"available":…,"minutesLeft":…}
 curl -sS -X DELETE "$API/game-sessions/$SID" -H "Authorization: Bearer $BUYER"
-# → {"ok":true,"billedCost":0.01,"billedMinutes":1}
+# Stop inside the first minute → {"ok":true,"billedMinutes":1,"billedCost":0.01}
 
 # 5) Take the node offline
 curl -sS -X DELETE "$API/seller/compute/nodes/$NODE_ID" -H "Authorization: Bearer $TOKEN"`;
@@ -220,6 +225,26 @@ def hook():
   "reason": "user",
   "minutes": 1,
   "billedCost": 0.01
+}`;
+
+  /** GPU stream: 1_hour at $1.20, stop after 90s → 2 whole minutes. */
+  readonly gpuBillingExample = `{
+  "category": "gpu-compute",
+  "pricing": { "model": "usage", "currency": "USD", "usageUnit": "1_hour", "usageRate": 1.2 },
+  "ratePerHour": 1.2,
+  "stopAfterSeconds": 90,
+  "DELETE /v1/game-sessions/:sessionId": { "ok": true, "billedMinutes": 2, "billedCost": 0.04 }
+}`;
+
+  /** Game stream (not a dedicated pod): 1_minute at $0.05 → $3/hour. */
+  readonly gameBillingExample = `{
+  "category": "game-server",
+  "pricing": { "model": "usage", "currency": "USD", "usageUnit": "1_minute", "usageRate": 0.05 },
+  "ratePerHour": 3,
+  "afterWholeMinutes": 10,
+  "tick": { "billedMinutes": 10, "billedCost": 0.5 },
+  "otherSessionStopAfterSeconds": 20,
+  "DELETE /v1/game-sessions/:sessionId": { "ok": true, "billedMinutes": 1, "billedCost": 0.05 }
 }`;
 
   readonly dedicatedExample = `POST https://api.aimarkets.vn/v1/game-sessions

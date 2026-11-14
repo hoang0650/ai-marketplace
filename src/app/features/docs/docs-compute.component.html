@@ -4,6 +4,7 @@
   </p>
   <h1>{{ 'docsCompute.title' | t }}</h1>
   <p class="seller-docs__lede">{{ 'docsCompute.lede' | t }}</p>
+  <p class="seller-docs__lede"><a routerLink="/docs" fragment="pricing-units">{{ 'docsCompute.pricingLink' | t }}</a></p>
 
   <nav class="seller-docs__toc" aria-label="TOC">
     @for (item of toc; track item.id) {
@@ -117,6 +118,37 @@
   <article id="billing" class="seller-docs__section">
     <h2>{{ 'docsCompute.billing.title' | t }}</h2>
     <p>{{ 'docsCompute.billing.p1' | t }}</p>
+    <p>{{ 'docsCompute.billing.units' | t: { apiBase } }}</p>
+    <div class="seller-docs__table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>usageUnit</th>
+            <th>{{ 'docsCompute.billing.col.session' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>1_second</code></td>
+            <td>{{ 'docsCompute.billing.row.second' | t }}</td>
+          </tr>
+          <tr>
+            <td><code>1_minute</code></td>
+            <td>{{ 'docsCompute.billing.row.minute' | t }}</td>
+          </tr>
+          <tr>
+            <td><code>1_hour</code></td>
+            <td>{{ 'docsCompute.billing.row.hour' | t }}</td>
+          </tr>
+          <tr>
+            <td><code>1_request</code></td>
+            <td>{{ 'docsCompute.billing.row.request' | t }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>{{ 'docsCompute.billing.legacy' | t }}</p>
+    <p>{{ 'docsCompute.billing.fx' | t }}</p>
     <ul>
       <li>{{ 'docsCompute.billing.l1' | t }}</li>
       <li>{{ 'docsCompute.billing.l2' | t }}</li>
@@ -124,6 +156,15 @@
       <li>{{ 'docsCompute.billing.l4' | t }}</li>
       <li>{{ 'docsCompute.billing.l5' | t }}</li>
     </ul>
+    <p>{{ 'docsCompute.billing.minCharge' | t }}</p>
+    <p>{{ 'docsCompute.billing.gateway' | t }}</p>
+    <p><a routerLink="/docs" fragment="pricing-units">{{ 'docsCompute.pricingLink' | t }}</a></p>
+    <h3>{{ 'docsCompute.billing.examplesTitle' | t }}</h3>
+    <p>{{ 'docsCompute.billing.gpuIntro' | t }}</p>
+    <pre class="seller-docs__code">{{ gpuBillingExample }}</pre>
+    <p>{{ 'docsCompute.billing.gameIntro' | t }}</p>
+    <pre class="seller-docs__code">{{ gameBillingExample }}</pre>
+    <p>{{ 'docsCompute.billing.dedicatedEx' | t }}</p>
   </article>
 
   <article id="examples" class="seller-docs__section">
