@@ -4,6 +4,7 @@
   </p>
   <h1>{{ 'sellDocs.title' | t }}</h1>
   <p class="seller-docs__lede">{{ 'sellDocs.lede' | t: { brand } }}</p>
+  <p class="seller-docs__lede"><a routerLink="/docs" fragment="pricing-units">{{ 'sellDocs.pricingLink' | t }}</a></p>
 
   <nav class="seller-docs__toc" [attr.aria-label]="'sellx.apiUsage.toc' | t">
     @for (item of toc; track item.id) {
@@ -50,7 +51,7 @@
       <li>{{ 'sellDocs.setup.l1' | t }}</li>
       <li>{{ 'sellDocs.setup.l2' | t: { apiBase } }}</li>
       <li>{{ 'sellDocs.setup.l3' | t }}</li>
-      <li>{{ 'sellDocs.setup.l4' | t }}</li>
+      <li>{{ 'sellDocs.setup.l4' | t: { apiBase } }}</li>
     </ol>
     <div class="seller-docs__actions">
       <a routerLink="/sell/products" class="btn">{{ 'sellDocs.setup.products' | t }}</a>

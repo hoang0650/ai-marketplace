@@ -563,6 +563,14 @@ export interface ProductPricing {
   interval?: 'day' | 'month' | 'year';
   usageUnit?: string;
   usageRate?: number;
+  /** Optional uncached input price, same unit size as usageRate. */
+  inputRate?: number;
+  /** Optional output price. Falls back to usageRate on the server. */
+  outputRate?: number;
+  /** Optional cached-input price. 0 means cached input is free. */
+  cachedInputRate?: number;
+  /** Optional floor in currency. Applied only when measured cost is > 0 and below it. */
+  minCharge?: number;
   /** Canonical code after the server maps free text. Null while needs_review. */
   usageUnitCode?: string | null;
   usageUnitLabel?: { vi?: string; en?: string } | null;

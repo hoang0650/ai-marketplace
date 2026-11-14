@@ -3,11 +3,13 @@ import test from 'node:test';
 import {
   accessUnitOf,
   isAccessUnit,
+  optionalUsageAmount,
   readAuthoritativeVnd,
   servicePackagePayload,
   snapUsageUnit,
   unitAllowed,
   unitsFor,
+  usageProductPricing,
   viPrice,
   type UsageUnitCatalog,
 } from '../src/app/features/usage/usage-contract.ts';
@@ -27,6 +29,26 @@ const catalog: UsageUnitCatalog = {
     'gpu-compute': ['1_hour'],
   },
 };
+
+test('usage pricing keeps a zero cached rate and omits blank split rates', () => {
+  const priced = usageProductPricing({
+    usageUnit: '1k_tokens',
+    usageRate: 0.5,
+    currency: 'CNY',
+    inputRate: '',
+    outputRate: null,
+    cachedInputRate: 0,
+    minCharge: '0.01',
+  });
+  assert.equal(priced.currency, 'CNY');
+  assert.equal(priced.usageRate, 0.5);
+  assert.equal(priced.cachedInputRate, 0);
+  assert.equal(priced.minCharge, 0.01);
+  assert.equal('inputRate' in priced, false);
+  assert.equal('outputRate' in priced, false);
+  assert.equal(optionalUsageAmount(-1), undefined);
+  assert.equal(usageProductPricing({ usageUnit: '1_image', usageRate: 0.04, currency: 'EUR' }).currency, 'USD');
+});
 
 test('the dropdown only lists units the server allows for the category', () => {
   assert.deepEqual(unitsFor(catalog, 'text-to-text').map((u) => u.code), ['1k_tokens', '1m_tokens', '1_day', '1_year']);

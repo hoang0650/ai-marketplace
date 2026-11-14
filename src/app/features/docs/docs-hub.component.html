@@ -28,7 +28,7 @@
         <li>
           <span class="docs-steps__n">{{ s.n }}</span>
           <div>
-            <strong>{{ s.titleKey | t }}</strong>
+            <strong>{{ s.titleKey | t: { apiBase, brand } }}</strong>
             <p>{{ s.bodyKey | t: { apiBase, brand } }}</p>
           </div>
         </li>
@@ -39,6 +39,158 @@
       <a routerLink="/sell/integrate" class="btn btn-outline">{{ 'docs.cta.integrate' | t }}</a>
       <a routerLink="/support" class="btn btn-outline">{{ 'docs.cta.support' | t }}</a>
     </div>
+  </section>
+
+  <section class="docs-hub__pricing panel" id="pricing-units">
+    <h2>{{ 'docs.pricing.title' | t }}</h2>
+    <p class="docs-hub__steps-lede">{{ 'docs.pricing.lede' | t: { apiBase } }}</p>
+
+    <h3>{{ 'docs.pricing.fieldsTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.fieldsIntro' | t }}</p>
+    <pre class="docs-code">{{ pricingSample }}</pre>
+    <div class="docs-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'docs.pricing.col.field' | t }}</th>
+            <th>{{ 'docs.pricing.col.meaning' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of pricingFields; track row.field) {
+            <tr>
+              <td><code>{{ row.field }}</code></td>
+              <td>{{ row.key | t }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p>{{ 'docs.pricing.aliases' | t }}</p>
+    <p>{{ 'docs.pricing.canonical' | t }}</p>
+    <p>{{ 'docs.pricing.legacy' | t }}</p>
+
+    <h3>{{ 'docs.pricing.unitsTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.unitsIntro' | t: { apiBase } }}</p>
+    <div class="docs-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'docs.pricing.col.unit' | t }}</th>
+            <th>{{ 'docs.pricing.col.counted' | t }}</th>
+            <th>{{ 'docs.pricing.col.buys' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of unitRows; track row.code) {
+            <tr>
+              <td><code>{{ row.code }}</code></td>
+              <td>{{ row.counted | t }}</td>
+              <td>{{ row.buys | t }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <h3>{{ 'docs.pricing.meterTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.meterIntro' | t }}</p>
+    <pre class="docs-code">{{ meterSample }}</pre>
+
+    <h3>{{ 'docs.pricing.measureTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.measureNote' | t }}</p>
+    <div class="docs-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'docs.pricing.col.dimension' | t }}</th>
+            <th>{{ 'docs.pricing.col.meaning' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of measureRows; track row.dim) {
+            <tr>
+              <td>{{ row.dim | t }}</td>
+              <td>{{ row.body | t }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <h3>{{ 'docs.pricing.roundTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.roundIntro' | t }}</p>
+    <pre class="docs-code">{{ roundingFormula }}</pre>
+    <ul>
+      @for (key of roundNotes; track key) {
+        <li>{{ key | t }}</li>
+      }
+    </ul>
+
+    <h3>{{ 'docs.pricing.reportTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.reportIntro' | t }}</p>
+    <div class="docs-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'docs.pricing.col.dimension' | t }}</th>
+            <th>{{ 'docs.pricing.col.max' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of boundRows; track row.dim) {
+            <tr>
+              <td>{{ row.dim | t }}</td>
+              <td>{{ row.maxKey ? (row.maxKey | t) : row.max }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p>{{ 'docs.pricing.report.discard' | t }}</p>
+    <p>{{ 'docs.pricing.report.runtime' | t }}</p>
+
+    <h3>{{ 'docs.pricing.report.openaiTitle' | t }}</h3>
+    <pre class="docs-code">{{ openaiUsageSample }}</pre>
+    <p>{{ 'docs.pricing.report.openaiNote' | t }}</p>
+
+    <h3>{{ 'docs.pricing.report.explicitTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.report.explicitNote' | t }}</p>
+    <pre class="docs-code">{{ imageReportSample }}</pre>
+    <pre class="docs-code">{{ tokenReportSample }}</pre>
+    <p>{{ 'docs.pricing.report.flatNote' | t }}</p>
+
+    <h3>{{ 'docs.pricing.report.headerTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.report.headerNote' | t }}</p>
+    <pre class="docs-code">{{ usageHeaderSample }}</pre>
+
+    <h3>{{ 'docs.pricing.examplesTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.examplesIntro' | t }}</p>
+    <div class="docs-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'docs.pricing.col.unit' | t }}</th>
+            <th>{{ 'docs.pricing.col.measured' | t }}</th>
+            <th>{{ 'docs.pricing.col.rate' | t }}</th>
+            <th>{{ 'docs.pricing.col.charge' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of exampleRows; track row.unit) {
+            <tr>
+              <td><code>{{ row.unit }}</code></td>
+              <td>{{ row.measured | t }}</td>
+              <td>{{ row.rate | t }}</td>
+              <td>{{ row.charge }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <h3>{{ 'docs.pricing.historyTitle' | t }}</h3>
+    <p>{{ 'docs.pricing.historyBody' | t: { apiBase } }}</p>
   </section>
 
   <aside class="docs-hub__warn panel">
