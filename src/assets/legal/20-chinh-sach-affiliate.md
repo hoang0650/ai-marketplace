@@ -29,7 +29,7 @@
 2. **Người bán** tự đặt tỷ lệ hoa hồng và chịu khoản đó từ doanh thu của mình.
 3. **Người giới thiệu** là một tư cách của tài khoản người dùng. Không có tuyến dưới, không có khoản nộp tiền để tham gia, không có hoa hồng tuyển dụng.
 4. **Người mua** mở liên kết và thanh toán đơn bằng số dư trên nền tảng.
-5. **Sổ hoa hồng** tách khỏi doanh thu người bán và khỏi số dư trả trước của người mua. Số dư trả trước không được rút hoặc chuyển. Hoa hồng được chi bằng VND vào tài khoản đứng tên người giới thiệu.
+5. **Sổ hoa hồng** tách khỏi doanh thu người bán và khỏi số dư trả trước của người mua. Số dư trả trước không được rút hoặc chuyển. Hoa hồng affiliate không được dùng để mua hàng hoặc chuyển thành số dư nội bộ; chỉ được chi trả bằng VND về tài khoản ngân hàng đã đăng ký của chính người tiếp thị liên kết, sau đối soát, tạm giữ 48 giờ, trong 07 ngày làm việc (không tính thứ bảy, chủ nhật và ngày nghỉ lễ).
 
 ## Điều 1B. Quy trình đang chạy trên hệ thống
 
@@ -42,7 +42,7 @@ Các bước dưới đây mô tả mã và hợp đồng API hiện có. Không
 5. Người mua mở liên kết dạng đường dẫn sản phẩm hoặc gian hàng kèm `ref`. Ghi nhận là lượt nhấp cuối. Số ngày lấy từ cấu hình `attributionDays`, giá trị mã đang dùng khi không đặt biến là 30 ngày. Lượt nhấp lặp của cùng thiết bị trong 30 phút được tính một lần.
 6. Đơn được ghi hoa hồng khi không phải tự giới thiệu, tỷ lệ lớn hơn 0, lượt nhấp còn trong cửa sổ, và tài khoản người giới thiệu còn hoạt động với hồ sơ nội bộ ở trạng thái verified tại thời điểm ghi nhận.
 7. Hoa hồng ghi đủ lúc đơn hoàn tất, trạng thái `active`. Trong thời gian giữ hoặc khi đơn đang tranh chấp, số đó là đang giữ. Hết giữ, số còn lại là khả dụng. Hoàn hoặc hủy đảo theo tỷ lệ và có thể đưa dòng sang đã đảo.
-8. Yêu cầu chi trả ghi một bút toán trên sổ hoa hồng. Không có mức chi trả tối thiểu thương mại. Sau đối soát và yêu cầu hợp lệ, Công ty chi bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ) vào tài khoản đứng tên người giới thiệu. Nghĩa vụ thuế vẫn còn.
+8. Yêu cầu chi trả ghi một bút toán trên sổ hoa hồng và không ghi có vào số dư nội bộ. Không có mức chi trả tối thiểu thương mại. Sau đối soát và yêu cầu hợp lệ, Công ty chi bằng VND trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ) vào tài khoản ngân hàng đã đăng ký đứng tên người giới thiệu. Nghĩa vụ thuế vẫn còn. Hoa hồng không được dùng để mua hàng.
 9. Thuế không được trang này ấn 10% cho mọi người giới thiệu và không coi mẫu cam kết đã duyệt là miễn thuế. Khoản 2 Điều 50 Nghị định 253/2026/NĐ-CP chỉ thuộc nhóm thù lao cụ thể.
 10. Tài khoản người giới thiệu không còn hoạt động thì lượt nhấp mới không được ghi nhận. Hoa hồng hợp lệ không bị xóa chỉ vì tài khoản bị khóa. Gian lận bị thu hồi theo Điều 8.
 11. Mã giới thiệu và lượt nhấp là dữ liệu của người giới thiệu và người mua. Trang này không công bố hồ sơ thuế của người khác.
@@ -70,15 +70,15 @@ Các bước dưới đây mô tả mã và hợp đồng API hiện có. Không
 
 ## Điều 5. Ghi có, tạm giữ và rút tiền
 
-1. Hoa hồng được ghi có vào ví của người giới thiệu ngay khi đơn hàng hoàn tất và được **tạm giữ 48 giờ** như doanh thu của người bán; nếu đơn hàng phát sinh khiếu nại, khoản hoa hồng tiếp tục bị giữ đến khi khiếu nại được giải quyết.
-2. Sau thời gian tạm giữ 48 giờ và khi có yêu cầu hợp lệ, hoa hồng khả dụng được chi bằng VND về tài khoản đứng tên đúng người giới thiệu trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Không có mức chi trả tối thiểu thương mại. Mọi số dư khả dụng lớn hơn 0 đều có thể được yêu cầu. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa. Việc tạm giữ không phải tài khoản escrow.
+1. Hoa hồng được ghi vào sổ hoa hồng ngay khi đơn hàng hoàn tất và được **tạm giữ 48 giờ**; nếu đơn hàng phát sinh khiếu nại, khoản hoa hồng tiếp tục bị giữ đến khi khiếu nại được giải quyết. Hoa hồng affiliate không được dùng để mua hàng hoặc chuyển thành số dư nội bộ.
+2. Sau thời gian tạm giữ 48 giờ và khi có yêu cầu hợp lệ, hoa hồng khả dụng chỉ được chi bằng VND về tài khoản ngân hàng đã đăng ký của chính người giới thiệu trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Không có mức chi trả tối thiểu thương mại. Mọi khoản hoa hồng khả dụng lớn hơn 0 đều có thể được yêu cầu. Chỉ tạm giữ phần đang tranh chấp hoặc thuộc diện thu hồi có căn cứ. Không tịch thu toàn bộ khoản hợp lệ chỉ vì tài khoản bị khóa. Việc tạm giữ không phải tài khoản escrow. Thuế được khấu trừ theo quy định tại thời điểm chi trả.
 3. Trang Affiliate hiển thị: liên kết, số lượt nhấp, số đơn, hoa hồng đang tạm giữ, hoa hồng khả dụng và hoa hồng bị thu hồi.
 
 ## Điều 6. Thuế thu nhập cá nhân
 
 1. Thuế trên hoa hồng được xác định theo tư cách, cư trú, bản chất thu nhập và văn bản có hiệu lực tại lúc chi trả. Trang này không áp dụng máy móc một tỷ lệ cố định, và không coi một mẫu cam kết đã duyệt là căn cứ miễn thuế.
 2. Nếu người giới thiệu gửi một bản cam kết thuế, đó là tệp, năm và mã số thuế để quản trị viên duyệt hoặc từ chối, có lý do. Việc duyệt tệp không phải xác thực điện tử và không phải miễn thuế. Nghị định 253/2026/NĐ-CP, khoản 2 Điều 50, chỉ nói cam kết là căn cứ tạm thời chưa khấu trừ đối với nhóm thù lao cụ thể khi đủ điều kiện, không áp cho mọi hoa hồng.
-3. Khoản đã khấu trừ, nếu có, được ghi trên lịch sử ví. Nghị định 252/2026/NĐ-CP, khoản 2 Điều 45, yêu cầu chủ quản nền tảng khai theo tháng số thuế đã khấu trừ đối với hoạt động kinh doanh của hộ và cá nhân kinh doanh. Trang này không xếp mọi hoa hồng người giới thiệu vào nhóm đó và không ghi lịch quý như quy tắc đã chốt.
+3. Khoản đã khấu trừ, nếu có, được ghi trên sổ hoa hồng. Nghị định 252/2026/NĐ-CP, khoản 2 Điều 45, yêu cầu chủ quản nền tảng khai theo tháng số thuế đã khấu trừ đối với hoạt động kinh doanh của hộ và cá nhân kinh doanh. Trang này không xếp mọi hoa hồng người giới thiệu vào nhóm đó và không ghi lịch quý như quy tắc đã chốt.
 4. Khoản thuế, nếu phát sinh, theo văn bản có hiệu lực tại thời điểm chi trả. Người giới thiệu tự chịu trách nhiệm quyết toán thuế của mình.
 
 ## Điều 7. Hành vi bị cấm
@@ -94,9 +94,9 @@ Người giới thiệu không được:
 
 ## Điều 8. Hoàn tiền, hủy đơn và thu hồi hoa hồng
 
-1. Đơn hàng bị hoàn tiền hoặc hủy, toàn bộ hay một phần, thì hoa hồng tương ứng bị **đảo ngược theo đúng tỷ lệ** và trừ khỏi ví người giới thiệu.
-2. Khi phát hiện gian lận hoặc vi phạm Điều 7, nền tảng có quyền thu hồi toàn bộ hoa hồng của các đơn hàng liên quan, kể cả khoản đã chuyển thành số dư khả dụng; tạm khóa tính năng affiliate hoặc tài khoản; và xử lý theo Quy trình xử lý vi phạm.
-3. Nếu số dư ví không đủ để thu hồi, khoản chênh lệch được ghi nợ và bù trừ vào các khoản ghi có sau này.
+1. Đơn hàng bị hoàn tiền hoặc hủy, toàn bộ hay một phần, thì hoa hồng tương ứng bị **đảo ngược theo đúng tỷ lệ** và trừ khỏi sổ hoa hồng của người giới thiệu.
+2. Khi phát hiện gian lận hoặc vi phạm Điều 7, nền tảng có quyền thu hồi toàn bộ hoa hồng của các đơn hàng liên quan, kể cả khoản đã chuyển sang trạng thái khả dụng trên sổ hoa hồng; tạm khóa tính năng affiliate hoặc tài khoản; và xử lý theo Quy trình xử lý vi phạm. Khoản hoa hồng không được chuyển thành số dư nội bộ.
+3. Nếu sổ hoa hồng không đủ để thu hồi, khoản chênh lệch được ghi nợ và bù trừ vào các khoản hoa hồng ghi có sau này.
 
 ## Điều 9. Trách nhiệm của người bán
 

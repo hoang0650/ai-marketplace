@@ -14,4 +14,4 @@ Người mua cung cấp thông tin chính xác, thanh toán theo phương thức
 
 ## Người tiếp thị liên kết
 
-Người tiếp thị liên kết phải định danh theo lộ trình pháp luật, công khai quan hệ hưởng hoa hồng, giới thiệu đúng thông tin và không thực hiện tự giới thiệu, nhồi cookie, thư rác hoặc quảng cáo gây nhầm lẫn. Quyền nhận hoa hồng và nghĩa vụ thuế thực hiện theo Chính sách Affiliate.
+Người tiếp thị liên kết phải định danh theo lộ trình pháp luật, công khai quan hệ hưởng hoa hồng, giới thiệu đúng thông tin và không thực hiện tự giới thiệu, nhồi cookie, thư rác hoặc quảng cáo gây nhầm lẫn. Quyền nhận hoa hồng và nghĩa vụ thuế thực hiện theo Chính sách Affiliate. Hoa hồng affiliate không được dùng để mua hàng hoặc chuyển thành số dư nội bộ; chỉ được chi trả bằng VND về tài khoản ngân hàng đã đăng ký của chính người tiếp thị liên kết, sau đối soát, tạm giữ 48 giờ, trong 07 ngày làm việc (không tính thứ bảy, chủ nhật và ngày nghỉ lễ).

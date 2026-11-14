@@ -17,7 +17,7 @@
 
 Website nạp ví bằng chuyển khoản VietQR vào tài khoản VPBank số 395951335, chủ tài khoản Công ty TNHH Giải pháp Công nghệ PHGroup. Ví được ghi có sau khi nội dung chuyển khoản khớp giao dịch ghi có. Đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán.
 
-Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase. Trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website.
+Trên ứng dụng iOS, nạp ví qua Apple In-App Purchase. Trên ứng dụng Android, nạp ví qua Google Play Billing. IAP chỉ dùng để nạp ví trong ứng dụng. Ứng dụng iOS không dẫn người dùng sang thanh toán trên website. Khi nạp số dư bằng mua trong ứng dụng (IAP) trên App Store hoặc Google Play, phí của Apple hoặc Google do người dùng chịu tại thời điểm nạp; giá trên kho ứng dụng đã bao gồm phí đó và số dư được ghi có bằng đúng giá trị tín dụng đã công bố của gói; phí này không được chuyển sang người bán.
 
 Công ty đã thiết lập nhận khoản chi trả từ Apple và Google về tài khoản ngân hàng đứng tên Công ty. Theo đối chiếu ngày 12/11/2026 trên App Store Connect, Thỏa thuận Paid Apps đang trạng thái Active (hiệu lực từ 26/10/2026 đến 08/07/2027); tài khoản ngân hàng gắn với thỏa thuận là Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank), số tài khoản 395951335, chủ tài khoản Công ty TNHH Giải pháp Công nghệ PHGroup, quốc gia Việt Nam, đồng tiền VND, trạng thái Active. Trên Google Play Console, phương thức nhận thanh toán chính là chuyển khoản ngân hàng đến tài khoản kết thúc bằng 335, đứng tên PHGROUP TECHNOLOGY SOLUTIONS COMPANY LIMITED (cùng pháp nhân). Các ảnh dưới đây minh họa việc đã thiết lập kênh nhận tiền; không phải chứng từ khoản chi trả đã phát sinh (tại thời điểm đối chiếu, Google Play Console hiển thị thu nhập 0,00 USD) và không phải chứng từ đã chi trả cho người bán.
 
@@ -55,11 +55,11 @@ Nền tảng không lưu thông tin thẻ của người mua.
 1. Người mua nạp tín dụng dịch vụ trên website bằng VietQR và trên ứng dụng bằng hệ thống thanh toán trong ứng dụng. Số tiền có hiệu lực là số VND của giao dịch được xác nhận.
 2. Số dư dịch vụ là khoản ghi trên sổ để thanh toán đơn hàng trên nền tảng, kể cả đơn của người bán, gồm cả trừ dần phí sử dụng và phí thuê bao agent khi người dùng đã chấp thuận gia hạn. Giao diện có thể gọi số dư là “ví”. Công ty không phải ví điện tử và không phải tổ chức cung ứng dịch vụ trung gian thanh toán được cấp phép theo Nghị định 52/2024/NĐ-CP. Trang này không khẳng định mô hình đã được cơ quan nhà nước chấp thuận theo nghị định đó.
 3. Người mua không rút số dư trả trước thành tiền, không chuyển nhượng hoặc chuyển số dư cho người dùng khác, không đổi số dư sang ngoại tệ và không được trả lãi. Số dư đã có được giữ, kể cả khoản nạp qua Apple hoặc Google. Hoàn tiền hợp pháp theo [Chính sách hoàn tiền](06-chinh-sach-hoan-tien.md); trang này không cam kết hoàn về phương thức thanh toán ban đầu. Khoản được duyệt ghi có vào tín dụng dịch vụ dùng được trên sàn.
-4. Chi trả người bán và hoa hồng affiliate là khoản phải trả riêng, sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ).
+4. Chi trả người bán và hoa hồng affiliate là khoản phải trả riêng, sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Hoa hồng affiliate không được dùng để mua hàng hoặc chuyển thành số dư nội bộ; chỉ được chi trả bằng VND về tài khoản ngân hàng đã đăng ký của chính người tiếp thị liên kết, sau đối soát, tạm giữ 48 giờ, trong 07 ngày làm việc (không tính thứ bảy, chủ nhật và ngày nghỉ lễ).
 
 ## Điều 4. Thanh toán trong ứng dụng
 
-Trên ứng dụng, Apple In-App Purchase và Google Play Billing chỉ áp dụng cho nội dung/tín dụng số đủ điều kiện theo quy tắc của kho ứng dụng. Khoản mua qua Apple/Google không được rút hoặc chuyển sang người dùng khác; yêu cầu hoàn tiền được xử lý theo kênh ban đầu và chính sách của Apple/Google.
+Trên ứng dụng, Apple In-App Purchase và Google Play Billing chỉ áp dụng cho nội dung/tín dụng số đủ điều kiện theo quy tắc của kho ứng dụng. Khi nạp số dư bằng mua trong ứng dụng (IAP) trên App Store hoặc Google Play, phí của Apple hoặc Google do người dùng chịu tại thời điểm nạp; giá trên kho ứng dụng đã bao gồm phí đó và số dư được ghi có bằng đúng giá trị tín dụng đã công bố của gói; phí này không được chuyển sang người bán. Khoản mua qua Apple/Google không được rút hoặc chuyển sang người dùng khác; yêu cầu hoàn tiền được xử lý theo kênh ban đầu và chính sách của Apple/Google.
 
 ## Điều 5. Đơn hàng
 
@@ -74,7 +74,7 @@ Trên ứng dụng, Apple In-App Purchase và Google Play Billing chỉ áp dụ
 3. Khi đơn hoàn tất, khoản phải trả người bán và hoa hồng tiếp thị liên kết, nếu có, được tạm giữ 48 giờ. Thời gian này là tạm giữ đối soát, không phải tài khoản escrow hay bảo lãnh ngân hàng. Chỉ giữ tiếp phần đang tranh chấp, và phải báo lý do cùng thời hạn rà soát.
 4. Bảng đối soát của từng đơn ghi: mã đơn, doanh thu, phí, thuế, hủy hoặc hoàn, tạm giữ, và thực nhận.
 5. Sau khi hết thời gian tạm giữ và có yêu cầu chi trả hợp lệ, Công ty chi bằng VND vào tài khoản đứng tên đúng người bán hoặc người tiếp thị liên kết trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Khoản đang tranh chấp hoặc chưa đủ hồ sơ không nằm trong thời hạn này. Không có mức chi trả tối thiểu thương mại đối với hoa hồng.
-6. Ba sổ được giữ riêng: doanh thu người bán, hoa hồng tiếp thị liên kết, và số dư trả trước của người mua. Số dư trả trước không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người dùng khác.
+6. Ba sổ được giữ riêng: doanh thu người bán, hoa hồng tiếp thị liên kết, và số dư trả trước của người mua. Số dư trả trước không được rút thành tiền, không được chuyển nhượng hoặc chuyển cho người dùng khác. Hoa hồng tiếp thị liên kết không được dùng để mua hàng hoặc chuyển thành số dư nội bộ; chỉ được chi trả bằng VND về tài khoản ngân hàng đã đăng ký của chính người tiếp thị liên kết.
 7. Hợp đồng cung cấp dịch vụ giao kết trên hệ thống là hợp đồng điện tử. Bản ghi giao kết có giá trị chứng cứ theo điểm b khoản 2 Điều 26 Nghị định 248/2026/NĐ-CP.
 
 ## Điều 7. Chi trả cho người bán

@@ -54,7 +54,7 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-thanh-toan-doi-soat',
     file: '05-chinh-sach-thanh-toan-doi-soat.md',
     title: 'Thanh toán và đối soát',
-    summary: 'Đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán. Số dư trả trước không được rút thành tiền, không được chuyển nhượng. Chi trả người bán và hoa hồng affiliate sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ).',
+    summary: 'Đơn hàng trên nền tảng được thanh toán bằng số dư nội bộ, kể cả đơn của người bán. Số dư trả trước không được rút thành tiền, không được chuyển nhượng. Chi trả người bán sau đối soát và tạm giữ 48 giờ, trong 07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ). Hoa hồng affiliate không được dùng để mua hàng hoặc chuyển thành số dư nội bộ; chỉ chi trả bằng VND về tài khoản ngân hàng đã đăng ký.',
     group: 'commerce',
   },
   {
@@ -159,14 +159,14 @@ export const LEGAL_POLICIES: LegalPolicyMeta[] = [
     slug: 'chinh-sach-affiliate',
     file: '20-chinh-sach-affiliate.md',
     title: 'Chính sách chương trình Affiliate',
-    summary: 'Hoa hồng 0–25% do người bán đặt, nhấp cuối, giữ 48 giờ. Xác thực điện tử chưa được triển khai.',
+    summary: 'Hoa hồng 0–25% do người bán đặt, nhấp cuối, giữ 48 giờ. Không dùng để mua hàng hoặc chuyển thành số dư nội bộ; chỉ chi trả bằng VND về tài khoản ngân hàng đã đăng ký. Xác thực điện tử chưa được triển khai.',
     group: 'commerce',
   },
   {
     slug: 'quy-trinh-tiep-thi-lien-ket',
     file: '29-quy-trinh-tiep-thi-lien-ket.md',
     title: 'Quy trình tiếp thị liên kết (Affiliate)',
-    summary: 'Năm vai trò và mười sáu bước theo khoản 11 Mục XI Quy chế. Một cấp, không phí tham gia.',
+    summary: 'Năm vai trò và mười sáu bước theo khoản 11 Mục XI Quy chế. Một cấp, không phí tham gia. Hoa hồng không dùng để mua hàng hoặc chuyển thành số dư nội bộ; chỉ chi trả về tài khoản ngân hàng đã đăng ký.',
     group: 'commerce',
   },
   {
