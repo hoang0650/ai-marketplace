@@ -80,8 +80,18 @@ test('published buyer copy does not offer a prepaid cash-out', () => {
 test('homepage footer publishes Điều 4–16 with distinct labels', () => {
   const html = readFileSync(new URL('../src/app/layout/shell.component.html', import.meta.url), 'utf8');
   const ts = readFileSync(new URL('../src/app/layout/shell.component.ts', import.meta.url), 'utf8');
-  assert.match(html, /footer-decree/);
-  assert.equal(MESSAGES.vi['footer.decree248.title'], 'Chính sách công khai theo Nghị định 248/2026/NĐ-CP (Điều 4–16)');
+  const scss = readFileSync(new URL('../src/app/layout/shell.component.scss', import.meta.url), 'utf8');
+  assert.equal(html.includes('footer-decree'), false);
+  assert.equal(scss.includes('footer-decree'), false);
+  assert.equal(scss.includes('#f3d48a'), false);
+  const termsAt = html.indexOf('footer.col.terms');
+  const legalAt = html.indexOf('footerLegal');
+  const decreeAt = html.indexOf('footerDecreePolicies');
+  assert.equal(termsAt > -1 && legalAt > termsAt && decreeAt > legalAt, true);
+  assert.match(html.slice(termsAt, decreeAt), /footer-group-title footer-terms-subhead/);
+  assert.equal(MESSAGES.vi['footer.decree248.title'], 'Theo Nghị định 248/2026/NĐ-CP');
+  assert.equal(MESSAGES.en['footer.decree248.title'], 'Under Decree 248/2026/ND-CP');
+  assert.equal(MESSAGES.zh['footer.decree248.title'], '依据第248/2026/NĐ-CP号法令');
   assert.equal(FOOTER_LINKS.length, 13);
   for (const item of FOOTER_LINKS) {
     assert.equal(ts.includes(item.path), true, item.path);
