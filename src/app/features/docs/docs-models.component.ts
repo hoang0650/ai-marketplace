@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DocsShellComponent } from './docs-shell.component';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -10,7 +11,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-docs-models',
   standalone: true,
-  imports: [RouterLink, TPipe],
+  imports: [RouterLink, TPipe, DocsShellComponent],
   templateUrl: './docs-models.component.html',
   styleUrl: './docs-models.component.scss',
 })
@@ -22,8 +23,11 @@ export class DocsModelsComponent implements OnInit {
   readonly apiBase = environment.apiUrl.replace(/\/v1\/?$/, '/v1');
   readonly aiBase = environment.aiV1Url;
   models: RunpodPublicEndpoint[] = [];
-  kinds: Array<RunpodPublicEndpoint['kind'] | 'all'> = ['all', 'image', 'video', 'text', 'audio'];
   kind: RunpodPublicEndpoint['kind'] | 'all' = 'all';
+  query = '';
+  loading = true;
+  loadError = false;
+  readonly skeletons = [1, 2, 3, 4, 5, 6];
 
   ngOnInit(): void {
     this.seo.set({
@@ -32,17 +36,46 @@ export class DocsModelsComponent implements OnInit {
     });
     this.runpod.publicEndpoints().subscribe({
       next: (rows) => {
-        this.models = rows;
+        this.models = rows || [];
+        this.loading = false;
       },
       error: () => {
         this.models = [];
+        this.loading = false;
+        this.loadError = true;
       },
     });
   }
 
+  kinds(): Array<RunpodPublicEndpoint['kind'] | 'all'> {
+    const order: RunpodPublicEndpoint['kind'][] = ['image', 'video', 'text', 'audio'];
+    const present = new Set(this.models.map((row) => row.kind));
+    return ['all', ...order.filter((kind) => present.has(kind)), ...[...present].filter((kind) => !order.includes(kind))];
+  }
+
+  kindLabel(kind: RunpodPublicEndpoint['kind'] | 'all'): string {
+    if (kind === 'all') return this.i18n.t('docsModels.filter.all');
+    const key = `docsModels.kind.${kind}`;
+    const label = this.i18n.t(key);
+    return label === key ? kind : label;
+  }
+
+  priceLine(row: RunpodPublicEndpoint): string {
+    const price = row.price;
+    if (price && typeof price.rate === 'number' && price.unit) {
+      const rate = Number(price.rate).toLocaleString('en-US', { maximumFractionDigits: 6 });
+      return `${rate} ${price.currency || 'USD'} / ${price.unit}`;
+    }
+    return row.pricing || '';
+  }
+
   filtered(): RunpodPublicEndpoint[] {
-    if (this.kind === 'all') return this.models;
-    return this.models.filter((m) => m.kind === this.kind);
+    const q = this.query.trim().toLowerCase();
+    return this.models.filter((row) => {
+      if (this.kind !== 'all' && row.kind !== this.kind) return false;
+      if (!q) return true;
+      return `${row.name} ${row.slug} ${row.description || ''}`.toLowerCase().includes(q);
+    });
   }
 
   setKind(kind: RunpodPublicEndpoint['kind'] | 'all'): void {

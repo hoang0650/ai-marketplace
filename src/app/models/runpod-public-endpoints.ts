@@ -23,6 +23,8 @@ export interface RunpodPublicEndpoint {
   openaiBaseUrl: string | null;
   openaiModel: string | null;
   pricing: string;
+  /** Structured price from GET /v1/endpoints/public-endpoints. */
+  price?: { rate: number; unit: string; currency?: string } | null;
   docsUrl: string;
 }
 

@@ -1,3 +1,4 @@
+<app-docs-shell>
 <section class="seller-docs docs-models page route-enter">
   <p class="seller-docs__crumb">
     <a routerLink="/docs">{{ 'docs.crumb' | t }}</a> / {{ 'docsModels.short' | t }}
@@ -10,25 +11,41 @@
     <span>OpenAI: <code>{{ aiBase }}</code></span>
   </p>
 
-  <nav class="seller-docs__toc" aria-label="Kinds">
-    @for (k of kinds; track k) {
-      <button type="button" class="docs-models__chip" [class.is-on]="kind === k" (click)="setKind(k)">
-        {{ k === 'all' ? ('docsModels.filter.all' | t) : k }}
-      </button>
-    }
-  </nav>
+  @if (loading) {
+    <div class="docs-models__list" aria-hidden="true">
+      @for (n of skeletons; track n) {
+        <div class="docs-models__skel"></div>
+      }
+    </div>
+    <p class="sr-only">{{ 'docsModels.loading' | t }}</p>
+  } @else if (loadError) {
+    <p class="seller-docs__warn">{{ 'docsModels.loadError' | t }}</p>
+  } @else {
+  <h2>{{ 'docsModels.catalog' | t }}</h2>
+  <div class="docs-models__tools">
+    <input class="input docs-models__search" type="search" [value]="query" (input)="query = $any($event.target).value" [attr.placeholder]="'docsModels.search' | t" />
+    <nav class="docs-models__filters" aria-label="Kinds">
+      @for (k of kinds(); track k) {
+        <button type="button" class="docs-models__chip" [class.is-on]="kind === k" (click)="setKind(k)">
+          {{ kindLabel(k) }}
+        </button>
+      }
+    </nav>
+  </div>
 
   <div class="docs-models__list">
     @for (m of filtered(); track m.slug) {
       <a class="docs-models__row" [routerLink]="['/docs/models', m.slug]">
-        <span class="docs-models__kind" [attr.data-kind]="m.kind">{{ m.kind }}</span>
-        <span class="docs-models__meta">
-          <strong>{{ m.name }}</strong>
-          <span>{{ m.description }}</span>
-        </span>
+        <span class="docs-models__kind" [attr.data-kind]="m.kind">{{ kindLabel(m.kind) }}</span>
+        <strong>{{ m.name }}</strong>
+        <span class="docs-models__desc">{{ m.description }}</span>
         <code class="docs-models__slug">{{ m.slug }}</code>
-        <span class="docs-models__price">{{ m.pricing }}</span>
+        <span class="docs-models__price">{{ priceLine(m) }}</span>
       </a>
+    } @empty {
+      <p class="seller-docs__lede">{{ 'docsModels.empty' | t }}</p>
     }
   </div>
+  }
 </section>
+</app-docs-shell>
