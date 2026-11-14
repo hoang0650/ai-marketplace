@@ -22,25 +22,24 @@ const BUYER_ZH =
 const PAYOUT_07 =
   '07 ngày làm việc (không tính các ngày thứ bảy, chủ nhật và các ngày nghỉ lễ)';
 
-const FOOTER_LINKS: { path: string; fragment?: string; key: string; vi: string }[] = [
-  { path: '/legal/thong-tin-chu-quan-nen-tang', key: 'footer.decree248.d4', vi: 'Điều 4. Thông tin chủ quản nền tảng' },
-  { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.decree248.d5', vi: 'Điều 5. Chính sách bảo mật và dữ liệu' },
-  { path: '/legal/quyen-va-nghia-vu-cac-ben', key: 'footer.decree248.d6', vi: 'Điều 6. Quyền và nghĩa vụ của các bên' },
-  { path: '/legal/chinh-sach-khieu-nai-tranh-chap', key: 'footer.decree248.d7', vi: 'Điều 7. Chính sách khiếu nại, tranh chấp' },
-  { path: '/legal/chinh-sach-gia-ca', key: 'footer.decree248.d8', vi: 'Điều 8. Chính sách giá cả' },
-  { path: '/legal/dieu-kien-va-han-che-cung-cap', key: 'footer.decree248.d9', vi: 'Điều 9. Điều kiện và hạn chế cung cấp dịch vụ' },
-  { path: '/legal/chinh-sach-thanh-toan-doi-soat', key: 'footer.decree248.d10', vi: 'Điều 10. Chính sách thanh toán, đối soát' },
-  { path: '/legal/chinh-sach-xep-hang-uu-tien-hien-thi', key: 'footer.decree248.d11', vi: 'Điều 11. Chính sách xếp hạng, ưu tiên hiển thị' },
-  { path: '/legal/quy-che-livestream-ban-hang', key: 'footer.decree248.d12', vi: 'Điều 12. Quy chế livestream bán hàng' },
-  { path: '/legal/chinh-sach-giao-nhan-san-pham-so', key: 'footer.decree248.d13', vi: 'Điều 13. Chính sách giao nhận sản phẩm số' },
-  { path: '/legal/chinh-sach-hoan-tien', key: 'footer.decree248.d14', vi: 'Điều 14. Chính sách hoàn tiền' },
-  { path: '/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu', key: 'footer.decree248.d15', vi: 'Điều 15. Phương thức cung cấp dịch vụ' },
-  {
-    path: '/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu',
-    fragment: 'dieu-16',
-    key: 'footer.decree248.d16',
-    vi: 'Điều 16. Chấm dứt dịch vụ',
-  },
+const FOOTER_LINKS: { path: string; key: string; vi: string; en: string; zh: string }[] = [
+  { path: '/legal/thong-tin-chu-quan-nen-tang', key: 'footer.decree248.d4', vi: 'Thông tin chủ quản nền tảng', en: 'Platform operator information', zh: '平台运营方信息' },
+  { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.decree248.d5', vi: 'Chính sách bảo mật và dữ liệu', en: 'Privacy and personal data', zh: '隐私与个人数据' },
+  { path: '/legal/quyen-va-nghia-vu-cac-ben', key: 'footer.decree248.d6', vi: 'Quyền và nghĩa vụ của các bên', en: 'Rights and obligations of the parties', zh: '各方权利与义务' },
+  { path: '/legal/chinh-sach-khieu-nai-tranh-chap', key: 'footer.decree248.d7', vi: 'Chính sách khiếu nại, tranh chấp', en: 'Complaints and disputes', zh: '投诉与争议' },
+  { path: '/complaints/new', key: 'complaint.cta.file', vi: 'Gửi khiếu nại', en: 'File a complaint', zh: '提交投诉' },
+  { path: '/legal/chinh-sach-gia-ca', key: 'footer.decree248.d8', vi: 'Chính sách giá cả', en: 'Pricing policy', zh: '价格政策' },
+  { path: '/legal/dieu-kien-va-han-che-cung-cap', key: 'footer.decree248.d9', vi: 'Điều kiện và hạn chế cung cấp dịch vụ', en: 'Conditions and limits of supply', zh: '服务提供条件与限制' },
+  { path: '/legal/chinh-sach-thanh-toan-doi-soat', key: 'footer.decree248.d10', vi: 'Chính sách thanh toán, đối soát', en: 'Payment and reconciliation', zh: '支付与对账' },
+  { path: '/legal/chinh-sach-xep-hang-uu-tien-hien-thi', key: 'footer.decree248.d11', vi: 'Chính sách xếp hạng, ưu tiên hiển thị', en: 'Ranking and display priority', zh: '排名与展示优先级' },
+  { path: '/legal/quy-che-livestream-ban-hang', key: 'footer.decree248.d12', vi: 'Quy chế livestream bán hàng', en: 'Livestream sales rules', zh: '直播销售规则' },
+  { path: '/legal/chinh-sach-giao-nhan-san-pham-so', key: 'footer.decree248.d13', vi: 'Chính sách giao nhận sản phẩm số', en: 'Delivery of digital products', zh: '数字产品交付' },
+  { path: '/legal/chinh-sach-hoan-tien', key: 'footer.decree248.d14', vi: 'Chính sách hoàn tiền', en: 'Refund policy', zh: '退款政策' },
+  { path: '/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu', key: 'footer.decree248.d15', vi: 'Phương thức cung cấp và chấm dứt dịch vụ', en: 'How the service is provided and ended', zh: '服务提供方式与终止服务' },
+  { path: '/legal/quy-che-hoat-dong-san-tmdt', key: 'footer.marketplaceRules', vi: 'Quy chế sàn', en: 'Marketplace rules', zh: '平台规则' },
+  { path: '/legal/quy-trinh-tiep-thi-lien-ket', key: 'footer.affiliateProcess', vi: 'Quy trình tiếp thị liên kết', en: 'Affiliate process', zh: '联盟推广流程' },
+  { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms', vi: 'Thỏa thuận sử dụng', en: 'Terms of use', zh: '使用条款' },
+  { path: '/legal', key: 'footer.publicPolicies', vi: 'Chính sách công khai', en: 'Public policies', zh: '公开政策' },
 ];
 
 test('buyer policy summaries match in VI, EN and ZH', () => {
@@ -77,32 +76,43 @@ test('published buyer copy does not offer a prepaid cash-out', () => {
   assert.match(shown('zh', 'wallet.withdraw.lede'), /不可提现/);
 });
 
-test('homepage footer publishes Điều 4–16 with distinct labels', () => {
+test('homepage footer publishes Điều 4–16 once each, without article prefixes', () => {
   const html = readFileSync(new URL('../src/app/layout/shell.component.html', import.meta.url), 'utf8');
   const ts = readFileSync(new URL('../src/app/layout/shell.component.ts', import.meta.url), 'utf8');
   const scss = readFileSync(new URL('../src/app/layout/shell.component.scss', import.meta.url), 'utf8');
   assert.equal(html.includes('footer-decree'), false);
+  assert.equal(html.includes('footer-terms-subhead'), false);
+  assert.equal(html.includes('footer.decree248.title'), false);
   assert.equal(scss.includes('footer-decree'), false);
+  assert.equal(scss.includes('footer-terms-subhead'), false);
   assert.equal(scss.includes('#f3d48a'), false);
-  const termsAt = html.indexOf('footer.col.terms');
-  const legalAt = html.indexOf('footerLegal');
-  const decreeAt = html.indexOf('footerDecreePolicies');
-  assert.equal(termsAt > -1 && legalAt > termsAt && decreeAt > legalAt, true);
-  assert.match(html.slice(termsAt, decreeAt), /footer-group-title footer-terms-subhead/);
-  assert.equal(MESSAGES.vi['footer.decree248.title'], 'Theo Nghị định 248/2026/NĐ-CP');
-  assert.equal(MESSAGES.en['footer.decree248.title'], 'Under Decree 248/2026/ND-CP');
-  assert.equal(MESSAGES.zh['footer.decree248.title'], '依据第248/2026/NĐ-CP号法令');
-  assert.equal(FOOTER_LINKS.length, 13);
+  const blockStart = ts.indexOf('readonly footerTerms');
+  const blockEnd = ts.indexOf('readonly quickLinks');
+  assert.equal(blockStart > -1 && blockEnd > blockStart, true);
+  const block = ts.slice(blockStart, blockEnd);
+  const paths = [...block.matchAll(/path: '([^']+)'/g)].map((match) => match[1]);
+  assert.equal(paths.length, FOOTER_LINKS.length);
+  assert.equal(new Set(paths).size, paths.length, `duplicate footer hrefs: ${paths.join(', ')}`);
+  assert.equal(block.includes('fragment:'), false);
+  paths.forEach((path, index) => assert.equal(path, FOOTER_LINKS[index].path));
   for (const item of FOOTER_LINKS) {
-    assert.equal(ts.includes(item.path), true, item.path);
-    assert.equal(ts.includes(item.key), true, item.key);
+    assert.equal(block.includes(item.key), true, item.key);
     assert.equal(MESSAGES.vi[item.key], item.vi);
-    assert.match(MESSAGES.en[item.key], /^Điều \d+\. /);
-    assert.match(MESSAGES.zh[item.key], /^Điều \d+\. /);
+    assert.equal(MESSAGES.en[item.key], item.en);
+    assert.equal(MESSAGES.zh[item.key], item.zh);
+    for (const lang of ['vi', 'en', 'zh'] as const) {
+      assert.equal(/^Điều \d+\./.test(MESSAGES[lang][item.key]), false, `${lang} ${item.key}`);
+    }
   }
-  assert.match(ts, /fragment: 'dieu-16'/);
+  for (const key of ['footer.decree248.title', 'footer.decree248.d16', 'footer.privacy', 'footer.paymentPolicy', 'footer.disputePolicy']) {
+    for (const lang of ['vi', 'en', 'zh'] as const) {
+      assert.equal(MESSAGES[lang][key], undefined, `${lang} ${key}`);
+    }
+  }
   const termination = readFileSync(new URL('../src/assets/legal/27-phuong-thuc-cung-cap-va-cham-dut-dich-vu.md', import.meta.url), 'utf8');
   assert.match(termination, /\{#dieu-16\}/);
+  assert.equal(paths.filter((path) => path === '/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu').length, 1);
+  assert.match(html, /footerTerms/);
   assert.match(html, /footer\.company\.(name|tax|address|phone|email)/);
 });
 

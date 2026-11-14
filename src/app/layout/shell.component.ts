@@ -55,22 +55,17 @@ export class ShellComponent {
     { path: '/support', key: 'nav.support' },
     { path: '/sell', key: 'footer.nav.sell' },
   ];
-  readonly footerLegal = [
-    { path: '/legal', key: 'footer.publicPolicies' },
-    { path: '/legal/chinh-sach-thanh-toan-doi-soat', key: 'footer.paymentPolicy' },
-    { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.privacy' },
-    { path: '/legal/quy-che-hoat-dong-san-tmdt', key: 'footer.marketplaceRules' },
-    { path: '/legal/chinh-sach-khieu-nai-tranh-chap', key: 'footer.disputePolicy' },
-    { path: '/legal/quy-trinh-tiep-thi-lien-ket', key: 'footer.affiliateProcess' },
-    { path: '/complaints/new', key: 'complaint.cta.file' },
-    { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms' },
-  ];
-  /** Decree 248/2026 Articles 4–16. Điều 16 shares the Điều 15 page and uses an anchor. */
-  readonly footerDecreePolicies: { path: string; fragment?: string; key: string }[] = [
+  /**
+   * Terms column, one link per destination.
+   * Decree 248 Articles 4–15 each have their own page. Article 16 is a section of the Article 15 page,
+   * so that page is linked once. The complaint form is an action, not a second copy of the dispute policy.
+   */
+  readonly footerTerms = [
     { path: '/legal/thong-tin-chu-quan-nen-tang', key: 'footer.decree248.d4' },
     { path: '/legal/chinh-sach-bao-mat-va-du-lieu', key: 'footer.decree248.d5' },
     { path: '/legal/quyen-va-nghia-vu-cac-ben', key: 'footer.decree248.d6' },
     { path: '/legal/chinh-sach-khieu-nai-tranh-chap', key: 'footer.decree248.d7' },
+    { path: '/complaints/new', key: 'complaint.cta.file' },
     { path: '/legal/chinh-sach-gia-ca', key: 'footer.decree248.d8' },
     { path: '/legal/dieu-kien-va-han-che-cung-cap', key: 'footer.decree248.d9' },
     { path: '/legal/chinh-sach-thanh-toan-doi-soat', key: 'footer.decree248.d10' },
@@ -79,7 +74,10 @@ export class ShellComponent {
     { path: '/legal/chinh-sach-giao-nhan-san-pham-so', key: 'footer.decree248.d13' },
     { path: '/legal/chinh-sach-hoan-tien', key: 'footer.decree248.d14' },
     { path: '/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu', key: 'footer.decree248.d15' },
-    { path: '/legal/phuong-thuc-cung-cap-va-cham-dut-dich-vu', fragment: 'dieu-16', key: 'footer.decree248.d16' },
+    { path: '/legal/quy-che-hoat-dong-san-tmdt', key: 'footer.marketplaceRules' },
+    { path: '/legal/quy-trinh-tiep-thi-lien-ket', key: 'footer.affiliateProcess' },
+    { path: '/legal/dieu-khoan-su-dung', key: 'footer.terms' },
+    { path: '/legal', key: 'footer.publicPolicies' },
   ];
   /** "Popular" column of the Categories mega-menu (former top-level Agent / Model links + key hubs). */
   readonly quickLinks = [
