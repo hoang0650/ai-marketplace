@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { DocsShellComponent } from './docs-shell.component';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -11,7 +12,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-docs-model',
   standalone: true,
-  imports: [RouterLink, TPipe],
+  imports: [RouterLink, TPipe, DocsShellComponent],
   templateUrl: './docs-model.component.html',
   styleUrl: './docs-model.component.scss',
 })

@@ -1,3 +1,4 @@
+<app-docs-shell>
 <section class="docs-hub page route-enter">
   <header class="docs-hub__hero">
     <p class="docs-hub__crumb">{{ 'docs.crumb' | t }}</p>
@@ -47,7 +48,7 @@
 
     <h3>{{ 'docs.pricing.fieldsTitle' | t }}</h3>
     <p>{{ 'docs.pricing.fieldsIntro' | t }}</p>
-    <pre class="docs-code">{{ pricingSample }}</pre>
+    <app-docs-code [text]="pricingSample"></app-docs-code>
     <div class="docs-table-wrap">
       <table>
         <thead>
@@ -95,7 +96,7 @@
 
     <h3>{{ 'docs.pricing.meterTitle' | t }}</h3>
     <p>{{ 'docs.pricing.meterIntro' | t }}</p>
-    <pre class="docs-code">{{ meterSample }}</pre>
+    <app-docs-code [text]="meterSample"></app-docs-code>
 
     <h3>{{ 'docs.pricing.measureTitle' | t }}</h3>
     <p>{{ 'docs.pricing.measureNote' | t }}</p>
@@ -120,7 +121,7 @@
 
     <h3>{{ 'docs.pricing.roundTitle' | t }}</h3>
     <p>{{ 'docs.pricing.roundIntro' | t }}</p>
-    <pre class="docs-code">{{ roundingFormula }}</pre>
+    <app-docs-code [text]="roundingFormula"></app-docs-code>
     <ul>
       @for (key of roundNotes; track key) {
         <li>{{ key | t }}</li>
@@ -151,18 +152,18 @@
     <p>{{ 'docs.pricing.report.runtime' | t }}</p>
 
     <h3>{{ 'docs.pricing.report.openaiTitle' | t }}</h3>
-    <pre class="docs-code">{{ openaiUsageSample }}</pre>
+    <app-docs-code [text]="openaiUsageSample"></app-docs-code>
     <p>{{ 'docs.pricing.report.openaiNote' | t }}</p>
 
     <h3>{{ 'docs.pricing.report.explicitTitle' | t }}</h3>
     <p>{{ 'docs.pricing.report.explicitNote' | t }}</p>
-    <pre class="docs-code">{{ imageReportSample }}</pre>
-    <pre class="docs-code">{{ tokenReportSample }}</pre>
+    <app-docs-code [text]="imageReportSample"></app-docs-code>
+    <app-docs-code [text]="tokenReportSample"></app-docs-code>
     <p>{{ 'docs.pricing.report.flatNote' | t }}</p>
 
     <h3>{{ 'docs.pricing.report.headerTitle' | t }}</h3>
     <p>{{ 'docs.pricing.report.headerNote' | t }}</p>
-    <pre class="docs-code">{{ usageHeaderSample }}</pre>
+    <app-docs-code [text]="usageHeaderSample"></app-docs-code>
 
     <h3>{{ 'docs.pricing.examplesTitle' | t }}</h3>
     <p>{{ 'docs.pricing.examplesIntro' | t }}</p>
@@ -198,3 +199,4 @@
     <p>{{ 'docs.warn.body' | t }}</p>
   </aside>
 </section>
+</app-docs-shell>

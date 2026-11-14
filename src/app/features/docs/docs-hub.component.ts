@@ -1,5 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DocsShellComponent } from './docs-shell.component';
+import { DocsCodeComponent } from './docs-code.component';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -9,7 +11,7 @@ import { DOCS_PRICING_MESSAGES } from './docs-pricing.messages';
 @Component({
   selector: 'app-docs-hub',
   standalone: true,
-  imports: [RouterLink, TPipe],
+  imports: [RouterLink, TPipe, DocsShellComponent, DocsCodeComponent],
   templateUrl: './docs-hub.component.html',
   styleUrl: './docs-hub.component.scss',
 })

@@ -1,3 +1,4 @@
+<app-docs-shell>
 <section class="seller-docs docs-model page route-enter">
   <p class="seller-docs__crumb">
     <a routerLink="/docs">{{ 'docs.crumb' | t }}</a> /
@@ -33,6 +34,7 @@
     <article id="endpoints" class="seller-docs__section">
       <h2>{{ 'docsModels.endpoints.title' | t }}</h2>
       <p>{{ 'docsModels.endpoints.p1' | t }}</p>
+      <div class="docs-model__table-wrap">
       <table class="docs-model__table">
         <tbody>
           <tr>
@@ -55,10 +57,17 @@
           }
           <tr>
             <th>{{ 'docsModels.pricing' | t }}</th>
-            <td>{{ model.pricing }}</td>
+            <td>
+              @if (model.price) {
+                {{ model.price.rate }} {{ model.price.currency || 'USD' }} / {{ model.price.unit }}
+              } @else {
+                {{ model.pricing }}
+              }
+            </td>
           </tr>
         </tbody>
       </table>
+      </div>
       <div class="seller-docs__actions">
         <a [routerLink]="['/product', 'aim-' + model.slug]" class="btn btn-fill">{{ 'docsModels.playground' | t }}</a>
       </div>
@@ -113,6 +122,7 @@ Authorization: Bearer mk_live_…</pre>
     <article id="schema" class="seller-docs__section">
       <h2>{{ 'docsModels.schema.title' | t }}</h2>
       @if (paramRows().length) {
+        <div class="docs-model__table-wrap">
         <table class="docs-model__table">
           <thead>
             <tr>
@@ -133,9 +143,11 @@ Authorization: Bearer mk_live_…</pre>
             }
           </tbody>
         </table>
+        </div>
       } @else {
         <p>{{ 'docsModels.schema.empty' | t }}</p>
       }
     </article>
   }
 </section>
+</app-docs-shell>

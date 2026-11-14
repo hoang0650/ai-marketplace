@@ -1,6 +1,8 @@
 import { DOCS_RUNTIME_MESSAGES } from '../docs/docs-runtime.messages';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DocsShellComponent } from '../docs/docs-shell.component';
+import { DocsCodeComponent } from '../docs/docs-code.component';
 import { SeoService } from '../../services/seo.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -9,7 +11,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-sell-api-usage-docs',
   standalone: true,
-  imports: [RouterLink, TPipe],
+  imports: [RouterLink, TPipe, DocsShellComponent, DocsCodeComponent],
   templateUrl: './sell-api-usage.component.html',
   styleUrl: './sell-api-usage.component.scss',
 })
@@ -32,16 +34,33 @@ export class SellApiUsageDocsComponent implements OnInit {
   }
 
   readonly sampleResponse = `{
-  "usage": {
-    "input_tokens": 12,
-    "output_tokens": 48,
-    "total_tokens": 60
-  },
-  "marketplace": {
-    "cost": 0.0012,
-    "provider": "featherless"
-  }
+  "id": "chatcmpl_…",
+  "object": "chat.completion",
+  "model": "your-product-slug",
+  "choices": [
+    { "index": 0, "message": { "role": "assistant", "content": "…" }, "finish_reason": "stop" }
+  ],
+  "usage": { "input_tokens": 12, "output_tokens": 48, "total_tokens": 60 },
+  "marketplace": { "cost": 0.0012, "provider": "featherless" }
 }`;
+
+  readonly runtimeSample = `POST https://api.aimarkets.vn/v1/chat/completions
+Authorization: Bearer mk_live_<product_scoped_key>
+Idempotency-Key: <unique_request_id>
+Content-Type: application/json
+
+{ "model": "your-product-slug", "messages": [{ "role": "user", "content": "Hello" }], "max_tokens": 128 }
+
+Response fields set by POST /v1/chat/completions:
+{
+  "id": "chatcmpl_…",
+  "object": "chat.completion",
+  "model": "your-product-slug",
+  "choices": [{ "index": 0, "message": { "role": "assistant", "content": "…" }, "finish_reason": "stop" }],
+  "usage": { "prompt_tokens": 12, "completion_tokens": 48, "total_tokens": 60 },
+  "marketplace": { "cost": 0.0012, "provider": "featherless" }
+}
+marketplace.cost is the USD charged for this call (exact_pro_rata_round6 on the listing usageUnit). usage is the upstream usage object.`;
 
   readonly curlExample = `curl ${environment.production ? 'https://api.aimarkets.vn/v1' : 'http://localhost:4100/v1'}/chat/completions \\
   -H "Authorization: Bearer mk_live_xxxxxxxx" \\
