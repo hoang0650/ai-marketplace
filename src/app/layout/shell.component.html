@@ -452,26 +452,15 @@
           }
         </div>
       </div>
-      <div>
+      <div class="footer-terms">
         <p class="footer-col-title">{{ 'footer.col.terms' | t }}</p>
         <ul>
-          @for (item of footerLegal; track item.path) {
+          @for (item of footerTerms; track item.path) {
             <li><a [routerLink]="item.path" class="footer-link">{{ item.key | t }}</a></li>
           }
         </ul>
       </div>
     </div>
-
-    <nav class="footer-decree" aria-labelledby="footer-decree-title">
-      <p id="footer-decree-title" class="footer-decree__title">{{ 'footer.decree248.title' | t }}</p>
-      <ul class="footer-decree__list">
-        @for (item of footerDecreePolicies; track item.key) {
-          <li>
-            <a class="footer-link" [routerLink]="item.path" [fragment]="item.fragment">{{ item.key | t }}</a>
-          </li>
-        }
-      </ul>
-    </nav>
 
     <div class="site-footer__bottom">
       <p>© {{ year }} {{ brand }}. {{ 'lux.partners' | t }}.</p>
