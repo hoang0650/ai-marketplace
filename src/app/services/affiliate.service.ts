@@ -94,8 +94,10 @@ export class AffiliateService {
   }
 
   /**
-   * Affiliate withdrawal in wallet currency (USD, 2 decimals). No commercial minimum.
-   * The API still applies the 48h hold, available-balance check, and any tax it has configured.
+   * Affiliate bank payout in ledger currency (USD, 2 decimals). No commercial minimum.
+   * This does not credit the spendable balance and is not a checkout payment source.
+   * The API still applies reconciliation, the 48h hold, the available-balance check, and any tax it has configured.
+   * Settlement is VND to the affiliate's own registered bank account (GET /wallet/payout-account).
    */
   withdraw(amount: number): Observable<{ quote?: { gross: number; tax: number; net: number } }> {
     return this.http.post<{ quote?: { gross: number; tax: number; net: number } }>(`${environment.apiUrl.replace(/\/$/, '')}/wallet/withdraw`, {

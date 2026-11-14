@@ -18,7 +18,7 @@ Chính sách này nói cách nền tảng nhìn nghĩa vụ thuế trên giao d�
 
 ## Điều 2. Phí sàn không phải thuế
 
-Phí sàn đang mô tả trên sàn (mặc định 20% giá sau giảm giá đối với người bán bên thứ ba) là phí dịch vụ, không phải thuế giá trị gia tăng hay thuế thu nhập của người bán. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tín dụng dịch vụ trên ứng dụng. Nền tảng không mô tả phí kho ứng dụng là phí của đơn hàng người bán.
+Phí sàn đang mô tả trên sàn (mặc định 20% giá sau giảm giá đối với người bán bên thứ ba) là phí dịch vụ, không phải thuế giá trị gia tăng hay thuế thu nhập của người bán. Apple In-App Purchase và Google Play Billing chỉ dùng để nạp tín dụng dịch vụ trên ứng dụng. Khi nạp số dư bằng mua trong ứng dụng (IAP) trên App Store hoặc Google Play, phí của Apple hoặc Google do người dùng chịu tại thời điểm nạp; giá trên kho ứng dụng đã bao gồm phí đó và số dư được ghi có bằng đúng giá trị tín dụng đã công bố của gói; phí này không được chuyển sang người bán. Nền tảng không mô tả phí kho ứng dụng là phí của đơn hàng người bán.
 
 ## Điều 3. Chưa công bố bảng khấu trừ
 

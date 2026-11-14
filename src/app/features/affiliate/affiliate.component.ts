@@ -3,8 +3,10 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AffiliateService } from '../../services/affiliate.service';
+import { DashboardService } from '../../services/api.services';
 import { SeoService } from '../../services/seo.service';
-import { AffiliateLink, AffiliateStats, PitCommitment } from '../../models/marketplace.models';
+import { AffiliateLink, AffiliateStats, PayoutAccountInfo, PitCommitment } from '../../models/marketplace.models';
+import { PayoutAccountFormComponent } from '../wallet/payout-account-form.component';
 import { quoteAffiliateWithdraw } from './affiliate-withdraw';
 import { I18nService } from '../../i18n/i18n.service';
 import { TPipe } from '../../i18n/t.pipe';
@@ -25,7 +27,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
 @Component({
   selector: 'app-affiliate',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, DecimalPipe, TPipe],
+  imports: [FormsModule, RouterLink, DatePipe, DecimalPipe, TPipe, PayoutAccountFormComponent],
   template: `
     <section class="page route-enter max-w-5xl">
       <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ 'aff.nav' | t }}</p>
@@ -80,7 +82,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
           <div class="panel">
             <p class="text-xs text-muted">{{ 'aff.available' | t }}</p>
             <p class="mt-2 font-display text-2xl">{{ money(s.commission?.available ?? s.earnings, s.currency) }}</p>
-            <a routerLink="/wallet" class="mt-1 inline-block text-xs underline">{{ 'aff.withdraw' | t }}</a>
+            <a href="#affiliate-payout" class="mt-1 inline-block text-xs underline">{{ 'aff.withdraw' | t }}</a>
           </div>
           <div class="panel">
             <p class="text-xs text-muted">{{ 'aff.reversed' | t }}</p>
@@ -92,9 +94,19 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
         </div>
 
         @if (s.withdrawal; as w) {
-          <form class="panel mt-6" (ngSubmit)="withdraw()">
+          <div id="affiliate-payout" class="panel mt-6">
             <h2 class="font-display text-xl">{{ 'aff.wd.title' | t }}</h2>
             <p class="mt-1 text-sm text-muted">{{ 'aff.wd.rule' | t }}</p>
+            <div class="mt-3 text-sm">
+              <p class="text-xs text-muted">{{ 'wd.bank' | t }}</p>
+              @if (payoutAccount(); as bank) {
+                <p class="mt-1"><strong>{{ bank.bankName }}</strong> · {{ bank.accountNumberMasked }}</p>
+                <p class="text-muted">{{ bank.accountName }}</p>
+              } @else if (payoutLoaded()) {
+                <p class="mt-1 text-muted">{{ 'aff.wd.noBank' | t }}</p>
+                <app-payout-account-form (savedChange)="onPayoutAccount($event)" />
+              }
+            </div>
             @if (w.pitCommitmentApplied) {
               <p class="mt-1 text-sm text-muted">{{ 'aff.wd.exempt' | t }}</p>
             } @else if (w.pitRate > 0) {
@@ -104,29 +116,31 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
             @if (!(w.available > 0) || !(w.availableVnd > 0)) {
               <p class="mt-1 text-sm text-muted">{{ 'aff.wd.none' | t }}</p>
             } @else {
-              <div class="mt-3 flex flex-wrap items-end gap-3">
-                <label class="text-sm">
-                  {{ 'aff.wd.amount' | t }}
-                  <input class="input mt-1 block w-48" type="number" name="wdAmount" [(ngModel)]="wdVnd" min="1" [max]="w.availableVnd" step="1" />
-                </label>
-                <button type="submit" class="btn btn-fill" [disabled]="busy() || !withdrawQuote()?.ok || s.payoutReady === false">{{ 'aff.wd.submit' | t }}</button>
-              </div>
-              @if (withdrawQuote(); as q) {
-                @if (!q.ok) {
-                  <p class="mt-2 text-sm text-muted">{{ ('aff.wd.' + q.code) | t }}</p>
-                } @else if (w.pitRate > 0) {
-                  <p class="mt-2 text-sm text-muted">
-                    {{ 'aff.wd.preview' | t: { gross: vnd(q.amountVnd), pit: vnd(q.amountVnd * w.pitRate), net: vnd(q.amountVnd - q.amountVnd * w.pitRate) } }}
-                  </p>
-                } @else {
-                  <p class="mt-2 text-sm text-muted">{{ 'aff.wd.previewPlain' | t: { gross: vnd(q.amountVnd) } }}</p>
+              <form (ngSubmit)="withdraw()">
+                <div class="mt-3 flex flex-wrap items-end gap-3">
+                  <label class="text-sm">
+                    {{ 'aff.wd.amount' | t }}
+                    <input class="input mt-1 block w-48" type="number" name="wdAmount" [(ngModel)]="wdVnd" min="1" [max]="w.availableVnd" step="1" />
+                  </label>
+                  <button type="submit" class="btn btn-fill" [disabled]="busy() || !withdrawQuote()?.ok || s.payoutReady === false || !payoutAccount()">{{ 'aff.wd.submit' | t }}</button>
+                </div>
+                @if (withdrawQuote(); as q) {
+                  @if (!q.ok) {
+                    <p class="mt-2 text-sm text-muted">{{ ('aff.wd.' + q.code) | t }}</p>
+                  } @else if (w.pitRate > 0) {
+                    <p class="mt-2 text-sm text-muted">
+                      {{ 'aff.wd.preview' | t: { gross: vnd(q.amountVnd), pit: vnd(q.amountVnd * w.pitRate), net: vnd(q.amountVnd - q.amountVnd * w.pitRate) } }}
+                    </p>
+                  } @else {
+                    <p class="mt-2 text-sm text-muted">{{ 'aff.wd.previewPlain' | t: { gross: vnd(q.amountVnd) } }}</p>
+                  }
                 }
-              }
+              </form>
             }
             @if (wdMsg()) {
               <p class="mt-2 text-sm">{{ wdMsg() }}</p>
             }
-          </form>
+          </div>
         }
 
         @if (!s.kycRequired) {
@@ -237,6 +251,7 @@ export function parseAffiliateTarget(raw: string): { productSlug?: string; store
 })
 export class AffiliateComponent implements OnInit {
   private readonly api = inject(AffiliateService);
+  private readonly dashboard = inject(DashboardService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
   private readonly currency = inject(CurrencyService);
@@ -253,10 +268,19 @@ export class AffiliateComponent implements OnInit {
   pitYear = new Date().getFullYear();
   wdVnd = 0;
   readonly wdMsg = signal('');
+  readonly payoutAccount = signal<PayoutAccountInfo | null>(null);
+  readonly payoutLoaded = signal(false);
   pitTaxCode = '';
 
   ngOnInit(): void {
     this.seo.set({ title: this.i18n.t('aff.title') });
+    this.dashboard.payoutAccount().subscribe({
+      next: (account) => {
+        this.payoutAccount.set(account.account);
+        this.payoutLoaded.set(true);
+      },
+      error: () => this.payoutLoaded.set(true),
+    });
     this.api.dashboard().subscribe((s) => {
       this.stats.set(s);
       const available = Math.round(Number(s.withdrawal?.availableVnd) || 0);
@@ -309,7 +333,11 @@ export class AffiliateComponent implements OnInit {
     });
   }
 
-  /** Withdraw affiliate commission (amount typed in VND, sent in USD cents). */
+  onPayoutAccount(account: PayoutAccountInfo): void {
+    this.payoutAccount.set(account);
+  }
+
+  /** Request a VND bank payout of affiliate commission. It is not credited to the spendable balance. */
   withdraw(): void {
     const quote = this.withdrawQuote();
     if (!quote?.ok) {
@@ -318,6 +346,10 @@ export class AffiliateComponent implements OnInit {
     }
     if (this.stats()?.payoutReady === false) {
       this.wdMsg.set(this.i18n.t('aff.kycNotice'));
+      return;
+    }
+    if (!this.payoutAccount()) {
+      this.wdMsg.set(this.i18n.t('aff.wd.noBank'));
       return;
     }
     this.wdMsg.set('');
